@@ -44,7 +44,6 @@ Stop Grafana:
 - `preSteps`: This is the folder that contains the scripts to prepare the database and tables.
     - `get_api.py`: Generate server API key and update `gf_conn.yaml`.
     - `add_dbsource.py`: Connect the PostegreSQL (hgcdb) as data source to Grafana.
-- `dashboard_config.yaml`: This is the configuration file for all the dashboards and panels.
 - `Create`: This is the folder that creates the database and tables from `dashboard_config.yaml` and the templates in the `Generate` folder.
     - `create_panels.py`: This script creates the panels (SQL) from `dashboard_config.yaml`.
     - `create_dashboard.py`: This script creates the dashboards (JSON) from `dashboard_config.yaml` and `panels.sql`.
@@ -54,10 +53,13 @@ Stop Grafana:
 - `Scripts`: This is the folder that contains the scripts to start and stop Grafana.
     - `start_grafana.sh`: scrpit to start Grafana.
     - `stop_grafana.sh`: script to stop Grafana.
+- `dashboard_config.yaml`: This is the configuration file for all the dashboards and panels.
 - `main.py`: the main file to run everything: `get_api.py`, `add_dbsource.py`, and finally upload all the dashboards' JSON files to Grafana.
+
 
 ## Dashboards and Panels
 - Components Inventory
     -
 - Modules Assembly and Inventory
     -
+- 施工中...
