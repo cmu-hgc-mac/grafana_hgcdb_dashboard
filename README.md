@@ -2,8 +2,11 @@
 
 ### Download Grafana
 - [Get Grafana](https://grafana.com/get)
+    - Select `OSS`
+    - Download Grafana based on your operating system
+    - Version: 12.0.0
 
-For macOS:
+For macOS (since I'm using macOS):
 ```
 curl -k -O https://dl.grafana.com/enterprise/release/grafana-enterprise-12.0.0.darwin-amd64.tar.gz
 tar -zxvf grafana-enterprise-12.0.0.darwin-amd64.tar.gz
@@ -13,6 +16,11 @@ Allow shell scripts to be executed:
 ```
 chmod +x start_grafana.sh
 chmod +x stop_grafana.sh
+```
+
+Run `main.py` to generate the dashboard:
+```
+python main.py
 ```
 
 ### Start Grafana
