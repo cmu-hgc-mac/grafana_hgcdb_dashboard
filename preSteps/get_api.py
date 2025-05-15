@@ -87,7 +87,7 @@ def get_api(gf_conn_path='a_EverythingNeedToChange/gf_conn.yaml',
         'GF_SA_ID': service_account_id,
         'GF_SA_NAME': f"{host}-service-account",
         'GF_API_KEY': token_key,
-        'GF_DATA_SOURCE_NAME': db_name
+        'GF_DATA_SOURCE_NAME': f"{host}-{db_name}"
     })
 
     with open(grafana_conn_path, 'w') as file:

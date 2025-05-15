@@ -32,12 +32,12 @@ Run `main.py` to generate the dashboard:
 python main.py
 ```
 
-Finally to stop Grafana:
+Stop Grafana:
 ```
 ./stop_grafana.sh
 ```
 
-## Files
+## Files Intro
 - `a_EverythingNeedToChange`: This is the only folder that need to be changed with different settings if everything runs smoothly. 
     - `db_conn.yaml`: database connection file.
     - `gf_conn.yaml`: grafana connectoin file. `GF_SA_NAME`, `GF_SA_ID`, `GF_DATA_SOURCE_NAME`, and `GF_API_KEY` would be automatically updated after running `get_api.py`.
@@ -54,7 +54,7 @@ Finally to stop Grafana:
 - `Scripts`: This is the folder that contains the scripts to start and stop Grafana.
     - `start_grafana.sh`: scrpit to start Grafana.
     - `stop_grafana.sh`: script to stop Grafana.
-- `main.py`: the main file to run everything.
+- `main.py`: the main file to run everything: `get_api.py`, `add_dbsource.py`, and finally upload all the dashboards' JSON files to Grafana.
 
 ## Dashboards and Panels
 - Components Inventory

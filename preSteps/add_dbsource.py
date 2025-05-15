@@ -3,7 +3,7 @@ import json
 import yaml
 
 """
-This function adds the PostgreSQL data source (hgcdb) to Grafana.
+This function adds the PostgreSQL data source to Grafana as default.
 """
 
 def add_dbsource(gf_conn_path='a_EverythingNeedToChange/gf_conn.yaml',
@@ -23,6 +23,7 @@ def add_dbsource(gf_conn_path='a_EverythingNeedToChange/gf_conn.yaml',
     db_password = db_conn['password']
     gf_api_key = gf_conn['GF_API_KEY']
     grafana_url = gf_conn['GF_URL']
+    gf_datasource = gf_conn['GF_DATA_SOURCE_NAME']
 
     headers = {
         "Content-Type": "application/json",
@@ -30,7 +31,7 @@ def add_dbsource(gf_conn_path='a_EverythingNeedToChange/gf_conn.yaml',
     }
 
     # payload for Postgres data source:
-    payload = {
+    ds_payload = {
         "name": db_name,
         "type": "postgres",
         "access": "proxy",
@@ -50,11 +51,11 @@ def add_dbsource(gf_conn_path='a_EverythingNeedToChange/gf_conn.yaml',
         response = requests.post(
             f"{grafana_url}/api/datasources",
             headers=headers,
-            data=json.dumps(payload)
+            data=json.dumps(ds_payload)
         )
         
         if response.status_code == 200:
-            print("PostgreSQL data source added to Grafana...")
+            print(f"PostgreSQL data source: {gf_datasource} added to Grafana as default...")
         else:
             print("Failed to add data source.")
             print("Status:", response.status_code)
