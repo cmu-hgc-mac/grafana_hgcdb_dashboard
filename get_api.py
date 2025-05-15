@@ -94,4 +94,5 @@ def get_api(grafana_conn_path='a_EverythingNeedToChange/gf_conn.yaml',
 
 
 # Run the function:
-get_api_key()
+if __name__ is '__main__':
+    get_api()

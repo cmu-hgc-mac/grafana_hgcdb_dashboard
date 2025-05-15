@@ -68,4 +68,5 @@ def add_dbsource(gf_conn_path='a_EverythingNeedToChange/gf_conn.yaml',
     
 
 # Run the function:
-add_dbsource()
+if __name__ is '__main__':
+    add_dbsource()

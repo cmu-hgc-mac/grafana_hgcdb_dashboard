@@ -1,4 +1,4 @@
-# Information for connecting to the HGCDB database
+# Setting for HGCDB database
 
 dbname: 'hgcdb'
 port: '5432'
