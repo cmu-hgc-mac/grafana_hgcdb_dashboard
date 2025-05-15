@@ -1,5 +1,5 @@
 # Grafana_HGCDB_Dashboard
-This is a dashboard for [Grafana](https://github.com/grafana/grafana?tab=readme-ov-file) to monitor the HGCDB database. 
+This is a dashboard provided by [Grafana](https://github.com/grafana/grafana?tab=readme-ov-file) to monitor the HGC Postgres database. 
 
 ## Download Grafana
 - [Get Grafana](https://grafana.com/get) from 
@@ -12,8 +12,8 @@ tar -zxvf grafana-enterprise-12.0.0.darwin-amd64.tar.gz
 ```
 
 The default port is `localhost:3000` and the default URL is http://localhost:3000.
-- Default Grafana username: `admin`
-- Defualt Grafana password: `admin`
+- default Grafana username: `admin`
+- defualt Grafana password: `admin`
 
 ## Getting Started
 I have written scripts to start and stop Grafana. In order to use the scripts, it is necessary to make them executable.
@@ -38,7 +38,7 @@ Finally to stop Grafana:
 ./stop_grafana.sh
 ```
 
-## File introduction
+## Files
 - `a_EverythingNeedToChange`: This is the only file that need to be changed with different settings. (`a` is added to be put in the top)
     - `db_conn.yaml`: database connection file.
     - `gf_conn.yaml`: grafana connectoin file. `GF_SA_NAME`, `GF_SA_ID`, `GF_DATA_SOURCE_NAME`, and `GF_API_KEY` would be automatically updated after running `get_api.py`.
@@ -50,3 +50,9 @@ Finally to stop Grafana:
 - `start_grafana.sh`: scrpit to start Grafana.
 - `stop_grafana.sh`: script to stop Grafana.
 - `main.py`: the main file to run everything.
+
+## Dashboards and Panels
+- `Components Inventory`
+    -
+- `Modules Assembly and Inventory`
+    -
