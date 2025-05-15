@@ -75,7 +75,7 @@ cd Scripts
 ```
 lsof -i -P -n | grep grafana
 ```
-If there's output saying that you have grafana using the port, then you should be able to login to the Grafana dashboard by localhost:3000 directly. It that doesn't work, try to run `./stop_grafana.sh` and then restart it.  
+> If there's output saying that you have grafana using the port, then you should be able to login to the Grafana dashboard by localhost:3000 directly. It that doesn't work, try to run `./stop_grafana.sh` and then restart it.  
 
 ### Get API_KEY and Add Database_Source
 1. Problem: Not able to get the token.
