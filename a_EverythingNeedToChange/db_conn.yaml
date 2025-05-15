@@ -1,0 +1,10 @@
+# Information for connecting to the HGCDB database
+
+dbname: 'hgcdb'
+port: '5432'
+db_hostname: 'cmsmac04.phys.cmu.edu' ## 'localhost'
+institution_abbr: 'CMU'  ## update this: CMU, IHEP, NTU, TTU, TIFR, UCSB
+
+user: 'viewer' ## recommended
+password: 'hgcal' 
+

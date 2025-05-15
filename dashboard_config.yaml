@@ -1,0 +1,35 @@
+datasource_variable: DS_POSTGRES
+
+dashboards:
+
+  - title: "Componets Inventory"
+    panels:
+      - title: "Free Baseplates"
+        table: "baseplate"
+        type: "Bar"
+        condition: "proto_no is NULL"
+        groupby: ["bp_material", "resolution", geometry]
+        filters: ["bp_material", "resolution", geometry]
+      
+      - title: "Free Sensors"
+        table: "sensor"
+        type: "Bar"
+        condition: "proto_no is NULL"
+        groupby: ["thickness", "resolution", "geometry"]
+        filters: ["thickness", "resolution", "geometry"]
+      
+      - title: "Free Hexaboards"
+        table: "hexaboard"
+        type: "Bar"
+        condition: "module_no is NULL"
+        groupby: ["roc_version", "resolution", "geometry"]
+        filters: ["roc_version", "resolution", "geometry"]
+  
+  - title: "Module Assembely and Inventory"
+    panels:
+      - title: "Modules Information"
+        table: "module_info"
+        type: "Bar"
+        condition: 
+        groupby: ["bp_material", "resolution", "roc_version", "geometry"]
+        filters: ["bp_material", "resolution", "roc_version", "geometry"]

@@ -1,0 +1,11 @@
+# Information for connecting to Grafana
+
+GF_URL: "http://localhost:3000" # default
+    # If there's vpn connected, try http://127.0.0.1:3000
+GF_SA_NAME: 
+GF_SA_ID: 
+GF_DATA_SOURCE_NAME: 
+GF_API_KEY: 
+
+GF_USER: 'admin' # default
+GF_PASS: 'admin' # default

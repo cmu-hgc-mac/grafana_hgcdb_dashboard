@@ -1,0 +1,23 @@
+########### Download Grafana(for MacOs) ###########
+# From: https://github.com/grafana/grafana?tab=readme-ov-file
+## MacOs ##
+curl -k -O https://dl.grafana.com/enterprise/release/grafana-enterprise-12.0.0.darwin-amd64.tar.gz
+tar -zxvf grafana-enterprise-12.0.0.darwin-amd64.tar.gz
+#######################################################
+
+########### Start Grafana in Terminal ###########
+cd grafana-v12.0.0/bin
+./grafana server web
+
+# Default port: http://localhost:3000
+# Default username: admin
+# Default password: admin
+#######################################################
+
+########### Allow Script ########### 
+chmod +x start_grafana.sh
+chmod +x stop_grafana.sh
+########### Run Script to start/stop ########### 
+./start_grafana.sh
+./stop_grafana.sh
+#######################################################

@@ -1,0 +1,71 @@
+import requests
+import json
+import yaml
+
+"""
+This function adds the PostgreSQL data source (hgcdb) to Grafana.
+"""
+
+def add_dbsource(gf_conn_path='a_EverythingNeedToChange/gf_conn.yaml',
+                 db_conn_path='a_EverythingNeedToChange/db_conn.yaml'):
+
+    # Read the conn files:
+    with open(gf_conn_path, mode='r') as file:
+        gf_conn = yaml.safe_load(file)
+    with open(db_conn_path, mode='r') as file:
+        db_conn = yaml.safe_load(file)
+
+    # load information:
+    db_name = db_conn['dbname']
+    db_port = db_conn['port']
+    db_host = db_conn['db_hostname']
+    db_user = db_conn['user']
+    db_password = db_conn['password']
+    gf_api_key = gf_conn['GF_API_KEY']
+    grafana_url = gf_conn['GF_URL']
+
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {gf_api_key}"
+    }
+
+    # payload for Postgres data source:
+    payload = {
+        "name": db_name,
+        "type": "postgres",
+        "access": "proxy",
+        "url": f"{db_host}:{db_port}",
+        "database": db_name,
+        "user": db_user,
+        "secureJsonData": {
+            "password": db_password
+        },
+        "isDefault": True,
+        "jsonData": {
+            "sslmode": "disable"
+        }
+    }
+
+    try:
+        response = requests.post(
+            f"{grafana_url}/api/datasources",
+            headers=headers,
+            data=json.dumps(payload)
+        )
+        
+        if response.status_code == 200:
+            print("PostgreSQL data source added to Grafana...")
+        else:
+            print("Failed to add data source.")
+            print("Status:", response.status_code)
+            print(response.text)
+            return None
+
+    except Exception as e:
+        print("Error ocurr while adding the data source.")
+        print(e)
+        return None
+    
+
+# Run the function:
+add_dbsource()
