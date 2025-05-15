@@ -2,7 +2,7 @@
 
 echo "Stopping Grafana..."
 
-# 查找监听 3000 端口的所有进程
+# Listen to the operating port: 3000
 PIDS=$(lsof -ti :3000)
 
 if [ -z "$PIDS" ]; then

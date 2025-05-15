@@ -6,11 +6,11 @@ import json
 This function is used to create a service account and get the API key to connect to Grafana.
 """
 
-def get_api(grafana_conn_path='a_EverythingNeedToChange/gf_conn.yaml',
-                db_conn_path='a_EverythingNeedToChange/db_conn.yaml'):
+def get_api(gf_conn_path='a_EverythingNeedToChange/gf_conn.yaml',
+            db_conn_path='a_EverythingNeedToChange/db_conn.yaml'):
 
     # Read the conn files:
-    with open(grafana_conn_path, mode='r') as file:
+    with open(gf_conn_path, mode='r') as file:
         gf_conn = yaml.safe_load(file)
 
     with open(db_conn_path, mode='r') as file:
@@ -28,23 +28,26 @@ def get_api(grafana_conn_path='a_EverythingNeedToChange/gf_conn.yaml',
 
 
     # Create service account
-    payload = {
+    sa_payload = {
         "name": f"{host}-service-account",
         "role": "Admin"
     }
 
     try:
-        response = requests.post(
+        create_response = requests.post(
             f"{GRAFANA_URL}/api/serviceaccounts",
             headers=headers,
             auth=(USERNAME, PASSWORD),
-            data=json.dumps(payload)
+            data=json.dumps(sa_payload)
         )
 
-        print("Service account created successfully...", response.status_code)
+        create_response.raise_for_status()
 
-        service_account = response.json()
+        print("Service account created successfully...", create_response.status_code)
+
+        service_account = create_response.json()
         service_account_id = service_account['id']
+
         print(f"Service account ID: {service_account_id}")
 
     except Exception as e:
@@ -76,7 +79,7 @@ def get_api(grafana_conn_path='a_EverythingNeedToChange/gf_conn.yaml',
     except Exception as e:
         print("Failed to create token.")
         print(e)
-        return None
+        exit()
     
 
     # Update gf_conn.yaml: 
@@ -89,8 +92,11 @@ def get_api(grafana_conn_path='a_EverythingNeedToChange/gf_conn.yaml',
 
     with open(grafana_conn_path, 'w') as file:
         yaml.dump(gf_conn, file)
-        print(f"Updated {grafana_config_path} with service account and API key...")
+        print(f"Updated {gf_conn_path} with service account and API key...")
 
+"""
+Unfortunatly if you failed to get the token_key, you will have to create a new service account and get a new token due to the secuirty limitation of Grafana.
+"""
 
 
 # Run the function:

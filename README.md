@@ -38,20 +38,26 @@ Finally to stop Grafana:
 ```
 
 ## Files
-- `a_EverythingNeedToChange`: This is the only file that need to be changed with different settings. (`a` is added to be put in the top)
+- `a_EverythingNeedToChange`: This is the only folder that need to be changed with different settings if everything runs smoothly. 
     - `db_conn.yaml`: database connection file.
     - `gf_conn.yaml`: grafana connectoin file. `GF_SA_NAME`, `GF_SA_ID`, `GF_DATA_SOURCE_NAME`, and `GF_API_KEY` would be automatically updated after running `get_api.py`.
-- `dashboard_config.yaml`: The configuration file for the dashboards and panels.
-- `get_api.py`: Generate server API key and update `gf_conn.yaml`.
-- `add_dbsource.py`: Connect the PostegreSQL (hgcdb) as data source to Grafana.
-- `create_panels.py`: generate the SQL queries for creating panels.
-- `create_dashboard.py`: generate the dashboard JSON file.
-- `start_grafana.sh`: scrpit to start Grafana.
-- `stop_grafana.sh`: script to stop Grafana.
+- `preSteps`: This is the folder that contains the scripts to prepare the database and tables.
+    - `get_api.py`: Generate server API key and update `gf_conn.yaml`.
+    - `add_dbsource.py`: Connect the PostegreSQL (hgcdb) as data source to Grafana.
+- `dashboard_config.yaml`: This is the configuration file for all the dashboards and panels.
+- `Create`: This is the folder that creates the database and tables from `dashboard_config.yaml` and the templates in the `Generate` folder.
+    - `create_panels.py`: This script creates the panels (SQL) from `dashboard_config.yaml`.
+    - `create_dashboard.py`: This script creates the dashboards (JSON) from `dashboard_config.yaml` and `panels.sql`.
+- `Generate`: This is the folder that contains the scripts to genreate the dashboards (JSON) and panels (SQL)
+    - `generate_panel_sql.py`: This script generates the SQL for differenty types of panels: Bar, Histograms...
+    - `generate_dashboard_json.py`: This script generates the JSON for dashboards.
+- `Scripts`: This is the folder that contains the scripts to start and stop Grafana.
+    - `start_grafana.sh`: scrpit to start Grafana.
+    - `stop_grafana.sh`: script to stop Grafana.
 - `main.py`: the main file to run everything.
 
 ## Dashboards and Panels
-- `Components Inventory`
+- Components Inventory
     -
-- `Modules Assembly and Inventory`
+- Modules Assembly and Inventory
     -
