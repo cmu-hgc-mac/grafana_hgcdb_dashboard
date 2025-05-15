@@ -53,7 +53,7 @@ def get_api(gf_conn_path='a_EverythingNeedToChange/gf_conn.yaml',
     except Exception as e:
         print("Failed to create service account.")
         print(e)
-        return None
+        exit()
 
 
     # Get the token/API key:
@@ -93,10 +93,6 @@ def get_api(gf_conn_path='a_EverythingNeedToChange/gf_conn.yaml',
     with open(grafana_conn_path, 'w') as file:
         yaml.dump(gf_conn, file)
         print(f"Updated {gf_conn_path} with service account and API key...")
-
-"""
-Unfortunatly if you failed to get the token_key, you will have to create a new service account and get a new token due to the secuirty limitation of Grafana.
-"""
 
 
 # Run the function:
