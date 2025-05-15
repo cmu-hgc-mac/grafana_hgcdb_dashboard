@@ -15,7 +15,7 @@ The default port is `localhost:3000` and the default URL is http://localhost:300
 - defualt Grafana password: `admin`
 
 ## Getting Started
-I have written scripts to start and stop Grafana. In order to use the scripts, it is necessary to make them executable.
+I have written scripts to start and stop Grafana. In `start_grafana.sh`, an enviornment is setted to avoid log in, wchih allow readers to view the dashboard direclty. I think this might be more convineient so I added it. In order to use the scripts, it is necessary to make them executable./n
 Allow shell scripts to be executed:
 ```
 chmod +x start_grafana.sh
@@ -24,6 +24,7 @@ chmod +x stop_grafana.sh
 
 Start Grafana:
 ```
+cd Scripts
 ./start_grafana.sh
 ```
 
@@ -31,9 +32,10 @@ Run `main.py` to generate the dashboard:
 ```
 python main.py
 ```
-
-Stop Grafana:
+If everything went smoothly, at this point the dashboard should be created successfully. But if very unfourtunate, due to different settings and conditions, there are some problems happened, I will try my best to encounter all the bugs I met and provide potential / my solution to the problem. But let's assume we have successfully created the dashboard.
+\nStop Grafana:
 ```
+cd Scripts
 ./stop_grafana.sh
 ```
 
