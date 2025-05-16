@@ -54,8 +54,10 @@ def add_dbsource(gf_conn_path='a_EverythingNeedToChange/gf_conn.yaml',
             data=json.dumps(ds_payload)
         )
         
-        if response.status_code == 200:
+        if response.status_code in [200, 201]:
             print(f"PostgreSQL data source: {gf_datasource} added to Grafana as default...")
+        elif response.status_code == 409:
+            print("Datasource already exists.")
         else:
             print("Failed to add data source.")
             print("Status:", response.status_code)
@@ -69,5 +71,5 @@ def add_dbsource(gf_conn_path='a_EverythingNeedToChange/gf_conn.yaml',
     
 
 # Run the function:
-if __name__ is '__main__':
+if __name__ == '__main__':
     add_dbsource()

@@ -90,11 +90,11 @@ def get_api(gf_conn_path='a_EverythingNeedToChange/gf_conn.yaml',
         'GF_DATA_SOURCE_NAME': f"{host}-{db_name}"
     })
 
-    with open(grafana_conn_path, 'w') as file:
+    with open(gf_conn_path, 'w') as file:
         yaml.dump(gf_conn, file)
         print(f"Updated {gf_conn_path} with service account and API key...")
 
 
 # Run the function:
-if __name__ is '__main__':
+if __name__ == '__main__':
     get_api()
