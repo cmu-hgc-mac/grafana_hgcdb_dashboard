@@ -41,7 +41,7 @@ cd Scripts
 ./stop_grafana.sh
 ```
   
-## Files Introductory
+## Files Introduction
 - `a_EverythingNeedToChange`: This is the only folder that need to be changed with different settings if everything runs smoothly. 
     - `db_conn.yaml`: database connection file.
     - `gf_conn.yaml`: grafana connectoin file. `GF_SA_NAME`, `GF_SA_ID`, `GF_DATA_SOURCE_NAME`, and `GF_API_KEY` would be automatically updated after running `get_api.py`.  
@@ -75,7 +75,7 @@ cd Scripts
 ```
 lsof -i -P -n | grep grafana
 ```
-> If there's output saying that you have grafana using the port, then you should be able to login to the Grafana dashboard by localhost:3000 directly. It that doesn't work, try to run `./stop_grafana.sh` and then restart it.  
+> If there's output saying that you have grafana using the port: 3000, then you should be able to login to the Grafana dashboard by localhost:3000 directly. If you are not able to open localhost:3000, try to run `./stop_grafana.sh` and restart it.  
 
 ### Get API_KEY and Add Database_Source
 1. Problem: Not able to get the token.

@@ -3,10 +3,10 @@ import requests
 import json
 
 """
-This function is used to create a service account and get the API key to connect to Grafana.
+This function creates a service account and get the API key to connect to Grafana.
 """
 
-def get_api(gf_conn_path='a_EverythingNeedToChange/gf_conn.yaml',
+def get_api_key(gf_conn_path='a_EverythingNeedToChange/gf_conn.yaml',
             db_conn_path='a_EverythingNeedToChange/db_conn.yaml'):
 
     # Read the conn files:
@@ -97,4 +97,4 @@ def get_api(gf_conn_path='a_EverythingNeedToChange/gf_conn.yaml',
 
 # Run the function:
 if __name__ == '__main__':
-    get_api()
+    get_api_key()

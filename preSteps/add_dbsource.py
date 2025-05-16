@@ -21,7 +21,7 @@ def add_dbsource(gf_conn_path='a_EverythingNeedToChange/gf_conn.yaml',
     db_host = db_conn['db_hostname']
     db_user = db_conn['user']
     db_password = db_conn['password']
-    gf_api_key = gf_conn['GF_API_KEY']
+    gf_api_key = gf_conn['GF_API_KEY'] # check if it is not empty
     grafana_url = gf_conn['GF_URL']
     gf_datasource = gf_conn['GF_DATA_SOURCE_NAME']
 
