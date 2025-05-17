@@ -24,12 +24,6 @@ def add_dbsource(gf_conn_path='a_EverythingNeedToChange/gf_conn.yaml',
     gf_api_key = gf_conn['GF_API_KEY'] # check if it is not empty
     grafana_url = gf_conn['GF_URL']
     gf_datasource = gf_conn['GF_DATA_SOURCE_NAME']
-
-    # key_parameter checks:
-    if not gf_api_key:
-        print("GF_API_KEY is not set in the connection file.")
-        exit(1)
-
     headers = {
         "Content-Type": "application/json",
         "Authorization": f"Bearer {gf_api_key}"
@@ -53,6 +47,12 @@ def add_dbsource(gf_conn_path='a_EverythingNeedToChange/gf_conn.yaml',
         "editable": False,
     }
 
+    # key_parameter checks:
+    if not gf_api_key:
+        print("GF_API_KEY is not set in the gf_conn.yaml file.")
+        exit(1)
+
+    # Add database source
     try:
         response = requests.post(
             f"{grafana_url}/api/datasources",
