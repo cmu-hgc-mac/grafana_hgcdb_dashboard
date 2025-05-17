@@ -7,7 +7,7 @@ This function creates a service account and get the API key to connect to Grafan
 """
 
 def get_api_key(gf_conn_path='a_EverythingNeedToChange/gf_conn.yaml',
-            db_conn_path='a_EverythingNeedToChange/db_conn.yaml'):
+                db_conn_path='a_EverythingNeedToChange/db_conn.yaml'):
 
     # Read the conn files:
     with open(gf_conn_path, mode='r') as file:

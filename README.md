@@ -19,13 +19,13 @@ I have written scripts to start and stop Grafana. In `start_grafana.sh`, an envi
   
 Allow shell scripts to be executed:
 ```
+cd Scripts
 chmod +x start_grafana.sh
 chmod +x stop_grafana.sh
 ```
   
 Start Grafana:
 ```
-cd Scripts
 ./start_grafana.sh
 ```
   
@@ -37,17 +37,17 @@ If everything went smoothly, at this point the dashboard should be created succe
   
 And finally, stop Grafana:
 ```
-cd Scripts
 ./stop_grafana.sh
 ```
   
 ## Files Introduction
-- `a_EverythingNeedToChange`: This is the only folder that need to be changed with different settings if everything runs smoothly. 
+- `a_EverythingNeedToChange`: This is the only folder that need to be changed with different settings if I'm a really good developer. (hopefully I am)
     - `db_conn.yaml`: database connection file.
-    - `gf_conn.yaml`: grafana connectoin file. `GF_SA_NAME`, `GF_SA_ID`, `GF_DATA_SOURCE_NAME`, and `GF_API_KEY` would be automatically updated after running `get_api.py`.  
+    - `gf_conn.yaml`: grafana connectoin file. `GF_SA_NAME`, `GF_SA_ID`, `GF_DATA_SOURCE_NAME`, and `GF_API_KEY` would be automatically updated after running `get_api.py`.
 - `preSteps`: This is the folder that contains the scripts to prepare the database and tables.
     - `get_api.py`: Generate server API key and update `gf_conn.yaml`.
-    - `add_dbsource.py`: Connect the PostegreSQL (hgcdb) as data source to Grafana.  
+    - `add_dbsource.py`: Connect the PostegreSQL (hgcdb) as data source to Grafana. 
+    - `modity_viewer_access.yaml`: modify the viewer access to the dashboard from `default.ini`. 
 - `Create`: This is the folder that creates the database and tables from `dashboard_config.yaml` and the templates in the `Generate` folder.
     - `create_panels.py`: This script creates the panels (SQL) from `dashboard_config.yaml`.
     - `create_dashboard.py`: This script creates the dashboards (JSON) from `dashboard_config.yaml` and `panels.sql`.  
