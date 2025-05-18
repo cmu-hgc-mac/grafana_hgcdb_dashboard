@@ -14,9 +14,6 @@ export GF_USERS_SIGN_UP=false
 export GF_AUTH_ANONYMOUS_ENABLED=true
 export GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
 
-# DB_URL=$(python3 -c "import yaml; file = open('/Users/chensiyu/Desktop/111/SURA/grafana_hgcdb_dashboard/a_EverythingNeedToChange/db_conn.yaml','r'); institution = yaml.safe_load(file)['institution_abbr'];print(f'http://grafana.{institution}.com')")
-# export GF_SERVER_ROOT_URL=$DB_URL
-
 # Kill any previous Grafana instance on port 3000 
 if lsof -i :3000 > /dev/null; then
     echo "Port 3000 already in use, killing previous process..."

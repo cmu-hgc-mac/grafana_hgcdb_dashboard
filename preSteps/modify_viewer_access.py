@@ -1,4 +1,5 @@
 import os
+import yaml
 
 """
 This script modifies the default.ini file in the conf directory to enable anonymous access to Grafana.
@@ -6,7 +7,11 @@ This script modifies the default.ini file in the conf directory to enable anonym
 By default the file should be inside the conf directory of grafana-v12.0.0
 """
 
-def modify_viewer_access(default_config_path = './grafana-v12.0.0/conf/default.ini'):
+def modify_viewer_access():
+    # read the path from gf_conn.yaml
+    file = open('./a_EverythingNeedToChange/gf_conn.yaml','r')
+    default_config_path = yaml.safe_load(file)['GF_defaults_PATH']
+
     # exit the program if default.ini not found in conf directory
     if not os.path.exists(default_config_path):
         print(f">> {default_config_path} not found. Exiting.")
