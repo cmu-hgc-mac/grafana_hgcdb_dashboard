@@ -7,7 +7,7 @@ GF_URL: "http://localhost:3000" # default
 GF_USER: 'admin' # default
 GF_PASS: 'admin' # default
 
-GF_defaults_PATH: '/Users/chensiyu/grafana-v12.0.0/conf/defaults.ini' 
+GF_defaults_PATH: '/Users/*****/grafana-v12.0.0/conf/defaults.ini' 
     # by default, 'defaults.ini' should be in the conf directory of Grafana
 
 # Things will be auto-updated:

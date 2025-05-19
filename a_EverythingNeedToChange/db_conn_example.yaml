@@ -1,10 +1,10 @@
-# Setting for HGCDB database
+# Setting for hgcdb database
 
 dbname: 'hgcdb'
 port: '5432'
-db_hostname: 'localhost' ## 'localhost'
-institution_abbr: 'CMU'  ## update this: CMU, IHEP, NTU, TTU, TIFR, UCSB
+db_hostname: 'localhost'  # 'localhost'
+institution_abbr: ''  # update this: CMU, IHEP, NTU, TTU, TIFR, UCSB
 
-user: 'viewer' ## recommended
-password: 'dummy' 
+user: 'viewer'  # recommended
+password: ''  # your password
 

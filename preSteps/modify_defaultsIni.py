@@ -4,12 +4,13 @@ import subprocess
 
 """
 This script modifies the default.ini file in the conf directory to enable anonymous access to Grafana.
-    *** Make Sure the path is correct ***
-By default the file should be inside the conf directory of grafana-v12.0.0
+    *** Make Sure the path is correct *** --> In gf_conn.yaml
+    By default the file should be inside the conf directory of grafana-v12.0.0
 Grafana will be restarted after the modification.
 """
 
 def modify_defaultsIni():
+    
     # read the path from gf_conn.yaml
     file = open('./a_EverythingNeedToChange/gf_conn.yaml','r')
     default_config_path = yaml.safe_load(file)['GF_defaults_PATH']
@@ -54,7 +55,7 @@ def modify_defaultsIni():
 
         if in_server_block:
             if stripped.startswith('['):
-                in_server_block = False
+                in_server_block = False # Server block ends
         
             # modify the lines:
             if stripped.startswith('http_addr'):
@@ -62,7 +63,7 @@ def modify_defaultsIni():
 
         output.append(line)
         
-    # Modify the file:
+    # rewrite the file:
     with open(default_config_path, 'w') as file:
         file.writelines(output)
     

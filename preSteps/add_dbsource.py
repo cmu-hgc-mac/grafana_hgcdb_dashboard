@@ -23,7 +23,9 @@ def add_dbsource(gf_conn_path='a_EverythingNeedToChange/gf_conn.yaml',
     db_password = db_conn['password']
     gf_api_key = gf_conn['GF_API_KEY'] # check if it is not empty
     grafana_url = gf_conn['GF_URL']
-    gf_datasource = gf_conn['GF_DATA_SOURCE_NAME']
+    gf_datasource_name = gf_conn['GF_DATA_SOURCE_NAME']
+    gf_datasource_uid = gf_conn['GF_DATA_SOURCE_ID']
+
     headers = {
         "Content-Type": "application/json",
         "Authorization": f"Bearer {gf_api_key}"
@@ -31,7 +33,7 @@ def add_dbsource(gf_conn_path='a_EverythingNeedToChange/gf_conn.yaml',
 
     # payload for Postgres data source:
     ds_payload = {
-        "name": db_name,
+        "name": gf_datasource_name,
         "type": "postgres",
         "access": "proxy",
         "url": f"{db_host}:{db_port}",
@@ -41,10 +43,11 @@ def add_dbsource(gf_conn_path='a_EverythingNeedToChange/gf_conn.yaml',
             "password": db_password
         },
         "isDefault": True,
+        "editable": False,
+        "uid": gf_datasource_uid,
         "jsonData": {
             "sslmode": "disable"
         }
-        "editable": False,
     }
 
     # key_parameter checks:
@@ -61,7 +64,7 @@ def add_dbsource(gf_conn_path='a_EverythingNeedToChange/gf_conn.yaml',
         )
         
         if response.status_code in [200, 201]:
-            print(f"PostgreSQL data source: {gf_datasource} added to Grafana as default...")
+            print(f"PostgreSQL data source: {gf_datasource_name} added to Grafana as default...")
         elif response.status_code == 409:
             print("Datasource already exists.")
         else:
