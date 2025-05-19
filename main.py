@@ -21,6 +21,9 @@ def run_git_pull_seq(auto_exit_on_update=True):
     # 2. add_dbsource()
     # 3. update_dashboard.py (upload the json file to grafana)
 
+def upload():
+    - upload whatever in dashboard_json folder
+    - update uid for each dashboard
 
 
 if __name__ == '__main__':
