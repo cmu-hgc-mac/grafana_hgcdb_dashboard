@@ -4,11 +4,7 @@ This is a dashboard provided by [Grafana](https://github.com/grafana/grafana?tab
 ## Download Grafana
 - [Get Grafana](https://grafana.com/get)
 
-In `Get Grafana` page, choose `OSS` instead of `Cloud`. Download the Grafana by your operating system. The version I used is `v12.0.0`. Since I'm using MacOS, here is the command I used to download the Grafana for MacOS:
-```
-curl -k -O https://dl.grafana.com/enterprise/release/grafana-enterprise-12.0.0.darwin-amd64.tar.gz
-tar -zxvf grafana-enterprise-12.0.0.darwin-amd64.tar.gz
-```
+In `Get Grafana` page, choose `OSS` instead of `Cloud`. Download the Grafana by your operating system. The version I used is `v12.0.0`.  
 
 The default port is `localhost:3000` and the default URL is http://localhost:3000.
 - default Grafana username: `admin`

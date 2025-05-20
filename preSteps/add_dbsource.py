@@ -24,7 +24,7 @@ def add_dbsource(gf_conn_path='a_EverythingNeedToChange/gf_conn.yaml',
     gf_api_key = gf_conn['GF_API_KEY'] # check if it is not empty
     grafana_url = gf_conn['GF_URL']
     gf_datasource_name = gf_conn['GF_DATA_SOURCE_NAME']
-    gf_datasource_uid = gf_conn['GF_DATA_SOURCE_ID']
+    gf_datasource_uid = gf_conn['GF_DATA_SOURCE_UID']
 
     headers = {
         "Content-Type": "application/json",
@@ -43,7 +43,7 @@ def add_dbsource(gf_conn_path='a_EverythingNeedToChange/gf_conn.yaml',
             "password": db_password
         },
         "isDefault": True,
-        "editable": False,
+        "editable": True,
         "uid": gf_datasource_uid,
         "jsonData": {
             "sslmode": "disable"

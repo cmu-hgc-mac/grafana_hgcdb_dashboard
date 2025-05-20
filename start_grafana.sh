@@ -14,6 +14,8 @@ export GF_USERS_SIGN_UP=false
 export GF_AUTH_ANONYMOUS_ENABLED=true
 export GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
 
+export GF_AUTOFILL_PASSWORD=true
+
 # Kill any previous Grafana instance on port 3000 
 if lsof -i :3000 > /dev/null; then
     echo "Port 3000 already in use, killing previous process..."
@@ -24,7 +26,7 @@ fi
 ./grafana server web > ../grafana_start.log 2>&1 &
 
 # Wait to give it time to start
-sleep 2
+sleep 5
 
 # Check if Grafana actually started (check port or process)
 if lsof -i :3000 > /dev/null; then

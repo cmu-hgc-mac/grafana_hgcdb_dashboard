@@ -1,12 +1,9 @@
 # Setting for Grafana
 
 # Things might need to be changes:
-GF_URL: "http://localhost:3000" # default
-    # If there's a vpn connected, try http://127.0.0.1:3000
-
+GF_URL: "http://127.0.0.1:3000" # default
 GF_USER: 'admin' # default
 GF_PASS: 'admin' # default
-
 GF_defaults_PATH: '/Users/*****/grafana-v12.0.0/conf/defaults.ini' 
     # by default, 'defaults.ini' should be in the conf directory of Grafana
 
@@ -15,4 +12,4 @@ GF_SA_NAME:
 GF_SA_ID: 
 GF_DATA_SOURCE_NAME: 
 GF_API_KEY: 
-GF_DATA_SOURCE_ID: 
+GF_DATA_SOURCE_UID: 
