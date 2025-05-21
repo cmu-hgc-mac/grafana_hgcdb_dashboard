@@ -12,10 +12,11 @@ The default port is `localhost:3000` and the default URL is http://localhost:300
 
 ## Getting Started
 I have written scripts to start and stop Grafana. In `start_grafana.sh`, an enviornment is setted to avoid log in, wchih allow readers to view the dashboard direclty. I think this might be more convineient so I added it. In order to use the scripts, it is necessary to make them executable.  
+
+### Before running the scripts, make sure to check the files in `a_EverythingNeedToChange` folder and change the necessary parameters.
   
 Allow shell scripts to be executed:
 ```
-cd Scripts
 chmod +x start_grafana.sh
 chmod +x stop_grafana.sh
 ```
@@ -25,36 +26,30 @@ Start Grafana:
 ./start_grafana.sh
 ```
   
-Run `main.py` to generate the dashboard:
+Run `main.py` to generate the dashboards to Grafana:
 ```
 python main.py
 ```
 If everything went smoothly, at this point the dashboard should be created successfully. But if very unfourtunate, due to different settings and conditions, there are some problems happened, I will try my best to encounter all the bugs I met and provide potential / my solution to the problem. But let's assume we have successfully created the dashboard.  
   
-And finally, stop Grafana:
+And finally, if needed, to stop Grafana:
 ```
 ./stop_grafana.sh
 ```
-  
-## Files Introduction
-- `a_EverythingNeedToChange`: This is the only folder that need to be changed with different settings if I'm a really good developer. (hopefully I am)
-    - `db_conn.yaml`: database connection file.
-    - `gf_conn.yaml`: grafana connectoin file. `GF_SA_NAME`, `GF_SA_ID`, `GF_DATA_SOURCE_NAME`, and `GF_API_KEY` would be automatically updated after running `get_api.py`.
-- `preSteps`: This is the folder that contains the scripts to prepare the database and tables.
-    - `get_api.py`: Generate server API key and update `gf_conn.yaml`.
-    - `add_dbsource.py`: Connect the PostegreSQL (hgcdb) as data source to Grafana. 
-    - `modity_viewer_access.yaml`: modify the viewer access to the dashboard from `default.ini`. 
-- `Create`: This is the folder that creates the database and tables from `dashboard_config.yaml` and the templates in the `Generate` folder.
-    - `create_panels.py`: This script creates the panels (SQL) from `dashboard_config.yaml`.
-    - `create_dashboard.py`: This script creates the dashboards (JSON) from `dashboard_config.yaml` and `panels.sql`.  
-- `Generate`: This is the folder that contains the scripts to genreate the dashboards (JSON) and panels (SQL)
-    - `generate_panel_sql.py`: This script generates the SQL for differenty types of panels: Bar, Histograms...
-    - `generate_dashboard_json.py`: This script generates the JSON for dashboards.  
-- `Scripts`: This is the folder that contains the scripts to start and stop Grafana.
-    - `start_grafana.sh`: scrpit to start Grafana.
-    - `stop_grafana.sh`: script to stop Grafana.  
-- `dashboard_config.yaml`: This is the configuration file for all the dashboards and panels.  
-- `main.py`: the main file to run everything: `get_api.py`, `add_dbsource.py`, and finally upload all the dashboards' JSON files to Grafana.  
+
+## Files and Folders Inventory:
+- Files:
+    - `start_grafana.sh`: start Grafana with the environment setted to avoid log in.
+    - `stop_grafana.sh`: stop Grafana.
+    - `main.py`: The only script that need to be run.
+- Folders:
+    - `a_EverythingNeedToChange`: contains all the files that need to be changed before running the scripts.
+        - `db_conn.yaml`: contains the database connection information.
+        - `gf_config.yaml`: contains the Grafana configuration information.
+        - **PLEASE CHECK THESE FILES BEFORE RUNNING THE SCRIPTS.**
+    - `config_folders`: contains all the configuration files for Grafana.
+    - `Create`: contains all the files to create the dashboards.
+    - `preSteps`: contains all the scripts to get the API_KEY and add the database_source.
 
 
 ## Dashboards and Panels
