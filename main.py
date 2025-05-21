@@ -1,35 +1,55 @@
+import os
+import requests
+import json
 import yaml
-from get_api import get_api
-from add_dbsource import add_dbsource
 
 
-def run_git_pull_seq(auto_exit_on_update=True):
-    result = subprocess.run(["git", "pull"], capture_output=True, text=True)
-    if result.returncode == 0:
-        print("Git pull successful.")
-        if "Already up to date." not in result.stdout:
-            print("Repo updated.")
-            if auto_exit_on_update:
-                print("Please re-run the script to use the latest version.")
-                exit()
-    else:
-        print("Git pull failed.")
-        print(result.stderr)
+def upload_dashboards(file_path):
 
-# def run_step():
-    # 1. get_api()
-    # 2. add_dbsource()
-    # 3. update_dashboard.py (upload the json file to grafana)
+    # Load information from gf_conn.yaml
+    with open('a_EverythingNeedToChange/gf_conn.yaml', 'r') as file:
+        gf_conn = yaml.safe_load(file)
 
-def upload():
-    - upload whatever in dashboard_json folder
-    - update uid for each dashboard
+    GRAFANA_URL = gf_conn['GF_URL']
+    API_TOKEN = gf_conn['GF_API_KEY']
+    headers = {
+        "Authorization": f"Bearer {API_TOKEN}",
+        "Content-Type": "application/json"
+    }
+
+    # Get folder UID
+    folder_uid = os.path.basename(os.path.dirname(file_path)).
+
+    # Load dashboard JSON
+    def load_dashboard_json(path):
+        with open(path, 'r', encoding='utf-8') as f:
+            return json.load(f)
+
+    dashboard = load_dashboard_json(file_path)
+
+    # Build payload 
+    payload = {
+        "dashboard": dashboard,
+        "folderUid": f'{folder_uid}',
+        "overwrite": True
+    }
+
+    # Upload dashboard
+    response = requests.post(
+        f"{GRAFANA_URL}/api/dashboards/db",
+        headers=headers,
+        data=json.dumps(payload)
+    )
+
+    # Print output response
+    print("Upload status:", response.status_code)
+    print("Response text:", response.text)
 
 
-if __name__ == '__main__':
-    try:
-        run_git_pull_seq() 
-    except:
-        print("There is a git conflict or network issue.")
 
-    run_step()
+def main():
+    os.system("python preSteps/get_api_key.py")
+    os.system("python preSteps/add_datasource.py")
+    os.system("python preSteps/modify_defasultsIni.py")
+    os.system("python Create/create_folders.py")
+    os.system("python Create/create_dashboards.py")

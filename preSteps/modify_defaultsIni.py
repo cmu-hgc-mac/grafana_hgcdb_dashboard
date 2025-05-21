@@ -9,67 +9,62 @@ This script modifies the default.ini file in the conf directory to enable anonym
 Grafana will be restarted after the modification.
 """
 
-def modify_defaultsIni():
-    
-    # read the path from gf_conn.yaml
-    file = open('./a_EverythingNeedToChange/gf_conn.yaml','r')
-    default_config_path = yaml.safe_load(file)['GF_defaults_PATH']
 
-    # exit the program if default.ini not found in conf directory
-    if not os.path.exists(default_config_path):
-        print(f">> {default_config_path} not found. Exiting.")
-        exit(1)
-    
-    # load the file
-    with open(default_config_path, 'r') as file:
-        lines = file.readlines()
+# read the path from gf_conn.yaml
+file = open('./a_EverythingNeedToChange/gf_conn.yaml','r')
+default_config_path = yaml.safe_load(file)['GF_defaults_PATH']
 
-    # Initialize the condition
-    output = []
-    in_anonymous_block = False  
-    in_server_block = False
+# exit the program if default.ini not found in conf directory
+if not os.path.exists(default_config_path):
+    print(f">> {default_config_path} not found. Exiting.")
+    exit(1)
 
-    # start the loop
-    for line in lines:
-        stripped = line.strip()
+# load the file
+with open(default_config_path, 'r') as file:
+    lines = file.readlines()
 
-        if stripped.startswith('[auth.anonymous]'):
-            in_anonymous_block = True   # Anonymous block starts
-            output.append(line)
-            continue
+# Initialize the condition
+output = []
+in_anonymous_block = False  
+in_server_block = False
 
-        if in_anonymous_block:
-            if stripped.startswith('['):
-                in_anonymous_block = False  # Anonymous block ends
+# start the loop
+for line in lines:
+    stripped = line.strip()
 
-            # modify the lines
-            if stripped.startswith('enabled'):
-                line = 'enabled = true\n'
-            if stripped.startswith('device_limit'):
-                line = 'device_limit = 100000\n'
-        
-        if stripped.startswith('[server]'):
-            in_server_block = True  # Server block starts
-            output.append(line)
-            continue
-
-        if in_server_block:
-            if stripped.startswith('['):
-                in_server_block = False # Server block ends
-        
-            # modify the lines:
-            if stripped.startswith('http_addr'):
-                line = 'http_addr = 127.0.0.1\n'    # only allow listen to local
-
+    if stripped.startswith('[auth.anonymous]'):
+        in_anonymous_block = True   # Anonymous block starts
         output.append(line)
-        
-    # rewrite the file:
-    with open(default_config_path, 'w') as file:
-        file.writelines(output)
-    
-    # restart grafana:
-    subprocess.run(["bash", "./start_grafana.sh"])
+        continue
 
-# Allow Run
-if __name__ == '__main__':
-    modify_defaultsIni()
+    if in_anonymous_block:
+        if stripped.startswith('['):
+            in_anonymous_block = False  # Anonymous block ends
+
+        # modify the lines
+        if stripped.startswith('enabled'):
+            line = 'enabled = true\n'
+        if stripped.startswith('device_limit'):
+            line = 'device_limit = 1000\n'
+    
+    if stripped.startswith('[server]'):
+        in_server_block = True  # Server block starts
+        output.append(line)
+        continue
+
+    if in_server_block:
+        if stripped.startswith('['):
+            in_server_block = False # Server block ends
+    
+        # modify the lines:
+        if stripped.startswith('http_addr'):
+            line = 'http_addr = 127.0.0.1\n'    # only allow listen to local
+
+    output.append(line)
+    
+# rewrite the file:
+with open(default_config_path, 'w') as file:
+    file.writelines(output)
+
+# restart grafana:
+subprocess.run(["bash", "./start_grafana.sh"])

@@ -1,0 +1,63 @@
+datasource_variable: DS_POSTGRES
+
+dashboards:
+
+  - title: "Free Baseplates"
+    panels:
+      - title: "bp_material"
+        table: "baseplate"
+        chart_type: "barchart"
+        condition: "proto_no is NULL"
+        groupby: "bp_material"
+
+      - title: "resolution"
+        table: "baseplate"
+        chart_type: "barchart"
+        condition: "proto_no is NULL"
+        groupby: "resolution"
+      
+      - title: "geometry"
+        table: "baseplate"
+        chart_type: "barchart"
+        condition: "proto_no is NULL"
+        groupby: "geometry"
+
+  - title: "Free Sensors"
+    panels:
+      - title: "thickness"
+        table: "sensor"
+        chart_type: "barchart"
+        condition: "proto_no is NULL"
+        groupby: "thickness"
+
+      - title: "resolution"
+        table: "sensor"
+        chart_type: "barchart"
+        condition: "proto_no is NULL"
+        groupby: "resolution"
+
+      - title: "geometry"
+        table: "sensor"
+        chart_type: "barchart"
+        condition: "proto_no is NULL"
+        groupby: "geometry"
+  
+  - title: "Free Hexaboards"
+    panels:
+      - title: "roc_version"
+        table: "hexaboard"
+        chart_type: "barchart"
+        condition: "module_no is NULL"
+        groupby: "roc_version"
+      
+      - title: "resolution"
+        table: "hexaboard"
+        chart_type: "barchart"
+        condition: "module_no is NULL"
+        groupby: "resolution"
+
+      - title: "geometry"
+        table: "hexaboard"
+        chart_type: "barchart"
+        condition: "module_no is NULL"
+        groupby: "geometry"
