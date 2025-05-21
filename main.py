@@ -56,8 +56,8 @@ def main():
     os.system("python preSteps/get_api_key.py")
     os.system("python preSteps/add_datasource.py")
     os.system("python preSteps/modify_defasultsIni.py")
-    os.system("python Create/create_folders.py")
-    os.system("python Create/create_dashboards.py")
+    os.system("python create/create_folders.py")
+    os.system("python create/create_dashboards.py")
 
     # Upload dashboards:
     folder_list = os.listdir("./Dashboards")
