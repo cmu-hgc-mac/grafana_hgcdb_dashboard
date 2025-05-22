@@ -3,7 +3,7 @@ import json
 import yaml
 
 """
-This function adds the PostgreSQL data source to Grafana as default.
+This file adds the PostgreSQL data source to Grafana as default.
 """
 
 # Define paths:
@@ -72,10 +72,9 @@ try:
         print("Failed to add data source.")
         print("Status:", response.status_code)
         print(response.text)
-        return None
-
+        
 except Exception as e:
     print("Error ocurr while adding the data source.")
     print(e)
-    return None
+    
     
