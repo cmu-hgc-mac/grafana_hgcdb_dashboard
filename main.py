@@ -2,6 +2,7 @@ import os
 import requests
 import json
 import yaml
+import subprocess
 
 
 def upload_dashboards(file_path):
@@ -51,15 +52,17 @@ def upload_dashboards(file_path):
     print("Response text:", response.text)
 
 
-
 def main():
-    os.system("python preSteps/get_api_key.py")
-    os.system("python preSteps/add_datasource.py")
-    os.system("python preSteps/modify_defasultsIni.py")
-    os.system("python create/create_folders.py")
-    os.system("python create/create_dashboards.py")
+    # Run preSteps in order
+    subprocess.run(["python", "./preSteps/get_api_key.py"], check=True)
+    subprocess.run(["python", "./preSteps/add_datasource.py"], check=True)
+    subprocess.run(["python", "./preSteps/modify_defasultsIni.py"], check=True)
 
-    # Upload dashboards:
+    # Everything Need To Generate
+    subprocess.run(["python", "create/create_folders.py"], check=True)
+    subprocess.run(["python", "create/create_dashboards.py"], check=True)
+
+    # Upload dashboards
     folder_list = os.listdir("./Dashboards")
     for folder in folder_list:
         file_list = os.listdir(f"./Dashboards/{folder}")
@@ -68,5 +71,7 @@ def main():
                 file_path = f"./Dashboards/{folder}/{file}"
                 upload_dashboards(file_path)
 
+
+# Allow Run
 if __name__ == '__main__':
     main()

@@ -3,12 +3,11 @@ import yaml
 import subprocess
 
 """
-This script modifies the default.ini file in the conf directory to enable anonymous access to Grafana.
+Modify the default.ini file in the conf directory to enable anonymous access to Grafana.
     *** Make Sure the path is correct *** --> In gf_conn.yaml
     By default the file should be inside the conf directory of grafana-v12.0.0
 Grafana will be restarted after the modification.
 """
-
 
 # read the path from gf_conn.yaml
 file = open('./a_EverythingNeedToChange/gf_conn.yaml','r')

@@ -3,7 +3,7 @@ import json
 import yaml
 
 """
-This file adds the PostgreSQL data source to Grafana as default.
+Add the PostgreSQL data source to Grafana as default.
 """
 
 # Define paths:

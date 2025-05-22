@@ -3,7 +3,7 @@ import requests
 import json
 
 """
-This function creates a service account and get the API key to connect to Grafana.
+Create a service account and get the API key to connect to Grafana.
 """
 
 # Define paths:

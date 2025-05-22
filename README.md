@@ -11,9 +11,9 @@ The default port is `localhost:3000` and the default URL is http://localhost:300
 - defualt Grafana password: `admin`
 
 ## Getting Started
-I have written scripts to start and stop Grafana. In `start_grafana.sh`, an enviornment is setted to avoid log in, wchih allow readers to view the dashboard direclty. I think this might be more convineient so I added it. In order to use the scripts, it is necessary to make them executable.  
-
 ### Before running the scripts, make sure to check the files in `a_EverythingNeedToChange` folder and change the necessary parameters.
+  
+I have written scripts to start and stop Grafana. In `start_grafana.sh`, an enviornment is setted to avoid log in, wchih allow readers to view the dashboard direclty. I think this might be more convineient so I added it. In order to use the scripts, it is necessary to make them executable.  
   
 Allow shell scripts to be executed:
 ```
@@ -52,11 +52,20 @@ And finally, if needed, to stop Grafana:
     - `preSteps`: contains all the scripts to get the API_KEY and add the database_source.
 
 
-## Dashboards and Panels
+## Folders, Dashboards and Panels
 - Components Inventory
-    -
-- Modules Assembly and Inventory
-    -
+    - Free Baseplates
+        - bp_material
+        - resolution
+        - geometry
+    - Free Sensors
+        - thickness
+        - resolution
+        - geometry
+    - Free Hexaboards
+        - roc_version
+        - resolution
+        - geometry
 - 工事中...
   
 ## Potential Bugs
