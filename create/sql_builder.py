@@ -12,20 +12,6 @@ class ChartSQLGenerator(ABC):
         pass
 
 
-# -- Create a SQL Generator Factory --
-class ChartSQLFactory:
-    _generators = {
-        "barchart" = BarChartGenerator()
-    }
-
-    @classmethod
-    def get_generator(cls, chart_type: str) -> ChartSQLGenerator:
-        generator = cls._generators.get(chart_type)
-        if not generator:
-            raise ValueError(f"Unsupported chart type: {chart_type}")
-        return generator
-
-
 # -- Generator for each chart_type --
 class BarChartGenerator(ChartSQLGenerator):
     def generate_sql(self, table: str, condition: str, groupby: str) -> str:
@@ -51,3 +37,19 @@ class BarChartGenerator(ChartSQLGenerator):
 class LineChartGenerator(ChartSQLGenerator):
     def generate_sql(self, table: str, condition: str, groupby: str) -> str:
         pass
+
+
+
+# -- Create the SQL Generator Factory --
+class ChartSQLFactory:
+    _generators = {
+        "barchart": BarChartGenerator(),
+        "linechart": LineChartGenerator()
+    }
+
+    @classmethod
+    def get_generator(cls, chart_type: str) -> ChartSQLGenerator:
+        generator = cls._generators.get(chart_type)
+        if not generator:
+            raise ValueError(f"Unsupported chart type: {chart_type}")
+        return generator
