@@ -26,7 +26,7 @@ fi
 ./grafana server web > ../grafana_start.log 2>&1 &
 
 # Wait to give it time to start
-sleep 5
+sleep 2
 
 # Check if Grafana actually started (check port or process)
 if lsof -i :3000 > /dev/null; then
