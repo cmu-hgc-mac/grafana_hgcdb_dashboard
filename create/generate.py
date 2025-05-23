@@ -1,6 +1,7 @@
 import requests
 import json
 import yaml
+import os
 
 """
 This file contains the functions to generate everything needed for the Grafana dashboards.
@@ -74,8 +75,10 @@ def generate_dashboard(dashboard_title, panels):
     Generates a Grafana dashboard json file based on the given panels.
     """
 
+    # load information
     dashboard_uid = dashboard_title.lower().replace(" ", "-")
     
+    # generate the dashboard json
     dashboard = {
         "annotations": {
             "list": [
@@ -119,28 +122,86 @@ def generate_dashboard(dashboard_title, panels):
     return dashboard
 
 
+def save_dashboard_json(dashboard, dashboard_json, folder):
+    """Save a dashboard JSON into Dashboards/<folder>/<dashboard_title>.json
+    """
+
+    # Get the safe title for the filename
+    safe_title = dashboard["title"].replace(" ", "_")
+    filename = safe_title + ".json"
+
+    # create path
+    folder_path = os.path.join("Dashboards", folder)
+    os.makedirs(folder_path, exist_ok=True)  # create the new Dashboards/folder
+
+    path = os.path.join(folder_path, filename)
+
+    # import file
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(dashboard_json, f, indent=2)
+    
+    print(f"Dashboard saved to {path}")
+
+
+def upload_dashboards(file_path):
+    """Uploads the dashboard JSON file to Grafana.
+    """
+
+    # Load information from gf_conn.yaml
+    with open('a_EverythingNeedToChange/gf_conn.yaml', 'r') as file:
+        gf_conn = yaml.safe_load(file)
+
+    GRAFANA_URL = gf_conn['GF_URL']
+    API_TOKEN = gf_conn['GF_API_KEY']
+    headers = {
+        "Authorization": f"Bearer {API_TOKEN}",
+        "Content-Type": "application/json"
+    }
+
+    # Get folder UID
+    filelist = os.listdir("./config_folders")   # Get everything in the config_folders directory
+    folder_name = os.path.basename(os.path.dirname(file_path))  # Get the folder's name from the file path
+    num = filelist.index(folder_name)  # Get the index of the folder's name in the filelist
+    folder_uid = gf_conn[f'GF_FOLDER_UID{num}']
+
+    # Load dashboard JSON
+    def load_dashboard_json(path):
+        with open(path, 'r', encoding='utf-8') as f:
+            return json.load(f)
+
+    dashboard = load_dashboard_json(file_path)
+
+    # Build payload 
+    payload = {
+        "dashboard": dashboard,
+        "folderUid": f'{folder_uid}',
+        "overwrite": True
+    }
+
+    # Upload dashboard
+    response = requests.post(
+        f"{GRAFANA_URL}/api/dashboards/db",
+        headers=headers,
+        data=json.dumps(payload)
+    )
+
+    # Print output response
+    print("Upload status:", response.status_code)
+    print("Response text:", response.text)
+
+
 # ============================================================
 # === Panel Generator ========================================
 # ============================================================
 
 def generate_panel(title,raw_sql, table, groupby, chart_type, gridPos):
-    """
-    Generate a panel json based on the given raw_sql, table, groupby, chart_type, and gridPos.
-
-    example of gridPos (dict):
-    {
-        "h": 7,
-        "w": 8,
-        "x": 7,
-        "y": 0
-      }
-
+    """Generate a panel json based on the given raw_sql, table, groupby, chart_type, and gridPos.
     """
 
     # load information:
     datasource_uid = gf_conn['GF_DATA_SOURCE_UID']
 
-    # create the panel json:
+    # generate the panel json:
     panel_json = {
       "datasource": {
         "type": "grafana-postgresql-datasource",
@@ -240,20 +301,61 @@ def generate_panel(title,raw_sql, table, groupby, chart_type, gridPos):
     return panel_json
 
 
+def assign_gridPos(panels, width=8, height=6, max_cols=24):
+    """Assign gridPos to each panel in the dashboard. 
+    Default: 3 panles in 1 row. 
+    """
+
+    # initial settings
+    x, y = 0, 0
+
+    # assign gridPos to each panel
+    for panel in panels:
+        if x + width > max_cols:    # Switch lines
+            x = 0
+            y += height
+
+        panel["gridPos"] = {
+            "x": x,
+            "y": y,
+            "w": width,
+            "h": height
+        }
+
+        x += width
+
+    return panels
+
+
+def read_panel_info(panel):
+    """Read panel information from the config file.
+    """
+
+    title = panel["title"]
+    table = panel["table"]
+    chart_type = panel["chart_type"]
+    condition = panel["condition"]
+    groupby = panel["groupby"]
+    gridPos = panel["gridPos"]
+
+    return title, table, chart_type, condition, groupby, gridPos
+
+
 # ============================================================
 # === SQL Builder ============================================
 # ============================================================
 
 def barchart_sql(table, condition, groupby):
-    """
-    Generate a barchart panel's SQL command
+    """Generate a barchart panel's SQL command
     """
 
+    # Check `condition`
     if condition:
         where_condition = f"WHERE {condition}"
     else:
         where_condition = ""
 
+    # generate the sql command
     panel_sql = f"""
     SELECT 
         {groupby},

@@ -31,7 +31,7 @@ headers = {
 
 # Create service account
 sa_payload = {
-    "name": f"{institution}-service-account",
+    "name": f"{institution}-service-account",   # GF_SA_NAME
     "role": "Admin"
 }
 
@@ -43,11 +43,11 @@ try:
         data=json.dumps(sa_payload)
     )
 
-    create_response.raise_for_status()
+    create_response.raise_for_status()  # Check status
     print("Service account created successfully...", create_response.status_code)
 
     service_account = create_response.json()
-    service_account_id = service_account['id']
+    service_account_id = service_account['id']  # GF_SA_ID
     print(f"Service account ID: {service_account_id}")
 
 except Exception as e:
@@ -73,7 +73,7 @@ try:
     print("Token created successfully...", token_response.status_code)
 
     token = token_response.json() 
-    token_key = token['key']
+    token_key = token['key']    # GF_API_KEY
     print(f"API key: {token_key}")
 
 except Exception as e:

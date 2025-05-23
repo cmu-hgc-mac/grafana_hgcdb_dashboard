@@ -56,6 +56,7 @@ if not gf_api_key:
     print("GF_API_KEY is not set in the gf_conn.yaml file.")
     exit(1)
 
+
 # Add database source
 try:
     response = requests.post(
@@ -66,8 +67,10 @@ try:
     
     if response.status_code in [200, 201]:
         print(f"PostgreSQL data source: {gf_datasource_name} added to Grafana as default...")
+        
     elif response.status_code == 409:
         print("Datasource already exists.")
+
     else:
         print("Failed to add data source.")
         print("Status:", response.status_code)
