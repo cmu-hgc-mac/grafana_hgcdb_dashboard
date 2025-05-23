@@ -1,6 +1,7 @@
 import yaml
 import os
-from generate import*
+from generate import *
+from sql_builder import *
 
 """
 This file generates all the dashboards json_file and saves them to a folder under `grafana_hgcdb_dashboard`.
@@ -34,6 +35,8 @@ for config in filelist:
             # Generate the sql query
             if chart_type == "barchart":
                 raw_sql = barchart_sql(table, condition, groupby)
+            
+            # raw_sql = generate_sql(chart_type, table, condition, groupby) -> from sql_builder.py
             
             # Generate the panel json
             panel_json = generate_panel(title, raw_sql, table, groupby, chart_type, gridPos)

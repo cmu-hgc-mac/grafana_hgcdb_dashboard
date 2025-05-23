@@ -3,6 +3,7 @@ import json
 import yaml
 import os
 
+
 """
 This file contains all the functions that are needed to generate everything for the Grafana dashboards.
 """
@@ -70,7 +71,7 @@ def generate_folder(folder_name, folder_number):
 # === Dashboard Generator ====================================
 # ============================================================
 
-def generate_dashboard(dashboard_title, panels):
+def generate_dashboard(dashboard_title: str, panels: list) -> dict:
     """
     Generates a Grafana dashboard json file based on the given panels.
     """
@@ -122,8 +123,8 @@ def generate_dashboard(dashboard_title, panels):
     return dashboard
 
 
-def save_dashboard_json(dashboard, dashboard_json, folder):
-    """Save a dashboard JSON into Dashboards/<folder>/<dashboard_title>.json
+def save_dashboard_json(dashboard: dict, dashboard_json: dict, folder: str):
+    """Save a dashboard JSON into Dashboards/<folder>/<dashboard_title>.json.
     """
 
     # Get the safe title for the filename
@@ -143,7 +144,7 @@ def save_dashboard_json(dashboard, dashboard_json, folder):
     print(f"Dashboard saved to {path}")
 
 
-def upload_dashboards(file_path):
+def upload_dashboards(file_path: str):
     """Uploads the dashboard JSON file to Grafana.
     """
 
@@ -165,7 +166,7 @@ def upload_dashboards(file_path):
     folder_uid = gf_conn[f'GF_FOLDER_UID{num}']
 
     # Load dashboard JSON
-    def load_dashboard_json(path):
+    def load_dashboard_json(path: str):
         with open(path, 'r', encoding='utf-8') as f:
             return json.load(f)
 
@@ -194,7 +195,7 @@ def upload_dashboards(file_path):
 # === Panel Generator ========================================
 # ============================================================
 
-def generate_panel(title,raw_sql, table, groupby, chart_type, gridPos):
+def generate_panel(title: str, raw_sql: str, table: str, groupby: str, chart_type: str, gridPos: dict) -> dict:
     """Generate a panel json based on the given raw_sql, table, groupby, chart_type, and gridPos.
     """
 
@@ -301,7 +302,7 @@ def generate_panel(title,raw_sql, table, groupby, chart_type, gridPos):
     return panel_json
 
 
-def assign_gridPos(panels, width=8, height=6, max_cols=24):
+def assign_gridPos(panels: list, width=8, height=6, max_cols=24) -> list:
     """Assign gridPos to each panel in the dashboard. 
     Default: 3 panles in 1 row. 
     """
@@ -327,7 +328,7 @@ def assign_gridPos(panels, width=8, height=6, max_cols=24):
     return panels
 
 
-def read_panel_info(panel):
+def read_panel_info(panel: dict) -> tuple:
     """Read panel information from the config file.
     """
 
@@ -345,8 +346,21 @@ def read_panel_info(panel):
 # === SQL Builder ============================================
 # ============================================================
 
-def barchart_sql(table, condition, groupby):
-    """Generate a barchart panel's SQL command
+def generate_sql(chart_type: str, table: str, condition: str, groupby: str) -> str:
+    """Generate the SQL command from ChartSQLFactory.
+    """
+
+    # Get Generator
+    generator = ChartSQLFactory.get_generator(chart_type)
+
+    # Generate SQL command
+    panel_sql = generator.generate_sql(table, condition, groupby)
+
+    return panel_sql
+    
+
+def barchart_sql(table: str, condition: str, groupby: str) -> str:
+    """Generate a barchart panel's SQL command.
     """
 
     # Check `condition`
@@ -368,5 +382,5 @@ def barchart_sql(table, condition, groupby):
     
     return panel_sql
 
-""" May want to turn the SQL Builder into a factory
+""" May want to turn the SQL Builder into abstract base class
 """
