@@ -1,7 +1,4 @@
 import os
-import requests
-import json
-import yaml
 import subprocess
 from create.generate import upload_dashboards
 from time import sleep

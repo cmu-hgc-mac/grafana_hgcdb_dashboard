@@ -4,7 +4,7 @@ import yaml
 import os
 
 """
-This file contains the functions to generate everything needed for the Grafana dashboards.
+This file contains all the functions that are needed to generate everything for the Grafana dashboards.
 """
 
 # -- Load YAML Configuration --
@@ -367,3 +367,6 @@ def barchart_sql(table, condition, groupby):
     """
     
     return panel_sql
+
+""" May want to turn the SQL Builder into a factory
+"""

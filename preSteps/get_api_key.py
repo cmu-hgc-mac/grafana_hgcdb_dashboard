@@ -95,3 +95,6 @@ with open(gf_conn_path, 'w') as file:
     yaml.dump(gf_conn, file)
     print(f"Auto update for gf_conn.yaml successfully...")
 
+
+""" May include encrypt_config and backpath for GF_API_KEY in the future.
+"""
