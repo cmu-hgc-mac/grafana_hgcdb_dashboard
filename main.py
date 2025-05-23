@@ -23,9 +23,9 @@ def main():
     folder_list = os.listdir("./Dashboards")
     for folder in folder_list:
         file_list = os.listdir(f"./Dashboards/{folder}")
-        for file in file_list:
-            if file.endswith(".json"):
-                file_path = f"./Dashboards/{folder}/{file}"
+        for file_name in file_list:
+            if file_name.endswith(".json"):
+                file_path = f"./Dashboards/{folder}/{file_name}"
                 upload_dashboards(file_path)
 
 
