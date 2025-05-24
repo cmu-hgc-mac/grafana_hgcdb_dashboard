@@ -30,7 +30,7 @@ sleep 2
 
 # Check if Grafana actually started (check port or process)
 if lsof -i :3000 > /dev/null; then
-    echo "Grafana started successfully at http://localhost:3000"
+    echo "Grafana started successfully."
 else
     echo "Grafana failed to start."
     exit 1
