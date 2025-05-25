@@ -8,29 +8,29 @@ from time import sleep
 This file does EVERYTHING for you (*´ω`*)
 """
 
-# check run times
-gf_conn_path = './a_EverythingNeedToChange/gf_conn.yaml'
-with open(gf_conn_path, mode='r') as file:
-    gf_conn = yaml.safe_load(file)
-run_times = int(gf_conn['GF_RUN_TIMES'])
+def main():
+    # check run times
+    gf_conn_path = './a_EverythingNeedToChange/gf_conn.yaml'
+    with open(gf_conn_path, mode='r') as file:
+        gf_conn = yaml.safe_load(file)
+    run_times = int(gf_conn['GF_RUN_TIMES'])
 
 
-# main function
-def main(run_times=run_times):
-    if run_times == 0:  # first run
-
+    # First run
+    if run_times == 0:
         print(" >> First run, preSteps will be executed. (<ゝω・）☆")
-
-        # Run preSteps in order
+        # preSteps in order
         subprocess.run(["python", "./preSteps/get_api_key.py"], check=True)
         sleep(0.5)    # wait for token to generate
         subprocess.run(["python", "./preSteps/add_datasource.py"], check=True)
         subprocess.run(["python", "./preSteps/modify_defaultsIni.py"], check=True)
 
+
     # Everything Need To Generate
     subprocess.run(["python", "create/create_folders.py"], check=True)
     sleep(0.5)    # wait for folders to add
     subprocess.run(["python", "create/create_dashboards.py"], check=True)
+
 
     # Upload dashboards
     folder_list = os.listdir("./Dashboards")
@@ -42,6 +42,7 @@ def main(run_times=run_times):
                 upload_dashboards(file_path)
     
     print(" >> Dashboards uploaded! ᕕ( ᐛ )ᕗ")
+
 
     # Add run times
     run_times += 1
