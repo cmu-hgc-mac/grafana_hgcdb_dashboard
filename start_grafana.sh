@@ -3,7 +3,7 @@
 # navigate to grafana directory
 cd ~/grafana-v12.0.0/bin || { echo "Grafana not found"; exit 1; }
 
-echo "Starting Grafana..."
+echo "Starting Grafana...(≧∇≦)"
 
 # Set enviornment
 export GF_SECURITY_ADMIN_USER=admin
@@ -18,7 +18,7 @@ export GF_AUTOFILL_PASSWORD=true
 
 # Kill any previous Grafana instance on port 3000 
 if lsof -i :3000 > /dev/null; then
-    echo "Port 3000 already in use, killing previous process..."
+    echo "Port 3000 already in use (#ﾟдﾟ), killing previous process..."
     kill -9 $(lsof -ti :3000)
 fi
 
@@ -30,8 +30,8 @@ sleep 2
 
 # Check if Grafana actually started (check port or process)
 if lsof -i :3000 > /dev/null; then
-    echo "Grafana started successfully."
+    echo "Grafana started successfully. ᕕ( ᐛ )ᕗ"
 else
-    echo "Grafana failed to start."
+    echo "Grafana failed to start. Σ(ﾟдﾟ;)"
     exit 1
 fi

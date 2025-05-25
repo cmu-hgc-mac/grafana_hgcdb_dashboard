@@ -53,7 +53,7 @@ ds_payload = {
 
 # key_parameter checks:
 if not gf_api_key:
-    print("GF_API_KEY is not set in the gf_conn.yaml file.")
+    print("GF_API_KEY is not set in the gf_conn.yaml file. (´ﾟДﾟ`)???")
     exit(1)
 
 
@@ -66,18 +66,18 @@ try:
     )
     
     if response.status_code in [200, 201]:
-        print(f"PostgreSQL data source: {gf_datasource_name} added to Grafana as default...")
+        print(f"PostgreSQL data source: {gf_datasource_name} added to Grafana as default... (`∀´σ)")
         
     elif response.status_code == 409:
-        print("Datasource already exists.")
+        print("Datasource already exists. (´･ω･`)")
 
     else:
-        print("Failed to add data source.")
+        print("Failed to add data source. ヽ(`Д´)ﾉ")
         print("Status:", response.status_code)
         print(response.text)
         
 except Exception as e:
-    print("Error ocurr while adding the data source.")
+    print("Error ocurr while adding the data source. Σ(っ °Д °;)っ")
     print(e)
     
     

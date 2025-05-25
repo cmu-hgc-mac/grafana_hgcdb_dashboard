@@ -83,3 +83,6 @@ with open(default_config_path, 'w') as file:
 
 # restart grafana:
 subprocess.run(["bash", "./start_grafana.sh"])
+
+# let user know: 
+print(" >> defaults.ini file is modified ↙(`ヮ´ )↗, and Grafana is restarted for allow anoaonymous access. ᕕ( ᐛ )ᕗ")

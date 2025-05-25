@@ -44,14 +44,14 @@ try:
     )
 
     create_response.raise_for_status()  # Check status
-    print("Service account created successfully...", create_response.status_code)
+    print("Service account created successfully (*´∀`)...", create_response.status_code)
 
     service_account = create_response.json()
     service_account_id = service_account['id']  # GF_SA_ID
     print(f"Service account ID: {service_account_id}")
 
 except Exception as e:
-    print("Failed to create service account.")
+    print("Failed to create service account.ヽ(`Д´)ﾉ")
     print(e)
     exit(1)
 
@@ -70,14 +70,14 @@ try:
         data=json.dumps(token_payload)
     )
 
-    print("Token created successfully...", token_response.status_code)
+    print("Token created successfully (ゝ∀･)...", token_response.status_code)
 
     token = token_response.json() 
     token_key = token['key']    # GF_API_KEY
     print(f"API key: {token_key}")
 
 except Exception as e:
-    print("Failed to create token.")
+    print("Failed to create token. Σ(っ °Д °;)っ")
     print(e)
     exit(1)
 
@@ -93,7 +93,7 @@ gf_conn.update({
 
 with open(gf_conn_path, 'w') as file:
     yaml.dump(gf_conn, file)
-    print(f"Auto update for gf_conn.yaml successfully...")
+    print(f"Auto update for gf_conn.yaml successfully! ヾ(´ωﾟ｀)")
 
 
 """ May include encrypt_config and backpath for GF_API_KEY in the future.

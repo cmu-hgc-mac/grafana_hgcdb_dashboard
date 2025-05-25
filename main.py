@@ -1,18 +1,31 @@
 import os
 import subprocess
+import yaml
 from create.generate import upload_dashboards
 from time import sleep
 
 """
-This file does EVERYTHING for you ;)
+This file does EVERYTHING for you (*´ω`*)
 """
 
-def main():
-    # Run preSteps in order
-    subprocess.run(["python", "./preSteps/get_api_key.py"], check=True)
-    sleep(0.5)    # wait for token to generate
-    subprocess.run(["python", "./preSteps/add_datasource.py"], check=True)
-    subprocess.run(["python", "./preSteps/modify_defaultsIni.py"], check=True)
+# check run times
+gf_conn_path = './a_EverythingNeedToChange/gf_conn.yaml'
+with open(gf_conn_path, mode='r') as file:
+    gf_conn = yaml.safe_load(file)
+run_times = int(gf_conn['GF_RUN_TIMES'])
+
+
+# main function
+def main(run_times=run_times):
+    if run_times == 0:  # first run
+
+        print(" >> First run, preSteps will be executed. (<ゝω・）☆")
+
+        # Run preSteps in order
+        subprocess.run(["python", "./preSteps/get_api_key.py"], check=True)
+        sleep(0.5)    # wait for token to generate
+        subprocess.run(["python", "./preSteps/add_datasource.py"], check=True)
+        subprocess.run(["python", "./preSteps/modify_defaultsIni.py"], check=True)
 
     # Everything Need To Generate
     subprocess.run(["python", "create/create_folders.py"], check=True)
@@ -27,8 +40,21 @@ def main():
             if file_name.endswith(".json"):
                 file_path = f"./Dashboards/{folder}/{file_name}"
                 upload_dashboards(file_path)
+    
+    print(" >> Dashboards uploaded! ᕕ( ᐛ )ᕗ")
+
+    # Add run times
+    run_times += 1
+    gf_conn['GF_RUN_TIMES'] = run_times
+    with open(gf_conn_path, mode='w') as file:
+        yaml.dump(gf_conn, file)
+
+    print(" >> And run_times updated! 乚(`ヮ´ ﾐэ)Э")
+
+    # Done!!
+    print(" >>>> All done! (๑•̀ㅂ•́)و✧")
 
 
-# Allow Run
+# allow Run
 if __name__ == '__main__':
     main()
