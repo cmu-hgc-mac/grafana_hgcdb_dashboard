@@ -48,3 +48,5 @@ for config in filelist:
         # Export the dashboard json to a file
         file_name = config.split(".")[0]
         save_dashboard_json(dashboard, dashboard_json, file_name)
+
+print("Dashboards generated successfully! (ﾉ)`ω´(ヾ)")

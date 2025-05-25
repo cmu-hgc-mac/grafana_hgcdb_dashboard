@@ -23,7 +23,7 @@ gf_ip = gf_conn['GF_IP']
 
 # exit the program if default.ini not found in conf directory
 if not os.path.exists(default_config_path):
-    print(f">> {default_config_path} not found. Exiting.")
+    print(f" >> {default_config_path} not found. Exiting.")
     exit(1)
 
 # load the file
