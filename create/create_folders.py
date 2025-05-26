@@ -17,6 +17,6 @@ for i, config in enumerate(filelist):
     folder_id = i   # unique id for each folder
     generate_folder(folder_name, folder_id)
     
-print("Folders are created! (ゝ∀･)")
+print(" >> Folders are created in Grafana! (ゝ∀･)")
 
 
