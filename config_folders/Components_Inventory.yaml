@@ -4,60 +4,24 @@ dashboards:
 
   - title: "Free Baseplates"
     panels:
-      - title: "bp_material"
+      - title: "Free Baseplates"
         table: "baseplate"
         chart_type: "barchart"
         condition: "proto_no is NULL"
-        groupby: "bp_material"
-
-      - title: "resolution"
-        table: "baseplate"
-        chart_type: "barchart"
-        condition: "proto_no is NULL"
-        groupby: "resolution"
-      
-      - title: "geometry"
-        table: "baseplate"
-        chart_type: "barchart"
-        condition: "proto_no is NULL"
-        groupby: "geometry"
+        groupby: ["bp_material", "resolution", "geometry"]
 
   - title: "Free Sensors"
     panels:
-      - title: "thickness"
+      - title: "Free Sensors"
         table: "sensor"
         chart_type: "barchart"
         condition: "proto_no is NULL"
-        groupby: "thickness"
+        groupby: ["thickness", "resolution", "geometry"]
 
-      - title: "resolution"
-        table: "sensor"
-        chart_type: "barchart"
-        condition: "proto_no is NULL"
-        groupby: "resolution"
-
-      - title: "geometry"
-        table: "sensor"
-        chart_type: "barchart"
-        condition: "proto_no is NULL"
-        groupby: "geometry"
-  
   - title: "Free Hexaboards"
     panels:
-      - title: "roc_version"
+      - title: "Free Hexaboards"
         table: "hexaboard"
         chart_type: "barchart"
         condition: "module_no is NULL"
-        groupby: "roc_version"
-      
-      - title: "resolution"
-        table: "hexaboard"
-        chart_type: "barchart"
-        condition: "module_no is NULL"
-        groupby: "resolution"
-
-      - title: "geometry"
-        table: "hexaboard"
-        chart_type: "barchart"
-        condition: "module_no is NULL"
-        groupby: "geometry"
+        groupby: ["roc_version", "resolution", "geometry"]

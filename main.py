@@ -21,14 +21,14 @@ def main():
         print(" >> First run, preSteps will be executed. (<ゝω・）☆")
         # preSteps in order
         subprocess.run(["python", "./preSteps/get_api_key.py"], check=True)
-        sleep(0.5)    # wait for token to generate
+        sleep(0.5)    # wait for token to be generated
         subprocess.run(["python", "./preSteps/add_datasource.py"], check=True)
         subprocess.run(["python", "./preSteps/modify_defaultsIni.py"], check=True)
 
 
     # Everything Need To Generate
     subprocess.run(["python", "create/create_folders.py"], check=True)
-    sleep(0.5)    # wait for folders to add
+    sleep(0.5)    # wait for folders to be added
     subprocess.run(["python", "create/create_dashboards.py"], check=True)
 
 

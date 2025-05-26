@@ -2,6 +2,7 @@ import requests
 import json
 import yaml
 import os
+from sql_builder import ChartSQLFactory
 
 
 """
@@ -71,7 +72,7 @@ def generate_folder(folder_name, folder_number):
 # === Dashboard Generator ====================================
 # ============================================================
 
-def generate_dashboard(dashboard_title: str, panels: list) -> dict:
+def generate_dashboard(dashboard_title: str, panels: list, template_list: list) -> dict:
     """
     Generates a Grafana dashboard json file based on the given panels.
     """
@@ -107,7 +108,7 @@ def generate_dashboard(dashboard_title: str, panels: list) -> dict:
         "schemaVersion": 41,
         "tags": [],
         "templating": {
-            "list": []
+            "list": template_list
         },
         "time": {
             "from": "now-6h",
@@ -148,10 +149,7 @@ def upload_dashboards(file_path: str):
     """Uploads the dashboard JSON file to Grafana.
     """
 
-    # Load information from gf_conn.yaml
-    with open('a_EverythingNeedToChange/gf_conn.yaml', 'r') as file:
-        gf_conn = yaml.safe_load(file)
-
+    # load information
     GRAFANA_URL = gf_conn['GF_URL']
     API_TOKEN = gf_conn['GF_API_KEY']
     headers = {
@@ -342,12 +340,8 @@ def read_panel_info(panel: dict) -> tuple:
     return title, table, chart_type, condition, groupby, gridPos
 
 
-# ============================================================
-# === SQL Builder ============================================
-# ============================================================
-
 def generate_sql(chart_type: str, table: str, condition: str, groupby: str) -> str:
-    """Generate the SQL command from ChartSQLFactory.
+    """Generate the SQL command from ChartSQLFactory. -> sql_builder.py
     """
 
     # Get Generator
@@ -359,28 +353,40 @@ def generate_sql(chart_type: str, table: str, condition: str, groupby: str) -> s
     return panel_sql
     
 
-def barchart_sql(table: str, condition: str, groupby: str) -> str:
-    """Generate a barchart panel's SQL command.
-    """
+# ============================================================
+# === Template Generator =====================================
+# ============================================================
 
-    # Check `condition`
-    if condition:
-        where_condition = f"WHERE {condition}"
-    else:
-        where_condition = ""
+def generate_filter(filter_name: str, filter_sql: str) -> dict:
+  """Generate a template json based on the given .
+  """
 
-    # generate the sql command
-    panel_sql = f"""
-    SELECT 
-        {groupby},
-    COUNT(*) AS free_count
-    FROM {table}
-    {where_condition}
-    GROUP BY {groupby}
-    ORDER BY free_count DESC;
-    """
-    
-    return panel_sql
+  # load information:
+  datasource_uid = gf_conn['GF_DATA_SOURCE_UID']
 
-""" May want to turn the SQL Builder into abstract base class
-"""
+  filter_json = {"datasource": {
+          "type": "postgres",
+          "uid": f"{datasource_uid}"
+        },
+        "includeAll": True,
+        "multi": True,
+        "name": filter_name,
+        "options": [],
+        "query": filter_sql,
+        "refresh": 1, # refresh everytime when dashboard is loaded
+        "type": "query"
+      }
+
+  return filter_json
+
+
+def generate_filterSQL(filter_name: str, table: str) -> str:
+  """Generate a template SQL command based on the given filter name.
+  """
+
+  # generate the sql command
+  filter_sql = f"""
+  SELECT DISTINCT {filter_name} FROM {table} ORDER BY {filter_name}
+  """
+
+  return filter_sql
