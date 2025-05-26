@@ -76,8 +76,8 @@ What's inside the folders will be explained below. The `preSteps` folder will on
     - `sql_builder.py` is the script to build the SQL queries for each panel. I used `ABC` - Abstract Base Class - to build the SQL queries for different chart types. For the future developers who want to add more chart types, they can simply add a new class and implement the chart types in the `ChartSQLFactory` class. The Class is called only in: `generate.py`: line 343 - line 353 to generate the SQL queries for each panel.
     - And also, here is the link to [JSON MODEL](https://grafana.com/docs/grafana/latest/dashboards/build-dashboards/view-dashboard-json-model/) for Grafana dashboards. I hope this is helpful! (*´ω`*)
   
-That's all I would like to say about the scripts for now. If you have any questions, please feel free to ask me! (σ`∀´) And I'm also very happy to hear any suggestions or improvements! And I'm happy to provide a Chinese version of this README if needed!
-** And lastly, THANK YOU VERY MUCH for reading this! (๑•̀ㅂ•́)و✧**
+That's all I would like to say about the scripts for now. If you have any questions, please feel free to ask me! (σ`∀´) And I'm also very happy to hear any suggestions or improvements! And I'm happy to provide a Chinese version of this README if needed!  
+**And lastly, THANK YOU VERY MUCH for reading this! (๑•̀ㅂ•́)و✧**
 
 
 ## Potential Bugs
