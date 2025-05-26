@@ -2,7 +2,7 @@
 This is a dashboard provided by [Grafana](https://github.com/grafana/grafana?tab=readme-ov-file) to monitor the HGC Postgres database. 
 
 ## Run Steps
-Since I really afraid of setting up enviorment, (It is a realllll nightmare(／‵口′)／~ ╧╧) I tried my very best to make the scripts as simple as possible. ε=ε=(ノ≧∇≦)ノ  
+Since I really afraid of setting up enviorment (／‵口′)／~ ╧╧, I tried my very best to make the scripts as simple as possible. ε=ε=(ノ≧∇≦)ノ  
 I know that my scripts by no chance can be perfect, but this is the best I can have at this moment! (σ`∀´)♡ A more detailed explanation on how the scripts work can be found in the later section.
   
 And.... Here are the steps to set up the Grafana_HGCDB_Dashboard: (;´ヮ`)7
