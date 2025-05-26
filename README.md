@@ -76,7 +76,7 @@ What's inside the folders will be explained below. The preSteps folder will only
   
 That's all I would like to say about the scripts for now. If you have any questions, please feel free to ask me! (σ`∀´)
   
-* And thank you very much for reading this! (๑•̀ㅂ•́)و✧ *  
+* Thank you very much for reading this! (๑•̀ㅂ•́)و✧ *  
 
 
 ## Potential Bugs
