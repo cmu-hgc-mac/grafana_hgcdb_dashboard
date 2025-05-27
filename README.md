@@ -60,23 +60,24 @@ The default port is `localhost:3000` and the default URL is http://localhost:300
   
 
 ## How the Scripts Work σ( ᑒ )
-The "normal" way to generate a Grafana dashboard is to use the Grafana Web UI. However, it seems that I am not their target user, which means that I'm not able to interact perfectly with their UI, and I `noticed` that each dashboard is actually a json file. So I wonder if if is possible for me to generate the json files by code and upload them to Grafana directly... Then I don't have to interact with the UI anymore! ╮(￣▽￣)╭  
+The "normal" way to generate a Grafana dashboard is to use the Grafana Web UI. However, it seems that I am not their target user, which means that I'm not able to interact perfectly with their UI, and I `noticed` that each dashboard is actually a json file. So I wonder if it is possible for me to generate the json files by code and upload them to Grafana directly... Then I don't have to interact with the UI anymore! ╮(￣▽￣)╭  
   
-And luckly.... I can! (๑•̀ㅂ•́)و✧ So, here's what I have!(σ`∀´)♡  
+And luckly.... I can! (๑•̀ㅂ•́)و✧ So, here's what I have! (σ`∀´)♡  
   
 The `preSteps` folder will only be runned for once, as there's a parameter - `GF_RUN_TIMES` - in `gf_conn.yaml` (please check it before running the main.py) counting how many times the `main.py` has been runned:  
 - `preSteps` folder:  
     - `get_api_key.py` is the script to create a service account and get the API_KEY for Grafana. The API_KEY will be stored in the `gf_conn.yaml` file for future usages: add datasource, create folders, and upload dashboards.
     - `add_datasource.py` is the script to add the database_source to Grafana. The database_source is called from the parameters in the `db_conn.yaml` file. -> **please Modify the `db_conn.yaml` file before running the main.py. ( `д´)9**
-    - `modify_defaulsIni.py` is the script to modify the default.ini file in the Grafana configuration folder. The modifications are mainly focusing on `auth.anonymous` and `server`. The `auth.anonymous` is set to `true` to allow anonymous access to the Grafana dashboard. The `server` is set to allow access from any IP address connection to the Grafana port -> hence modification on device's firewall is needed. 
-    - I know this is not a secure connection, in the future we can use `Nginx` as a reverse proxy. But I'm having problem downloading `Nginx` on my device for now. I will figure it out, I will figure it out, I will figure it out.( `д´)σ 
+    - `modify_defaulsIni.py` is the script to modify the defaults.ini file in the Grafana configuration folder. The modifications are mainly focusing on `auth.anonymous` and `server`. The `auth.anonymous` is set to `true` to allow anonymous access to the Grafana dashboard. The `server` is set to allow access from any IP address connection to the Grafana port -> hence modification on device's firewall is needed. 
+    - I know this is not a secure connection, in the future we can use `Nginx` as a reverse proxy. But I'm having trouble downloading `Nginx` on my device for now. I will figure it out, I will figure it out, I will figure it out. ( `д´)σ 
 - `Create` folder:
     - `create_dashboards.py` and `create_folders.py` are the scripts to do whatever is listed in the titles. There's nothing much to talk here. Just run the scripts and the dashboards will be generated.
-    -  `generate.py` is the script to generate almost everything. It is very very very long and I don't recommand any one to take a look at it. It is soooooooo looooooooong and there's nothing I can do to make it shorter and I'm really really sad (;´Д`)
+    -  `generate.py` is the script to generate almost everything. It is very very very long and I don't recommand any one to take a look at it. It is soooooooo looooooooong and there's nothing I can do to make it shorter and I'm really really sad. (;´Д`)
     - `sql_builder.py` is the script to build the SQL queries for each panel. I used `ABC` - Abstract Base Class - to build the SQL queries for different chart types. For the future developers who want to add more chart types, they can simply add a new class and implement the chart types in the `ChartSQLFactory` class. The Class is called only in: `generate.py`: line 343 - line 353 to generate the SQL queries for each panel.
     - And also, here is the link to [JSON MODEL](https://grafana.com/docs/grafana/latest/dashboards/build-dashboards/view-dashboard-json-model/) for Grafana dashboards. I hope this is helpful! (*´ω`*)
   
-That's all I would like to say about the scripts for now. If you have any questions, please feel free to ask me! ε=ε=(ノ≧∇≦)ノ And I'm more than happy to hear any suggestions or improvements! And I'm also very happy to provide a Chinese version of this `README.md` if needed!ᕕ( ᐛ )ᕗ  
+That's all I would like to say about the scripts for now.  
+If you have any questions, please feel free to ask me! ε=ε=(ノ≧∇≦)ノ And I'm more than happy to hear any suggestions or improvements! And I'm also very happy to provide a Chinese version of this `README.md` if needed! ᕕ( ᐛ )ᕗ  
 
 # And lastly, THANK YOU VERY MUCH for reading this! (σ`∀´)♡
 
