@@ -4,7 +4,6 @@ import yaml
 import os
 from sql_builder import ChartSQLFactory
 
-
 """
 This file contains all the functions that are needed to generate everything for the Grafana dashboards.
 """

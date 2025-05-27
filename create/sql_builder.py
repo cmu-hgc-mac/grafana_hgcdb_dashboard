@@ -23,7 +23,7 @@ class BarChartGenerator(ChartSQLGenerator):
 
         for elem in groupby:
             param = f"${{{elem}}}"
-            arg = f"('All' = ANY(ARRAY[{param}]) OR {elem} = ANY(ARRAY[{param}]))"
+            arg = f"('All' = ANY(ARRAY[{param}]) OR {elem}::text = ANY(ARRAY[{param}]))"
             where_clause.append(arg)
 
         # check condition
