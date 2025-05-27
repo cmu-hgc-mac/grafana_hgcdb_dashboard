@@ -364,9 +364,18 @@ def generate_filter(filter_name: str, filter_sql: str) -> dict:
   # load information:
   datasource_uid = gf_conn['GF_DATA_SOURCE_UID']
 
-  filter_json = {"datasource": {
-          "type": "postgres",
-          "uid": f"{datasource_uid}"
+  filter_json = {
+        "current": {
+        "text": [
+          "All"
+          ],
+        "value": [
+          "$__all"
+          ]
+        },
+        "datasource": {
+        "type": "postgres",
+        "uid": f"{datasource_uid}"
         },
         "includeAll": True,
         "multi": True,

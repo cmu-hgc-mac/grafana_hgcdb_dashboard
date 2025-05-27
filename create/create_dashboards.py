@@ -32,7 +32,7 @@ for config in filelist:
             # Load information
             title, table, chart_type, condition, groupby, gridPos = read_panel_info(panel)
             
-            # # Generate the sql query
+            # Generate the sql query
             raw_sql = generate_sql(chart_type, table, condition, groupby)   # -> from sql_builder.py
             
             # Generate the panel json

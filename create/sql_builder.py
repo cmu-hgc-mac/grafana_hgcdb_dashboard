@@ -16,7 +16,7 @@ class ChartSQLGenerator(ABC):
 class BarChartGenerator(ChartSQLGenerator):
     def generate_sql(self, table: str, condition: str, groupby: list) -> str:
         # define the select clause
-        select_clause = ", ".join(groupby)
+        select_clause = " || '-' || ".join(groupby)
 
         # whatever in WHERE query
         where_clause = []
@@ -35,11 +35,11 @@ class BarChartGenerator(ChartSQLGenerator):
         # generate the sql command
         panel_sql = f"""
         SELECT 
-        {select_clause},
+        {select_clause} AS label,
         COUNT(*) AS free_count
         FROM {table}
         WHERE {where_condition}
-        GROUP BY {select_clause}
+        GROUP BY label
         ORDER BY free_count DESC;
         """
         
