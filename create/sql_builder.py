@@ -8,26 +8,33 @@ This file defines the abstract class ChartSQLGenerator and the factory ChartSQLF
 # -- Define the abstract class --
 class ChartSQLGenerator(ABC):
     @abstractmethod
-    def generate_sql(self, table: str, condition: str, groupby: str) -> str:
+    def generate_sql(self, table: str, condition: str, groupby: list, filters: list, override: str) -> str:
         pass
 
 
 # -- Generator for each chart_type --
 class BarChartGenerator(ChartSQLGenerator):
-    def generate_sql(self, table: str, condition: str, groupby: list, override: str) -> str:
+    def generate_sql(self, table: str, condition: str, groupby: list, filters: list, override: str) -> str:
         # define the select clause
-        select_clause = " || '/' || ".join(groupby)
+        groupby_tmp = []
+        for elem in groupby:
+            if elem.endswith("time"):
+                name = elem.split("_")[0]
+                groupby_tmp.append(f"CASE WHEN {elem} IS NULL THEN 'not {name}' ELSE '{name}' END")
+            else:
+                groupby_tmp.append(elem)
+
+        select_clause = " || '/' || ".join(groupby_tmp)
 
         # define WHERE query
         where_clause = []
 
-        for elem in groupby:
-            if elem.endswith("time"):
-                name = elem.split("_")[0]
-                param = f"${elem}"
+        for elem in filters:
+            if elem == "status":
+                param = "${status}"
                 arg = f"""('All' = ANY(ARRAY[{param}]) OR 
-                        ({elem} IS NULL AND 'not {name}' = ANY(ARRAY[{param}])) OR
-                        ({elem} IS NOT NULL AND '{name}' = ANY(ARRAY[{param}])))"""
+                        (shipped_datetime IS NULL AND 'not shipped' = ANY(ARRAY[{param}])) OR
+                        (shipped_datetime IS NOT NULL AND 'shipped' = ANY(ARRAY[{param}])))"""
                 where_clause.append(arg)
             else:
                 param = f"${{{elem}}}"

@@ -313,7 +313,7 @@ def read_panel_info(panel: dict) -> tuple:
     return title, table, chart_type, condition, groupby, gridPos, filters, override
 
 
-def generate_sql(chart_type: str, table: str, condition: str, groupby: str, override: str) -> str:
+def generate_sql(chart_type: str, table: str, condition: str, groupby: list, filters: list, override: str) -> str:
     """Generate the SQL command from ChartSQLFactory. -> sql_builder.py
     """
 
@@ -321,7 +321,7 @@ def generate_sql(chart_type: str, table: str, condition: str, groupby: str, over
     generator = ChartSQLFactory.get_generator(chart_type)
 
     # Generate SQL command
-    panel_sql = generator.generate_sql(table, condition, groupby, override)
+    panel_sql = generator.generate_sql(table, condition, groupby, filters, override)
 
     return panel_sql
     
@@ -365,21 +365,21 @@ def generate_filter(filter_name: str, filter_sql: str) -> dict:
 def generate_filterSQL(filter_name: str, table: str) -> str:
   """Generate a template SQL command based on the given filter name.
   """
-
-  # check the filter type
-  if filter_name.endswith("time"):
-    name = filter_name.split('_')[0]
+    
+  # check filter type:
+  if filter_name == "status":
     filter_sql = f"""
-    SELECT DISTINCT CASE WHEN {filter_name} IS NULL THEN 'not {name}' ELSE '{name}' END AS {filter_name} FROM {table}
-    """
-
-  # generate the sql command
-  filter_sql = f"""
-  SELECT DISTINCT {filter_name} FROM {table} ORDER BY {filter_name}
-  """
+      SELECT DISTINCT 
+      CASE WHEN shipped_datetime IS NULL THEN 'not shipped' ELSE 'shipped' END AS status 
+      FROM {table}
+      ORDER BY status
+      """
+  else:
+    filter_sql = f"""
+      SELECT DISTINCT {filter_name} FROM {table} ORDER BY {filter_name}
+      """
 
   return filter_sql
-
 
 
 # ============================================================
