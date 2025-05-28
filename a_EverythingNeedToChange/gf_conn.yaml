@@ -1,0 +1,21 @@
+# Setting for Grafana
+
+# Things must be changed:
+GF_PORT: '3000' # default -> If you changed the port, please also change the port in sh. files
+GF_IP: '127.0.0.1' # default
+GF_defaults_PATH: '/Users/******/grafana-v12.0.0/conf/defaults.ini' 
+    # by default, 'defaults.ini' should be in the conf directory of Grafana
+
+# Things might be changed:
+GF_USER: 'admin' # default
+GF_PASS: 'admin' # default
+GF_URL: "http://127.0.0.1:3000" # default -> only change your port if you changed GF_PORT
+    # the url for login Grafana and uploading dashboards
+
+# Things will be auto-updated:
+GF_SA_NAME: 
+GF_SA_ID: 
+GF_DATA_SOURCE_NAME: 
+GF_API_KEY: 
+GF_DATA_SOURCE_UID: 
+GF_RUN_TIMES: 0 # default

@@ -35,12 +35,9 @@ for config in filelist:
             # Generate the sql query
             raw_sql = generate_sql(chart_type, table, condition, groupby, override)   # -> from sql_builder.py
 
-            # Generate the option json
-            if override:
-                override_list = generate_override(override)
 
             # Generate the panel json
-            panel_json = generate_panel(title, raw_sql, table, groupby, chart_type, gridPos, override_list)
+            panel_json = generate_panel(title, raw_sql, table, groupby, chart_type, gridPos)
             panels_array.append(panel_json)
 
             # Generate the template json

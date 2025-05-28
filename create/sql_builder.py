@@ -16,15 +16,23 @@ class ChartSQLGenerator(ABC):
 class BarChartGenerator(ChartSQLGenerator):
     def generate_sql(self, table: str, condition: str, groupby: list, override: str) -> str:
         # define the select clause
-        select_clause = " || '-' || ".join(groupby)
+        select_clause = " || '/' || ".join(groupby)
 
-        # whatever in WHERE query
+        # define WHERE query
         where_clause = []
 
         for elem in groupby:
-            param = f"${{{elem}}}"
-            arg = f"('All' = ANY(ARRAY[{param}]) OR {elem}::text = ANY(ARRAY[{param}]))"
-            where_clause.append(arg)
+            if elem.endswith("time"):
+                name = elem.split("_")[0]
+                param = f"${elem}"
+                arg = f"""('All' = ANY(ARRAY[{param}]) OR 
+                        ({elem} IS NULL AND 'not {name}' = ANY(ARRAY[{param}])) OR
+                        ({elem} IS NOT NULL AND '{name}' = ANY(ARRAY[{param}])))"""
+                where_clause.append(arg)
+            else:
+                param = f"${{{elem}}}"
+                arg = f"('All' = ANY(ARRAY[{param}]) OR {elem}::text = ANY(ARRAY[{param}]))"
+                where_clause.append(arg)
 
         # check condition
         if condition:
@@ -35,8 +43,8 @@ class BarChartGenerator(ChartSQLGenerator):
         # check status:
         if override:
             name = override.split("_")[0]
-            case_condition = f"CASE WHEN {override} IS NULL THEN 'not {name}' ELSE '{name}' END AS status,"
-            groupby_clause = "label, status"
+            case_condition = f"CASE WHEN {override} IS NULL THEN 'not {name}' ELSE '{name}' END AS {override},"
+            groupby_clause = f"label, {override}"
         else:
             case_condition = ""
             groupby_clause = "label"

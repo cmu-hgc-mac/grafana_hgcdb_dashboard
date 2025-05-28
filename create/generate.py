@@ -192,7 +192,7 @@ def upload_dashboards(file_path: str):
 # === Panel Generator ========================================
 # ============================================================
 
-def generate_panel(title: str, raw_sql: str, table: str, groupby: str, chart_type: str, gridPos: dict, overrides: list) -> dict:
+def generate_panel(title: str, raw_sql: str, table: str, groupby: str, chart_type: str, gridPos: dict) -> dict:
     """Generate a panel json based on the given raw_sql, table, groupby, chart_type, and gridPos.
     """
 
@@ -217,7 +217,7 @@ def generate_panel(title: str, raw_sql: str, table: str, groupby: str, chart_typ
           },
           "mappings": [],
         },
-        "overrides": overrides
+        "overrides": []
       },
       "gridPos": gridPos,
       "id": 1,
@@ -366,12 +366,20 @@ def generate_filterSQL(filter_name: str, table: str) -> str:
   """Generate a template SQL command based on the given filter name.
   """
 
+  # check the filter type
+  if filter_name.endswith("time"):
+    name = filter_name.split('_')[0]
+    filter_sql = f"""
+    SELECT DISTINCT CASE WHEN {filter_name} IS NULL THEN 'not {name}' ELSE '{name}' END AS {filter_name} FROM {table}
+    """
+
   # generate the sql command
   filter_sql = f"""
   SELECT DISTINCT {filter_name} FROM {table} ORDER BY {filter_name}
   """
 
   return filter_sql
+
 
 
 # ============================================================
