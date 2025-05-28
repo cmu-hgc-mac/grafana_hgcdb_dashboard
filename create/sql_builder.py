@@ -12,69 +12,74 @@ class ChartSQLGenerator(ABC):
         pass
 
 
-# -- Generator for each chart_type --
+# -- Generator for BarChart --
 class BarChartGenerator(ChartSQLGenerator):
     def generate_sql(self, table: str, condition: str, groupby: list, filters: list, override: str) -> str:
-        # define the select clause
-        groupby_tmp = []
+        select_clause = self._build_select_clause(groupby)
+        where_clause = self._build_where_clause(filters, condition)
+        groupby_clause, case_statement = self._build_groupby_clause(override)
+
+        sql = f"""
+        SELECT 
+            {select_clause} AS label,
+            {case_statement}
+            COUNT(*) AS count
+        FROM {table}
+        WHERE {where_clause}
+        GROUP BY {groupby_clause}
+        ORDER BY count DESC;
+        """
+        return sql.strip()
+
+    def _build_select_clause(self, groupby: list) -> str:
+        """Builds the SELECT clause by joining all groupby fields.
+        """
+        groupby_fields = []
         for elem in groupby:
             if elem.endswith("time"):
                 name = elem.split("_")[0]
-                groupby_tmp.append(f"CASE WHEN {elem} IS NULL THEN 'not {name}' ELSE '{name}' END")
+                groupby_fields.append(f"CASE WHEN {elem} IS NULL THEN 'not {name}' ELSE '{name}' END")
             else:
-                groupby_tmp.append(elem)
+                groupby_fields.append(elem)
+        return " || '/' || ".join(groupby_fields)
 
-        select_clause = " || '/' || ".join(groupby_tmp)
-
-        # define WHERE query
-        where_clause = []
-
+    def _build_where_clause(self, filters: list, condition: str) -> str:
+        """Builds the WHERE clause from filters and condition.
+        """
+        clauses = []
         for elem in filters:
             if elem == "status":
                 param = "${status}"
                 arg = f"""('All' = ANY(ARRAY[{param}]) OR 
-                        (shipped_datetime IS NULL AND 'not shipped' = ANY(ARRAY[{param}])) OR
-                        (shipped_datetime IS NOT NULL AND 'shipped' = ANY(ARRAY[{param}])))"""
-                where_clause.append(arg)
+                          (shipped_datetime IS NULL AND 'not shipped' = ANY(ARRAY[{param}])) OR
+                          (shipped_datetime IS NOT NULL AND 'shipped' = ANY(ARRAY[{param}])))"""
             else:
                 param = f"${{{elem}}}"
                 arg = f"('All' = ANY(ARRAY[{param}]) OR {elem}::text = ANY(ARRAY[{param}]))"
-                where_clause.append(arg)
+            clauses.append(arg)
 
-        # check condition
         if condition:
-            where_condition = f"{' AND '.join(where_clause)} AND {condition}"
-        else:
-            where_condition = f"{' AND '.join(where_clause)}"
+            clauses.append(condition)
 
-        # check status:
+        return " AND ".join(clauses)
+
+    def _build_groupby_clause(self, override: str) -> tuple:
+        """Builds the GROUP BY clause and optional CASE statement.
+        """
         if override:
             name = override.split("_")[0]
-            case_condition = f"CASE WHEN {override} IS NULL THEN 'not {name}' ELSE '{name}' END AS {override},"
+            case_stmt = f"CASE WHEN {override} IS NULL THEN 'not {name}' ELSE '{name}' END AS {override},"
             groupby_clause = f"label, {override}"
         else:
-            case_condition = ""
+            case_stmt = ""
             groupby_clause = "label"
-        
+        return groupby_clause, case_stmt
 
-        # generate the sql command
-        panel_sql = f"""
-        SELECT 
-        {select_clause} AS label,
-        {case_condition}
-        COUNT(*) AS count
-        FROM {table}
-        WHERE {where_condition}
-        GROUP BY {groupby_clause}
-        ORDER BY count DESC;
-        """
-        
-        return panel_sql
 
+# -- Placeholder for LineChart (not implemented yet) --
 class LineChartGenerator(ChartSQLGenerator):
-    def generate_sql(self, table: str, condition: str, groupby: str) -> str:
-        pass
-
+    def generate_sql(self, table: str, condition: str, groupby: list, filters: list, override: str) -> str:
+        raise NotImplementedError("Line chart SQL generation is not implemented yet.")
 
 
 # -- Create the SQL Generator Factory --

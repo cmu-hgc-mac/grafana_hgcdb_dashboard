@@ -271,13 +271,16 @@ def generate_panel(title: str, raw_sql: str, table: str, groupby: str, chart_typ
     return panel_json
 
 
-def assign_gridPos(panels: list, width=24, height=14, max_cols=24) -> list:
+def assign_gridPos(panels: list, max_cols=24) -> list:
     """Assign gridPos to each panel in the dashboard. 
     Default: 3 panles in 1 row. 
     """
 
     # initial settings
     x, y = 0, 0
+    num_panels = len(panels)
+    width = max_cols // num_panels
+    height = width // 2 + 2
 
     # assign gridPos to each panel
     for panel in panels:
