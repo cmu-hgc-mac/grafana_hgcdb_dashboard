@@ -14,7 +14,7 @@ class ChartSQLGenerator(ABC):
 
 # -- Generator for each chart_type --
 class BarChartGenerator(ChartSQLGenerator):
-    def generate_sql(self, table: str, condition: str, groupby: list) -> str:
+    def generate_sql(self, table: str, condition: str, groupby: list, override: str) -> str:
         # define the select clause
         select_clause = " || '-' || ".join(groupby)
 
@@ -32,15 +32,26 @@ class BarChartGenerator(ChartSQLGenerator):
         else:
             where_condition = f"{' AND '.join(where_clause)}"
 
+        # check status:
+        if override:
+            name = override.split("_")[0]
+            case_condition = f"CASE WHEN {override} IS NULL THEN 'not {name}' ELSE '{name}' END AS status,"
+            groupby_clause = "label, status"
+        else:
+            case_condition = ""
+            groupby_clause = "label"
+        
+
         # generate the sql command
         panel_sql = f"""
         SELECT 
         {select_clause} AS label,
-        COUNT(*) AS free_count
+        {case_condition}
+        COUNT(*) AS count
         FROM {table}
         WHERE {where_condition}
-        GROUP BY label
-        ORDER BY free_count DESC;
+        GROUP BY {groupby_clause}
+        ORDER BY count DESC;
         """
         
         return panel_sql

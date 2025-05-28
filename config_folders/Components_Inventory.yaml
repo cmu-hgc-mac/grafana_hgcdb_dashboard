@@ -9,6 +9,8 @@ dashboards:
         chart_type: "barchart"
         condition: "proto_no is NULL"
         groupby: ["bp_material", "resolution", "geometry"]
+        filters: ["bp_material", "resolution", "geometry"]
+        override: 
 
   - title: "Free Sensors"
     panels:
@@ -17,6 +19,8 @@ dashboards:
         chart_type: "barchart"
         condition: "proto_no is NULL"
         groupby: ["thickness", "resolution", "geometry"]
+        filters: ["thickness", "resolution", "geometry"]
+        override:
 
   - title: "Free Hexaboards"
     panels:
@@ -25,3 +29,5 @@ dashboards:
         chart_type: "barchart"
         condition: "module_no is NULL"
         groupby: ["roc_version", "resolution", "geometry"]
+        filters: ["roc_version", "resolution", "geometry"]
+        override:

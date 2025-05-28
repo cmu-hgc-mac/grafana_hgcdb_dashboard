@@ -192,7 +192,7 @@ def upload_dashboards(file_path: str):
 # === Panel Generator ========================================
 # ============================================================
 
-def generate_panel(title: str, raw_sql: str, table: str, groupby: str, chart_type: str, gridPos: dict) -> dict:
+def generate_panel(title: str, raw_sql: str, table: str, groupby: str, chart_type: str, gridPos: dict, overrides: list) -> dict:
     """Generate a panel json based on the given raw_sql, table, groupby, chart_type, and gridPos.
     """
 
@@ -208,44 +208,16 @@ def generate_panel(title: str, raw_sql: str, table: str, groupby: str, chart_typ
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "thresholds"
+            "mode": "palette-classic"
           },
           "custom": {
-            "axisBorderShow": False,
-            "axisCenteredZero": False,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "fillOpacity": 80,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": False,
-              "tooltip": False,
-              "viz": False
-            },
-            "lineWidth": 1,
             "scaleDistribution": {
               "type": "linear"
             },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
           },
           "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green"
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
         },
-        "overrides": []
+        "overrides": overrides
       },
       "gridPos": gridPos,
       "id": 1,
@@ -262,7 +234,7 @@ def generate_panel(title: str, raw_sql: str, table: str, groupby: str, chart_typ
         },
         "orientation": "auto",
         "showValue": "auto",
-        "stacking": "none",
+        "stacking": "normal",
         "tooltip": {
           "hideZeros": False,
           "mode": "single",
@@ -335,11 +307,13 @@ def read_panel_info(panel: dict) -> tuple:
     condition = panel["condition"]
     groupby = panel["groupby"]
     gridPos = panel["gridPos"]
+    filters = panel["filters"]
+    override = panel["override"]
 
-    return title, table, chart_type, condition, groupby, gridPos
+    return title, table, chart_type, condition, groupby, gridPos, filters, override
 
 
-def generate_sql(chart_type: str, table: str, condition: str, groupby: str) -> str:
+def generate_sql(chart_type: str, table: str, condition: str, groupby: str, override: str) -> str:
     """Generate the SQL command from ChartSQLFactory. -> sql_builder.py
     """
 
@@ -347,7 +321,7 @@ def generate_sql(chart_type: str, table: str, condition: str, groupby: str) -> s
     generator = ChartSQLFactory.get_generator(chart_type)
 
     # Generate SQL command
-    panel_sql = generator.generate_sql(table, condition, groupby)
+    panel_sql = generator.generate_sql(table, condition, groupby, override)
 
     return panel_sql
     
@@ -398,3 +372,44 @@ def generate_filterSQL(filter_name: str, table: str) -> str:
   """
 
   return filter_sql
+
+
+# ============================================================
+# === Overrides Generator ====================================
+# ============================================================
+
+def generate_override(override_name: str):
+  if override_name == "shipped_datetime":
+    override_list = [
+    {
+        "matcher": {
+          "id": "byName",
+          "options": "shipped"
+        },
+        "properties": [
+          {
+            "id": "color",
+            "value": {
+              "fixedColor": "#2ECC71",
+              "mode": "fixed"
+            }
+          }
+        ]
+      },
+      {
+        "matcher": {
+          "id": "byName",
+          "options": "not shipped"
+        },
+        "properties": [
+          {
+            "id": "color",
+            "value": {
+              "fixedColor": "#E74C3C",
+              "mode": "fixed"
+            }
+          }
+        ]
+      }]
+
+    return override_list

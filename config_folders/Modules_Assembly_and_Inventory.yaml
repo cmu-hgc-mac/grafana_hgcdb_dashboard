@@ -9,3 +9,5 @@ dashboards:
         chart_type: "barchart"
         condition: 
         groupby: ["bp_material", "resolution", "roc_version", "geometry"]
+        filters: ["bp_material", "resolution", "roc_version", "geometry"]
+        override: "shipped_datetime"
