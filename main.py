@@ -8,16 +8,16 @@ from time import sleep
 This file does EVERYTHING for you (*´ω`*)
 """
 
-cmu_logo = """
- ▗▄▄▖▗▖  ▗▖▗▖ ▗▖    ▗▄▄▖ ▗▖ ▗▖▗▖  ▗▖▗▄▄▖▗▄▄▄▖ ▗▄▄▖ ▗▄▄▖
-▐▌   ▐▛▚▞▜▌▐▌ ▐▌    ▐▌ ▐▌▐▌ ▐▌ ▝▚▞▘▐▌     █  ▐▌   ▐▌   
-▐▌   ▐▌  ▐▌▐▌ ▐▌    ▐▛▀▘ ▐▛▀▜▌  ▐▌  ▝▀▚▖  █  ▐▌    ▝▀▚▖
-▝▚▄▄▖▐▌  ▐▌▝▚▄▞▘    ▐▌   ▐▌ ▐▌  ▐▌ ▗▄▄▞▘▗▄█▄▖▝▚▄▄▖▗▄▄▞▘
+cmu_mcs_cms_logo = """
+ ▗▄▄▖▗▖  ▗▖▗▖ ▗▖    ▗▖  ▗▖ ▗▄▄▖ ▗▄▄▖     ▗▄▄▖▗▖  ▗▖ ▗▄▄▖
+▐▌   ▐▛▚▞▜▌▐▌ ▐▌    ▐▛▚▞▜▌▐▌   ▐▌       ▐▌   ▐▛▚▞▜▌▐▌   
+▐▌   ▐▌  ▐▌▐▌ ▐▌    ▐▌  ▐▌▐▌    ▝▀▚▖    ▐▌   ▐▌  ▐▌ ▝▀▚▖
+▝▚▄▄▖▐▌  ▐▌▝▚▄▞▘    ▐▌  ▐▌▝▚▄▄▖▗▄▄▞▘    ▝▚▄▄▖▐▌  ▐▌▗▄▄▞▘
                                                                                               
 """
 
 def main():
-    print(cmu_logo)
+    print(cmu_mcs_cms_logo)
 
     # check run times
     gf_conn_path = './a_EverythingNeedToChange/gf_conn.yaml'

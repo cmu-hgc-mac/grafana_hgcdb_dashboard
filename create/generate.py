@@ -172,8 +172,8 @@ def upload_dashboards(file_path: str):
     # Build payload 
     payload = {
         "dashboard": dashboard,
-        "folderUid": f'{folder_uid}',
-        "overwrite": True
+        "folderUid": f'{folder_uid}',   # to the target folder
+        "overwrite": True   # allow upgrade
     }
 
     # Upload dashboard
