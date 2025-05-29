@@ -25,15 +25,16 @@ for config in filelist:
         assign_gridPos(panels)  # Assign gridPos to each panel
         panels_array = []
         template_list = []
+        exist_filter = set()
 
         # Loop for every panel in a dashboard
         for panel in panels:
 
             # Load information
-            title, table, chart_type, condition, groupby, gridPos, filters, override = read_panel_info(panel)
+            title, table, chart_type, condition, groupby, gridPos, filters, filters_table, override = read_panel_info(panel)
             
             # Generate the sql query
-            raw_sql = generate_sql(chart_type, table, condition, groupby, filters, override)   # -> from sql_builder.py
+            raw_sql = generate_sql(chart_type, table, condition, groupby, filters, filters_table, override)   # -> from sql_builder.py
 
 
             # Generate the panel json
@@ -43,7 +44,11 @@ for config in filelist:
             # Generate the template json
             if filters:
                 for elem in filters:
-                    filter_sql = generate_filterSQL(elem, table)
+                    if elem in exist_filter:
+                        continue    # filter exist
+                    exist_filter.add(elem)
+
+                    filter_sql = generate_filterSQL(elem, filters_table)
                     filter_json = generate_filter(elem, filter_sql)
                     template_list.append(filter_json)
             

@@ -10,4 +10,23 @@ dashboards:
         condition: 
         groupby: ["bp_material", "resolution", "roc_version", "geometry", "shipped_datetime"]
         filters: ["bp_material", "resolution", "roc_version", "geometry", "status"]
+        filters_table: "module_info"
         override: "shipped_datetime"
+  - title: "Module Inspect"
+    panels:
+      - title: "grade"
+        table: "module_inspect"
+        chart_type: "barchart"
+        condition: "grade IS NOT NULL"
+        groupby: ["grade"]
+        filters: ["bp_material", "resolution", "roc_version", "geometry"]
+        filters_table: "module_info"
+        override: 
+      - title: "flatness"
+        table: "module_inspect"
+        chart_type: "histogram"
+        condition: "module_inspect.flatness IS NOT NULL"
+        groupby: ["flatness"]
+        filters: ["bp_material", "resolution", "roc_version", "geometry"]
+        filters_table: "module_info"
+        override:

@@ -10,6 +10,7 @@ dashboards:
         condition: "proto_no is NULL"
         groupby: ["bp_material", "resolution", "geometry"]
         filters: ["bp_material", "resolution", "geometry"]
+        filters_table: "baseplate"
         override: 
 
   - title: "Free Sensors"
@@ -20,6 +21,7 @@ dashboards:
         condition: "proto_no is NULL"
         groupby: ["thickness", "resolution", "geometry"]
         filters: ["thickness", "resolution", "geometry"]
+        filters_table: "sensor"
         override:
 
   - title: "Free Hexaboards"
@@ -30,4 +32,5 @@ dashboards:
         condition: "module_no is NULL"
         groupby: ["roc_version", "resolution", "geometry"]
         filters: ["roc_version", "resolution", "geometry"]
+        filters_table: "hexaboard"
         override:

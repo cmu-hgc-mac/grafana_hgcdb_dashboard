@@ -317,12 +317,13 @@ def read_panel_info(panel: dict) -> tuple:
     groupby = panel["groupby"]
     gridPos = panel["gridPos"]
     filters = panel["filters"]
+    filters_table = panel["filters_table"]
     override = panel["override"]
 
-    return title, table, chart_type, condition, groupby, gridPos, filters, override
+    return title, table, chart_type, condition, groupby, gridPos, filters, filters_table, override
 
 
-def generate_sql(chart_type: str, table: str, condition: str, groupby: list, filters: list, override: str) -> str:
+def generate_sql(chart_type: str, table: str, condition: str, groupby: list, filters: list, filters_table: str, override: str) -> str:
     """Generate the SQL command from ChartSQLFactory. -> sql_builder.py
     """
 
@@ -330,7 +331,7 @@ def generate_sql(chart_type: str, table: str, condition: str, groupby: list, fil
     generator = ChartSQLFactory.get_generator(chart_type)
 
     # Generate SQL command
-    panel_sql = generator.generate_sql(table, condition, groupby, filters, override)
+    panel_sql = generator.generate_sql(table, condition, groupby, filters, filters_table, override)
 
     return panel_sql
     
@@ -371,7 +372,7 @@ def generate_filter(filter_name: str, filter_sql: str) -> dict:
   return filter_json
 
 
-def generate_filterSQL(filter_name: str, table: str) -> str:
+def generate_filterSQL(filter_name: str, filters_table: str) -> str:
   """Generate a template SQL command based on the given filter name.
   """
     
@@ -380,53 +381,12 @@ def generate_filterSQL(filter_name: str, table: str) -> str:
     filter_sql = f"""
       SELECT DISTINCT 
       CASE WHEN shipped_datetime IS NULL THEN 'not shipped' ELSE 'shipped' END AS status 
-      FROM {table}
+      FROM {filters_table}
       ORDER BY status
       """
   else:
     filter_sql = f"""
-      SELECT DISTINCT {filter_name} FROM {table} ORDER BY {filter_name}
+      SELECT DISTINCT {filter_name} FROM {filters_table} ORDER BY {filter_name}
       """
 
   return filter_sql
-
-
-# ============================================================
-# === Overrides Generator ====================================
-# ============================================================
-
-def generate_override(override_name: str):
-  if override_name == "shipped_datetime":
-    override_list = [
-    {
-        "matcher": {
-          "id": "byName",
-          "options": "shipped"
-        },
-        "properties": [
-          {
-            "id": "color",
-            "value": {
-              "fixedColor": "#2ECC71",
-              "mode": "fixed"
-            }
-          }
-        ]
-      },
-      {
-        "matcher": {
-          "id": "byName",
-          "options": "not shipped"
-        },
-        "properties": [
-          {
-            "id": "color",
-            "value": {
-              "fixedColor": "#E74C3C",
-              "mode": "fixed"
-            }
-          }
-        ]
-      }]
-
-    return override_list
