@@ -2,7 +2,9 @@ from abc import ABC, abstractmethod
 
 """
 This file defines the abstract class ChartSQLGenerator and the factory ChartSQLFactory.
-    - The current available chart type is "barchart".
+    - The current available chart type:
+        - "barchart"
+        - "histogram"
 """
 
 # -- Define the abstract class --
@@ -110,13 +112,10 @@ class HistogramGenerator(ChartSQLGenerator):
         join_clause = self._build_join_clause(table, filters_table)
 
         sql = f"""
-        SELECT {select_clause} AS bin,
-        COUNT(*) AS count
+        SELECT {select_clause}
         FROM {table}
         {join_clause}
         WHERE {where_clause}
-        GROUP BY bin
-        ORDER BY bin;
         """
 
         return sql
@@ -125,8 +124,7 @@ class HistogramGenerator(ChartSQLGenerator):
         """Builds the SELECT clause from groupby. 
            - For histogram, there should only be 1 element in groupby.
         """
-        target_column = groupby[0]
-        select_clause = f"width_bucket({table}.{target_column}, 0, 500, 10)"
+        select_clause = groupby[0]
 
         return select_clause
 
