@@ -1,5 +1,8 @@
-import yaml
 import os
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+import yaml
 from generate import*
 
 """
@@ -7,16 +10,13 @@ This file creates the folders from config_folders.
     - Each folder would be named by replacing '_' to ' ' of the yaml_filename.
 """
 
-# Define the path of the config folders
-path = "./config_folders"
-filelist = os.listdir(path)
+# Load all .yaml files in config_folders/
+folder_configs = os.listdir("./config_folders")
 
-# Loop for generations of folders
-for i, config in enumerate(filelist):
-    folder_name = config.split(".")[0].replace("_", " ")    # rename the folder
-    folder_id = i   # unique id for each folder
-    generate_folder(folder_name, folder_id)
+for config in folder_configs:
+    folder_name = config.split(".")[0].replace("_", " ")
+    generate_folder(folder_name)
     
-print(" >> Folders are created in Grafana! (ゝ∀･)")
+print(" >> Folders are in Grafana! (ゝ∀･)")
 
 

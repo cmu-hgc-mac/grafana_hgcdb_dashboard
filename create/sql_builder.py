@@ -86,7 +86,8 @@ class BarChartGenerator(ChartSQLGenerator):
         if table == filters_table:
             join_clause = ""
         else:
-            join_clause = f"JOIN {filters_table} ON {table}.module_no = {filters_table}.module_no"
+            elem = filters_table.split("_")[0]
+            join_clause = f"JOIN {filters_table} ON {table}.{elem}_no = {filters_table}.{elem}_no"
         
         return join_clause
 

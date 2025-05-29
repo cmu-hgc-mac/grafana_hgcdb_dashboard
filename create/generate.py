@@ -2,7 +2,7 @@ import requests
 import json
 import yaml
 import os
-from sql_builder import ChartSQLFactory
+from create.sql_builder import ChartSQLFactory
 
 """
 This file contains all the functions that are needed to generate everything for the Grafana dashboards.
@@ -25,46 +25,37 @@ with open(db_conn_path, mode='r') as file:
 # === Folder Generator =======================================
 # ============================================================
 
-def generate_folder(folder_name, folder_number):
-    """
-    Generate a folder in Grafana based on the given folder name and number.
+def generate_folder(folder_name: str):
+    """Create Grafana folder or fetch if it already exists. Update UID map.
     """
 
-    # load information
-    service_account_id = gf_conn['GF_SA_ID']
     grafana_url = gf_conn['GF_URL']
     username = gf_conn['GF_USER']
     password = gf_conn['GF_PASS']
-    headers = {
-        "Content-Type": "application/json"
-    }
+    headers = {"Content-Type": "application/json"}
+    folder_uid = folder_name.lower().replace(" ", "-")
 
-    # Create the folder:
-    folder_payload = {
-        "title": folder_name,
-        "uid": folder_name.lower().replace(" ", "-")
-    }
+    # Check if folder exists
+    response = requests.get(f"{grafana_url}/api/folders/{folder_uid}", headers=headers, auth=(username, password))
+    if response.status_code == 200:
+        print(f"Folder '{folder_name}' exists.")
+        uid = response.json()['uid']
+    else:
+        # Create folder
+        payload = {"title": folder_name, "uid": folder_uid}
+        response = requests.post(f"{grafana_url}/api/folders", headers=headers, auth=(username, password), data=json.dumps(payload))
+        response.raise_for_status()
+        uid = response.json()['uid']
+        print(f"Created folder '{folder_name}' with UID {uid}")
 
-    create_folder_response = requests.post(
-        f"{grafana_url}/api/folders",
-        headers=headers,
-        auth=(username, password),
-        data=json.dumps(folder_payload)
-    )
-    create_folder_response.raise_for_status()
-    folder_uid = create_folder_response.json()['uid']
-    print(f"Created folder '{folder_name}' with UID: {folder_uid}")
+    # Update UID map
+    if "GF_FOLDER_UIDS" not in gf_conn:
+        gf_conn["GF_FOLDER_UIDS"] = {}
+    gf_conn["GF_FOLDER_UIDS"][folder_name] = uid
 
-
-    # Update gf_conn.yaml: 
-    gf_conn.update({
-        f'GF_FOLDER_NAME{folder_number}': str(folder_name),
-        f'GF_FOLDER_UID{folder_number}': str(folder_uid),
-    })
-
-    with open(gf_conn_path, 'w') as file:
-        yaml.dump(gf_conn, file)
-        print(f" >> Auto update for gf_conn.yaml successfully...")
+    with open(gf_conn_path, "w") as f:
+        yaml.dump(gf_conn, f)
+        print(f"Updated gf_conn.yaml with folder '{folder_name}'.")
 
 
 # ============================================================
@@ -145,47 +136,41 @@ def save_dashboard_json(dashboard: dict, dashboard_json: dict, folder: str):
 
 
 def upload_dashboards(file_path: str):
-    """Uploads the dashboard JSON file to Grafana.
+    """Upload one dashboard JSON file into Grafana folder.
     """
 
-    # load information
-    GRAFANA_URL = gf_conn['GF_URL']
-    API_TOKEN = gf_conn['GF_API_KEY']
+    grafana_url = gf_conn['GF_URL']
+    api_token = gf_conn['GF_API_KEY']
     headers = {
-        "Authorization": f"Bearer {API_TOKEN}",
+        "Authorization": f"Bearer {api_token}",
         "Content-Type": "application/json"
     }
 
-    # Get folder UID
-    filelist = os.listdir("./config_folders")   # Get everything in the config_folders directory
-    folder_name = os.path.basename(os.path.dirname(file_path))  # Get the folder's name from the file path
-    num = filelist.index(folder_name)  # Get the index of the folder's name in the filelist
-    folder_uid = gf_conn[f'GF_FOLDER_UID{num}']
+    folder_name = os.path.basename(os.path.dirname(file_path)).replace("_", " ")
+    folder_uid_map = gf_conn.get("GF_FOLDER_UIDS", {})
 
-    # Load dashboard JSON
-    def load_dashboard_json(path: str):
-        with open(path, 'r', encoding='utf-8') as f:
-            return json.load(f)
+    if folder_name not in folder_uid_map:
+        raise ValueError(f"Folder '{folder_name}' not in GF_FOLDER_UIDS")
 
-    dashboard = load_dashboard_json(file_path)
+    folder_uid = folder_uid_map[folder_name]
 
-    # Build payload 
+    with open(file_path, 'r', encoding='utf-8') as f:
+        dashboard = json.load(f)
+
     payload = {
         "dashboard": dashboard,
-        "folderUid": f'{folder_uid}',   # to the target folder
-        "overwrite": True   # allow upgrade
+        "folderUid": folder_uid,
+        "overwrite": True
     }
 
-    # Upload dashboard
     response = requests.post(
-        f"{GRAFANA_URL}/api/dashboards/db",
+        f"{grafana_url}/api/dashboards/db",
         headers=headers,
         data=json.dumps(payload)
     )
 
-    # Print output response
-    print("Upload status:", response.status_code)
-    print("Response text:", response.text)
+    print(f"[{folder_name}] Upload status: {response.status_code}")
+    print(response.text)
 
 
 # ============================================================
@@ -365,7 +350,7 @@ def generate_filter(filter_name: str, filter_sql: str) -> dict:
         "name": filter_name,
         "options": [],
         "query": filter_sql,
-        "refresh": 1, # refresh everytime when dashboard is loaded
+        "refresh": 1,   # refresh everytime when dashboard is loaded
         "type": "query"
       }
 
