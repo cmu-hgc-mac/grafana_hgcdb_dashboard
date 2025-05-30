@@ -94,7 +94,7 @@ def generate_dashboard(dashboard_title: str, panels: list, template_list: list) 
         "id": None,
         "links": [],
         "panels": panels,
-        "refresh": "10s",
+        "refresh": "5m",
         "schemaVersion": 41,
         "tags": [],
         "templating": {
