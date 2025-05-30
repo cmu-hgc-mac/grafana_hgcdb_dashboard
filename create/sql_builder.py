@@ -41,11 +41,12 @@ class BarChartGenerator(ChartSQLGenerator):
         groupby_fields = []
         for elem in groupby:
             if elem.endswith("time"):
-                name = elem.split("_")[0]
-                groupby_fields.append(f"CASE WHEN {elem} IS NULL THEN 'not {name}' ELSE '{name}' END")
+                # name = elem.split("_")[0]
+                # groupby_fields.append(f"CASE WHEN {elem} IS NULL THEN 'not {name}' ELSE '{name}' END")
+                continue
             else:
                 groupby_fields.append(elem)
-        return " || '-' || ".join(groupby_fields)
+        return " || '/' || ".join(groupby_fields)
 
     def _build_where_clause(self, filters: list, condition: str, table: str, filters_table: str) -> str:
         """Builds the WHERE clause from filters and condition. 

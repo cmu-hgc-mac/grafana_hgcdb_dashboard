@@ -31,7 +31,7 @@ dashboards:
         filters: ["bp_material", "resolution", "roc_version", "geometry"]
         filters_table: "module_info"
         override:
-      - title: "avg_thickness"
+      - title: "avg_thickness (mm)"
         table: "module_inspect"
         chart_type: "histogram"
         condition: "module_inspect.avg_thickness IS NOT NULL"
@@ -55,7 +55,7 @@ dashboards:
         filters: ["bp_material", "resolution", "roc_version", "geometry"]
         filters_table: "module_info"
         override:
-      - title: "max_thickness"
+      - title: "max_thickness (mm)"
         table: "module_inspect"
         chart_type: "histogram"
         condition: "module_inspect.max_thickness IS NOT NULL"
@@ -90,7 +90,7 @@ dashboards:
         filters: ["resolution", "geometry"]
         filters_table: "proto_assembly"
         override:
-      - title: "avg_thickness"
+      - title: "avg_thickness (mm)"
         table: "proto_inspect"
         chart_type: "histogram"
         condition: "proto_inspect.avg_thickness IS NOT NULL"
@@ -114,7 +114,7 @@ dashboards:
         filters: ["resolution", "geometry"]
         filters_table: "proto_assembly"
         override:
-      - title: "max_thickness"
+      - title: "max_thickness (mm)"
         table: "proto_inspect"
         chart_type: "histogram"
         condition: "proto_inspect.max_thickness IS NOT NULL"

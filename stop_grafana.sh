@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "Stopping Grafana..."
+echo "Stopping Grafana...(≧∇≦)"
 
 # get port from gf_conn.yaml
 CONFIG_FILE="a_EverythingNeedToChange/gf_conn.yaml"
@@ -14,5 +14,5 @@ if [ -z "$PIDS" ]; then
     echo "No Grafana process running on port $GF_PORT."
 else
     kill -9 $PIDS
-    echo "Grafana processes stopped. (;´ヮ`)7"
+    echo "Grafana processes stopped. ᕕ( ᐛ )ᕗ"
 fi
