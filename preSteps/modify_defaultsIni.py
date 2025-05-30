@@ -73,7 +73,7 @@ for line in lines:
         if stripped.startswith('domain'):
             line = f'domain = {gf_ip}\n'
         if stripped.startswith('root_url'):
-            line = f'root_url = http://{gf_ip}:{gf_port}\n'
+            line = f'root_url = http://{gf_ip}:{gf_port}/\n'
 
     output.append(line)
     
