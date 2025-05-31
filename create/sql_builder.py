@@ -87,7 +87,7 @@ class BarChartGenerator(ChartSQLGenerator):
         if table == filters_table:
             join_clause = ""
         else:
-            elem = filters_table.split("_")[0]
+            elem = table.split("_")[0]
             join_clause = f"JOIN {filters_table} ON {table}.{elem}_no = {filters_table}.{elem}_no"
         
         return join_clause
@@ -169,7 +169,7 @@ class HistogramGenerator(ChartSQLGenerator):
         if table == filters_table:
             join_clause = ""
         else:
-            elem = filters_table.split("_")[0]
+            elem = table.split("_")[0]
             join_clause = f"JOIN {filters_table} ON {table}.{elem}_no = {filters_table}.{elem}_no"
         
         return join_clause

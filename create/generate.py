@@ -139,15 +139,19 @@ def upload_dashboards(file_path: str):
     """Upload one dashboard JSON file into Grafana folder.
     """
 
-    grafana_url = gf_conn['GF_URL']
-    api_token = gf_conn['GF_API_KEY']
+    #reload gf_conn.yaml
+    with open(gf_conn_path, mode='r') as file:
+      new_gf_conn = yaml.safe_load(file)
+
+    grafana_url = new_gf_conn['GF_URL']
+    api_token = new_gf_conn['GF_API_KEY']
     headers = {
         "Authorization": f"Bearer {api_token}",
         "Content-Type": "application/json"
     }
 
     folder_name = os.path.basename(os.path.dirname(file_path)).replace("_", " ")
-    folder_uid_map = gf_conn.get("GF_FOLDER_UIDS", {})
+    folder_uid_map = new_gf_conn.get("GF_FOLDER_UIDS", {})
 
     if folder_name not in folder_uid_map:
         raise ValueError(f"Folder '{folder_name}' not in GF_FOLDER_UIDS")
