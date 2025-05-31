@@ -62,4 +62,4 @@ for config in filelist:
         file_name = config.split(".")[0]
         save_dashboard_json(dashboard, dashboard_json, file_name)
 
-print(" >> Dashboards generated successfully! =͟͟͞͞( 'ヮ' 三 'ヮ' =͟͟͞͞)")
+print(" >> Dashboards generated successfully! =͟͟͞͞( 'ヮ' 三 'ヮ' =͟͟͞͞) \n")

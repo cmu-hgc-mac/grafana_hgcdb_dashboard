@@ -151,6 +151,7 @@ def upload_dashboards(file_path: str):
     }
 
     folder_name = os.path.basename(os.path.dirname(file_path)).replace("_", " ")
+    file_name = os.path.basename(file_path).split(".")[0].replace("_", " ")
     folder_uid_map = new_gf_conn.get("GF_FOLDER_UIDS", {})
 
     if folder_name not in folder_uid_map:
@@ -158,8 +159,8 @@ def upload_dashboards(file_path: str):
 
     folder_uid = folder_uid_map[folder_name]
 
-    with open(file_path, 'r', encoding='utf-8') as f:
-        dashboard = json.load(f)
+    with open(file_path, 'r', encoding='utf-8') as file:
+        dashboard = json.load(file)
 
     payload = {
         "dashboard": dashboard,
@@ -173,8 +174,7 @@ def upload_dashboards(file_path: str):
         data=json.dumps(payload)
     )
 
-    print(f"[{folder_name}] Upload status: {response.status_code}")
-    # print(response.text)
+    print(f"[{folder_name}]: {file_name}  Upload status: {response.status_code}")
 
 
 # ============================================================

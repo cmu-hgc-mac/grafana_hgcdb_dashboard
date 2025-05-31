@@ -51,7 +51,7 @@ def main():
                 file_path = f"./Dashboards/{folder}/{file_name}"
                 upload_dashboards(file_path)
     
-    print(" >> Dashboards uploaded! ᕕ( ᐛ )ᕗ")
+    print(" >> Dashboards uploaded! ᕕ( ᐛ )ᕗ \n")
 
 
     # Add run times
@@ -60,7 +60,7 @@ def main():
     with open(gf_conn_path, mode='w') as file:
         yaml.dump(gf_conn, file)
 
-    print(" >> And run_times updated! 乚(`ヮ´ ﾐэ)Э")
+    print(" >> And run_times updated! 乚(`ヮ´ ﾐэ)Э \n")
 
     # Done!!
     print(" >>>> All done! (๑•̀ㅂ•́)و✧")
