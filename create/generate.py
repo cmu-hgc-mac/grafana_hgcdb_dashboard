@@ -174,7 +174,7 @@ def upload_dashboards(file_path: str):
     )
 
     print(f"[{folder_name}] Upload status: {response.status_code}")
-    print(response.text)
+    # print(response.text)
 
 
 # ============================================================
@@ -221,7 +221,7 @@ def generate_panel(title: str, raw_sql: str, table: str, groupby: str, chart_typ
           "placement": "bottom",
           "showLegend": True
         },
-        "orientation": "auto",
+        "orientation": "horizontal",
         "showValue": "auto",
         "stacking": "normal",
         "tooltip": {
@@ -307,12 +307,11 @@ def read_panel_info(panel: dict) -> tuple:
     gridPos = panel["gridPos"]
     filters = panel["filters"]
     filters_table = panel["filters_table"]
-    override = panel["override"]
 
-    return title, table, chart_type, condition, groupby, gridPos, filters, filters_table, override
+    return title, table, chart_type, condition, groupby, gridPos, filters, filters_table
 
 
-def generate_sql(chart_type: str, table: str, condition: str, groupby: list, filters: list, filters_table: str, override: str) -> str:
+def generate_sql(chart_type: str, table: str, condition: str, groupby: list, filters: list, filters_table: str) -> str:
     """Generate the SQL command from ChartSQLFactory. -> sql_builder.py
     """
 
@@ -320,7 +319,7 @@ def generate_sql(chart_type: str, table: str, condition: str, groupby: list, fil
     generator = ChartSQLFactory.get_generator(chart_type)
 
     # Generate SQL command
-    panel_sql = generator.generate_sql(table, condition, groupby, filters, filters_table, override)
+    panel_sql = generator.generate_sql(table, condition, groupby, filters, filters_table)
 
     return panel_sql
     

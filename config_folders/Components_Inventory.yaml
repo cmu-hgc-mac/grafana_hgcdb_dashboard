@@ -11,7 +11,6 @@ dashboards:
         groupby: ["bp_material", "resolution", "geometry"]
         filters: ["bp_material", "resolution", "geometry"]
         filters_table: "baseplate"
-        override: 
 
   - title: "Free Sensors"
     panels:
@@ -22,7 +21,6 @@ dashboards:
         groupby: ["thickness", "resolution", "geometry"]
         filters: ["thickness", "resolution", "geometry"]
         filters_table: "sensor"
-        override:
 
   - title: "Free Hexaboards"
     panels:
@@ -33,4 +31,3 @@ dashboards:
         groupby: ["roc_version", "resolution", "geometry"]
         filters: ["roc_version", "resolution", "geometry"]
         filters_table: "hexaboard"
-        override:

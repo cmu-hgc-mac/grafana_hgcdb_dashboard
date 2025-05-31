@@ -34,10 +34,10 @@ for config in filelist:
         for panel in panels:
 
             # Load information
-            title, table, chart_type, condition, groupby, gridPos, filters, filters_table, override = read_panel_info(panel)
+            title, table, chart_type, condition, groupby, gridPos, filters, filters_table = read_panel_info(panel)
             
             # Generate the sql query
-            raw_sql = generate_sql(chart_type, table, condition, groupby, filters, filters_table, override)   # -> from sql_builder.py
+            raw_sql = generate_sql(chart_type, table, condition, groupby, filters, filters_table)   # -> from sql_builder.py
 
 
             # Generate the panel json

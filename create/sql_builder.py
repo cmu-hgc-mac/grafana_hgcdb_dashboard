@@ -10,27 +10,25 @@ This file defines the abstract class ChartSQLGenerator and the factory ChartSQLF
 # -- Define the abstract class --
 class ChartSQLGenerator(ABC):
     @abstractmethod
-    def generate_sql(self, table: str, condition: str, groupby: list, filters: list, filters_table: str, override: str) -> str:
+    def generate_sql(self, table: str, condition: str, groupby: list, filters: list, filters_table: str) -> str:
         pass
 
 
 # -- Generator for BarChart --
 class BarChartGenerator(ChartSQLGenerator):
-    def generate_sql(self, table: str, condition: str, groupby: list, filters: list, filters_table: str, override: str) -> str:
+    def generate_sql(self, table: str, condition: str, groupby: list, filters: list, filters_table: str) -> str:
         select_clause = self._build_select_clause(groupby)
         where_clause = self._build_where_clause(filters, condition, table, filters_table)
         join_clause = self._build_join_clause(table, filters_table)
-        groupby_clause, case_statement = self._build_groupby_clause(override)
 
         sql = f"""
         SELECT 
             {select_clause} AS label,
-            {case_statement}
             COUNT(*) AS count
         FROM {table}
         {join_clause}
         WHERE {where_clause}
-        GROUP BY {groupby_clause}
+        GROUP BY label
         ORDER BY count DESC;
         """
         return sql.strip()
@@ -41,8 +39,6 @@ class BarChartGenerator(ChartSQLGenerator):
         groupby_fields = []
         for elem in groupby:
             if elem.endswith("time"):
-                # name = elem.split("_")[0]
-                # groupby_fields.append(f"CASE WHEN {elem} IS NULL THEN 'not {name}' ELSE '{name}' END")
                 continue
             else:
                 groupby_fields.append(elem)
@@ -92,23 +88,10 @@ class BarChartGenerator(ChartSQLGenerator):
         
         return join_clause
 
-    def _build_groupby_clause(self, override: str) -> tuple:
-        """Builds the GROUP BY clause and optional CASE statement.
-        """
-        if override:
-            name = override.split("_")[0]
-            case_stmt = f"CASE WHEN {override} IS NULL THEN 'not {name}' ELSE '{name}' END AS status,"
-            groupby_clause = f"label, status"
-        else:
-            case_stmt = ""
-            groupby_clause = "label"
-
-        return groupby_clause, case_stmt
-
 
 # -- Generator for Histogram --
 class HistogramGenerator(ChartSQLGenerator):
-    def generate_sql(self, table: str, condition: str, groupby: list, filters: list, filters_table: str, override: str) -> str:
+    def generate_sql(self, table: str, condition: str, groupby: list, filters: list, filters_table: str) -> str:
         select_clause = self._build_select_clause(table, groupby)
         where_clause = self._build_where_clause(filters, condition, table, filters_table)
         join_clause = self._build_join_clause(table, filters_table)
@@ -177,7 +160,7 @@ class HistogramGenerator(ChartSQLGenerator):
 
 # -- Placeholder for LineChart (not implemented yet) --
 class LineChartGenerator(ChartSQLGenerator):
-    def generate_sql(self, table: str, condition: str, groupby: list, filters: list, override: str) -> str:
+    def generate_sql(self, table: str, condition: str, groupby: list, filters: list, filters_table: str) -> str:
         raise NotImplementedError("Line chart SQL generation is not implemented yet.")
 
 
