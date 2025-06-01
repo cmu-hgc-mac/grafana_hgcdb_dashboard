@@ -101,7 +101,7 @@ def generate_dashboard(dashboard_title: str, panels: list, template_list: list) 
             "list": template_list
         },
         "time": {
-            "from": "now-6h",
+            "from": "now-1y",
             "to": "now"
         },
         "timepicker": {},
