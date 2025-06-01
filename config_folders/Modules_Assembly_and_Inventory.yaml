@@ -11,6 +11,13 @@ dashboards:
         groupby: ["bp_material", "resolution", "roc_version", "geometry", "shipped_datetime"]
         filters: ["bp_material", "resolution", "roc_version", "geometry", "status"]
         filters_table: "module_info"
+      - title: "Module Assmebly"
+        table: "module_info"
+        chart_type: "timeseries"
+        condition: "module_info.assembled IS NOT NULL"
+        groupby: ["assembled"]
+        filters: ["bp_material", "resolution", "roc_version", "geometry", "status"]
+        filters_table: "module_info"
 
   - title: "Module Inspect"
     panels:
