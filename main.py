@@ -33,8 +33,6 @@ def main():
         subprocess.run(["python", "./preSteps/get_api_key.py"], check=True)
         sleep(0.5)    # wait for token to be generated
         subprocess.run(["python", "./preSteps/add_dbsource.py"], check=True)
-        # subprocess.run(["python", "./preSteps/modify_defaultsIni.py"], check=True)     
-                # not able to run due to the sudo access issue
 
 
     # Everything Need To Generate
