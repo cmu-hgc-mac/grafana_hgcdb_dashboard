@@ -17,7 +17,7 @@ class ChartSQLGenerator(ABC):
 # -- Generator for BarChart --
 class BarChartGenerator(ChartSQLGenerator):
     def generate_sql(self, table: str, condition: str, groupby: list, filters: list, filters_table: str) -> str:
-        select_clause = self._build_select_clause(groupby)
+        select_clause = self._build_select_clause(table, groupby)
         where_clause = self._build_where_clause(filters, condition, table, filters_table)
         join_clause = self._build_join_clause(table, filters_table)
 
@@ -33,7 +33,7 @@ class BarChartGenerator(ChartSQLGenerator):
         """
         return sql.strip()
 
-    def _build_select_clause(self, groupby: list) -> str:
+    def _build_select_clause(self, table: str, groupby: list) -> str:
         """Builds the SELECT clause by joining all groupby fields.
         """
         groupby_fields = []
@@ -41,7 +41,7 @@ class BarChartGenerator(ChartSQLGenerator):
             if elem.endswith("time"):
                 continue
             else:
-                groupby_fields.append(elem)
+                groupby_fields.append(f"{table}.{elem}")
         return " || '/' || ".join(groupby_fields)
 
     def _build_where_clause(self, filters: list, condition: str, table: str, filters_table: str) -> str:
@@ -109,7 +109,7 @@ class HistogramGenerator(ChartSQLGenerator):
         """Builds the SELECT clause from groupby. 
            - For histogram, there should only be 1 element in groupby.
         """
-        select_clause = groupby[0]
+        select_clause = f"{table}.{groupby[0]}"
 
         return select_clause
 
@@ -161,7 +161,7 @@ class HistogramGenerator(ChartSQLGenerator):
 # -- Generator for Timeseries --
 class TimeseriesGenerator(ChartSQLGenerator):
     def generate_sql(self, table: str, condition: str, groupby: list, filters: list, filters_table: str) -> str:
-        select_clause = self._build_select_clause(groupby)
+        select_clause = self._build_select_clause(table, groupby)
         where_clause = self._build_where_clause(filters, condition, table, filters_table)
         join_clause = self._build_join_clause(table, filters_table)
 
@@ -177,11 +177,11 @@ class TimeseriesGenerator(ChartSQLGenerator):
         """
         return sql.strip()
 
-    def _build_select_clause(self, groupby: list) -> str:
+    def _build_select_clause(self, table: str, groupby: list) -> str:
         """Builds the SELECT clause by joining all groupby fields.
            - For timeseries, there should only be 1 element in groupby.
         """
-        select_clause = f"{groupby[0]}::date"
+        select_clause = f"{table}.{groupby[0]}::date"
 
         return select_clause
 

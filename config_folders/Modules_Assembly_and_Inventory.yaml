@@ -78,47 +78,47 @@ dashboards:
         chart_type: "barchart"
         condition: "proto_inspect.grade IS NOT NULL"
         groupby: ["grade"]
-        filters: ["resolution", "geometry"]
-        filters_table: "proto_assembly"
+        filters: ["resolution", "geometry", "thickness"]
+        filters_table: "sensor"
       - title: "flatness"
         table: "proto_inspect"
         chart_type: "histogram"
         condition: "proto_inspect.flatness IS NOT NULL"
         groupby: ["flatness"]
-        filters: ["resolution", "geometry"]
-        filters_table: "proto_assembly"
+        filters: ["resolution", "geometry", "thickness"]
+        filters_table: "sensor"
       - title: "average thickness (mm)"
         table: "proto_inspect"
         chart_type: "histogram"
         condition: "proto_inspect.avg_thickness IS NOT NULL"
         groupby: ["avg_thickness"]
-        filters: ["resolution", "geometry"]
-        filters_table: "proto_assembly"
+        filters: ["resolution", "geometry", "thickness"]
+        filters_table: "sensor"
       - title: "x offset (μm)"
         table: "proto_inspect"
         chart_type: "histogram"
         condition: "proto_inspect.x_offset_mu IS NOT NULL"
         groupby: ["x_offset_mu"]
-        filters: ["resolution", "geometry"]
-        filters_table: "proto_assembly"
+        filters: ["resolution", "geometry", "thickness"]
+        filters_table: "sensor"
       - title: "y offset (μm)"
         table: "proto_inspect"
         chart_type: "histogram"
         condition: "proto_inspect.y_offset_mu IS NOT NULL"
         groupby: ["y_offset_mu"]
-        filters: ["resolution", "geometry"]
-        filters_table: "proto_assembly"
+        filters: ["resolution", "geometry", "thickness"]
+        filters_table: "sensor"
       - title: "max thickness (mm)"
         table: "proto_inspect"
         chart_type: "histogram"
         condition: "proto_inspect.max_thickness IS NOT NULL"
         groupby: ["max_thickness"]
-        filters: ["resolution", "geometry"]
-        filters_table: "proto_assembly"
+        filters: ["resolution", "geometry", "thickness"]
+        filters_table: "sensor"
       - title: "ang offset (deg)"
         table: "proto_inspect"
         chart_type: "histogram"
         condition: "proto_inspect.ang_offset_deg IS NOT NULL"
         groupby: ["ang_offset_deg"]
-        filters: ["resolution", "geometry"]
-        filters_table: "proto_assembly"
+        filters: ["resolution", "geometry", "thickness"]
+        filters_table: "sensor"
