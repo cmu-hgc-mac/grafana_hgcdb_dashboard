@@ -6,6 +6,7 @@ This file defines the abstract class ChartSQLGenerator and the factory ChartSQLF
         - "barchart"
         - "histogram"
         - "timeseries"
+        - "text"
 """
 
 # -- Define the abstract class --
@@ -127,7 +128,7 @@ class HistogramGenerator(ChartSQLGenerator):
     def _build_pre_clause(self, table: str, distinct: bool) -> str:
         """Builds the pre-SELECT clause for histogram. 
            - If distinct is True, it will select the distinct modules.
-           - 最丑陋的一集, 我真的受不了了: 之后会想办法
+           - 最丑陋的一集, 我真的受不了了: 之后再想办法吧我真的想不动了
         """
         if distinct:
             target_table = "temp_table"
@@ -305,11 +306,10 @@ class TimeseriesGenerator(ChartSQLGenerator):
         return "\n".join(clause)
 
 
-# -- Placeholder for LineChart (not implemented yet) --
-class LineChartGenerator(ChartSQLGenerator):
-    def generate_sql(self, table: str, condition: str, groupby: list, filters: list, filters_table: str) -> str:
-        raise NotImplementedError("Line chart SQL generation is not implemented yet.")
-
+# -- Generator for Text Chart --
+class TextChartGenerator(ChartSQLGenerator):
+    def generate_sql(self, table: str, condition: str, groupby: list, filters: list, filters_table: str, distinct: bool) -> str:
+        return None
 
 # -- Create the SQL Generator Factory --
 class ChartSQLFactory:
@@ -317,7 +317,7 @@ class ChartSQLFactory:
         "barchart": BarChartGenerator(),
         "histogram": HistogramGenerator(),
         "timeseries": TimeseriesGenerator(),
-        "linechart": LineChartGenerator()
+        "text": TextChartGenerator()
     }
 
     @classmethod

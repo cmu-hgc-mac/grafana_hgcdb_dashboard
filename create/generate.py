@@ -260,6 +260,37 @@ def generate_panel(title: str, raw_sql: str, table: str, groupby: str, chart_typ
     return panel_json
 
 
+def generate_IV_curve_panel(title: str, content: str, gridPos: dict) -> dict:
+    """Generate the panel specifially for IV_curve
+    """
+
+    # load information:
+    datasource_uid = gf_conn['GF_DATA_SOURCE_UID']
+
+    panel_json = {
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": gridPos,
+      "id": 7,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": False,
+          "showMiniMap": False
+        },
+        "content": content,
+        "mode": "markdown"
+      },
+      "pluginVersion": "12.0.0",
+      "title": title,
+      "type": "text"
+    }
+
+    return panel_json
+
+
 def assign_gridPos(panels: list, max_cols=24) -> list:
     """Assign gridPos to each panel in the dashboard. 
     """

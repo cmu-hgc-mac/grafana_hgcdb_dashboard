@@ -52,3 +52,14 @@ dashboards:
           filters: ["final_grade"]
           filters_table: "module_qc_summary"
           distinct: True
+  
+  - title: "iv_curve plot"
+    panels:
+        - title: "iv_curve plot"
+          table:
+          chart_type: "text"
+          condition: 
+          groupby:
+          filters:
+          filters_table:
+          distinct: False

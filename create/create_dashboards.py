@@ -4,6 +4,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import yaml
 from generate import *
+from composite_IV import *
 
 """
 This file generates all the dashboards json_file and saves them to a folder under `grafana_hgcdb_dashboard`.
@@ -36,26 +37,35 @@ for config in filelist:
             # Load information
             title, table, chart_type, condition, groupby, gridPos, filters, filters_table, distinct = read_panel_info(panel)
             
-            # Generate the sql query
-            raw_sql = generate_sql(chart_type, table, condition, groupby, filters, filters_table, distinct)   # -> from sql_builder.py
+            if chart_type == "text":
+                plt_path = generate_plot()
+                encoded_string = convert_png_to_base64(plt_path)
+                content = generate_content(encoded_string)
+
+                panel_json = generate_IV_curve_panel(title, content, gridPos)
+                panels_array.append(panel_json)
+
+            else:    
+                # Generate the sql query
+                raw_sql = generate_sql(chart_type, table, condition, groupby, filters, filters_table, distinct)   # -> from sql_builder.py
 
 
-            # Generate the panel json
-            panel_json = generate_panel(title, raw_sql, table, groupby, chart_type, gridPos)
-            panels_array.append(panel_json)
+                # Generate the panel json
+                panel_json = generate_panel(title, raw_sql, table, groupby, chart_type, gridPos)
+                panels_array.append(panel_json)
 
-            # Generate the template json
-            if filters:
-                for elem in filters:
-                    if elem in exist_filter:
-                        continue    # filter exist
-                    elif elem == "assembled" or elem.endswith("time"):
-                        continue    # filter not used in dashboard
-                    exist_filter.add(elem)
+                # Generate the template json
+                if filters:
+                    for elem in filters:
+                        if elem in exist_filter:
+                            continue    # filter exist
+                        elif elem == "assembled" or elem.endswith("time"):
+                            continue    # filter not used in dashboard
+                        exist_filter.add(elem)
 
-                    filter_sql = generate_filterSQL(elem, filters_table)
-                    filter_json = generate_filter(elem, filter_sql)
-                    template_list.append(filter_json)
+                        filter_sql = generate_filterSQL(elem, filters_table)
+                        filter_json = generate_filter(elem, filter_sql)
+                        template_list.append(filter_json)
             
         # Generate the dashboard json
         dashboard_json = generate_dashboard(dashboard["title"], panels_array, template_list)

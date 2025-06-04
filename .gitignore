@@ -32,9 +32,13 @@
 *.DS_Store?
 ._*
 
-# Configuration file #
+# Files #
 *.yaml
+*.png
 
 # Folders #
 Dashboards/
 __pycache__/
+
+# Files #
+composite_IV.py
