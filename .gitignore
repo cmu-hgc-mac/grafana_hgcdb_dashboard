@@ -31,3 +31,9 @@
 .DS_Store
 .DS_Store?
 ._*
+
+# Configuration file #
+*.yaml
+
+# Folders #
+Dashboard/
