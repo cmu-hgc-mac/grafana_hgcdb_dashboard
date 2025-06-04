@@ -11,6 +11,7 @@ dashboards:
         groupby: ["bp_material", "resolution", "roc_version", "geometry", "shipped_datetime"]
         filters: ["bp_material", "resolution", "roc_version", "geometry", "status"]
         filters_table: "module_info"
+        distinct: False
       - title: "Module Assmebly"
         table: "module_info"
         chart_type: "timeseries"
@@ -18,6 +19,7 @@ dashboards:
         groupby: ["assembled"]
         filters: ["bp_material", "resolution", "roc_version", "geometry", "status"]
         filters_table: "module_info"
+        distinct: False
 
   - title: "Module Inspect"
     panels:
@@ -28,6 +30,7 @@ dashboards:
         groupby: ["grade"]
         filters: ["bp_material", "resolution", "roc_version", "geometry"]
         filters_table: "module_info"
+        distinct: False
       - title: "Flatness"
         table: "module_inspect"
         chart_type: "histogram"
@@ -35,6 +38,7 @@ dashboards:
         groupby: ["flatness"]
         filters: ["bp_material", "resolution", "roc_version", "geometry"]
         filters_table: "module_info"
+        distinct: False
       - title: "average thickness (mm)"
         table: "module_inspect"
         chart_type: "histogram"
@@ -42,6 +46,7 @@ dashboards:
         groupby: ["avg_thickness"]
         filters: ["bp_material", "resolution", "roc_version", "geometry"]
         filters_table: "module_info"
+        distinct: False
       - title: "x offset (μm)"
         table: "module_inspect"
         chart_type: "histogram"
@@ -49,6 +54,7 @@ dashboards:
         groupby: ["x_offset_mu"]
         filters: ["bp_material", "resolution", "roc_version", "geometry"]
         filters_table: "module_info"
+        distinct: False
       - title: "y offset (μm)"
         table: "module_inspect"
         chart_type: "histogram"
@@ -56,6 +62,7 @@ dashboards:
         groupby: ["y_offset_mu"]
         filters: ["bp_material", "resolution", "roc_version", "geometry"]
         filters_table: "module_info"
+        distinct: False
       - title: "max thickness (mm)"
         table: "module_inspect"
         chart_type: "histogram"
@@ -63,6 +70,7 @@ dashboards:
         groupby: ["max_thickness"]
         filters: ["bp_material", "resolution", "roc_version", "geometry"]
         filters_table: "module_info"
+        distinct: False
       - title: "ang offset (deg)"
         table: "module_inspect"
         chart_type: "histogram"
@@ -70,6 +78,7 @@ dashboards:
         groupby: ["ang_offset_deg"]
         filters: ["bp_material", "resolution", "roc_version", "geometry"]
         filters_table: "module_info"
+        distinct: False
 
   - title: "Proto Inspect"
     panels:
@@ -80,6 +89,7 @@ dashboards:
         groupby: ["grade"]
         filters: ["resolution", "geometry", "thickness"]
         filters_table: "sensor"
+        distinct: False
       - title: "flatness"
         table: "proto_inspect"
         chart_type: "histogram"
@@ -87,6 +97,7 @@ dashboards:
         groupby: ["flatness"]
         filters: ["resolution", "geometry", "thickness"]
         filters_table: "sensor"
+        distinct: False
       - title: "average thickness (mm)"
         table: "proto_inspect"
         chart_type: "histogram"
@@ -94,6 +105,7 @@ dashboards:
         groupby: ["avg_thickness"]
         filters: ["resolution", "geometry", "thickness"]
         filters_table: "sensor"
+        distinct: False
       - title: "x offset (μm)"
         table: "proto_inspect"
         chart_type: "histogram"
@@ -101,6 +113,7 @@ dashboards:
         groupby: ["x_offset_mu"]
         filters: ["resolution", "geometry", "thickness"]
         filters_table: "sensor"
+        distinct: False
       - title: "y offset (μm)"
         table: "proto_inspect"
         chart_type: "histogram"
@@ -108,6 +121,7 @@ dashboards:
         groupby: ["y_offset_mu"]
         filters: ["resolution", "geometry", "thickness"]
         filters_table: "sensor"
+        distinct: False
       - title: "max thickness (mm)"
         table: "proto_inspect"
         chart_type: "histogram"
@@ -115,6 +129,7 @@ dashboards:
         groupby: ["max_thickness"]
         filters: ["resolution", "geometry", "thickness"]
         filters_table: "sensor"
+        distinct: False
       - title: "ang offset (deg)"
         table: "proto_inspect"
         chart_type: "histogram"
@@ -122,3 +137,4 @@ dashboards:
         groupby: ["ang_offset_deg"]
         filters: ["resolution", "geometry", "thickness"]
         filters_table: "sensor"
+        distinct: False

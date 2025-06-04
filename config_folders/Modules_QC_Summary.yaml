@@ -1,0 +1,46 @@
+datasource_variable: DS_POSTGRES
+
+dashboards:
+
+  - title: "module_qc_summary"
+    panels:
+      - title: "count_bad_cells"
+        table: "module_qc_summary"
+        chart_type: "histogram"
+        condition: "final_grade IS NOT NULL"
+        groupby: ["count_bad_cells"]
+        filters: ["final_grade"]
+        filters_table: "module_qc_summary"
+        distinct: True
+      - title: "list_cells_unbonded"
+        table: "module_qc_summary"
+        chart_type: "histogram"
+        condition:
+        groupby: ["list_cells_unbonded"]
+        filters: ["final_grade"]
+        filters_table: "module_qc_summary"
+        distinct: True
+      - title: "list_cells_grounded"
+        table: "module_qc_summary"
+        chart_type: "histogram"
+        condition:
+        groupby: ["list_cells_grounded"]
+        filters: ["final_grade"]
+        filters_table: "module_qc_summary"
+        distinct: True
+      - title: "list_noisy_cells"
+        table: "module_qc_summary"
+        chart_type: "histogram"
+        condition:
+        groupby: ["list_noisy_cells"]
+        filters: ["final_grade"]
+        filters_table: "module_qc_summary"
+        distinct: True
+      - title: "list_dead_cells"
+        table: "module_qc_summary"
+        chart_type: "histogram"
+        condition:
+        groupby: ["list_dead_cells"]
+        filters: ["final_grade"]
+        filters_table: "module_qc_summary"
+        distinct: True

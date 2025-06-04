@@ -5,18 +5,19 @@ This file defines the abstract class ChartSQLGenerator and the factory ChartSQLF
     - The current available chart type:
         - "barchart"
         - "histogram"
+        - "timeseries"
 """
 
 # -- Define the abstract class --
 class ChartSQLGenerator(ABC):
     @abstractmethod
-    def generate_sql(self, table: str, condition: str, groupby: list, filters: list, filters_table: str) -> str:
+    def generate_sql(self, table: str, condition: str, groupby: list, filters: list, filters_table: str, distinct: bool) -> str:
         pass
 
 
 # -- Generator for BarChart --
 class BarChartGenerator(ChartSQLGenerator):
-    def generate_sql(self, table: str, condition: str, groupby: list, filters: list, filters_table: str) -> str:
+    def generate_sql(self, table: str, condition: str, groupby: list, filters: list, filters_table: str, distinct: bool) -> str:
         select_clause = self._build_select_clause(table, groupby)
         where_clause = self._build_where_clause(filters, condition, table, filters_table)
         join_clause = self._build_join_clause(table, filters_table)
@@ -40,6 +41,8 @@ class BarChartGenerator(ChartSQLGenerator):
         for elem in groupby:
             if elem.endswith("time"):
                 continue
+            elif elem.startswith("list"):
+                groupby_fields.append(f"COALESCE(array_length({table}.{elem}::int[], 1), 0)")
             else:
                 groupby_fields.append(f"{table}.{elem}")
         return " || '/' || ".join(groupby_fields)
@@ -91,33 +94,63 @@ class BarChartGenerator(ChartSQLGenerator):
 
 # -- Generator for Histogram --
 class HistogramGenerator(ChartSQLGenerator):
-    def generate_sql(self, table: str, condition: str, groupby: list, filters: list, filters_table: str) -> str:
-        select_clause = self._build_select_clause(table, groupby)
-        where_clause = self._build_where_clause(filters, condition, table, filters_table)
-        join_clause = self._build_join_clause(table, filters_table)
+    def generate_sql(self, table: str, condition: str, groupby: list, filters: list, filters_table: str, distinct: bool) -> str:
+        pre_clause, target_table = self._build_pre_clause(table, distinct)
+        select_clause = self._build_select_clause(table, groupby, distinct)
+        where_clause = self._build_where_clause(filters, condition, table, filters_table, distinct)
+        join_clause = self._build_join_clause(table, filters_table, distinct)
 
         sql = f"""
+        {pre_clause}
         SELECT {select_clause}
-        FROM {table}
+        FROM {target_table}
         {join_clause}
         WHERE {where_clause}
         """
 
         return sql
+
+    def _build_pre_clause(self, table: str, distinct: bool) -> str:
+        """Builds the pre-SELECT clause for histogram. 
+           - If distinct is True, it will select the distinct modules.
+        """
+        if distinct:
+            target_table = "temp_table"
+
+            if table == "module_qc_summary":
+                pre_clause = """WITH temp_table AS (SELECT DISTINCT ON (module_no) * FROM module_qc_summary ORDER BY module_no, mod_qc_no DESC)"""
+        else:
+            target_table = table
+            pre_clause = ""
+        
+        return pre_clause, target_table
     
-    def _build_select_clause(self, table: str, groupby: list) -> str:
+    def _build_select_clause(self, table: str, groupby: list, distinct: bool) -> str:
         """Builds the SELECT clause from groupby. 
            - For histogram, there should only be 1 element in groupby.
         """
-        select_clause = f"{table}.{groupby[0]}"
+        elem = groupby[0]
 
+        if distinct:
+            table = "temp_table"
+
+        if elem.startswith("list"):
+            select_clause = f"COALESCE(array_length({table}.{elem}::int[], 1), 0)"
+        else:
+            select_clause = f"{table}.{groupby[0]}"
+        
         return select_clause
 
-    def _build_where_clause(self, filters: list, condition: str, table: str, filters_table: str) -> str:
+    def _build_where_clause(self, filters: list, condition: str, table: str, filters_table: str, distinct: bool) -> str:
         """Builds the WHERE clause from filters and condition. 
            - Minor changes for filters from a different table.
         """
         clauses = []
+
+        if distinct:
+            table = "temp_table"
+            filters_table = "temp_table"
+
         if table == filters_table: 
             for elem in filters:
                 if elem == "status":
@@ -146,7 +179,7 @@ class HistogramGenerator(ChartSQLGenerator):
 
         return " AND ".join(clauses)
     
-    def _build_join_clause(self, table: str, filters_table: str) -> str:
+    def _build_join_clause(self, table: str, filters_table: str, distinct: bool) -> str:
         """Builds the JOIN command by using the foriegn key.
         """
         if table == filters_table:
@@ -160,7 +193,7 @@ class HistogramGenerator(ChartSQLGenerator):
 
 # -- Generator for Timeseries --
 class TimeseriesGenerator(ChartSQLGenerator):
-    def generate_sql(self, table: str, condition: str, groupby: list, filters: list, filters_table: str) -> str:
+    def generate_sql(self, table: str, condition: str, groupby: list, filters: list, filters_table: str, distinct: bool) -> str:
         select_clause = self._build_select_clause(table, groupby)
         where_clause = self._build_where_clause(filters, condition, table, filters_table)
         join_clause = self._build_join_clause(table, filters_table)
@@ -178,10 +211,13 @@ class TimeseriesGenerator(ChartSQLGenerator):
         return sql.strip()
 
     def _build_select_clause(self, table: str, groupby: list) -> str:
-        """Builds the SELECT clause by joining all groupby fields.
-           - For timeseries, there should only be 1 element in groupby.
-        """
-        select_clause = f"{table}.{groupby[0]}::date"
+        """Builds the SELECT clause from groupby.                                                                                                                                                                      - For histogram, there should only be 1 element in groupby.                                                                                                                                            """
+        elem = groupby[0]
+
+        if elem.startswith("list"):
+            select_clause = f"COALESCE(array_length({table}.{elem}::int[], 1), 0)"
+        else:
+            select_clause = f"{table}.{groupby[0]}"
 
         return select_clause
 
