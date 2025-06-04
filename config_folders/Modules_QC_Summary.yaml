@@ -47,7 +47,7 @@ dashboards:
         - title: "i_at_ref_a"
           table: "module_qc_summary"
           chart_type: "histogram"
-          condition: 
+          condition: "module_no <> 46"
           groupby: ["i_at_600v", "i_at_ref_a"]
           filters: ["final_grade"]
           filters_table: "module_qc_summary"
