@@ -28,8 +28,8 @@
 
 # OS generated files #
 ######################
-.DS_Store
-.DS_Store?
+*.DS_Store
+*.DS_Store?
 ._*
 
 # Configuration file #
@@ -37,3 +37,4 @@
 
 # Folders #
 Dashboards/
+__pycache__/
