@@ -16,7 +16,7 @@ dashboards:
         table: "module_info"
         chart_type: "timeseries"
         condition: "module_info.assembled IS NOT NULL"
-        groupby: ["assembled"]
+        groupby: ["assembled", "count"]
         filters: ["bp_material", "resolution", "roc_version", "geometry", "status"]
         filters_table: "module_info"
         distinct: False
@@ -137,4 +137,15 @@ dashboards:
         groupby: ["ang_offset_deg"]
         filters: ["resolution", "geometry", "thickness"]
         filters_table: "sensor"
+        distinct: False
+
+  - title: "Enviorment Monitoring"
+    panels:
+      - title: "Temperature (°C)"
+        table: "temp_humidity"
+        chart_type: "timeseries"
+        condition: "temp_humidity.temp_c IS NOT NULL"
+        groupby: ["log_timestamp", "temp_c"]
+        filters: ["log_location"]
+        filters_table: "temp_humidity"
         distinct: False

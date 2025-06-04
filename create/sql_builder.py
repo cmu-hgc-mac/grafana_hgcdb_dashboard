@@ -18,39 +18,64 @@ class ChartSQLGenerator(ABC):
 # -- Generator for BarChart --
 class BarChartGenerator(ChartSQLGenerator):
     def generate_sql(self, table: str, condition: str, groupby: list, filters: list, filters_table: str, distinct: bool) -> str:
-        select_clause = self._build_select_clause(table, groupby)
-        where_clause = self._build_where_clause(filters, condition, filters_table)
+        pre_clause, target_table = self._build_pre_clause(table, distinct)
+        select_clause = self._build_select_clause(table, groupby, distinct)
+        where_clause = self._build_where_clause(filters, condition, filters_table, distinct)
         join_clause = self._build_join_clause(table, filters_table)
 
         sql = f"""
+        {pre_clause}
         SELECT 
             {select_clause} AS label,
             COUNT(*) AS count
-        FROM {table}
+        FROM {target_table}
         {join_clause}
         WHERE {where_clause}
         GROUP BY label
         ORDER BY count DESC;
         """
         return sql.strip()
+    
+    def _build_pre_clause(self, table: str, distinct: bool) -> str:
+        """Builds the pre-SELECT clause for histogram. 
+           - If distinct is True, it will select the distinct modules.
+        """
+        if distinct:
+            target_table = "temp_table"
 
-    def _build_select_clause(self, table: str, groupby: list) -> str:
+            if table == "module_qc_summary":
+                pre_clause = """WITH temp_table AS (SELECT DISTINCT ON (module_no) * FROM module_qc_summary ORDER BY module_no, mod_qc_no DESC)"""
+        else:
+            target_table = table
+            pre_clause = ""
+        
+        return pre_clause, target_table
+
+    def _build_select_clause(self, table: str, groupby: list, distinct: bool) -> str:
         """Builds the SELECT clause by joining all groupby fields.
         """
         groupby_fields = []
+
+        if distinct:
+            table = "temp_table"
+
         for elem in groupby:
             if elem.endswith("time"):
                 continue
             elif elem.startswith("list"):
-                groupby_fields.append(f"COALESCE(array_length({table}.{elem}::int[], 1), 0)")
+                groupby_fields.append(f"COALESCE(array_length({table}.{elem}::int[], 1), 0)::text")
             else:
-                groupby_fields.append(f"{table}.{elem}")
+                groupby_fields.append(f"{table}.{elem}::text")
         return " || '/' || ".join(groupby_fields)
 
-    def _build_where_clause(self, filters: list, condition: str, filters_table: str) -> str:
+    def _build_where_clause(self, filters: list, condition: str, filters_table: str, distinct: bool) -> str:
         """Builds the WHERE clause from filters and condition. 
         """
         clauses = []
+
+        if distinct:
+            filters_table = "temp_table"
+
         for elem in filters:
             if elem == "status":
                 param = "${status}"
@@ -86,7 +111,7 @@ class HistogramGenerator(ChartSQLGenerator):
     def generate_sql(self, table: str, condition: str, groupby: list, filters: list, filters_table: str, distinct: bool) -> str:
         pre_clause, target_table = self._build_pre_clause(table, distinct)
         select_clause = self._build_select_clause(table, groupby, distinct)
-        where_clause = self._build_where_clause(filters, condition, table, filters_table, distinct)
+        where_clause = self._build_where_clause(filters, condition, filters_table, distinct)
         join_clause = self._build_join_clause(table, filters_table, distinct)
 
         sql = f"""
@@ -102,6 +127,7 @@ class HistogramGenerator(ChartSQLGenerator):
     def _build_pre_clause(self, table: str, distinct: bool) -> str:
         """Builds the pre-SELECT clause for histogram. 
            - If distinct is True, it will select the distinct modules.
+           - 最丑陋的一集, 我真的受不了了: 之后会想办法
         """
         if distinct:
             target_table = "temp_table"
@@ -118,50 +144,53 @@ class HistogramGenerator(ChartSQLGenerator):
         """Builds the SELECT clause from groupby. 
            - For histogram, there should only be 1 element in groupby.
         """
-        elem = groupby[0]
-
         if distinct:
             table = "temp_table"
-
-        if elem.startswith("list"):
-            select_clause = f"COALESCE(array_length({table}.{elem}::int[], 1), 0)"
-        else:
-            select_clause = f"{table}.{groupby[0]}"
         
+        # check for the groupby length:
+        num_groupby = len(groupby)
+
+        if num_groupby == 1:
+            elem = groupby[0]
+            if elem.startswith("list"):
+                select_clause = f"COALESCE(array_length({table}.{elem}::int[], 1), 0) AS {elem}"
+            else:
+                select_clause = f"{table}.{elem} AS {elem}"
+        if num_groupby == 2: 
+            select_clause = []
+            for elem in groupby:
+                if elem.startswith("list"):
+                    select_arg = f"COALESCE(array_length({table}.{elem}::int[], 1), 0)"
+                else:
+                    select_arg = f"{table}.{elem}"
+                select_clause.append(select_arg)
+            select_clause = f"COALESCE({", ".join(select_clause)}) as {groupby[0]}"
+        else:
+            # raise ValueError("The groupby list has not correct length.")
+            return None
+
         return select_clause
 
-    def _build_where_clause(self, filters: list, condition: str, table: str, filters_table: str, distinct: bool) -> str:
+    def _build_where_clause(self, filters: list, condition: str, filters_table: str, distinct: bool) -> str:
         """Builds the WHERE clause from filters and condition. 
            - Minor changes for filters from a different table.
         """
         clauses = []
 
         if distinct:
-            table = "temp_table"
+            # table = "temp_table"
             filters_table = "temp_table"
 
-        if table == filters_table: 
-            for elem in filters:
-                if elem == "status":
-                    param = "${status}"
-                    arg = f"""('All' = ANY(ARRAY[{param}]) OR 
-                            (shipped_datetime IS NULL AND 'not shipped' = ANY(ARRAY[{param}])) OR
-                            (shipped_datetime IS NOT NULL AND 'shipped' = ANY(ARRAY[{param}])))"""
-                else:
-                    param = f"${{{elem}}}"
-                    arg = f"('All' = ANY(ARRAY[{param}]) OR {elem}::text = ANY(ARRAY[{param}]))"
-                clauses.append(arg)
-        else:
-            for elem in filters:
-                if elem == "status":
-                    param = "${status}"
-                    arg = f"""('All' = ANY(ARRAY[{param}]) OR 
-                            (shipped_datetime IS NULL AND 'not shipped' = ANY(ARRAY[{param}])) OR
-                            (shipped_datetime IS NOT NULL AND 'shipped' = ANY(ARRAY[{param}])))"""
-                else:
-                    param = f"${{{elem}}}"
-                    arg = f"('All' = ANY(ARRAY[{param}]) OR {filters_table}.{elem}::text = ANY(ARRAY[{param}]))"
-                clauses.append(arg)
+        for elem in filters:
+            if elem == "status":
+                param = "${status}"
+                arg = f"""('All' = ANY(ARRAY[{param}]) OR 
+                        (shipped_datetime IS NULL AND 'not shipped' = ANY(ARRAY[{param}])) OR
+                        (shipped_datetime IS NOT NULL AND 'shipped' = ANY(ARRAY[{param}])))"""
+            else:
+                param = f"${{{elem}}}"
+                arg = f"('All' = ANY(ARRAY[{param}]) OR {filters_table}.{elem}::text = ANY(ARRAY[{param}]))"
+            clauses.append(arg)
 
         if condition:
             clauses.append(condition)
@@ -186,29 +215,41 @@ class TimeseriesGenerator(ChartSQLGenerator):
         select_clause = self._build_select_clause(table, groupby)
         where_clause = self._build_where_clause(filters, condition, filters_table)
         join_clause = self._build_join_clause(table, filters_table)
+        orderby_clause = self._build_orderby_clause(groupby)
 
         sql = f"""
         SELECT 
-            {select_clause} AS date,
-            COUNT(*) AS count
+            {select_clause}
         FROM {table}
         {join_clause}
         WHERE {where_clause}
-        GROUP BY date
-        ORDER BY date;
+        {orderby_clause};
         """
         return sql.strip()
 
     def _build_select_clause(self, table: str, groupby: list) -> str:
-        """Builds the SELECT clause from groupby.                                                                                                                                                                      - For histogram, there should only be 1 element in groupby.                                                                                                                                            """
-        elem = groupby[0]
+        """Builds the SELECT clause from groupby.    
+        """
+        # Currently, it is setted to have the first element as time and the second element as the element to be counted.
+        # It is definetly not ideal, I will try to come up with a better solution later.
+        time = groupby[0]
+        elem = groupby[1]
+        select_clause = []
 
+        # Time
+        time_arg = f"{table}.{time} AS date"
+        select_clause.append(time_arg)
+
+        # Element
         if elem.startswith("list"):
-            select_clause = f"COALESCE(array_length({table}.{elem}::int[], 1), 0)"
+            elem_arg = f"COALESCE(array_length({table}.{elem}::int[], 1), 0) AS {elem}"
+        elif elem == "count":
+            elem_arg = "COUNT(*) AS count"
         else:
-            select_clause = f"{table}.{groupby[0]}"
+            elem_arg = f"{table}.{elem} AS {elem}"
+        select_clause.append(elem_arg)
 
-        return select_clause
+        return ", ".join(select_clause)
 
     def _build_where_clause(self, filters: list, condition: str, filters_table: str) -> str:
         """Builds the WHERE clause from filters and condition. 
@@ -220,7 +261,7 @@ class TimeseriesGenerator(ChartSQLGenerator):
                 arg = f"""('All' = ANY(ARRAY[{param}]) OR 
                         (shipped_datetime IS NULL AND 'not shipped' = ANY(ARRAY[{param}])) OR
                         (shipped_datetime IS NOT NULL AND 'shipped' = ANY(ARRAY[{param}])))"""
-            elif elem == "assembled" or elem.endswith("time"):
+            elif elem == "assembled" or elem.endswith("time") or elem == "log_timestamp":
                 arg = f"$__timeFilter({filters_table}.{elem})"
             else:
                 param = f"${{{elem}}}"
@@ -242,6 +283,25 @@ class TimeseriesGenerator(ChartSQLGenerator):
             join_clause = f"JOIN {filters_table} ON {table}.{elem}_no = {filters_table}.{elem}_no"
         
         return join_clause
+    
+    def _build_orderby_clause(self, groupby: list) -> str:
+        """Builds the ORDER BY clause from groupby.
+        """
+        time = groupby[0]
+        elem = groupby[1]
+        clause = []
+
+        if elem == "count":
+            groupby_arg = f"GROUP BY {time}"
+        else: 
+            groupby_arg = ""
+        
+        orderby_arg = f"ORDER BY {time};"
+
+        clause.append(groupby_arg)
+        clause.append(orderby_arg)
+
+        return "\n".join(clause)
 
 
 # -- Placeholder for LineChart (not implemented yet) --
