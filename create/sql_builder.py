@@ -156,7 +156,8 @@ class HistogramGenerator(ChartSQLGenerator):
                 select_clause = f"COALESCE(array_length({table}.{elem}::int[], 1), 0) AS {elem}"
             else:
                 select_clause = f"{table}.{elem} AS {elem}"
-        if num_groupby == 2: 
+
+        elif num_groupby == 2: 
             select_clause = []
             for elem in groupby:
                 if elem.startswith("list"):
@@ -166,8 +167,8 @@ class HistogramGenerator(ChartSQLGenerator):
                 select_clause.append(select_arg)
             select_clause = f"COALESCE({", ".join(select_clause)}) as {groupby[0]}"
         else:
-            # raise ValueError("The groupby list has not correct length.")
-            return None
+            raise ValueError("The groupby list has not correct length.")
+            # return None
 
         return select_clause
 
