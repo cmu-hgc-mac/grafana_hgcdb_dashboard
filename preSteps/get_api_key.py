@@ -88,7 +88,7 @@ gf_conn.update({
     'GF_SA_NAME': f"{institution}-service-account",
     'GF_API_KEY': token_key,
     'GF_DATA_SOURCE_NAME': str(f"{institution}-{db_name}".upper()),
-    'GF_DATA_SOURCE_UID': "hgcdb"
+    'GF_DATA_SOURCE_UID': "mac-postgres-db"
 })
 
 with open(gf_conn_path, 'w') as file:
