@@ -49,6 +49,8 @@ for config in filelist:
                 for elem in filters:
                     if elem in exist_filter:
                         continue    # filter exist
+                    elif elem == "assembled" or elem.endswith("time"):
+                        continue    # filter not used in dashboard
                     exist_filter.add(elem)
 
                     filter_sql = generate_filterSQL(elem, filters_table)
