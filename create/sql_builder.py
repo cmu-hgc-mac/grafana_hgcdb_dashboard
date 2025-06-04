@@ -19,7 +19,7 @@ class ChartSQLGenerator(ABC):
 class BarChartGenerator(ChartSQLGenerator):
     def generate_sql(self, table: str, condition: str, groupby: list, filters: list, filters_table: str, distinct: bool) -> str:
         select_clause = self._build_select_clause(table, groupby)
-        where_clause = self._build_where_clause(filters, condition, table, filters_table)
+        where_clause = self._build_where_clause(filters, condition, filters_table)
         join_clause = self._build_join_clause(table, filters_table)
 
         sql = f"""
@@ -47,33 +47,22 @@ class BarChartGenerator(ChartSQLGenerator):
                 groupby_fields.append(f"{table}.{elem}")
         return " || '/' || ".join(groupby_fields)
 
-    def _build_where_clause(self, filters: list, condition: str, table: str, filters_table: str) -> str:
+    def _build_where_clause(self, filters: list, condition: str, filters_table: str) -> str:
         """Builds the WHERE clause from filters and condition. 
-           - Minor changes for filters from a different table.
         """
         clauses = []
-        if table == filters_table: 
-            for elem in filters:
-                if elem == "status":
-                    param = "${status}"
-                    arg = f"""('All' = ANY(ARRAY[{param}]) OR 
-                            (shipped_datetime IS NULL AND 'not shipped' = ANY(ARRAY[{param}])) OR
-                            (shipped_datetime IS NOT NULL AND 'shipped' = ANY(ARRAY[{param}])))"""
-                else:
-                    param = f"${{{elem}}}"
-                    arg = f"('All' = ANY(ARRAY[{param}]) OR {elem}::text = ANY(ARRAY[{param}]))"
-                clauses.append(arg)
-        else:
-            for elem in filters:
-                if elem == "status":
-                    param = "${status}"
-                    arg = f"""('All' = ANY(ARRAY[{param}]) OR 
-                            (shipped_datetime IS NULL AND 'not shipped' = ANY(ARRAY[{param}])) OR
-                            (shipped_datetime IS NOT NULL AND 'shipped' = ANY(ARRAY[{param}])))"""
-                else:
-                    param = f"${{{elem}}}"
-                    arg = f"('All' = ANY(ARRAY[{param}]) OR {filters_table}.{elem}::text = ANY(ARRAY[{param}]))"
-                clauses.append(arg)
+        for elem in filters:
+            if elem == "status":
+                param = "${status}"
+                arg = f"""('All' = ANY(ARRAY[{param}]) OR 
+                        (shipped_datetime IS NULL AND 'not shipped' = ANY(ARRAY[{param}])) OR
+                        (shipped_datetime IS NOT NULL AND 'shipped' = ANY(ARRAY[{param}])))"""
+            elif elem == "assembled" or elem.endswith("time"):
+                arg = f"$__timeFilter({filters_table}.{elem})"
+            else:
+                param = f"${{{elem}}}"
+                arg = f"('All' = ANY(ARRAY[{param}]) OR {filters_table}.{elem}::text = ANY(ARRAY[{param}]))"
+            clauses.append(arg)
 
         if condition:
             clauses.append(condition)
@@ -195,7 +184,7 @@ class HistogramGenerator(ChartSQLGenerator):
 class TimeseriesGenerator(ChartSQLGenerator):
     def generate_sql(self, table: str, condition: str, groupby: list, filters: list, filters_table: str, distinct: bool) -> str:
         select_clause = self._build_select_clause(table, groupby)
-        where_clause = self._build_where_clause(filters, condition, table, filters_table)
+        where_clause = self._build_where_clause(filters, condition, filters_table)
         join_clause = self._build_join_clause(table, filters_table)
 
         sql = f"""
@@ -221,33 +210,22 @@ class TimeseriesGenerator(ChartSQLGenerator):
 
         return select_clause
 
-    def _build_where_clause(self, filters: list, condition: str, table: str, filters_table: str) -> str:
+    def _build_where_clause(self, filters: list, condition: str, filters_table: str) -> str:
         """Builds the WHERE clause from filters and condition. 
-           - Minor changes for filters from a different table.
         """
         clauses = []
-        if table == filters_table: 
-            for elem in filters:
-                if elem == "status":
-                    param = "${status}"
-                    arg = f"""('All' = ANY(ARRAY[{param}]) OR 
-                            (shipped_datetime IS NULL AND 'not shipped' = ANY(ARRAY[{param}])) OR
-                            (shipped_datetime IS NOT NULL AND 'shipped' = ANY(ARRAY[{param}])))"""
-                else:
-                    param = f"${{{elem}}}"
-                    arg = f"('All' = ANY(ARRAY[{param}]) OR {elem}::text = ANY(ARRAY[{param}]))"
-                clauses.append(arg)
-        else:
-            for elem in filters:
-                if elem == "status":
-                    param = "${status}"
-                    arg = f"""('All' = ANY(ARRAY[{param}]) OR 
-                            (shipped_datetime IS NULL AND 'not shipped' = ANY(ARRAY[{param}])) OR
-                            (shipped_datetime IS NOT NULL AND 'shipped' = ANY(ARRAY[{param}])))"""
-                else:
-                    param = f"${{{elem}}}"
-                    arg = f"('All' = ANY(ARRAY[{param}]) OR {filters_table}.{elem}::text = ANY(ARRAY[{param}]))"
-                clauses.append(arg)
+        for elem in filters:
+            if elem == "status":
+                param = "${status}"
+                arg = f"""('All' = ANY(ARRAY[{param}]) OR 
+                        (shipped_datetime IS NULL AND 'not shipped' = ANY(ARRAY[{param}])) OR
+                        (shipped_datetime IS NOT NULL AND 'shipped' = ANY(ARRAY[{param}])))"""
+            elif elem == "assembled" or elem.endswith("time"):
+                arg = f"$__timeFilter({filters_table}.{elem})"
+            else:
+                param = f"${{{elem}}}"
+                arg = f"('All' = ANY(ARRAY[{param}]) OR {filters_table}.{elem}::text = ANY(ARRAY[{param}]))"
+            clauses.append(arg)
 
         if condition:
             clauses.append(condition)

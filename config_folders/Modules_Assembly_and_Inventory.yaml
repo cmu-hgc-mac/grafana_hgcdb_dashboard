@@ -9,7 +9,7 @@ dashboards:
         chart_type: "barchart"
         condition: 
         groupby: ["bp_material", "resolution", "roc_version", "geometry", "shipped_datetime"]
-        filters: ["bp_material", "resolution", "roc_version", "geometry", "status"]
+        filters: ["bp_material", "resolution", "roc_version", "geometry", "status", "assembled"]
         filters_table: "module_info"
         distinct: False
       - title: "Module Assmebly"
