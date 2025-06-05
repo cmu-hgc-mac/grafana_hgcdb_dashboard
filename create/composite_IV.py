@@ -7,6 +7,7 @@ import pickle
 import asyncio
 import asyncpg
 import sys
+import os
 
 import yaml
 # Load Information
@@ -104,7 +105,11 @@ def generate_plot():
     ax.set_ylim(1e-9, 1e-03)
     ax.set_xlim(0, 500)
     ax.legend(fontsize=15, loc='upper left')
-    plt_path = f'./combined_iv_logscale_{datetoday}_{N_MODULE_SHOW}.png'
+
+    # create folder:
+    os.makedirs("iv_curves_plot", exist_ok=True)
+    # define path and save plot
+    plt_path = f'iv_curves_plot/combined_iv_logscale_{datetoday}_{N_MODULE_SHOW}.png'
     plt.savefig(plt_path)
 
     return plt_path
