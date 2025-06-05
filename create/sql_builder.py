@@ -40,6 +40,7 @@ class BarChartGenerator(ChartSQLGenerator):
     def _build_pre_clause(self, table: str, distinct: bool) -> str:
         """Builds the pre-SELECT clause for histogram. 
            - If distinct is True, it will select the distinct modules.
+           - Hard Coded Version: Only for module_qc_summary table.
         """
         if distinct:
             target_table = "temp_table"
@@ -128,7 +129,7 @@ class HistogramGenerator(ChartSQLGenerator):
     def _build_pre_clause(self, table: str, distinct: bool) -> str:
         """Builds the pre-SELECT clause for histogram. 
            - If distinct is True, it will select the distinct modules.
-           - 最丑陋的一集, 我真的受不了了: 之后再想办法吧我真的想不动了
+           - Hard Coded Version: Only for module_qc_summary table.
         """
         if distinct:
             target_table = "temp_table"
