@@ -39,6 +39,3 @@
 # Folders #
 Dashboards/
 __pycache__/
-
-# Files #
-composite_IV.py

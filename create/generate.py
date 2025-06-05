@@ -82,6 +82,12 @@ def generate_dashboard(dashboard_title: str, panels: list, template_list: list) 
     # get dashboard_uid
     dashboard_uid = dashboard_title.lower().replace(" ", "-")
 
+    # define the time range
+    if dashboard_title == "Enviorment Monitoring":
+      time_range = "now-24h"
+    else:
+      time_range = "now-1y"
+    
     # generate the dashboard json
     dashboard = {
         "annotations": {
@@ -113,7 +119,7 @@ def generate_dashboard(dashboard_title: str, panels: list, template_list: list) 
             "list": template_list
         },
         "time": {
-            "from": "now-1y",
+            "from": time_range,
             "to": "now"
         },
         "timepicker": {},
