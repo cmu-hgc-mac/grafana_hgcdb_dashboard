@@ -36,7 +36,8 @@ for config in filelist:
 
             # Load information
             title, table, chart_type, condition, groupby, gridPos, filters, filters_table, distinct = read_panel_info(panel)
-            
+
+            # iv_curve plot
             if chart_type == "text":
                 plt_path = generate_plot()
                 encoded_string = convert_png_to_base64(plt_path)
@@ -45,6 +46,7 @@ for config in filelist:
                 panel_json = generate_IV_curve_panel(title, content, gridPos)
                 panels_array.append(panel_json)
 
+            # general case    
             else:    
                 # Generate the sql query
                 raw_sql = generate_sql(chart_type, table, condition, groupby, filters, filters_table, distinct)   # -> from sql_builder.py
