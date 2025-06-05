@@ -20,6 +20,13 @@ with open(gf_conn_path, mode='r') as file:
 with open(db_conn_path, mode='r') as file:
     db_conn = yaml.safe_load(file)
 
+# load information:
+grafana_url = gf_conn['GF_URL']
+api_token = gf_conn['GF_API_KEY']
+username = gf_conn['GF_USER']
+password = gf_conn['GF_PASS']
+datasource_uid = gf_conn['GF_DATA_SOURCE_UID']
+
 
 # ============================================================
 # === Folder Generator =======================================
@@ -28,15 +35,22 @@ with open(db_conn_path, mode='r') as file:
 def generate_folder(folder_name: str):
     """Create Grafana folder or fetch if it already exists. Update UID map.
     """
-
-    grafana_url = gf_conn['GF_URL']
-    username = gf_conn['GF_USER']
-    password = gf_conn['GF_PASS']
+    # define headers:
     headers = {"Content-Type": "application/json"}
-    folder_uid = folder_name.lower().replace(" ", "-")
+
+    # get the UID of the folder
+    if folder_name == "General":  # main dashboards
+      folder_uid = ""
+    else:
+      folder_uid = folder_name.lower().replace(" ", "-")
 
     # Check if folder exists
     response = requests.get(f"{grafana_url}/api/folders/{folder_uid}", headers=headers, auth=(username, password))
+
+    if folder_uid == "":
+      print("Skipping folder creation: 'General' is default folder with no UID.")
+      return
+
     if response.status_code == 200:
         print(f"Folder '{folder_name}' exists.")
         uid = response.json()['uid']
@@ -63,13 +77,11 @@ def generate_folder(folder_name: str):
 # ============================================================
 
 def generate_dashboard(dashboard_title: str, panels: list, template_list: list) -> dict:
+    """Generates a Grafana dashboard json file based on the given panels.
     """
-    Generates a Grafana dashboard json file based on the given panels.
-    """
-
-    # load information
+    # get dashboard_uid
     dashboard_uid = dashboard_title.lower().replace(" ", "-")
-    
+
     # generate the dashboard json
     dashboard = {
         "annotations": {
@@ -117,7 +129,6 @@ def generate_dashboard(dashboard_title: str, panels: list, template_list: list) 
 def save_dashboard_json(dashboard: dict, dashboard_json: dict, folder: str):
     """Save a dashboard JSON into Dashboards/<folder>/<dashboard_title>.json.
     """
-
     # Get the safe title for the filename
     safe_title = dashboard["title"].replace(" ", "_")
     filename = safe_title + ".json"
@@ -138,13 +149,10 @@ def save_dashboard_json(dashboard: dict, dashboard_json: dict, folder: str):
 def upload_dashboards(file_path: str):
     """Upload one dashboard JSON file into Grafana folder.
     """
-
     #reload gf_conn.yaml
     with open(gf_conn_path, mode='r') as file:
       new_gf_conn = yaml.safe_load(file)
 
-    grafana_url = new_gf_conn['GF_URL']
-    api_token = new_gf_conn['GF_API_KEY']
     headers = {
         "Authorization": f"Bearer {api_token}",
         "Content-Type": "application/json"
@@ -152,12 +160,14 @@ def upload_dashboards(file_path: str):
 
     folder_name = os.path.basename(os.path.dirname(file_path)).replace("_", " ")
     file_name = os.path.basename(file_path).split(".")[0].replace("_", " ")
-    folder_uid_map = new_gf_conn.get("GF_FOLDER_UIDS", {})
 
-    if folder_name not in folder_uid_map:
-        raise ValueError(f"Folder '{folder_name}' not in GF_FOLDER_UIDS")
-
-    folder_uid = folder_uid_map[folder_name]
+    if folder_name == "General":  # main dashboards: empty uid
+        folder_uid = ""
+    else:
+        folder_uid_map = new_gf_conn.get("GF_FOLDER_UIDS", {})
+        if folder_name not in folder_uid_map:
+            raise ValueError(f"Folder '{folder_name}' not in GF_FOLDER_UIDS")
+        folder_uid = folder_uid_map[folder_name]
 
     with open(file_path, 'r', encoding='utf-8') as file:
         dashboard = json.load(file)
@@ -184,10 +194,6 @@ def upload_dashboards(file_path: str):
 def generate_panel(title: str, raw_sql: str, table: str, groupby: str, chart_type: str, gridPos: dict) -> dict:
     """Generate a panel json based on the given raw_sql, table, groupby, chart_type, and gridPos.
     """
-
-    # load information:
-    datasource_uid = gf_conn['GF_DATA_SOURCE_UID']
-
     # generate the panel json:
     panel_json = {
       "datasource": {
@@ -263,16 +269,18 @@ def generate_panel(title: str, raw_sql: str, table: str, groupby: str, chart_typ
 def generate_IV_curve_panel(title: str, content: str, gridPos: dict) -> dict:
     """Generate the panel specifially for IV_curve
     """
-
-    # load information:
-    datasource_uid = gf_conn['GF_DATA_SOURCE_UID']
-
+    # generate the panel json:
     panel_json = {
       "fieldConfig": {
         "defaults": {},
         "overrides": []
       },
-      "gridPos": gridPos,
+      "gridPos": {        
+        "h": 14,
+        "w": 14,
+        "x": 0,
+        "y": 0
+      },
       "id": 7,
       "options": {
         "code": {
@@ -294,7 +302,6 @@ def generate_IV_curve_panel(title: str, content: str, gridPos: dict) -> dict:
 def assign_gridPos(panels: list, max_cols=24) -> list:
     """Assign gridPos to each panel in the dashboard. 
     """
-
     # initial settings
     x, y = 0, 0
 
@@ -329,7 +336,7 @@ def assign_gridPos(panels: list, max_cols=24) -> list:
 def read_panel_info(panel: dict) -> tuple:
     """Read panel information from the config file.
     """
-
+    # load information:
     title = panel["title"]
     table = panel["table"]
     chart_type = panel["chart_type"]
@@ -346,7 +353,6 @@ def read_panel_info(panel: dict) -> tuple:
 def generate_sql(chart_type: str, table: str, condition: str, groupby: list, filters: list, filters_table: str, distinct: bool) -> str:
     """Generate the SQL command from ChartSQLFactory. -> sql_builder.py
     """
-
     # Get Generator
     generator = ChartSQLFactory.get_generator(chart_type)
 
@@ -363,10 +369,7 @@ def generate_sql(chart_type: str, table: str, condition: str, groupby: list, fil
 def generate_filter(filter_name: str, filter_sql: str) -> dict:
   """Generate a template json based on the given .
   """
-
-  # load information:
-  datasource_uid = gf_conn['GF_DATA_SOURCE_UID']
-
+  # generate the filter json:
   filter_json = {
         "current": {
         "text": [
@@ -395,7 +398,6 @@ def generate_filter(filter_name: str, filter_sql: str) -> dict:
 def generate_filterSQL(filter_name: str, filters_table: str) -> str:
   """Generate a template SQL command based on the given filter name.
   """
-    
   # check filter type:
   if filter_name == "status":
     filter_sql = f"""
