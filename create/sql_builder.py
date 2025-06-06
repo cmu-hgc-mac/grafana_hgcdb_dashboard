@@ -7,6 +7,7 @@ This file defines the abstract class ChartSQLGenerator and the factory ChartSQLF
         - "histogram"
         - "timeseries"
         - "text"
+        - "stat"
 """
 
 # -- Define the abstract class --
@@ -32,7 +33,8 @@ class BarChartGenerator(ChartSQLGenerator):
         FROM {target_table}
         {join_clause}
         WHERE {where_clause}
-        GROUP BY label;
+        GROUP BY label
+        ORDER BY label;
         """
         return sql.strip()
     
