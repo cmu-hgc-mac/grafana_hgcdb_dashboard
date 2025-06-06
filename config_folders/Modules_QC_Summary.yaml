@@ -4,6 +4,14 @@ dashboards:
 
   - title: "module_qc_summary"
     panels:
+        - title: "iv_grade"
+          table: "module_qc_summary"
+          chart_type: "barchart"
+          condition: "final_grade IS NOT NULL"
+          groupby: ["final_grade"]
+          filters: ["final_grade"]
+          filters_table: "module_qc_summary"
+          distinct: True
         - title: "count_bad_cells"
           table: "module_qc_summary"
           chart_type: "barchart"
@@ -44,11 +52,11 @@ dashboards:
           filters: ["final_grade"]
           filters_table: "module_qc_summary"
           distinct: True
-        - title: "i_at_ref_a"
+        - title: "i_at_ref_a (i < 1e-6)"
           table: "module_qc_summary"
           chart_type: "histogram"
-          condition: "module_no <> 46"
-          groupby: ["i_at_600v", "i_at_ref_a"]
+          condition: "i_at_600v < 1e-6 OR i_at_ref_a < 1e-6"
+          groupby: ["i_at_ref_a", "i_at_600v"]
           filters: ["final_grade"]
           filters_table: "module_qc_summary"
           distinct: True

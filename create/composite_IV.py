@@ -104,6 +104,9 @@ def generate_plot():
     ax.set_ylabel(r'Leakage Current [A]', fontsize=25)
     ax.set_ylim(1e-9, 1e-03)
     ax.set_xlim(0, 500)
+    ax.xaxis.label.set_size(30)
+    ax.yaxis.label.set_size(30)
+    ax.tick_params(axis='both', which='major', labelsize=25)
     ax.legend(fontsize=15, loc='upper left')
 
     # create folder:

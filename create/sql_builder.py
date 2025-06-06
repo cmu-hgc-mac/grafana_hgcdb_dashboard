@@ -32,8 +32,7 @@ class BarChartGenerator(ChartSQLGenerator):
         FROM {target_table}
         {join_clause}
         WHERE {where_clause}
-        GROUP BY label
-        ORDER BY count DESC;
+        GROUP BY label;
         """
         return sql.strip()
     
