@@ -311,13 +311,86 @@ class TextChartGenerator(ChartSQLGenerator):
     def generate_sql(self, table: str, condition: str, groupby: list, filters: list, filters_table: str, distinct: bool) -> str:
         return None
 
+
+# -- Generator for Stat Chart --
+class StatChartGenerator(ChartSQLGenerator):
+    def generate_sql(self, table: str, condition: str, groupby: list, filters: list, filters_table: str, distinct: bool) -> str:
+        pre_clause, target_table = self._build_pre_clause(table, distinct)        
+        where_clause = self._build_where_clause(filters, condition, filters_table, distinct)
+        join_clause = self._build_join_clause(table, filters_table, distinct)        
+        
+        sql = f"""
+        {pre_clause}
+        SELECT COUNT(*) AS count
+        FROM {target_table}
+        {join_clause}
+        WHERE {where_clause}
+        """
+
+        return sql.strip()
+
+    def _build_pre_clause(self, table: str, distinct: bool) -> str:
+        """Builds the pre-SELECT clause for histogram. 
+           - If distinct is True, it will select the distinct modules.
+           - Hard Coded Version: Only for module_qc_summary table.
+        """
+        if distinct:
+            target_table = "temp_table"
+
+            if table == "module_qc_summary":
+                pre_clause = """WITH temp_table AS (SELECT DISTINCT ON (module_no) * FROM module_qc_summary ORDER BY module_no, mod_qc_no DESC)"""
+        else:
+            target_table = table
+            pre_clause = ""
+        
+        return pre_clause, target_table
+
+    def _build_where_clause(self, filters: list, condition: str, filters_table: str, distinct: bool) -> str:
+        """Builds the WHERE clause from filters and condition. 
+           - Minor changes for filters from a different table.
+        """
+        clauses = []
+
+        if distinct:
+            # table = "temp_table"
+            filters_table = "temp_table"
+
+        for elem in filters:
+            if elem == "status":
+                param = "${status}"
+                arg = f"""('All' = ANY(ARRAY[{param}]) OR 
+                        (shipped_datetime IS NULL AND 'not shipped' = ANY(ARRAY[{param}])) OR
+                        (shipped_datetime IS NOT NULL AND 'shipped' = ANY(ARRAY[{param}])))"""
+            else:
+                param = f"${{{elem}}}"
+                arg = f"('All' = ANY(ARRAY[{param}]) OR {filters_table}.{elem}::text = ANY(ARRAY[{param}]))"
+            clauses.append(arg)
+
+        if condition:
+            clauses.append(condition)
+
+        return " AND ".join(clauses)
+    
+    def _build_join_clause(self, table: str, filters_table: str, distinct: bool) -> str:
+        """Builds the JOIN command by using the foriegn key.
+        """
+        if table == filters_table:
+            join_clause = ""
+        else:
+            elem = table.split("_")[0]
+            join_clause = f"JOIN {filters_table} ON {table}.{elem}_no = {filters_table}.{elem}_no"
+        
+        return join_clause
+
+
 # -- Create the SQL Generator Factory --
 class ChartSQLFactory:
     _generators = {
         "barchart": BarChartGenerator(),
         "histogram": HistogramGenerator(),
         "timeseries": TimeseriesGenerator(),
-        "text": TextChartGenerator()
+        "text": TextChartGenerator(),
+        "stat": StatChartGenerator()
     }
 
     @classmethod
