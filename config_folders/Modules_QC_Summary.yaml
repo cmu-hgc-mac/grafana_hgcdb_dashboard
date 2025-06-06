@@ -60,7 +60,7 @@ dashboards:
           filters: ["final_grade"]
           filters_table: "module_qc_summary"
           distinct: True
-        - title: "i_at_ref_a (i > 1e-6)"
+        - title: "Count for i_at_ref_a > 1e-6"
           table: "module_qc_summary"
           chart_type: "stat"
           condition: "i_at_600v > 1e-6 OR i_at_ref_a > 1e-6"
