@@ -350,20 +350,19 @@ def read_panel_info(panel: dict) -> tuple:
     groupby = panel["groupby"]
     gridPos = panel["gridPos"]
     filters = panel["filters"]
-    filters_table = panel["filters_table"]
     distinct = panel["distinct"]
 
-    return title, table, chart_type, condition, groupby, gridPos, filters, filters_table, distinct
+    return title, table, chart_type, condition, groupby, gridPos, filters, distinct
 
 
-def generate_sql(chart_type: str, table: str, condition: str, groupby: list, filters: list, filters_table: str, distinct: bool) -> str:
+def generate_sql(chart_type: str, table: str, condition: str, groupby: list, filters: list, distinct: bool) -> str:
     """Generate the SQL command from ChartSQLFactory. -> sql_builder.py
     """
     # Get Generator
     generator = ChartSQLFactory.get_generator(chart_type)
 
     # Generate SQL command
-    panel_sql = generator.generate_sql(table, condition, groupby, filters, filters_table, distinct)
+    panel_sql = generator.generate_sql(table, condition, groupby, filters, distinct)
 
     return panel_sql
     

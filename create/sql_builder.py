@@ -13,17 +13,17 @@ This file defines the abstract class ChartSQLGenerator and the factory ChartSQLF
 # -- Define the abstract class --
 class ChartSQLGenerator(ABC):
     @abstractmethod
-    def generate_sql(self, table: str, condition: str, groupby: list, filters: list, filters_table: str, distinct: bool) -> str:
+    def generate_sql(self, table: str, condition: str, groupby: list, filters: list, distinct: bool) -> str:
         pass
 
 
 # -- Generator for BarChart --
 class BarChartGenerator(ChartSQLGenerator):
-    def generate_sql(self, table: str, condition: str, groupby: list, filters: list, filters_table: str, distinct: bool) -> str:
+    def generate_sql(self, table: str, condition: str, groupby: list, filters: list, distinct: bool) -> str:
         pre_clause, target_table = self._build_pre_clause(table, distinct)
         select_clause = self._build_select_clause(table, groupby, distinct)
-        where_clause = self._build_where_clause(filters, condition, filters_table, distinct)
-        join_clause = self._build_join_clause(table, filters_table)
+        where_clause = self._build_where_clause(filters, condition, table, distinct)
+        join_clause = self._build_join_clause(table, filters, distinct)
 
         sql = f"""
         {pre_clause}
@@ -71,51 +71,60 @@ class BarChartGenerator(ChartSQLGenerator):
                 groupby_fields.append(f"{table}.{elem}::text")
         return " || '/' || ".join(groupby_fields)
 
-    def _build_where_clause(self, filters: list, condition: str, filters_table: str, distinct: bool) -> str:
+    def _build_where_clause(self, filters: dict, condition: str, table: str, distinct: bool) -> str:
         """Builds the WHERE clause from filters and condition. 
         """
+        filters_table_list = list(filters.keys())
         clauses = []
 
-        if distinct:
-            filters_table = "temp_table"
-
-        for elem in filters:
-            if elem == "status":
-                param = "${status}"
-                arg = f"""('All' = ANY(ARRAY[{param}]) OR 
-                        (shipped_datetime IS NULL AND 'not shipped' = ANY(ARRAY[{param}])) OR
-                        (shipped_datetime IS NOT NULL AND 'shipped' = ANY(ARRAY[{param}])))"""
-            elif elem == "assembled" or elem.endswith("time") or elem.endswith("date"):
-                arg = f"$__timeFilter({filters_table}.{elem})"
-            else:
-                param = f"${{{elem}}}"
-                arg = f"('All' = ANY(ARRAY[{param}]) OR {filters_table}.{elem}::text = ANY(ARRAY[{param}]))"
-            clauses.append(arg)
+        for filters_table in filters_table_list:
+            if filters_table == table:
+                if distinct:
+                    filters["temp_table"] = filters.pop(f"{filters_table}")
+                    filters_table = "temp_table"
+            for elem in filters[filters_table]:
+                if elem == "status":
+                    param = "${status}"
+                    arg = f"""('All' = ANY(ARRAY[{param}]) OR 
+                            (shipped_datetime IS NULL AND 'not shipped' = ANY(ARRAY[{param}])) OR
+                            (shipped_datetime IS NOT NULL AND 'shipped' = ANY(ARRAY[{param}])))"""
+                elif elem == "assembled" or elem.endswith("time") or elem.endswith("date"):
+                    arg = f"$__timeFilter({filters_table}.{elem})"
+                else:
+                    param = f"${{{elem}}}"
+                    arg = f"('All' = ANY(ARRAY[{param}]) OR {filters_table}.{elem}::text = ANY(ARRAY[{param}]))"
+                clauses.append(arg)   
 
         if condition:
-            clauses.append(condition)
-
+            clauses.append(condition) 
+        
         return " AND ".join(clauses)
     
-    def _build_join_clause(self, table: str, filters_table: str) -> str:
+    def _build_join_clause(self, table: str, filters: dict, distinct: bool) -> str:
         """Builds the JOIN command by using the foriegn key.
         """
-        if table == filters_table:
-            join_clause = ""
-        else:
-            elem = table.split("_")[0]
-            join_clause = f"JOIN {filters_table} ON {table}.{elem}_no = {filters_table}.{elem}_no"
+        join_clause = []
         
-        return join_clause
+        # Use correct alias for main table
+        main_table = "temp_table" if distinct else table
+
+        for filters_table in filters:
+            main_prefix = filters_table.split("_")[0]
+            if filters_table == main_table:
+                continue  # don't join table to itself
+            else:
+                join_clause.append(f"JOIN {filters_table} ON {main_table}.{main_prefix}_no = {filters_table}.{main_prefix}_no")
+
+        return "\n".join(join_clause)
 
 
 # -- Generator for Histogram --
 class HistogramGenerator(ChartSQLGenerator):
-    def generate_sql(self, table: str, condition: str, groupby: list, filters: list, filters_table: str, distinct: bool) -> str:
+    def generate_sql(self, table: str, condition: str, groupby: list, filters: list, distinct: bool) -> str:
         pre_clause, target_table = self._build_pre_clause(table, distinct)
         select_clause = self._build_select_clause(table, groupby, distinct)
-        where_clause = self._build_where_clause(filters, condition, filters_table, distinct)
-        join_clause = self._build_join_clause(table, filters_table, distinct)
+        where_clause = self._build_where_clause(filters, condition, table, distinct)
+        join_clause = self._build_join_clause(table, filters, distinct)
 
         sql = f"""
         {pre_clause}
@@ -171,56 +180,62 @@ class HistogramGenerator(ChartSQLGenerator):
             select_clause = f"COALESCE({", ".join(select_clause)}) as {groupby[0]}"
         else:
             raise ValueError("The groupby list has not correct length.")
-            # return None
 
         return select_clause
 
-    def _build_where_clause(self, filters: list, condition: str, filters_table: str, distinct: bool) -> str:
+    def _build_where_clause(self, filters: dict, condition: str, table: str, distinct: bool) -> str:
         """Builds the WHERE clause from filters and condition. 
-           - Minor changes for filters from a different table.
         """
+        filters_table_list = list(filters.keys())
         clauses = []
 
-        if distinct:
-            # table = "temp_table"
-            filters_table = "temp_table"
-
-        for elem in filters:
-            if elem == "status":
-                param = "${status}"
-                arg = f"""('All' = ANY(ARRAY[{param}]) OR 
-                        (shipped_datetime IS NULL AND 'not shipped' = ANY(ARRAY[{param}])) OR
-                        (shipped_datetime IS NOT NULL AND 'shipped' = ANY(ARRAY[{param}])))"""
-            elif elem == "assembled" or elem.endswith("time") or elem.endswith("date"):
-                arg = f"$__timeFilter({filters_table}.{elem})"
-            else:
-                param = f"${{{elem}}}"
-                arg = f"('All' = ANY(ARRAY[{param}]) OR {filters_table}.{elem}::text = ANY(ARRAY[{param}]))"
-            clauses.append(arg)
+        for filters_table in filters_table_list:
+            if filters_table == table:
+                if distinct:
+                    filters["temp_table"] = filters.pop(f"{filters_table}")
+                    filters_table = "temp_table"
+            for elem in filters[filters_table]:
+                if elem == "status":
+                    param = "${status}"
+                    arg = f"""('All' = ANY(ARRAY[{param}]) OR 
+                            (shipped_datetime IS NULL AND 'not shipped' = ANY(ARRAY[{param}])) OR
+                            (shipped_datetime IS NOT NULL AND 'shipped' = ANY(ARRAY[{param}])))"""
+                elif elem == "assembled" or elem.endswith("time") or elem.endswith("date"):
+                    arg = f"$__timeFilter({filters_table}.{elem})"
+                else:
+                    param = f"${{{elem}}}"
+                    arg = f"('All' = ANY(ARRAY[{param}]) OR {filters_table}.{elem}::text = ANY(ARRAY[{param}]))"
+                clauses.append(arg)   
 
         if condition:
-            clauses.append(condition)
-
+            clauses.append(condition) 
+        
         return " AND ".join(clauses)
     
-    def _build_join_clause(self, table: str, filters_table: str, distinct: bool) -> str:
+    def _build_join_clause(self, table: str, filters: dict, distinct: bool) -> str:
         """Builds the JOIN command by using the foriegn key.
         """
-        if table == filters_table:
-            join_clause = ""
-        else:
-            elem = table.split("_")[0]
-            join_clause = f"JOIN {filters_table} ON {table}.{elem}_no = {filters_table}.{elem}_no"
+        join_clause = []
         
-        return join_clause
+        # Use correct alias for main table
+        main_table = "temp_table" if distinct else table
+
+        for filters_table in filters:
+            main_prefix = filters_table.split("_")[0]
+            if filters_table == main_table:
+                continue  # don't join table to itself
+            else:
+                join_clause.append(f"JOIN {filters_table} ON {main_table}.{main_prefix}_no = {filters_table}.{main_prefix}_no")
+
+        return "\n".join(join_clause)
 
 
 # -- Generator for Timeseries --
 class TimeseriesGenerator(ChartSQLGenerator):
-    def generate_sql(self, table: str, condition: str, groupby: list, filters: list, filters_table: str, distinct: bool) -> str:
+    def generate_sql(self, table: str, condition: str, groupby: list, filters: list, distinct: bool) -> str:
         select_clause = self._build_select_clause(table, groupby)
-        where_clause = self._build_where_clause(filters, condition, filters_table)
-        join_clause = self._build_join_clause(table, filters_table)
+        where_clause = self._build_where_clause(filters, condition, table, distinct)
+        join_clause = self._build_join_clause(table, filters, distinct)
         orderby_clause = self._build_orderby_clause(groupby)
 
         sql = f"""
@@ -257,38 +272,51 @@ class TimeseriesGenerator(ChartSQLGenerator):
 
         return ", ".join(select_clause)
 
-    def _build_where_clause(self, filters: list, condition: str, filters_table: str) -> str:
+    def _build_where_clause(self, filters: dict, condition: str, table: str, distinct: bool) -> str:
         """Builds the WHERE clause from filters and condition. 
         """
+        filters_table_list = list(filters.keys())
         clauses = []
-        for elem in filters:
-            if elem == "status":
-                param = "${status}"
-                arg = f"""('All' = ANY(ARRAY[{param}]) OR 
-                        (shipped_datetime IS NULL AND 'not shipped' = ANY(ARRAY[{param}])) OR
-                        (shipped_datetime IS NOT NULL AND 'shipped' = ANY(ARRAY[{param}])))"""
-            elif elem == "assembled" or elem.endswith("time") or elem == "log_timestamp" or elem.endswith("date"):
-                arg = f"$__timeFilter({filters_table}.{elem})"
-            else:
-                param = f"${{{elem}}}"
-                arg = f"('All' = ANY(ARRAY[{param}]) OR {filters_table}.{elem}::text = ANY(ARRAY[{param}]))"
-            clauses.append(arg)
+
+        for filters_table in filters_table_list:
+            if filters_table == table:
+                if distinct:
+                    filters["temp_table"] = filters.pop(f"{filters_table}")
+                    filters_table = "temp_table"
+            for elem in filters[filters_table]:
+                if elem == "status":
+                    param = "${status}"
+                    arg = f"""('All' = ANY(ARRAY[{param}]) OR 
+                            (shipped_datetime IS NULL AND 'not shipped' = ANY(ARRAY[{param}])) OR
+                            (shipped_datetime IS NOT NULL AND 'shipped' = ANY(ARRAY[{param}])))"""
+                elif elem == "assembled" or elem.endswith("time") or elem.endswith("date"):
+                    arg = f"$__timeFilter({filters_table}.{elem})"
+                else:
+                    param = f"${{{elem}}}"
+                    arg = f"('All' = ANY(ARRAY[{param}]) OR {filters_table}.{elem}::text = ANY(ARRAY[{param}]))"
+                clauses.append(arg)   
 
         if condition:
-            clauses.append(condition)
-
+            clauses.append(condition) 
+        
         return " AND ".join(clauses)
     
-    def _build_join_clause(self, table: str, filters_table: str) -> str:
+    def _build_join_clause(self, table: str, filters: dict, distinct: bool) -> str:
         """Builds the JOIN command by using the foriegn key.
         """
-        if table == filters_table:
-            join_clause = ""
-        else:
-            elem = table.split("_")[0]
-            join_clause = f"JOIN {filters_table} ON {table}.{elem}_no = {filters_table}.{elem}_no"
+        join_clause = []
         
-        return join_clause
+        # Use correct alias for main table
+        main_table = "temp_table" if distinct else table
+
+        for filters_table in filters:
+            main_prefix = filters_table.split("_")[0]
+            if filters_table == main_table:
+                continue  # don't join table to itself
+            else:
+                join_clause.append(f"JOIN {filters_table} ON {main_table}.{main_prefix}_no = {filters_table}.{main_prefix}_no")
+
+        return "\n".join(join_clause)
     
     def _build_orderby_clause(self, groupby: list) -> str:
         """Builds the ORDER BY clause from groupby.
@@ -312,16 +340,16 @@ class TimeseriesGenerator(ChartSQLGenerator):
 
 # -- Generator for Text Chart --
 class TextChartGenerator(ChartSQLGenerator):
-    def generate_sql(self, table: str, condition: str, groupby: list, filters: list, filters_table: str, distinct: bool) -> str:
+    def generate_sql(self, table: str, condition: str, groupby: list, filters: list, distinct: bool) -> str:
         return None
 
 
 # -- Generator for Stat Chart --
 class StatChartGenerator(ChartSQLGenerator):
-    def generate_sql(self, table: str, condition: str, groupby: list, filters: list, filters_table: str, distinct: bool) -> str:
+    def generate_sql(self, table: str, condition: str, groupby: list, filters: list, distinct: bool) -> str:
         pre_clause, target_table = self._build_pre_clause(table, distinct)        
-        where_clause = self._build_where_clause(filters, condition, filters_table, distinct)
-        join_clause = self._build_join_clause(table, filters_table, distinct)        
+        where_clause = self._build_where_clause(filters, condition, table, distinct)
+        join_clause = self._build_join_clause(table, filters, distinct)
         
         sql = f"""
         {pre_clause}
@@ -349,42 +377,51 @@ class StatChartGenerator(ChartSQLGenerator):
         
         return pre_clause, target_table
 
-    def _build_where_clause(self, filters: list, condition: str, filters_table: str, distinct: bool) -> str:
+    def _build_where_clause(self, filters: dict, condition: str, table: str, distinct: bool) -> str:
         """Builds the WHERE clause from filters and condition. 
-           - Minor changes for filters from a different table.
         """
+        filters_table_list = list(filters.keys())
         clauses = []
 
-        if distinct:
-            # table = "temp_table"
-            filters_table = "temp_table"
-
-        for elem in filters:
-            if elem == "status":
-                param = "${status}"
-                arg = f"""('All' = ANY(ARRAY[{param}]) OR 
-                        (shipped_datetime IS NULL AND 'not shipped' = ANY(ARRAY[{param}])) OR
-                        (shipped_datetime IS NOT NULL AND 'shipped' = ANY(ARRAY[{param}])))"""
-            else:
-                param = f"${{{elem}}}"
-                arg = f"('All' = ANY(ARRAY[{param}]) OR {filters_table}.{elem}::text = ANY(ARRAY[{param}]))"
-            clauses.append(arg)
+        for filters_table in filters_table_list:
+            if filters_table == table:
+                if distinct:
+                    filters["temp_table"] = filters.pop(f"{filters_table}")
+                    filters_table = "temp_table"
+            for elem in filters[filters_table]:
+                if elem == "status":
+                    param = "${status}"
+                    arg = f"""('All' = ANY(ARRAY[{param}]) OR 
+                            (shipped_datetime IS NULL AND 'not shipped' = ANY(ARRAY[{param}])) OR
+                            (shipped_datetime IS NOT NULL AND 'shipped' = ANY(ARRAY[{param}])))"""
+                elif elem == "assembled" or elem.endswith("time") or elem.endswith("date"):
+                    arg = f"$__timeFilter({filters_table}.{elem})"
+                else:
+                    param = f"${{{elem}}}"
+                    arg = f"('All' = ANY(ARRAY[{param}]) OR {filters_table}.{elem}::text = ANY(ARRAY[{param}]))"
+                clauses.append(arg)   
 
         if condition:
-            clauses.append(condition)
-
+            clauses.append(condition) 
+        
         return " AND ".join(clauses)
-    
-    def _build_join_clause(self, table: str, filters_table: str, distinct: bool) -> str:
+
+    def _build_join_clause(self, table: str, filters: dict, distinct: bool) -> str:
         """Builds the JOIN command by using the foriegn key.
         """
-        if table == filters_table:
-            join_clause = ""
-        else:
-            elem = table.split("_")[0]
-            join_clause = f"JOIN {filters_table} ON {table}.{elem}_no = {filters_table}.{elem}_no"
+        join_clause = []
         
-        return join_clause
+        # Use correct alias for main table
+        main_table = "temp_table" if distinct else table
+
+        for filters_table in filters:
+            main_prefix = filters_table.split("_")[0]
+            if filters_table == main_table:
+                continue  # don't join table to itself
+            else:
+                join_clause.append(f"JOIN {filters_table} ON {main_table}.{main_prefix}_no = {filters_table}.{main_prefix}_no")
+
+        return "\n".join(join_clause)
 
 
 # -- Create the SQL Generator Factory --

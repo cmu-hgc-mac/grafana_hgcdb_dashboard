@@ -9,8 +9,7 @@ dashboards:
         chart_type: "barchart"
         condition: "proto_no is NULL"
         groupby: ["bp_material", "resolution", "geometry"]
-        filters: ["bp_material", "resolution", "geometry"]
-        filters_table: "baseplate"
+        filters: {"baseplate": ["bp_material", "resolution", "geometry"]}
         distinct: False
 
   - title: "Free Sensors"
@@ -20,8 +19,7 @@ dashboards:
         chart_type: "barchart"
         condition: "proto_no is NULL"
         groupby: ["thickness", "resolution", "geometry"]
-        filters: ["thickness", "resolution", "geometry"]
-        filters_table: "sensor"
+        filters: {"sensor": ["thickness", "resolution", "geometry"]}
         distinct: False
 
   - title: "Free Hexaboards"
@@ -31,6 +29,5 @@ dashboards:
         chart_type: "barchart"
         condition: "module_no is NULL"
         groupby: ["roc_version", "resolution", "geometry"]
-        filters: ["roc_version", "resolution", "geometry"]
-        filters_table: "hexaboard"
+        filters: {"hexaboard": ["roc_version", "resolution", "geometry"]}
         distinct: False

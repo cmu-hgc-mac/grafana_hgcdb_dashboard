@@ -9,14 +9,12 @@ dashboards:
         chart_type: "timeseries"
         condition: "temp_humidity.temp_c IS NOT NULL"
         groupby: ["log_timestamp", "temp_c"]
-        filters: ["log_location"]
-        filters_table: "temp_humidity"
+        filters: {"temp_humidity": ["log_location"]}
         distinct: False
       - title: "Real Humidity"
         table: "temp_humidity"
         chart_type: "timeseries"
         condition: "temp_humidity.rel_hum IS NOT NULL"
         groupby: ["log_timestamp", "rel_hum"]
-        filters: ["log_location"]
-        filters_table: "temp_humidity"
+        filters: {"temp_humidity": ["log_location"]}
         distinct: False

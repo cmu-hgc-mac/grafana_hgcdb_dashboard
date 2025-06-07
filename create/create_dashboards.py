@@ -29,13 +29,13 @@ for config in filelist:
         assign_gridPos(panels)  # Assign gridPos to each panel
         panels_array = []
         template_list = []
-        exist_filter = set()
+        exist_filter = set()    # avoid adding same filters
 
         # Loop for every panel in a dashboard
         for panel in panels:
 
             # Load information
-            title, table, chart_type, condition, groupby, gridPos, filters, filters_table, distinct = read_panel_info(panel)
+            title, table, chart_type, condition, groupby, gridPos, filters, distinct = read_panel_info(panel)
 
             # iv_curve plot
             if chart_type == "text":
@@ -48,27 +48,32 @@ for config in filelist:
 
             # general case    
             else:    
-                # Generate the sql query
-                raw_sql = generate_sql(chart_type, table, condition, groupby, filters, filters_table, distinct)   # -> from sql_builder.py
+                # Generate the template json
+                if filters:
+                    filters_table_list = list(filters.keys())
+                    # check if the filter exists
+                    for filters_table in filters_table_list:
+                        for elem in filters[filters_table]:
+                            if elem in exist_filter:
+                                continue    # filter exists
+                            elif elem == "assembled" or elem.endswith("time"):
+                                continue    # filter not used in dashboard
+                        
+                            exist_filter.add(elem)
 
+                            # generate the filter's json
+                            filter_sql = generate_filterSQL(elem, filters_table)
+                            filter_json = generate_filter(elem, filter_sql)
+                            template_list.append(filter_json)
+
+                # Generate the sql query
+                raw_sql = generate_sql(chart_type, table, condition, groupby, filters, distinct)   # -> from sql_builder.py
 
                 # Generate the panel json
                 panel_json = generate_panel(title, raw_sql, table, groupby, chart_type, gridPos)
                 panels_array.append(panel_json)
-
-                # Generate the template json
-                if filters:
-                    for elem in filters:
-                        if elem in exist_filter:
-                            continue    # filter exist
-                        elif elem == "assembled" or elem.endswith("time"):
-                            continue    # filter not used in dashboard
-                        exist_filter.add(elem)
-
-                        filter_sql = generate_filterSQL(elem, filters_table)
-                        filter_json = generate_filter(elem, filter_sql)
-                        template_list.append(filter_json)
             
+
         # Generate the dashboard json
         dashboard_json = generate_dashboard(dashboard["title"], panels_array, template_list)
         
