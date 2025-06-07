@@ -28,7 +28,7 @@ dashboards:
         chart_type: "barchart"
         condition: "module_inspect.grade IS NOT NULL"
         groupby: ["grade"]
-        filters: ["bp_material", "resolution", "roc_version", "geometry"]
+        filters: ["bp_material", "resolution", "roc_version", "geometry", "assembled"]
         filters_table: "module_info"
         distinct: False
       - title: "Flatness"
@@ -36,7 +36,7 @@ dashboards:
         chart_type: "histogram"
         condition: "module_inspect.flatness IS NOT NULL"
         groupby: ["flatness"]
-        filters: ["bp_material", "resolution", "roc_version", "geometry"]
+        filters: ["bp_material", "resolution", "roc_version", "geometry", "assembled"]
         filters_table: "module_info"
         distinct: False
       - title: "average thickness (mm)"
@@ -44,7 +44,7 @@ dashboards:
         chart_type: "histogram"
         condition: "module_inspect.avg_thickness IS NOT NULL"
         groupby: ["avg_thickness"]
-        filters: ["bp_material", "resolution", "roc_version", "geometry"]
+        filters: ["bp_material", "resolution", "roc_version", "geometry", "assembled"]
         filters_table: "module_info"
         distinct: False
       - title: "x offset (μm)"
@@ -52,7 +52,7 @@ dashboards:
         chart_type: "histogram"
         condition: "module_inspect.x_offset_mu IS NOT NULL"
         groupby: ["x_offset_mu"]
-        filters: ["bp_material", "resolution", "roc_version", "geometry"]
+        filters: ["bp_material", "resolution", "roc_version", "geometry", "assembled"]
         filters_table: "module_info"
         distinct: False
       - title: "y offset (μm)"
@@ -60,7 +60,7 @@ dashboards:
         chart_type: "histogram"
         condition: "module_inspect.y_offset_mu IS NOT NULL"
         groupby: ["y_offset_mu"]
-        filters: ["bp_material", "resolution", "roc_version", "geometry"]
+        filters: ["bp_material", "resolution", "roc_version", "geometry", "assembled"]
         filters_table: "module_info"
         distinct: False
       - title: "max thickness (mm)"
@@ -68,7 +68,7 @@ dashboards:
         chart_type: "histogram"
         condition: "module_inspect.max_thickness IS NOT NULL"
         groupby: ["max_thickness"]
-        filters: ["bp_material", "resolution", "roc_version", "geometry"]
+        filters: ["bp_material", "resolution", "roc_version", "geometry", "assembled"]
         filters_table: "module_info"
         distinct: False
       - title: "ang offset (deg)"
@@ -76,7 +76,7 @@ dashboards:
         chart_type: "histogram"
         condition: "module_inspect.ang_offset_deg IS NOT NULL"
         groupby: ["ang_offset_deg"]
-        filters: ["bp_material", "resolution", "roc_version", "geometry"]
+        filters: ["bp_material", "resolution", "roc_version", "geometry", "assembled"]
         filters_table: "module_info"
         distinct: False
 

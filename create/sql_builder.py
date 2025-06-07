@@ -85,7 +85,7 @@ class BarChartGenerator(ChartSQLGenerator):
                 arg = f"""('All' = ANY(ARRAY[{param}]) OR 
                         (shipped_datetime IS NULL AND 'not shipped' = ANY(ARRAY[{param}])) OR
                         (shipped_datetime IS NOT NULL AND 'shipped' = ANY(ARRAY[{param}])))"""
-            elif elem == "assembled" or elem.endswith("time"):
+            elif elem == "assembled" or elem.endswith("time") or elem.endswith("date"):
                 arg = f"$__timeFilter({filters_table}.{elem})"
             else:
                 param = f"${{{elem}}}"
@@ -191,6 +191,8 @@ class HistogramGenerator(ChartSQLGenerator):
                 arg = f"""('All' = ANY(ARRAY[{param}]) OR 
                         (shipped_datetime IS NULL AND 'not shipped' = ANY(ARRAY[{param}])) OR
                         (shipped_datetime IS NOT NULL AND 'shipped' = ANY(ARRAY[{param}])))"""
+            elif elem == "assembled" or elem.endswith("time") or elem.endswith("date"):
+                arg = f"$__timeFilter({filters_table}.{elem})"
             else:
                 param = f"${{{elem}}}"
                 arg = f"('All' = ANY(ARRAY[{param}]) OR {filters_table}.{elem}::text = ANY(ARRAY[{param}]))"
@@ -265,7 +267,7 @@ class TimeseriesGenerator(ChartSQLGenerator):
                 arg = f"""('All' = ANY(ARRAY[{param}]) OR 
                         (shipped_datetime IS NULL AND 'not shipped' = ANY(ARRAY[{param}])) OR
                         (shipped_datetime IS NOT NULL AND 'shipped' = ANY(ARRAY[{param}])))"""
-            elif elem == "assembled" or elem.endswith("time") or elem == "log_timestamp":
+            elif elem == "assembled" or elem.endswith("time") or elem == "log_timestamp" or elem.endswith("date"):
                 arg = f"$__timeFilter({filters_table}.{elem})"
             else:
                 param = f"${{{elem}}}"
