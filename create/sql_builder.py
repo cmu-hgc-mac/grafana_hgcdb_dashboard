@@ -109,13 +109,13 @@ class BarChartGenerator(ChartSQLGenerator):
         main_table = "temp_table" if distinct else table
 
         for filters_table in filters:
-            main_prefix = filters_table.split("_")[0]
+            main_prefix = table.split("_")[0]
             if filters_table == main_table:
                 continue  # don't join table to itself
             else:
                 join_clause.append(f"JOIN {filters_table} ON {main_table}.{main_prefix}_no = {filters_table}.{main_prefix}_no")
 
-        return "\n".join(join_clause)
+        return "\n  ".join(join_clause)
 
 
 # -- Generator for Histogram --
@@ -221,13 +221,13 @@ class HistogramGenerator(ChartSQLGenerator):
         main_table = "temp_table" if distinct else table
 
         for filters_table in filters:
-            main_prefix = filters_table.split("_")[0]
+            main_prefix = table.split("_")[0]
             if filters_table == main_table:
                 continue  # don't join table to itself
             else:
                 join_clause.append(f"JOIN {filters_table} ON {main_table}.{main_prefix}_no = {filters_table}.{main_prefix}_no")
 
-        return "\n".join(join_clause)
+        return "\n  ".join(join_clause)
 
 
 # -- Generator for Timeseries --
@@ -310,13 +310,13 @@ class TimeseriesGenerator(ChartSQLGenerator):
         main_table = "temp_table" if distinct else table
 
         for filters_table in filters:
-            main_prefix = filters_table.split("_")[0]
+            main_prefix = table.split("_")[0]
             if filters_table == main_table:
                 continue  # don't join table to itself
             else:
                 join_clause.append(f"JOIN {filters_table} ON {main_table}.{main_prefix}_no = {filters_table}.{main_prefix}_no")
 
-        return "\n".join(join_clause)
+        return "\n  ".join(join_clause)
     
     def _build_orderby_clause(self, groupby: list) -> str:
         """Builds the ORDER BY clause from groupby.
@@ -421,7 +421,7 @@ class StatChartGenerator(ChartSQLGenerator):
             else:
                 join_clause.append(f"JOIN {filters_table} ON {main_table}.{main_prefix}_no = {filters_table}.{main_prefix}_no")
 
-        return "\n".join(join_clause)
+        return "\n  ".join(join_clause)
 
 
 # -- Create the SQL Generator Factory --

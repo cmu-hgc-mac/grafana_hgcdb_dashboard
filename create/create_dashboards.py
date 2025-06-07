@@ -56,7 +56,7 @@ for config in filelist:
                         for elem in filters[filters_table]:
                             if elem in exist_filter:
                                 continue    # filter exists
-                            elif elem == "assembled" or elem.endswith("time"):
+                            elif elem == "assembled" or elem.endswith("time") or elem.endswith("date"):
                                 continue    # filter not used in dashboard
                         
                             exist_filter.add(elem)
