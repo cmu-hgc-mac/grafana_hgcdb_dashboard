@@ -417,3 +417,4 @@ def generate_filterSQL(filter_name: str, filters_table: str) -> str:
       """
 
   return filter_sql
+  

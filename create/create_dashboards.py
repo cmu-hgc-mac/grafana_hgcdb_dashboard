@@ -17,6 +17,10 @@ filelist = os.listdir(path)
 
 # Loop for every config files
 for config in filelist:
+
+    # skip non-yaml files
+    if not config.endswith(".yaml"):
+        continue
     
     # Load the dashboards
     with open(os.path.join(path, config), mode = 'r') as file:
