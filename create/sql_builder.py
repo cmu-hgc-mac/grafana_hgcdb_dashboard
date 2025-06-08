@@ -8,6 +8,7 @@ This file defines the abstract class ChartSQLGenerator and the factory ChartSQLF
         - "timeseries"
         - "text"
         - "stat"
+        - "table"
 """
 
 # -- Define the abstract class --
@@ -80,7 +81,7 @@ class BarChartGenerator(ChartSQLGenerator):
                     select_clause.append(select_arg)
                 select_clause = f"COALESCE({', '.join(select_clause)}) as {elem[0]}"
                 groupby_fields.append(select_clause)
-                
+
         return " || '/' || ".join(groupby_fields)
 
     def _build_where_clause(self, filters: dict, condition: str, table: str, distinct: bool) -> str:
