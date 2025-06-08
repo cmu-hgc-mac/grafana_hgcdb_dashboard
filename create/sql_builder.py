@@ -63,12 +63,24 @@ class BarChartGenerator(ChartSQLGenerator):
             table = "temp_table"
 
         for elem in groupby:
-            if elem.endswith("time"):
-                continue
-            elif elem.startswith("list"):
-                groupby_fields.append(f"COALESCE(array_length({table}.{elem}::int[], 1), 0)::text")
-            else:
-                groupby_fields.append(f"{table}.{elem}::text")
+            if type(elem) == str:
+                if elem.endswith("time"):
+                    continue
+                elif elem.startswith("list"):
+                    groupby_fields.append(f"COALESCE(array_length({table}.{elem}::int[], 1), 0)::text")
+                else:
+                    groupby_fields.append(f"{table}.{elem}::text")
+            elif type(elem) == list:
+                select_clause = []
+                for column in elem:
+                    if column.startswith("list"):
+                        select_arg = f"COALESCE(array_length({table}.{column}::int[], 1), 0)"
+                    else:
+                        select_arg = f"{table}.{column}"
+                    select_clause.append(select_arg)
+                select_clause = f"COALESCE({', '.join(select_clause)}) as {elem[0]}"
+                groupby_fields.append(select_clause)
+                
         return " || '/' || ".join(groupby_fields)
 
     def _build_where_clause(self, filters: dict, condition: str, table: str, distinct: bool) -> str:
@@ -158,28 +170,30 @@ class HistogramGenerator(ChartSQLGenerator):
         """
         if distinct:
             table = "temp_table"
-        
-        # check for the groupby length:
-        num_groupby = len(groupby)
 
-        if num_groupby == 1:
+        # check for the lenght of groupby:
+        if len(groupby) > 1:
+            raise ValueError("The groupby list should have only 1 element.")
+        
+        # check for the type of groupby element:
+        type_groupby = type(groupby[0])
+
+        if type_groupby == str:
             elem = groupby[0]
             if elem.startswith("list"):
                 select_clause = f"COALESCE(array_length({table}.{elem}::int[], 1), 0) AS {elem}"
             else:
                 select_clause = f"{table}.{elem} AS {elem}"
 
-        elif num_groupby == 2: 
+        elif type_groupby == list:
             select_clause = []
-            for elem in groupby:
+            for elem in groupby[0]:
                 if elem.startswith("list"):
                     select_arg = f"COALESCE(array_length({table}.{elem}::int[], 1), 0)"
                 else:
                     select_arg = f"{table}.{elem}"
                 select_clause.append(select_arg)
-            select_clause = f"COALESCE({", ".join(select_clause)}) as {groupby[0]}"
-        else:
-            raise ValueError("The groupby list has not correct length.")
+            select_clause = f"COALESCE({', '.join(select_clause)}) as {groupby[0][0]}"
 
         return select_clause
 
@@ -424,6 +438,116 @@ class StatChartGenerator(ChartSQLGenerator):
         return "\n  ".join(join_clause)
 
 
+# -- Generator for Table --
+class TableGenerator(ChartSQLGenerator):
+    def generate_sql(self, table: str, condition: str, groupby: list, filters: list, distinct: bool) -> str:
+        pre_clause, target_table = self._build_pre_clause(table, distinct)
+        select_clause = self._build_select_clause(table, groupby, distinct)
+        where_clause = self._build_where_clause(filters, condition, table, distinct)
+        join_clause = self._build_join_clause(table, filters, distinct)
+
+        sql = f"""
+        {pre_clause}
+        SELECT 
+            {select_clause}
+        FROM {target_table}
+        {join_clause}
+        WHERE {where_clause}
+        """
+        return sql.strip()
+
+    def _build_pre_clause(self, table: str, distinct: bool) -> str:
+        """Builds the pre-SELECT clause for histogram. 
+           - If distinct is True, it will select the distinct modules.
+           - Hard Coded Version: Only for module_qc_summary table.
+        """
+        if distinct:
+            target_table = "temp_table"
+
+            if table == "module_qc_summary":
+                pre_clause = """WITH temp_table AS (SELECT DISTINCT ON (module_no) * FROM module_qc_summary ORDER BY module_no, mod_qc_no DESC)"""
+        else:
+            target_table = table
+            pre_clause = ""
+        
+        return pre_clause, target_table
+
+    def _build_select_clause(self, table: str, groupby: list, distinct: bool) -> str:
+        """Builds the SELECT clause by joining all groupby fields.
+        """
+        groupby_fields = []
+
+        if distinct:
+            table = "temp_table"
+
+        for elem in groupby:
+            if type(elem) == str:
+                if elem.endswith("time"):
+                    continue
+                elif elem.startswith("list"):
+                    groupby_fields.append(f"COALESCE(array_length({table}.{elem}::int[], 1), 0)::text")
+                else:
+                    groupby_fields.append(f"{table}.{elem}::text")
+            elif type(elem) == list:
+                select_clause = []
+                for column in elem:
+                    if column.startswith("list"):
+                        select_arg = f"COALESCE(array_length({table}.{column}::int[], 1), 0)"
+                    else:
+                        select_arg = f"{table}.{column}"
+                    select_clause.append(select_arg)
+                select_clause = f"COALESCE({', '.join(select_clause)}) as {elem[0]}"
+                groupby_fields.append(select_clause)
+
+        return ", ".join(groupby_fields)
+
+    def _build_where_clause(self, filters: dict, condition: str, table: str, distinct: bool) -> str:
+        """Builds the WHERE clause from filters and condition. 
+        """
+        filters_table_list = list(filters.keys())
+        clauses = []
+
+        for filters_table in filters_table_list:
+            if filters_table == table:
+                if distinct:
+                    filters["temp_table"] = filters.pop(f"{filters_table}")
+                    filters_table = "temp_table"
+            for elem in filters[filters_table]:
+                if elem == "status":
+                    param = "${status}"
+                    arg = f"""('All' = ANY(ARRAY[{param}]) OR 
+                            (shipped_datetime IS NULL AND 'not shipped' = ANY(ARRAY[{param}])) OR
+                            (shipped_datetime IS NOT NULL AND 'shipped' = ANY(ARRAY[{param}])))"""
+                elif elem == "assembled" or elem.endswith("time") or elem.endswith("date"):
+                    arg = f"$__timeFilter({filters_table}.{elem})"
+                else:
+                    param = f"${{{elem}}}"
+                    arg = f"('All' = ANY(ARRAY[{param}]) OR {filters_table}.{elem}::text = ANY(ARRAY[{param}]))"
+                clauses.append(arg)   
+
+        if condition:
+            clauses.append(condition) 
+        
+        return " AND ".join(clauses)
+    
+    def _build_join_clause(self, table: str, filters: dict, distinct: bool) -> str:
+        """Builds the JOIN command by using the foriegn key.
+        """
+        join_clause = []
+        
+        # Use correct alias for main table
+        main_table = "temp_table" if distinct else table
+
+        for filters_table in filters:
+            main_prefix = table.split("_")[0]
+            if filters_table == main_table:
+                continue  # don't join table to itself
+            else:
+                join_clause.append(f"JOIN {filters_table} ON {main_table}.{main_prefix}_no = {filters_table}.{main_prefix}_no")
+
+        return "\n  ".join(join_clause)
+
+
 # -- Create the SQL Generator Factory --
 class ChartSQLFactory:
     _generators = {
@@ -431,7 +555,8 @@ class ChartSQLFactory:
         "histogram": HistogramGenerator(),
         "timeseries": TimeseriesGenerator(),
         "text": TextChartGenerator(),
-        "stat": StatChartGenerator()
+        "stat": StatChartGenerator(),
+        "table": TableGenerator()
     }
 
     @classmethod
