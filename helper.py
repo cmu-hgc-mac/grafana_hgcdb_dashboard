@@ -186,17 +186,25 @@ def create_uid(title_name: str) -> str:
     return title_name.lower().replace(' ', '-')
 
 
+def get_gf_conn():
+    return ConfigLoader("gf_conn")
+
+def get_db_conn():
+    return ConfigLoader("db_conn")
+
+def get_client() -> GrafanaClient:
+    conn = get_gf_conn()
+    return GrafanaClient(conn.get("GF_API_KEY"), conn.get("GF_URL"))
+
+
 # -- Load YAML Configuration --
 gf_conn = ConfigLoader("gf_conn")
 db_conn = ConfigLoader("db_conn")
 
-gf_url          = gf_conn.get('GF_URL')
-api_token       = gf_conn.get('GF_API_KEY')
 gf_username     = gf_conn.get('GF_USER')
 gf_password     = gf_conn.get('GF_PASS')
 datasource_name = gf_conn.get('GF_DATA_SOURCE_NAME')
 datasource_uid  = gf_conn.get('GF_DATA_SOURCE_UID')
-run_times       = int(gf_conn.get('GF_RUN_TIMES'))
 
 db_host         = db_conn.get("db_hostname")
 db_name         = db_conn.get("dbname")
@@ -204,6 +212,3 @@ db_user         = db_conn.get("user")
 db_password     = db_conn.get("password")
 db_port         = db_conn.get("port")
 institution     = db_conn.get("institution_abbr")
-
-# -- define GrafanaClient --
-client = GrafanaClient(api_token, gf_url)

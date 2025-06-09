@@ -16,26 +16,26 @@ This file contains all the functions that are needed to generate everything for 
 def generate_folder(folder_name: str):
     """Create Grafana folder or fetch if it already exists. Update UID map.
     """
+    gf_conn = get_gf_conn()
+
     if folder_name == "General":  # default folder: no UID
         print("Skipping folder creation: 'General' is default folder with no UID.")
         return ""
+    else:
+        folder_uid = create_uid(folder_name)
 
-    folder_uid = create_uid(folder_name)
+    client = get_client()
 
     # create or fetch folder
     try:
         uid = client.create_or_get_folder(folder_name, folder_uid)
+        gf_conn.set(f"GF_FOLDER_UIDS.{folder_name}", uid)
+        gf_conn.save()
+        print(f"[Folder] Created or verified folder '{folder_name}'")
+
     except requests.RequestException as e:
         print(f"[ERROR] Failed to create or fetch folder '{folder_name}': {e}")
         raise
-
-    # Update UID map
-    if gf_conn.get("GF_FOLDER_UIDS") is None:
-        gf_conn.set("GF_FOLDER_UIDS", {})
-
-    gf_conn.set(f"GF_FOLDER_UIDS.{folder_name}", uid)
-
-    gf_conn.save()
 
 
 # ============================================================
@@ -118,11 +118,11 @@ def save_dashboard_json(dashboard: dict, dashboard_json: dict, folder: str):
     print(f"Dashboard saved to {path}")
 
 
-def upload_dashboards(file_path: str, client: GrafanaClient):
+def upload_dashboards(file_path: str):
     """Upload one dashboard JSON file into Grafana folder.
     """
     # reload gf_conn.yaml
-    gf_conn.reload()
+    gf_conn = get_gf_conn()
 
     # get folder and file name
     folder_name = os.path.basename(os.path.dirname(file_path)).replace("_", " ")
@@ -139,9 +139,12 @@ def upload_dashboards(file_path: str, client: GrafanaClient):
     with open(file_path, 'r', encoding='utf-8') as file:
         dashboard_json = json.load(file)
 
+    client = get_client()
+
     # upload dashboard
     try:
       client.upload_dashboard(dashboard_json, folder_uid)
+
     except requests.RequestException as e:
       print(f"[ERROR] Failed to upload dashboard '{file_name}': {e}")
       raise

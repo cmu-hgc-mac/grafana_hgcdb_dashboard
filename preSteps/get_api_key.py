@@ -8,6 +8,8 @@ from helper import *
 Create a service account and get the API key to connect to Grafana.
 """
 
+client = get_client()
+
 sa_name = f"{institution}-service-account"
 token_name = f"{institution}-sa-token"
 

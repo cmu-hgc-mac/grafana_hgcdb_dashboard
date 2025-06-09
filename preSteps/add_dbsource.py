@@ -8,6 +8,8 @@ from helper import *
 Add the PostgreSQL data source to Grafana as default.
 """
 
+client = get_client()
+
 # reload info
 gf_conn.reload()
 
