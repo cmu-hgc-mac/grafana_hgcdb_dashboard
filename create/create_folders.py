@@ -3,8 +3,7 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import yaml
-from generate import *
-from helper import *
+from generate import generate_folder
 
 """
 This file creates the folders from config_folders. 

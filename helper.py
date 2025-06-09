@@ -1,8 +1,9 @@
-import yaml
 import os
-import requests
 import json
 from typing import Any
+
+import requests
+import yaml
 
 """
 This file contains all the helpers used in the dashboard.
@@ -13,6 +14,7 @@ This file contains all the helpers used in the dashboard.
         - information: loaded from config file
 """
 
+# -- Helper Classes --
 class ConfigLoader:
     def __init__(self, config_name: str):
         if config_name == "gf_conn":
@@ -144,11 +146,11 @@ class GrafanaClient:
         )
 
         if response.status_code in [200, 201]:
-            print(f"[Grafana] PostgreSQL data source '{name}' added.")
+            print(f"[Grafana] PostgreSQL data source '{name}' added as default... (`∀´σ)")
         elif response.status_code == 409:
-            print(f"[Grafana] Data source '{name}' already exists.")
+            print(f"[Grafana] Data source '{name}' already exists.  (´･ω･`)")
         else:
-            print(f"[Grafana] Failed to add data source: {response.status_code}")
+            print(f"[Grafana] Failed to add data source: {response.status_code} ヽ(`Д´)ﾉ")
             print(response.text)
             response.raise_for_status()
     
@@ -179,6 +181,7 @@ class GrafanaClient:
         print(f"[Upload] Dashboard: {dashboard_json['title']} | Status: {response.status_code}")
 
 
+# -- Helper Functions --
 def create_uid(title_name: str) -> str:
     """Create a unique uid based on its title.
        - For `folder` and `dashboard`
@@ -186,29 +189,25 @@ def create_uid(title_name: str) -> str:
     return title_name.lower().replace(' ', '-')
 
 
-def get_gf_conn():
-    return ConfigLoader("gf_conn")
-
-def get_db_conn():
-    return ConfigLoader("db_conn")
-
-def get_client() -> GrafanaClient:
-    conn = get_gf_conn()
-    return GrafanaClient(conn.get("GF_API_KEY"), conn.get("GF_URL"))
-
-
 # -- Load YAML Configuration --
 gf_conn = ConfigLoader("gf_conn")
 db_conn = ConfigLoader("db_conn")
 
+# -- gf_conn.yaml --
+gf_url          = gf_conn.get('GF_URL')
+api_token       = gf_conn.get('GF_API_KEY')
 gf_username     = gf_conn.get('GF_USER')
 gf_password     = gf_conn.get('GF_PASS')
 datasource_name = gf_conn.get('GF_DATA_SOURCE_NAME')
 datasource_uid  = gf_conn.get('GF_DATA_SOURCE_UID')
 
+# -- db_conn.yaml --
 db_host         = db_conn.get("db_hostname")
 db_name         = db_conn.get("dbname")
 db_user         = db_conn.get("user")
 db_password     = db_conn.get("password")
 db_port         = db_conn.get("port")
 institution     = db_conn.get("institution_abbr")
+
+# -- define GrafanaClient --
+client = GrafanaClient(api_token, gf_url)

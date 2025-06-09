@@ -20,7 +20,6 @@ cmu_mcs_cms_logo = """
 
 print(cmu_mcs_cms_logo)
 
-gf_conn = get_gf_conn()
 run_times = int(gf_conn.get('GF_RUN_TIMES'))
 
 # First run
@@ -30,6 +29,11 @@ if run_times == 0:
     # preSteps in order
     subprocess.run(["python", "./preSteps/get_api_key.py"], check=True)
     sleep(0.5)    # wait for token to be generated
+
+    # rebuild GrafanaClient with new tokenAdd commentMore actions
+    gf_conn.reload()
+    new_token = gf_conn.get("GF_API_KEY")
+    client = GrafanaClient(new_token, gf_url)
 
     subprocess.run(["python", "./preSteps/add_dbsource.py"], check=True)
 

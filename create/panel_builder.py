@@ -17,6 +17,8 @@ from create.sql_builder import ChartSQLFactory
 
 """
 This file defines the class for building the panels json file in Grafana.
+    - General Panels
+    - IV Curve Plot
 """
 
 class PanelBuilder:

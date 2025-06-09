@@ -1,7 +1,6 @@
-import requests
-import json
-import yaml
 import os
+import json
+
 from create.sql_builder import ChartSQLFactory
 from helper import *
 
@@ -16,15 +15,11 @@ This file contains all the functions that are needed to generate everything for 
 def generate_folder(folder_name: str):
     """Create Grafana folder or fetch if it already exists. Update UID map.
     """
-    gf_conn = get_gf_conn()
-
     if folder_name == "General":  # default folder: no UID
         print("Skipping folder creation: 'General' is default folder with no UID.")
         return ""
     else:
         folder_uid = create_uid(folder_name)
-
-    client = get_client()
 
     # create or fetch folder
     try:
@@ -122,7 +117,7 @@ def upload_dashboards(file_path: str):
     """Upload one dashboard JSON file into Grafana folder.
     """
     # reload gf_conn.yaml
-    gf_conn = get_gf_conn()
+    gf_conn.reload()
 
     # get folder and file name
     folder_name = os.path.basename(os.path.dirname(file_path)).replace("_", " ")
@@ -138,8 +133,6 @@ def upload_dashboards(file_path: str):
 
     with open(file_path, 'r', encoding='utf-8') as file:
         dashboard_json = json.load(file)
-
-    client = get_client()
 
     # upload dashboard
     try:

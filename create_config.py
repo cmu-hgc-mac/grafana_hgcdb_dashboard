@@ -1,5 +1,13 @@
 import yaml
 
+"""
+This script creates two files in the current directory:
+    - db_conn.yaml: contains the database connection settings
+    - gf_conn.yaml: contains the Grafana connection settings
+    
+Please modify the settings according to your local environment.
+"""
+
 db_conn = { 
     # Setting for hgcdb database
         # Should be the same as local database settings
