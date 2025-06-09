@@ -17,7 +17,9 @@ This file contains all the helpers used in the dashboard.
         - information: loaded from config file
 """
 
-# -- Helper Classes --
+# ============================================================
+# === Helper Classes =========================================
+# ============================================================
 class ConfigLoader:
     def __init__(self, config_name: str):
         if config_name == "gf_conn":
@@ -184,13 +186,19 @@ class GrafanaClient:
         print(f"[Upload] Dashboard: {dashboard_json['title']} | Status: {response.status_code}")
 
 
-# -- Helper Functions --
+# ============================================================
+# === Helper Functions =======================================
+# ============================================================
 def create_uid(title_name: str) -> str:
     """Create a unique uid based on its title.
        - For `folder` and `dashboard`
     """
     return title_name.lower().replace(' ', '-')
 
+
+# ============================================================
+# === Loaded Info ============================================
+# ============================================================
 
 # -- Load YAML Configuration --
 gf_conn = ConfigLoader("gf_conn")
