@@ -1,8 +1,11 @@
 import os
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 import json
 
-from create.sql_builder import ChartSQLFactory
-from helper import *
+from tool.sql_builder import ChartSQLFactory
+from tool.helper import *
 
 """
 This file contains all the functions that are needed to generate everything for the Grafana dashboards.

@@ -2,14 +2,14 @@ import os
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from helper import *
+from tool.helper import *
 
 """
 Create a service account and get the API key to connect to Grafana.
 """
 
-sa_name = f"{institution}-service-account23"
-token_name = f"{institution}-sa-token23"
+sa_name = f"{institution}-service-account"
+token_name = f"{institution}-sa-token"
 
 # Create service account
 sa_id, api_key = client.create_service_account_and_token(sa_name, token_name, gf_username, gf_password)
@@ -24,4 +24,4 @@ gf_conn.set('GF_DATA_SOURCE_UID', "mac-postgres-db")
 gf_conn.save()
 gf_conn.reload()
 
-print(f"Auto update for gf_conn.yaml successfully! ヾ(´ωﾟ｀)")
+print(f" >> Auto update for gf_conn.yaml successfully! ヾ(´ωﾟ｀)")

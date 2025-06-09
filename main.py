@@ -1,9 +1,11 @@
 import os
 import subprocess
-import yaml
-from create.generate import upload_dashboards
 from time import sleep
-from helper import *
+
+import yaml
+
+from tool.generate import upload_dashboards
+from tool.helper import *
 
 """
 This file does EVERYTHING for you (*´ω`*)

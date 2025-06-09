@@ -1,5 +1,7 @@
 import os
 import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 import glob
 import pickle
 import asyncio
@@ -12,8 +14,8 @@ from matplotlib import pyplot as plt
 from matplotlib import patches
 from matplotlib.lines import Line2D
 
-from helper import *
-from create.sql_builder import ChartSQLFactory
+from tool.helper import *
+from tool.sql_builder import ChartSQLFactory
 
 """
 This file defines the class for building the panels json file in Grafana.

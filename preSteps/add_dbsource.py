@@ -2,7 +2,7 @@ import os
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from helper import *
+from tool.helper import *
 
 """
 Add the PostgreSQL data source to Grafana as default.

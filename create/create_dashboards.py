@@ -3,9 +3,9 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import yaml
-from generate import *
-from panel_builder import *
-from other_builder import *
+from tool.generate import *
+from tool.panel_builder import *
+from tool.other_builder import *
 
 """
 This file generates all the dashboards json_file and saves them to a folder under `grafana_hgcdb_dashboard`.
