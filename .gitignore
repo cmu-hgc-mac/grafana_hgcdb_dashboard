@@ -33,10 +33,10 @@
 ._*
 
 # Files #
-*.yaml
 *.png
 
 # Folders #
 Dashboards/
 __pycache__/
 iv_curves_plot/
+a_EverythingNeedToChange/

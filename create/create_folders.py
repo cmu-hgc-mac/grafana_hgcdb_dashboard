@@ -3,7 +3,8 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import yaml
-from generate import*
+from generate import *
+from helper import *
 
 """
 This file creates the folders from config_folders. 
@@ -14,12 +15,11 @@ This file creates the folders from config_folders.
 folder_configs = os.listdir("./config_folders")
 
 for config in folder_configs:
-    
     # skip non-yaml files
     if not config.endswith(".yaml"):
         continue
 
     folder_name = config.split(".")[0].replace("_", " ")
     generate_folder(folder_name)
-    
+
 print(" >> Folders are in Grafana! (ゝ∀･) \n")
