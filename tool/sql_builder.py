@@ -331,14 +331,14 @@ class TableGenerator(BaseSQLGenerator):
             table = "temp_table"
 
         for elem in groupby:
-            if type(elem) == str:
+            if isinstance(elem, str):
                 if elem.endswith("time"):
                     continue
                 elif elem.startswith("list"):
                     groupby_fields.append(f"COALESCE(array_length({table}.{elem}::int[], 1), 0)::text")
                 else:
                     groupby_fields.append(f"{table}.{elem}::text")
-            elif type(elem) == list:
+            elif isinstance(elem, list):
                 select_clause = []
                 for column in elem:
                     if column.startswith("list"):
