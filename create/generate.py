@@ -31,7 +31,7 @@ def generate_folder(folder_name: str):
 
     # Update UID map
     if gf_conn.get("GF_FOLDER_UIDS") is None:
-        gf_conn.set["GF_FOLDER_UIDS", {}]
+        gf_conn.set("GF_FOLDER_UIDS", {})
 
     gf_conn.set(f"GF_FOLDER_UIDS.{folder_name}", uid)
 
@@ -118,11 +118,11 @@ def save_dashboard_json(dashboard: dict, dashboard_json: dict, folder: str):
     print(f"Dashboard saved to {path}")
 
 
-def upload_dashboards(file_path: str):
+def upload_dashboards(file_path: str, client: GrafanaClient):
     """Upload one dashboard JSON file into Grafana folder.
     """
     # reload gf_conn.yaml
-    new_gf_conn = gf_conn._load()
+    gf_conn.reload()
 
     # get folder and file name
     folder_name = os.path.basename(os.path.dirname(file_path)).replace("_", " ")
@@ -131,7 +131,7 @@ def upload_dashboards(file_path: str):
     if folder_name == "General":  # main dashboards: empty uid
         folder_uid = ""
     else:
-        folder_uid_map = new_gf_conn.get("GF_FOLDER_UIDS", {})
+        folder_uid_map = gf_conn.get("GF_FOLDER_UIDS", {})
         if folder_name not in folder_uid_map:
             raise ValueError(f"Folder '{folder_name}' not in GF_FOLDER_UIDS")
         folder_uid = folder_uid_map[folder_name]

@@ -181,10 +181,10 @@ class PanelBuilder:
         # functions for interating with db
         async def connect_db():
             return await asyncpg.create_pool(
-                host = DBHostname,
-                database = DBDatabase,
-                user = DBUsername,
-                password = DBPassword
+                host = db_host,
+                database = db_name,
+                user = db_user,
+                password = db_password
             )
 
         pool = loop.run_until_complete(connect_db())

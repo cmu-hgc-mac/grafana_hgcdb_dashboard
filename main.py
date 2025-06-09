@@ -3,6 +3,7 @@ import subprocess
 import yaml
 from create.generate import upload_dashboards
 from time import sleep
+from helper import *
 
 """
 This file does EVERYTHING for you (*´ω`*)
@@ -16,55 +17,51 @@ cmu_mcs_cms_logo = """
                                                                                               
 """
 
-def main():
-    print(cmu_mcs_cms_logo)
 
-    # check run times
-    gf_conn_path = './a_EverythingNeedToChange/gf_conn.yaml'
-    with open(gf_conn_path, mode='r') as file:
-        gf_conn = yaml.safe_load(file)
-    run_times = int(gf_conn['GF_RUN_TIMES'])
+print(cmu_mcs_cms_logo)
 
+# First run
+if run_times == 0:
+    print(" >> First run, preSteps will be executed. (<ゝω・）☆")
 
-    # First run
-    if run_times == 0:
-        print(" >> First run, preSteps will be executed. (<ゝω・）☆")
-        # preSteps in order
-        subprocess.run(["python", "./preSteps/get_api_key.py"], check=True)
-        sleep(0.5)    # wait for token to be generated
-        subprocess.run(["python", "./preSteps/add_dbsource.py"], check=True)
-
-
-    # Everything Need To Generate
-    subprocess.run(["python", "create/create_folders.py"], check=True)
-    sleep(0.5)    # wait for folders to be added
-    subprocess.run(["python", "create/create_dashboards.py"], check=True)
-
-
-    # Upload dashboards
-    folder_list = os.listdir("./Dashboards")
-    for folder in folder_list:
-        file_list = os.listdir(f"./Dashboards/{folder}")
-        for file_name in file_list:
-            if file_name.endswith(".json"):
-                file_path = f"./Dashboards/{folder}/{file_name}"
-                upload_dashboards(file_path)
+    # preSteps in order
+    subprocess.run(["python", "./preSteps/get_api_key.py"], check=True)
+    sleep(0.5)    # wait for token to be generated
     
-    print(" >> Dashboards uploaded! ᕕ( ᐛ )ᕗ \n")
+    # rebuild GrafanaClient with new token
+    gf_conn.reload()
+    new_token = gf_conn.get("GF_API_KEY")
+    client = GrafanaClient(new_token, gf_url)
+
+    subprocess.run(["python", "./preSteps/add_dbsource.py"], check=True)
 
 
-    # Add run times
-    run_times += 1
-    gf_conn['GF_RUN_TIMES'] = run_times
-    with open(gf_conn_path, mode='w') as file:
-        yaml.dump(gf_conn, file)
-
-    print(" >> And run_times updated! 乚(`ヮ´ ﾐэ)Э \n")
-
-    # Done!!
-    print(" >>>> All done! (๑•̀ㅂ•́)و✧")
+# Everything Need To Generate
+subprocess.run(["python", "create/create_folders.py"], check=True)
+sleep(0.5)    # wait for folders to be added
+subprocess.run(["python", "create/create_dashboards.py"], check=True)
 
 
-# allow Run
-if __name__ == '__main__':
-    main()
+# Upload dashboards
+folder_list = os.listdir("./Dashboards")
+for folder in folder_list:
+    file_list = os.listdir(f"./Dashboards/{folder}")
+    for file_name in file_list:
+        if file_name.endswith(".json"):
+            file_path = f"./Dashboards/{folder}/{file_name}"
+            upload_dashboards(file_path, client)
+
+print(" >> Dashboards uploaded! ᕕ( ᐛ )ᕗ \n")
+
+
+# Add run times
+run_times += 1
+gf_conn.set('GF_RUN_TIMES', run_times)
+gf_conn.save()
+
+print(" >> And run_times updated! 乚(`ヮ´ ﾐэ)Э \n")
+
+# Done!!
+print(" >>>> All done! (๑•̀ㅂ•́)و✧")
+
+
