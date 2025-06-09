@@ -12,7 +12,7 @@ This file defines the abstract class ChartSQLGenerator and the factory ChartSQLF
 """
 
 # ============================================================
-# === Abstract Class =========================================
+# === Define the Abstract Class ==============================
 # ============================================================
 
 class ChartSQLGenerator(ABC):
@@ -74,7 +74,7 @@ class BaseSQLGenerator(ChartSQLGenerator):
         if condition:
             clauses.append(condition) 
         
-        return " AND ".join(clauses)
+        return "\n          AND ".join(clauses)
 
     def _build_join_clause(self, table: str, filters: dict, distinct: bool) -> str:
         """Builds the JOIN command by using the foriegn key.
@@ -91,7 +91,7 @@ class BaseSQLGenerator(ChartSQLGenerator):
             else:
                 join_clause.append(f"JOIN {filters_table} ON {main_table}.{main_prefix}_no = {filters_table}.{main_prefix}_no")
 
-        return "\n  ".join(join_clause)
+        return "\n        ".join(join_clause)
 
 
 # ============================================================
