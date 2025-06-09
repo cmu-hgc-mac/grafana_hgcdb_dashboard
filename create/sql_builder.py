@@ -36,58 +36,74 @@ class BaseSQLGenerator(ChartSQLGenerator):
            - If distinct is True, it will select the distinct modules.
            - Hard Coded Version: Only for module_qc_summary table.
         """
+        # fetch distinct modules from "module_qc_summary"
         if distinct:
             target_table = "temp_table"
-
             if table == "module_qc_summary":
                 pre_clause = """WITH temp_table AS (SELECT DISTINCT ON (module_no) * FROM module_qc_summary ORDER BY module_no, mod_qc_no DESC)"""
+        
         else:
             target_table = table
             pre_clause = ""
         
         return pre_clause, target_table
+    
+    def _build_filter_argument(self, elem: str, filters_table: str) -> str:
+        """Builds the filter argument for the WHERE clause.
+        """
+        # shipped / not shipped
+        if elem == "status":
+            param = "${status}"
+            arg = f"""('All' = ANY(ARRAY[{param}]) OR 
+                    (shipped_datetime IS NULL AND 'not shipped' = ANY(ARRAY[{param}])) OR
+                    (shipped_datetime IS NOT NULL AND 'shipped' = ANY(ARRAY[{param}])))"""
+
+        # time: using the Grafana built-in time filter
+        elif elem == "assembled" or elem.endswith("time") or elem.endswith("date"):
+            arg = f"$__timeFilter({filters_table}.{elem})"
+        
+        # general cases
+        else:
+            param = f"${{{elem}}}"
+            arg = f"('All' = ANY(ARRAY[{param}]) OR {filters_table}.{elem}::text = ANY(ARRAY[{param}]))"
+
+        return arg
 
     def _build_where_clause(self, filters: dict, condition: str, table: str, distinct: bool) -> str:
         """Builds the WHERE clause from filters and condition. 
         """
         filters_table_list = list(filters.keys())
-        clauses = []
+        where_clauses = []
 
         for filters_table in filters_table_list:
+            # update table name with distinct condition
             if filters_table == table:
                 if distinct:
                     filters["temp_table"] = filters.pop(f"{filters_table}")
                     filters_table = "temp_table"
+
+            # build the WHERE clause for each filter
             for elem in filters[filters_table]:
-                if elem == "status":
-                    param = "${status}"
-                    arg = f"""('All' = ANY(ARRAY[{param}]) OR 
-                            (shipped_datetime IS NULL AND 'not shipped' = ANY(ARRAY[{param}])) OR
-                            (shipped_datetime IS NOT NULL AND 'shipped' = ANY(ARRAY[{param}])))"""
-                elif elem == "assembled" or elem.endswith("time") or elem.endswith("date"):
-                    arg = f"$__timeFilter({filters_table}.{elem})"
-                else:
-                    param = f"${{{elem}}}"
-                    arg = f"('All' = ANY(ARRAY[{param}]) OR {filters_table}.{elem}::text = ANY(ARRAY[{param}]))"
-                clauses.append(arg)   
+                arg = self._build_filter_argument(elem, filters_table)
+                where_clauses.append(arg)   
 
         if condition:
-            clauses.append(condition) 
+            where_clauses.append(condition) 
         
-        return "\n          AND ".join(clauses)
+        return "\n          AND ".join(where_clauses)
 
     def _build_join_clause(self, table: str, filters: dict, distinct: bool) -> str:
         """Builds the JOIN command by using the foriegn key.
         """
         join_clause = []
         
-        # Use correct alias for main table
+        # update table name with distinct condition
         main_table = "temp_table" if distinct else table
+        main_prefix = table.split("_")[0]
 
         for filters_table in filters:
-            main_prefix = table.split("_")[0]
             if filters_table == main_table:
-                continue  # don't join table to itself
+                continue  # skip self-joining
             else:
                 join_clause.append(f"JOIN {filters_table} ON {main_table}.{main_prefix}_no = {filters_table}.{main_prefix}_no")
 
@@ -128,14 +144,15 @@ class BarChartGenerator(BaseSQLGenerator):
             table = "temp_table"
 
         for elem in groupby:
-            if type(elem) == str:
+            if isinstance(elem, str):
                 if elem.endswith("time"):
                     continue
                 elif elem.startswith("list"):
                     groupby_fields.append(f"COALESCE(array_length({table}.{elem}::int[], 1), 0)::text")
                 else:
                     groupby_fields.append(f"{table}.{elem}::text")
-            elif type(elem) == list:
+            # COALESCE Case: join multiple columns into 1 column
+            elif isinstance(elem, list):
                 select_clause = []
                 for column in elem:
                     if column.startswith("list"):
@@ -178,27 +195,27 @@ class HistogramGenerator(BaseSQLGenerator):
         if len(groupby) > 1:
             raise ValueError("The groupby list should have only 1 element.")
         
-        # check for the type of groupby element:
-        type_groupby = type(groupby[0])
+        # fetch the element from groupby
+        elem = groupby[0]
 
-        if type_groupby == str:
+        if isinstance(elem, str):
             elem = groupby[0]
             if elem.startswith("list"):
-                select_clause = f"COALESCE(array_length({table}.{elem}::int[], 1), 0) AS {elem}"
+                groupby_fields = f"COALESCE(array_length({table}.{elem}::int[], 1), 0) AS {elem}"
             else:
-                select_clause = f"{table}.{elem} AS {elem}"
-
-        elif type_groupby == list:
+                groupby_fields = f"{table}.{elem} AS {elem}"
+        # COALESCE Case: join multiple columns into 1 column
+        elif isinstance(elem, list):
             select_clause = []
-            for elem in groupby[0]:
-                if elem.startswith("list"):
-                    select_arg = f"COALESCE(array_length({table}.{elem}::int[], 1), 0)"
+            for column in groupby[0]:
+                if column.startswith("list"):
+                    select_arg = f"COALESCE(array_length({table}.{column}::int[], 1), 0)"
                 else:
-                    select_arg = f"{table}.{elem}"
+                    select_arg = f"{table}.{column}"
                 select_clause.append(select_arg)
-            select_clause = f"COALESCE({', '.join(select_clause)}) as {groupby[0][0]}"
+            groupby_fields = f"COALESCE({', '.join(select_clause)}) as {groupby[0][0]}"
 
-        return select_clause
+        return groupby_fields
 
 
 # -- Timeseries --
@@ -250,17 +267,13 @@ class TimeseriesGenerator(BaseSQLGenerator):
         elem = groupby[1]
         clause = []
 
-        if elem == "count":
-            groupby_arg = f"GROUP BY {time}"
-        else: 
-            groupby_arg = ""
-        
-        orderby_arg = f"ORDER BY {time};"
+        groupby_arg = f"GROUP BY {time}" if elem == "count" else ""
+        orderby_arg = f"ORDER BY {time}"
 
         clause.append(groupby_arg)
         clause.append(orderby_arg)
 
-        return "\n".join(clause)
+        return "\n        ".join(clause)
 
 
 # -- Text Chart --
