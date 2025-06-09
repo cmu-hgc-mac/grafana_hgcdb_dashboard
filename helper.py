@@ -6,8 +6,10 @@ from typing import Any
 """
 This file contains all the helpers used in the dashboard.
     - The included helper classes/functions are:
-        - Grafana Client: all API to Grafana server
-        - Config Loader: load the config file
+        - GrafanaClient: all API to Grafana server
+        - ConfigLoader: load the config file
+        - create_uid: create a unique uid based on its title
+        - information: loaded from config file
 """
 
 class GrafanaClient:
@@ -92,3 +94,21 @@ def create_uid(title_name: str) -> str:
        - For `folder` and `dashboard`
     """
     return title_name.lower().replace(' ', '-')
+
+
+# -- Load YAML Configuration --
+gf_conn = ConfigLoader("gf_conn")
+db_conn = ConfigLoader("db_conn")
+
+grafana_url = gf_conn.get('GF_URL')
+api_token = gf_conn.get('GF_API_KEY')
+datasource_uid = gf_conn.get('GF_DATA_SOURCE_UID')
+
+DBHostname = db_conn.get("db_hostname")
+DBDatabase = db_conn.get("dbname")
+DBUsername = db_conn.get("user")
+DBPassword = db_conn.get("password")
+
+# -- define GrafanaClient --
+client = GrafanaClient(api_token, grafana_url)
+
