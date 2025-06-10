@@ -168,12 +168,14 @@ class GrafanaClient:
 
         if response.status_code == 200:
             return response.json()['uid']
-        else:
+        elif response.status_code == 404:
             payload = {"title": title, "uid": uid}
             response = requests.post(f"{self.base_url}/api/folders", headers=self.headers, json=payload)
             response.raise_for_status()
             return response.json()['uid']
-    
+        else:
+            raise Exception(f"Error checking folder: {response.status_code} - {response.text}")
+
     def upload_dashboard_json(self, dashboard_json: dict, folder_uid: str):
         """Upload a dashboard to a folder.
         """
@@ -185,6 +187,10 @@ class GrafanaClient:
         url = f"{self.base_url}/api/dashboards/db"
         response = requests.post(url, headers=self.headers, json=payload)
         print(f"[Upload] Dashboard: {dashboard_json['title']} | Status: {response.status_code}")
+
+        # print out error message
+        if response.status_code != 200:
+            print(f"[Upload] Dashboard: {dashboard_json['title']} | Error: {response.text}")
     
     def upload_alert_json(self, alert_json: dict, folder_uid: str):
         """Upload an alert to a folder.
@@ -197,6 +203,10 @@ class GrafanaClient:
         url = f"{self.base_url}/api/v1/provisioning/alert-rules"
         response = requests.post(url, headers=self.headers, json=payload)
         print(f"[Upload] {alert_json['title']} | Status: {response.status_code}")
+
+        # print out error message
+        if response.status_code != 200:
+            print(f"[Upload] {alert_json['title']} | Error: {response.text}")
 
 
 # ============================================================

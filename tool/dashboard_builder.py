@@ -75,7 +75,7 @@ class DashboardBuilder:
         filename = safe_title + ".json"
 
         # create path
-        folder_path = os.path.join("dashboards", folder)
+        folder_path = os.path.join("Dashboards", folder)
         os.makedirs(folder_path, exist_ok=True)  # create the new Dashboards/folder
 
         path = os.path.join(folder_path, filename)
@@ -101,7 +101,7 @@ class DashboardBuilder:
         else:
             folder_uid_map = gf_conn.get("GF_DASHBOARD_FOLDER_UIDS", {})
             if folder_name not in folder_uid_map:
-                raise ValueError(f"Folder '{folder_name}' not in GF_DASHBOARD_FOLDER_UIDS")
+                raise ValueError(f"Dashboard Folder '{folder_name}' not in GF_DASHBOARD_FOLDER_UIDS")
             folder_uid = folder_uid_map[folder_name]
 
         with open(file_path, 'r', encoding='utf-8') as file:

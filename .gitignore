@@ -37,6 +37,7 @@
 
 # Folders #
 Dashboards/
+Alerts/
 __pycache__/
 iv_curves_plot/
 a_EverythingNeedToChange/

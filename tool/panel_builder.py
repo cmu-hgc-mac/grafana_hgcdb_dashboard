@@ -269,7 +269,7 @@ class PanelBuilder:
         ax.legend(fontsize=15, loc='upper left')
 
         # create folder:
-        os.makedirs("iv_curves_plot", exist_ok=True)
+        os.makedirs("IV_curves_plot", exist_ok=True)
         # define path and save plot
         plt_path = f'iv_curves_plot/combined_iv_logscale_{datetoday}_{N_MODULE_SHOW}.png'
         plt.savefig(plt_path)
