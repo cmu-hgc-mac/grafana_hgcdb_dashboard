@@ -47,7 +47,8 @@ def main():
     subprocess.run(["python", "create/create_dashboards.py"], check=True)
     # subprocess.run(["python", "create/create_alerts.py"], check=True)
 
-   # Add run times
+    # Add run times
+    gf_conn.reload()
     print(" >> And run_times updated! 乚(`ヮ´ ﾐэ)Э")
     gf_conn.set('GF_RUN_TIMES', run_times + 1)
     gf_conn.save()

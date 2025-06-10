@@ -100,7 +100,7 @@ class BaseSQLGenerator(ChartSQLGenerator):
         
         # update table name with distinct condition
         main_table = "temp_table" if distinct else table
-        main_prefix = table.split("_")[0]
+        main_prefix = "hxb" if table == "hexaboard" else table.split("_")[0]
 
         for filters_table in filters:
             if filters_table == main_table:

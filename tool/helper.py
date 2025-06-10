@@ -174,7 +174,7 @@ class GrafanaClient:
             response.raise_for_status()
             return response.json()['uid']
     
-    def upload_dashboard(self, dashboard_json: dict, folder_uid: str):
+    def upload_dashboard_json(self, dashboard_json: dict, folder_uid: str):
         """Upload a dashboard to a folder.
         """
         payload = {
@@ -186,7 +186,7 @@ class GrafanaClient:
         response = requests.post(url, headers=self.headers, json=payload)
         print(f"[Upload] Dashboard: {dashboard_json['title']} | Status: {response.status_code}")
     
-    def upload_alert(self, alert_json: dict, folder_uid: str):
+    def upload_alert_json(self, alert_json: dict, folder_uid: str):
         """Upload an alert to a folder.
         """
         payload = {

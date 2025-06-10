@@ -14,7 +14,7 @@ This file generates all the dashboards json_file, saves them to a folder under `
 """
 
 # Define the path of the config folders
-path = "./config_folders"
+path = "./config_dashboard_folders"
 filelist = os.listdir(path)
 
 # Define the builder
@@ -63,12 +63,12 @@ print(" >> Dashboards generated successfully! =͟͟͞͞( 'ヮ' 三 'ヮ' =͟͟͞
 
 
 # Upload dashboards
-folder_list = os.listdir("./Dashboards")
+folder_list = os.listdir("./dashboards")
 for folder in folder_list:
-    file_list = os.listdir(f"./Dashboards/{folder}")
+    file_list = os.listdir(f"./dashboards/{folder}")
     for file_name in file_list:
         if file_name.endswith(".json"):
-            file_path = f"./Dashboards/{folder}/{file_name}"
+            file_path = f"./dashboards/{folder}/{file_name}"
             dashboard_builder.upload_dashboards(file_path)
 
 print(" >> Dashboards uploaded! ᕕ( ᐛ )ᕗ \n")

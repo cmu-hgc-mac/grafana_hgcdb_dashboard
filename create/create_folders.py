@@ -7,7 +7,7 @@ import yaml
 from tool.helper import *
 
 """
-This file creates the folders from config_folders. 
+This file creates the folders from config_dashboard_folders. 
     - Each folder would be named by replacing '_' to ' ' of the yaml_filename.
 """
 
@@ -23,7 +23,7 @@ def generate_folder(folder_name: str):
     # create or fetch folder
     try:
         uid = client.create_or_get_folder(folder_name, folder_uid)
-        gf_conn.set(f"GF_FOLDER_UIDS.{folder_name}", uid)
+        gf_conn.set(f"GF_DASHBOARD_FOLDER_UIDS.{folder_name}", uid)
         gf_conn.save()
         print(f"[Folder] Created or verified folder '{folder_name}'")
 
@@ -32,7 +32,7 @@ def generate_folder(folder_name: str):
         raise
 
 # Load all .yaml files in config_folders/
-folder_configs = os.listdir("./config_folders")
+folder_configs = os.listdir("./config_dashboard_folders")
 
 for config in folder_configs:
     # skip non-yaml files

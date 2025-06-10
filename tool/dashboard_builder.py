@@ -75,7 +75,7 @@ class DashboardBuilder:
         filename = safe_title + ".json"
 
         # create path
-        folder_path = os.path.join("Dashboards", folder)
+        folder_path = os.path.join("dashboards", folder)
         os.makedirs(folder_path, exist_ok=True)  # create the new Dashboards/folder
 
         path = os.path.join(folder_path, filename)
@@ -99,9 +99,9 @@ class DashboardBuilder:
         if folder_name == "General":  # main dashboards: empty uid
             folder_uid = ""
         else:
-            folder_uid_map = gf_conn.get("GF_FOLDER_UIDS", {})
+            folder_uid_map = gf_conn.get("GF_DASHBOARD_FOLDER_UIDS", {})
             if folder_name not in folder_uid_map:
-                raise ValueError(f"Folder '{folder_name}' not in GF_FOLDER_UIDS")
+                raise ValueError(f"Folder '{folder_name}' not in GF_DASHBOARD_FOLDER_UIDS")
             folder_uid = folder_uid_map[folder_name]
 
         with open(file_path, 'r', encoding='utf-8') as file:
@@ -109,7 +109,7 @@ class DashboardBuilder:
 
         # upload dashboard
         try:
-            client.upload_dashboard(dashboard_json, folder_uid)
+            client.upload_dashboard_json(dashboard_json, folder_uid)
 
         except requests.RequestException as e:
             print(f"[ERROR] Failed to upload dashboard '{file_name}': {e}")
