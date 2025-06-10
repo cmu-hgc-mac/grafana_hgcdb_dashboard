@@ -25,15 +25,15 @@ gf_conn = {
     # Setting for Grafana
 
     # Things must be changed:
-    'GF_PORT': '3000', # default 
     'GF_IP': '127.0.0.1', # default
-    'GF_defaults_PATH': '/Users/******/grafana-v12.0.0/conf/defaults.ini', 
-        # by default, 'defaults.ini' should be in the conf directory of Grafana (for MacOs)
+    'GF_defaults_PATH': '', 
+        # For MacOs, the path should be './grafana-v12.0.0/conf/defaults.ini'
         # For Linux, the path should be '/etc/grafana/grafana.ini'
 
     # Things might be changed:
     'GF_USER': 'admin', # default
     'GF_PASS': 'admin', # default
+    'GF_PORT': '3000', # default 
     'GF_URL': "http://127.0.0.1:3000", # default -> only change your port if you changed GF_PORT
         # the url for login Grafana and uploading dashboards
 
