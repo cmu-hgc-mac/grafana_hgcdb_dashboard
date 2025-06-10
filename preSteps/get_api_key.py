@@ -24,4 +24,4 @@ gf_conn.set('GF_DATA_SOURCE_UID', "mac-postgres-db")
 gf_conn.save()
 gf_conn.reload()
 
-print(f" >> Auto update for gf_conn.yaml successfully! ヾ(´ωﾟ｀)")
+print(f" >> Auto update for gf_conn.yaml successfully! ヾ(´ωﾟ｀) \n")

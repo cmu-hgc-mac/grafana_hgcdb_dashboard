@@ -1,6 +1,4 @@
 import os
-import sys
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import json
 from typing import Any
@@ -20,6 +18,7 @@ This file contains all the helpers used in the dashboard.
 # ============================================================
 # === Helper Classes =========================================
 # ============================================================
+
 class ConfigLoader:
     def __init__(self, config_name: str):
         if config_name == "gf_conn":
@@ -151,11 +150,11 @@ class GrafanaClient:
         )
 
         if response.status_code in [200, 201]:
-            print(f"[Grafana] PostgreSQL data source '{name}' added as default... (`∀´σ)")
+            print(f"[Grafana] PostgreSQL data source '{name}' added as default... (`∀´σ) \n")
         elif response.status_code == 409:
-            print(f"[Grafana] Data source '{name}' already exists.  (´･ω･`)")
+            print(f"[Grafana] Data source '{name}' already exists.  (´･ω･`) \n")
         else:
-            print(f"[Grafana] Failed to add data source: {response.status_code} ヽ(`Д´)ﾉ")
+            print(f"[Grafana] Failed to add data source: {response.status_code} ヽ(`Д´)ﾉ \n")
             print(response.text)
             response.raise_for_status()
     

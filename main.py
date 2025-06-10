@@ -4,7 +4,6 @@ from time import sleep
 
 import yaml
 
-from tool.generate import upload_dashboards
 from tool.helper import *
 
 """
@@ -26,7 +25,7 @@ def main():
 
     # First run
     if run_times == 0:
-        print(" >> First run, preSteps will be executed. (<ゝω・）☆")
+        print(" >> First run, preSteps will be executed. (<ゝω・）☆ \n")
 
         # preSteps in order
         subprocess.run(["python", "./preSteps/get_api_key.py"], check=True)
@@ -46,21 +45,9 @@ def main():
     subprocess.run(["python", "create/create_folders.py"], check=True)
     sleep(0.5)    # wait for folders to be added
     subprocess.run(["python", "create/create_dashboards.py"], check=True)
+    # subprocess.run(["python", "create/create_alerts.py"], check=True)
 
-
-    # Upload dashboards
-    folder_list = os.listdir("./Dashboards")
-    for folder in folder_list:
-        file_list = os.listdir(f"./Dashboards/{folder}")
-        for file_name in file_list:
-            if file_name.endswith(".json"):
-                file_path = f"./Dashboards/{folder}/{file_name}"
-                upload_dashboards(file_path)
-
-    print(" >> Dashboards uploaded! ᕕ( ᐛ )ᕗ \n")
-
-
-    # Add run times
+   # Add run times
     print(" >> And run_times updated! 乚(`ヮ´ ﾐэ)Э")
     gf_conn.set('GF_RUN_TIMES', run_times + 1)
     gf_conn.save()
