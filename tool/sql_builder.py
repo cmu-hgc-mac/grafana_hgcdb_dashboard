@@ -9,6 +9,7 @@ This file defines the abstract class ChartSQLGenerator and the factory ChartSQLF
         - "text"
         - "stat"
         - "table"
+        - "gauge"
 """
 
 # ============================================================
@@ -348,6 +349,54 @@ class TableGenerator(BaseSQLGenerator):
         return ", ".join(groupby_fields)
 
 
+# -- Gauge Chart --
+class GaugeGenerator(BaseSQLGenerator):
+    def generate_sql(self, table: str, condition: str, groupby: list, filters: list, distinct: bool) -> str:
+        pre_clause, target_table = self._build_pre_clause(table, distinct)
+        select_clause = self._build_select_clause(table, groupby, distinct)
+        where_clause = self._build_where_clause(filters, condition, table, distinct)
+        join_clause = self._build_join_clause(table, filters, distinct)
+
+        sql = f"""
+        {pre_clause}
+        SELECT 
+            {select_clause}
+        FROM {target_table}
+        {join_clause}
+        WHERE {where_clause}
+        """
+        return sql.strip()
+
+    def _build_select_clause(self, table: str, groupby: list, distinct: bool) -> str:
+        """Builds the SELECT clause by joining all groupby fields.
+        """
+        groupby_fields = []
+
+        if distinct:
+            table = "temp_table"
+        
+        for elem in groupby:
+            if isinstance(elem, str):
+                if elem.endswith("time"):
+                    continue
+                elif elem.startswith("list"):
+                    groupby_fields.append(f"COALESCE(array_length({table}.{elem}::int[], 1), 0)")
+                else:
+                    groupby_fields.append(f"{table}.{elem}")
+            elif isinstance(elem, list):
+                select_clause = []
+                for column in elem:
+                    if column.startswith("list"):
+                        select_arg = f"COALESCE(array_length({table}.{column}::int[], 1), 0)"
+                    else:
+                        select_arg = f"{table}.{column}"
+                    select_clause.append(select_arg)
+                select_clause = f"COALESCE({', '.join(select_clause)}) as {elem[0]}"
+                groupby_fields.append(select_clause)
+        
+        return ", ".join(groupby_fields)
+
+
 # ============================================================
 # === SQL Generator Factory ==================================
 # ============================================================
@@ -359,7 +408,8 @@ class ChartSQLFactory:
         "timeseries": TimeseriesGenerator(),
         "text": TextChartGenerator(),
         "stat": StatChartGenerator(),
-        "table": TableGenerator()
+        "table": TableGenerator(),
+        "gauge": GaugeGenerator()
     }
 
     @classmethod

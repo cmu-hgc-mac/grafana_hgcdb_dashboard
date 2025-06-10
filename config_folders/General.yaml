@@ -2,7 +2,7 @@ datasource_variable: DS_POSTGRES
 
 dashboards:
 
-  - title: "Enviorment Monitoring"
+  - title: "Enviorment Monitoring trend"
     panels:
       - title: "Temperature (°C)"
         table: "temp_humidity"
@@ -17,4 +17,21 @@ dashboards:
         condition: "temp_humidity.rel_hum IS NOT NULL"
         groupby: ["log_timestamp", "rel_hum"]
         filters: {"temp_humidity": ["log_location"]}
+        distinct: False
+  
+  - title: "Enviorment Monitoring current"
+    panels:
+      - title: "Temperature (°C) (main_clean_room)"
+        table: "temp_humidity"
+        chart_type: "gauge"
+        condition: "temp_humidity.log_location = 'main_clean_room' AND (now() - log_timestamp) < INTERVAL '15 MINUTE'"
+        groupby: ["temp_c"]
+        filters: {}
+        distinct: False  
+      - title: "Real Humidity (main_clean_room)"
+        table: "temp_humidity"
+        chart_type: "gauge"
+        condition: "temp_humidity.log_location = 'main_clean_room' AND (now() - log_timestamp) < INTERVAL '15 MINUTE'"
+        groupby: ["rel_hum"]
+        filters: {}
         distinct: False

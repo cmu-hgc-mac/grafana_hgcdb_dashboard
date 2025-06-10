@@ -10,14 +10,17 @@ This file defines the class for building the dashboard json file in Grafana and 
 """
 
 class DashboardBuilder:
-    def __init__(self, dashboard_uid):
-        self.dashboard_uid = dashboard_uid
+    def __init__(self):
+        pass
 
     def build_dashboard(self, dashboard_title: str, panels: list, template_list: list) -> dict:
         """Generates a Grafana dashboard json file based on the given panels.
         """
+        # get dashboard_uid
+        dashboard_uid = create_uid(dashboard_title)
+
         # define the time range
-        if dashboard_title == "Enviorment Monitoring":
+        if "Enviorment Monitoring" in dashboard_title:
             time_range = "now-24h"
         else:
             time_range = "now-1y"
@@ -59,7 +62,7 @@ class DashboardBuilder:
             "timepicker": {},
             "timezone": "browser",
             "title": dashboard_title,
-            "uid": self.dashboard_uid,
+            "uid": dashboard_uid,
             "version": 1
         }
 

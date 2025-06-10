@@ -20,7 +20,7 @@ filelist = os.listdir(path)
 # Define the builder
 panel_builder = PanelBuilder(datasource_uid)
 filter_builder = FilterBuilder(datasource_uid)
-dashboard_builder = DashboardBuilder(datasource_uid)
+dashboard_builder = DashboardBuilder()
 
 # Loop for every config files
 for config in filelist:
