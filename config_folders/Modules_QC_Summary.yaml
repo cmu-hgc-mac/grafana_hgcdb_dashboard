@@ -46,21 +46,21 @@ dashboards:
           groupby: ["list_dead_cells"]
           filters: {"module_qc_summary": ["final_grade"], "module_info": ["assembled"]}
           distinct: True
-        - title: "i_at_ref_a < 1e-6"
+        - title: "i_at_ref_a < 1 μA"
           table: "module_qc_summary"
           chart_type: "histogram"
           condition: "i_at_600v < 1e-6 OR i_at_ref_a < 1e-6"
           groupby: [["i_at_ref_a", "i_at_600v"]]
           filters: {"module_qc_summary": ["final_grade"], "module_info": ["assembled"]}
           distinct: True
-        - title: "Count for i_at_ref_a > 1e-6"
+        - title: "Count for i_at_ref_a > 1 μA"
           table: "module_qc_summary"
           chart_type: "stat"
           condition: "i_at_600v > 1e-6 OR i_at_ref_a > 1e-6"
           groupby: [["i_at_ref_a", "i_at_600v"]]
           filters: {"module_qc_summary": ["final_grade"], "module_info": ["assembled"]}
           distinct: True
-        - title: "Table for i_at_ref_a > 1e-6"     
+        - title: "Table for i_at_ref_a > 1 μA"
           table: "module_qc_summary"
           chart_type: "table"
           condition: "i_at_600v > 1e-6 OR i_at_ref_a > 1e-6"

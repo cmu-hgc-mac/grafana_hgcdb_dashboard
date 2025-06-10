@@ -2,7 +2,6 @@ import os
 
 import json
 
-from tool.sql_builder import ChartSQLFactory
 from tool.helper import *
 
 """
