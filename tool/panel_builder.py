@@ -258,7 +258,7 @@ class PanelBuilder:
                         
         ax.set_yscale('log')
         dryname = 'Dry' if dry else 'Ambient'
-        ax.set_title(f'{dryname} Module IV Curves [Log Scale]', fontsize=30)
+        ax.set_title(f'{dryname} Module IV Curves [Log Scale]-{datetoday}', fontsize=30)
         ax.set_xlabel('Reverse Bias [V]', fontsize=25)
         ax.set_ylabel(r'Leakage Current [A]', fontsize=25)
         ax.set_ylim(1e-9, 1e-03)

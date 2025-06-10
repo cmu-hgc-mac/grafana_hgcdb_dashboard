@@ -25,6 +25,8 @@ class ConfigLoader:
             self.config_path = "./a_EverythingNeedToChange/gf_conn.yaml"
         elif config_name == "db_conn":
             self.config_path = "./a_EverythingNeedToChange/db_conn.yaml"
+        else:
+            raise ValueError(f"Invalid config name: {config_name}")
         
         self._data = self._load()
     
@@ -183,6 +185,18 @@ class GrafanaClient:
         url = f"{self.base_url}/api/dashboards/db"
         response = requests.post(url, headers=self.headers, json=payload)
         print(f"[Upload] Dashboard: {dashboard_json['title']} | Status: {response.status_code}")
+    
+    def upload_alert(self, alert_json: dict, folder_uid: str):
+        """Upload an alert to a folder.
+        """
+        payload = {
+            "alert": alert_json,
+            "folderUid": folder_uid,    # not sure to upload to dashboard or folder
+            "overwrite": True
+        }
+        url = f"{self.base_url}/api/v1/provisioning/alert-rules"
+        response = requests.post(url, headers=self.headers, json=payload)
+        print(f"[Upload] {alert_json['title']} | Status: {response.status_code}")
 
 
 # ============================================================

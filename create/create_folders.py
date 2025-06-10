@@ -15,7 +15,7 @@ def generate_folder(folder_name: str):
     """Create Grafana folder or fetch if it already exists. Update UID map.
     """
     if folder_name == "General":  # default folder: no UID
-        print("Skipping folder creation: 'General' is default folder with no UID.")
+        print("[Folder] Skipping folder creation: 'General' is default folder with no UID.")
         return ""
     else:
         folder_uid = create_uid(folder_name)
