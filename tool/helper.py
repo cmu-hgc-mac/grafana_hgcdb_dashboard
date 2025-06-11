@@ -246,3 +246,14 @@ institution     = db_conn.get("institution_abbr")
 
 # -- define GrafanaClient --
 client = GrafanaClient(api_token, gf_url)
+
+# define time zone
+time_zone_dict = {
+    "CMU": "America/New_York",
+    "IHEP": "Asia/Shanghai",
+    "NTU": "Asia/Taipei",
+    "TTU": "America/Chicago",
+    "TIFR": "Asia/Kolkata",
+    "UCSB": "America/Los_Angeles"
+}
+time_zone = time_zone_dict[institution]

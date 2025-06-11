@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+from tool.helper import time_zone
+
 """
 This file defines the abstract class ChartSQLGenerator and the factory ChartSQLFactory.
     - The current available chart type:
@@ -60,8 +62,8 @@ class BaseSQLGenerator(ChartSQLGenerator):
                     (shipped_datetime IS NOT NULL AND 'shipped' = ANY(ARRAY[{param}])))"""
 
         # time: using the Grafana built-in time filter
-        elif elem == "assembled" or elem.endswith("time") or elem.endswith("date"):
-            arg = f"$__timeFilter({filters_table}.{elem})"
+        elif elem == "assembled" or elem.endswith("time") or elem.endswith("date") or elem.endswith("timestamp"):
+            arg = f"$__timeFilter({filters_table}.{elem} AT TIME ZONE {"'" + time_zone + "'"})"
         
         # general cases
         else:
@@ -247,7 +249,7 @@ class TimeseriesGenerator(BaseSQLGenerator):
         select_clause = []
 
         # Time
-        time_arg = f"{table}.{time} AS date"
+        time_arg = f"{table}.{time} AT TIME ZONE {"'" + time_zone + "'"} AS date"
         select_clause.append(time_arg)
 
         # Element
