@@ -126,13 +126,13 @@ class AlertBuilder:
         file_name = os.path.basename(file_path).split(".")[0].replace("_", " ")
         
         # get folder uid
-        # if folder_name == "General":  # main dashboards: empty uid
-        #     folder_uid = ""
-        # else:
-        folder_uid_map = gf_conn.get("GF_FOLDER_UIDS", {})
-        if folder_name not in folder_uid_map:
-            raise ValueError(f"Dashboard Folder '{folder_name}' not in GF_DASHBOARD_FOLDER_UIDS")
-        folder_uid = folder_uid_map[folder_name]
+        if folder_name == "General":  # main dashboards: empty uid
+            folder_uid = ""
+        else:
+            folder_uid_map = gf_conn.get("GF_FOLDER_UIDS", {})
+            if folder_name not in folder_uid_map:
+                raise ValueError(f"Dashboard Folder '{folder_name}' not in GF_DASHBOARD_FOLDER_UIDS")
+            folder_uid = folder_uid_map[folder_name]
 
         with open(file_path, 'r', encoding='utf-8') as file:
             alert_json = json.load(file)
