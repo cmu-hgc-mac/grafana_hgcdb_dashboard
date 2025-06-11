@@ -242,7 +242,7 @@ db_name         = db_conn.get("dbname")
 db_user         = db_conn.get("user")
 db_password     = db_conn.get("password")
 db_port         = db_conn.get("port")
-institution     = db_conn.get("institution_abbr")
+institution     = db_conn.get("institution_abbr").upper()
 
 # -- define GrafanaClient --
 client = GrafanaClient(api_token, gf_url)
