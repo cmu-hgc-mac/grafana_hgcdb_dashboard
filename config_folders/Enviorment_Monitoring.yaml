@@ -35,3 +35,31 @@ dashboards:
         groupby: ["rel_hum"]
         filters: {}
         distinct: False
+
+
+alert:
+  - title: "High Temperature Alert"
+    table: "temp_humidity"
+    dashboard: "Enviorment Monitoring trend"
+    parameter: "temp_c"
+    threshold: 25
+    logicType: "gt"
+    duration: 5m
+    summary: "Temperature exceeds 25°C"
+    labels: 
+        "severity": "critical"
+        "sensor": "temp"
+        "location": "east"
+      
+  - title: "High Humidity Alert"
+    table: "temp_humidity"
+    dashboard: "Enviorment Monitoring trend"
+    parameter: "rel_hum"
+    threshold: 50
+    logicType: "gt"
+    duration: 5m
+    summary: "Humidity exceeds 50%"
+    labels: 
+        "severity": "critical"
+        "sensor": "humidity"
+        "location": "east"

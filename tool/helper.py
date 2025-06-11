@@ -197,7 +197,7 @@ class GrafanaClient:
         """
         payload = {
             "alert": alert_json,
-            "folderUid": folder_uid,    # not sure to upload to dashboard or folder
+            "folderUid": folder_uid,
             "overwrite": True
         }
         url = f"{self.base_url}/api/v1/provisioning/alert-rules"

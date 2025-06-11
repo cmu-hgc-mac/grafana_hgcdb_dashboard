@@ -95,14 +95,15 @@ class DashboardBuilder:
         # get folder and file name
         folder_name = os.path.basename(os.path.dirname(file_path)).replace("_", " ")
         file_name = os.path.basename(file_path).split(".")[0].replace("_", " ")
-
-        if folder_name == "General":  # main dashboards: empty uid
-            folder_uid = ""
-        else:
-            folder_uid_map = gf_conn.get("GF_DASHBOARD_FOLDER_UIDS", {})
-            if folder_name not in folder_uid_map:
-                raise ValueError(f"Dashboard Folder '{folder_name}' not in GF_DASHBOARD_FOLDER_UIDS")
-            folder_uid = folder_uid_map[folder_name]
+        
+        # get folder uid
+        # if folder_name == "General":  # main dashboards: empty uid
+        #     folder_uid = ""
+        # else:
+        folder_uid_map = gf_conn.get("GF_FOLDER_UIDS", {})
+        if folder_name not in folder_uid_map:
+            raise ValueError(f"Dashboard Folder '{folder_name}' not in GF_DASHBOARD_FOLDER_UIDS")
+        folder_uid = folder_uid_map[folder_name]
 
         with open(file_path, 'r', encoding='utf-8') as file:
             dashboard_json = json.load(file)

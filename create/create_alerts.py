@@ -4,15 +4,15 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import yaml
 
-from tool.helper import *
-from tool.other_builder import *
+from tool.helper import datasource_uid
+from tool.alert_builder import AlertBuilder
 
 """
-This file generates all the dashboards json_file, saves them to a folder under `grafana_hgcdb_dashboard`, and uploads them to grafana.
+This file generates all the alerts json_file, saves them to a folder under `grafana_hgcdb_dashboard`, and uploads them to grafana.
 """
 
 # Define the path of the config folders
-path = "./config_alert_folders"
+path = "./config_folders"
 filelist = os.listdir(path)
 
 # Define the builder
@@ -27,7 +27,10 @@ for config in filelist:
     
     # Load the alerts
     with open(os.path.join(path, config), mode = 'r') as file:
-        alerts = yaml.safe_load(file)["alert"]
+        tot_config = yaml.safe_load(file)
+        if "alert" not in tot_config:
+            continue
+        alerts = tot_config["alert"]
     
     # Loop for every panel in a dashboard
     for alert in alerts:

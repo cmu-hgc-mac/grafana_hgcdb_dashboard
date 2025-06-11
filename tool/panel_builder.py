@@ -70,7 +70,7 @@ class PanelBuilder:
 
         return config_panels
     
-    def generate_panel(self, title: str, raw_sql: str, table: str, chart_type: str, gridPos: dict) -> dict:
+    def generate_general_panel(self, title: str, raw_sql: str, table: str, chart_type: str, gridPos: dict) -> dict:
         """Generate a panel json based on the given title, raw_sql, table, chart_type, and gridPos.
         """
         # generate the panel json:
@@ -296,7 +296,7 @@ class PanelBuilder:
         return content
 
     # -- Genarate Panels --
-    def build_from_config(self, config_panels: list) -> list:
+    def generate_panels_json(self, config_panels: list) -> list:
         """Build the panel jsons based on the given config file.
         """
         panels = []
@@ -317,12 +317,12 @@ class PanelBuilder:
                 plt_path = self.generate_plot()
                 encoded_string = self.convert_png_to_base64(plt_path)
                 content = self.generate_content(encoded_string)
-                panel_obj = self.generate_IV_curve_panel(title, content)
+                panel_json = self.generate_IV_curve_panel(title, content)
 
             else:
                 raw_sql = self.generate_sql(chart_type, table, condition, groupby, filters, distinct)
-                panel_obj = self.generate_panel(title, raw_sql, table, chart_type, gridPos)
+                panel_json = self.generate_general_panel(title, raw_sql, table, chart_type, gridPos)
 
-            panels.append(panel_obj)
+            panels.append(panel_json)
 
         return panels

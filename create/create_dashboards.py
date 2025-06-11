@@ -4,9 +4,10 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import yaml
 
-from tool.panel_builder import *
-from tool.other_builder import *
-from tool.dashboard_builder import *
+from tool.helper import datasource_uid
+from tool.panel_builder import PanelBuilder
+from tool.other_builder import FilterBuilder
+from tool.dashboard_builder import DashboardBuilder
 
 """
 This file generates all the dashboards json_file, saves them to a folder under `grafana_hgcdb_dashboard`, and uploads them to grafana.
@@ -14,7 +15,7 @@ This file generates all the dashboards json_file, saves them to a folder under `
 """
 
 # Define the path of the config folders
-path = "./config_dashboard_folders"
+path = "./config_folders"
 filelist = os.listdir(path)
 
 # Define the builder
@@ -50,7 +51,7 @@ for config in filelist:
                 filter_json = filter_builder.build_template_list(filters, exist_filter)
                 template_list.extend(filter_json)
             
-        panels_array = panel_builder.build_from_config(config_panels)
+        panels_array = panel_builder.generate_panels_json(config_panels)
             
         # Generate the dashboard json
         dashboard_json = dashboard_builder.build_dashboard(dashboard["title"], panels_array, template_list)
