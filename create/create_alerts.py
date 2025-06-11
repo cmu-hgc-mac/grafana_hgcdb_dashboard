@@ -28,6 +28,7 @@ for config in filelist:
     # Load the alerts
     with open(os.path.join(path, config), mode = 'r') as file:
         tot_config = yaml.safe_load(file)
+        # check if alerts exist:
         if "alert" not in tot_config:
             continue
         alerts = tot_config["alert"]

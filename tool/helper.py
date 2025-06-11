@@ -141,7 +141,8 @@ class GrafanaClient:
             "editable": True,
             "uid": uid,
             "jsonData": {
-                "sslmode": "disable"
+                "sslmode": "disable",
+                "alerting": True
             }
         }
 

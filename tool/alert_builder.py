@@ -35,10 +35,7 @@ class AlertBuilder:
             "annotations": {
                 "summary": alertInfo['summary']
             },
-            "labels": {
-                "dashboard_uid": dashboard_uid,
-                # "auto": alertInfo['labels']
-            },
+            "labels": alertInfo['labels'],
             "data": [
                 {
                     "refId": "A",
