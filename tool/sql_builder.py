@@ -63,7 +63,7 @@ class BaseSQLGenerator(ChartSQLGenerator):
 
         # time: using the Grafana built-in time filter
         elif elem == "assembled" or elem.endswith("time") or elem.endswith("date") or elem.endswith("timestamp"):
-            arg = f"$__timeFilter({filters_table}.{elem} AT TIME ZONE {"'" + time_zone + "'"})"
+            arg = f"$__timeFilter({filters_table}.{elem} AT TIME ZONE '{time_zone}')"
         
         # general cases
         else:
@@ -249,7 +249,7 @@ class TimeseriesGenerator(BaseSQLGenerator):
         select_clause = []
 
         # Time
-        time_arg = f"{table}.{time} AT TIME ZONE {"'" + time_zone + "'"} AS date"
+        time_arg = f"{table}.{time} AT TIME ZONE '{time_zone}' AS date"
         select_clause.append(time_arg)
 
         # Element

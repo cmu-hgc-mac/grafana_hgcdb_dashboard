@@ -247,7 +247,7 @@ institution     = db_conn.get("institution_abbr").upper()
 # -- define GrafanaClient --
 client = GrafanaClient(api_token, gf_url)
 
-# define time zone
+# -- set time zone --
 time_zone_dict = {
     "CMU": "America/New_York",
     "IHEP": "Asia/Shanghai",
