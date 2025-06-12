@@ -194,16 +194,11 @@ class GrafanaClient:
         if response.status_code != 200:
             print(f"[Upload] Dashboard: {dashboard_json['title']} | Error: {response.text}")
     
-    def upload_alert_json(self, alert_json: dict, folder_uid: str):
+    def upload_alert_json(self, alert_json: dict):
         """Upload an alert to a folder.
         """
-        payload = {
-            "alert": alert_json,
-            "folderUid": folder_uid,
-            "overwrite": True
-        }
         url = f"{self.base_url}/api/v1/provisioning/alert-rules"
-        response = requests.post(url, headers=self.headers, json=payload)
+        response = requests.post(url, headers=self.headers, json=alert_json)
         print(f"[Upload] {alert_json['title']} | Status: {response.status_code}")
 
         # print out error message

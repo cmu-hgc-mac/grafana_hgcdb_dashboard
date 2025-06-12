@@ -18,6 +18,7 @@ class AlertBuilder:
         return alert_json
 
     def generate_alert_rule(self, alertSQL: str, alertInfo: dict, dashboard_title: str) -> dict:
+        # Folder uid should be added to the alert json, new para input for it
         """Generate a json of the alert rule based on the given info
         """
         # get dashboard uid
@@ -139,7 +140,9 @@ class AlertBuilder:
 
         # upload alerts
         try:
-            client.upload_alert_json(alert_json, folder_uid)
+            # Add function to check if the alert already exists
+                # alerts cannot be overwritten
+            client.upload_alert_json(alert_json)
 
         except requests.RequestException as e:
             print(f"[ERROR] Failed to upload alert '{file_name}': {e}")
