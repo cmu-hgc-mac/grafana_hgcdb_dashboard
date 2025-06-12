@@ -1,5 +1,6 @@
 # Grafana_HGCDB_Dashboard ε=ε=(<ゝω・)☆
-This is a dashboard provided by [Grafana](https://github.com/grafana/grafana?tab=readme-ov-file) to monitor the HGC Postgres database. 
+This is a dashboard provided by [Grafana](https://github.com/grafana/grafana?tab=readme-ov-file) to monitor the HGC Postgres database.  
+Chinese Version README: [读我.md](a_EverythingNeedToChange/读我.md)
 
 ## Before Run 
 1. Download Grafana.
@@ -86,4 +87,8 @@ The `preSteps` folder will only be runned for once, as there's a parameter - `GF
   
 Thanks for reading and using my scripts! If you have any questions, please feel free to ask me, and I'm happy to hear any suggestions or improvements! 
 
-Chinese Version README: [读我.md](a_EverythingNeedToChange/读我.md)
+## To Remove the unwanted dashboards
+1. Open the logged in Grafana Web UI.
+2. Select the dashboards/folders you want to remove.
+3. Click the `Delete` button.
+4. Confirm the deletion - Type the `Delete` word in the input box.

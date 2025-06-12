@@ -1,4 +1,5 @@
 import os
+import shutil
 
 import json
 from typing import Any
@@ -219,6 +220,15 @@ def create_uid(title_name: str) -> str:
     """
     return title_name.lower().replace(' ', '-')
 
+def remove_folder(folder_name: str, folder_path: str):
+    """Remove the folder with the given path.
+    """
+    if os.path.exists(folder_path):
+        shutil.rmtree(folder_path)
+        print(f"[Folder] Removed folder: {folder_name}")
+    else:
+        print(f"[Folder] Folder not found: {folder_name}")
+
 
 # ============================================================
 # === Loaded Info ============================================
@@ -257,3 +267,7 @@ time_zone_dict = {
     "UCSB": "America/Los_Angeles"
 }
 time_zone = time_zone_dict[institution]
+
+# -- path --
+dashboards_folder_path = "./Dashboards"
+iv_plots_folder_path = "./IV_curves_plot"

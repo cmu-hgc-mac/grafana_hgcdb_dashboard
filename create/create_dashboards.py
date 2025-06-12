@@ -4,7 +4,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import yaml
 
-from tool.helper import datasource_uid
+from tool.helper import *
 from tool.panel_builder import PanelBuilder
 from tool.other_builder import FilterBuilder
 from tool.dashboard_builder import DashboardBuilder
@@ -73,3 +73,8 @@ for folder in folder_list:
             dashboard_builder.upload_dashboards(file_path)
 
 print(" >> Dashboards uploaded! ᕕ( ᐛ )ᕗ \n")
+
+# Remove dashboards json files
+remove_folder("Dashboards", dashboards_folder_path)
+remove_folder("IV_curves_plot", iv_plots_folder_path)
+print(" >> Dashboards json files removed! o(≧v≦)o \n")
