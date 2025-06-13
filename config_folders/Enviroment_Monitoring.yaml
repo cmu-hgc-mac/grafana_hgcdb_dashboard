@@ -2,7 +2,7 @@ datasource_variable: DS_POSTGRES
 
 dashboards:
 
-  - title: "Enviorment Monitoring trend"
+  - title: "Enviorment Monitoring (trend)"
     panels:
       - title: "Temperature (°C)"
         table: "temp_humidity"
@@ -19,7 +19,7 @@ dashboards:
         filters: {"temp_humidity": ["log_location"]}
         distinct: False
   
-  - title: "Enviorment Monitoring current"
+  - title: "Enviorment Monitoring (current)"
     panels:
       - title: "Temperature (°C) (main_clean_room)"
         table: "temp_humidity"

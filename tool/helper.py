@@ -1,4 +1,5 @@
 import os
+import re
 import shutil
 
 import json
@@ -214,7 +215,8 @@ def create_uid(title_name: str) -> str:
     """Create a unique uid based on its title.
        - For `folder` and `dashboard`
     """
-    return title_name.lower().replace(' ', '-')
+    safe_uid = re.sub(r'[^a-zA-Z0-9 ]', '', title_name).lower().replace(' ', '-')
+    return safe_uid
 
 def remove_folder(folder_name: str, folder_path: str):
     """Remove the folder with the given path.
