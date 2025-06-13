@@ -13,6 +13,7 @@ This file contains all the helpers used in the dashboard.
         - GrafanaClient: all API to Grafana server
         - ConfigLoader: load the config file
         - create_uid: create a unique uid based on its title
+        - remove_folder: remove the folder that contains all json files
         - information: loaded from config file
 """
 
@@ -266,3 +267,4 @@ time_zone = time_zone_dict[institution]
 # -- path --
 dashboards_folder_path = "./Dashboards"
 iv_plots_folder_path = "./IV_curves_plot"
+alerts_folder_path = "./Alerts"

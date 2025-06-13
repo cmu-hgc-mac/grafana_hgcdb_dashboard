@@ -132,7 +132,7 @@ class AlertBuilder:
         else:
             folder_uid_map = gf_conn.get("GF_FOLDER_UIDS", {})
             if folder_name not in folder_uid_map:
-                raise ValueError(f"Dashboard Folder '{folder_name}' not in GF_DASHBOARD_FOLDER_UIDS")
+                raise ValueError(f"Dashboard Folder '{folder_name}' not in GF_FOLDER_UIDS")
             folder_uid = folder_uid_map[folder_name]
 
         with open(file_path, 'r', encoding='utf-8') as file:

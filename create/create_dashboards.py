@@ -78,3 +78,8 @@ print(" >> Dashboards uploaded! ᕕ( ᐛ )ᕗ \n")
 remove_folder("Dashboards", dashboards_folder_path)
 remove_folder("IV_curves_plot", iv_plots_folder_path)
 print(" >> Dashboards json files removed! o(≧v≦)o \n")
+
+# Clear GF_FOLDER_UID map:
+gf_conn.set("GF_FOLDER_UIDS", {})
+gf_conn.save()
+gf_conn.reload()
