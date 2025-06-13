@@ -60,7 +60,8 @@ print(" >> Alerts json files uploaded! (*ˉ︶ˉ*) \n")
 remove_folder("Alerts", alerts_folder_path)
 print(" >> Alerts json files removed! o(≧v≦)o \n")
 
-# Clear GF_ALERT_UID map:
+# Clear GF_FOLDER_UIDS and GF_ALERT_UIDs map:
+gf_conn.set("GF_FOLDER_UIDS", {})
 gf_conn.set("GF_ALERT_UIDS", {})
 gf_conn.save()
 gf_conn.reload()

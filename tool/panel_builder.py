@@ -37,7 +37,7 @@ class PanelBuilder:
 
         return panel_sql
 
-    def assign_gridPos(self, config_panels: list, max_cols=24) -> list:
+    def assign_gridPos(self, dashboard_title: str, config_panels: list, max_cols=24) -> list:
         """Assign gridPos to each panel in the dashboard. 
         """
         # initial settings
@@ -46,10 +46,16 @@ class PanelBuilder:
         # set up the size of each panel
         num_panels = len(config_panels)
 
-        if num_panels <= 3:
+        # set up the max number of panels per line:
+        if dashboard_title == "Module Info" or "Enviorment Monitoring" in dashboard_title:
+            max_num = 2
+        else: 
+            max_num = 3
+
+        if num_panels <= max_num:
             width = max_cols // num_panels
         else:
-            width = 8     # max 3 in a row
+            width = max_cols // max_num
 
         height = width // 2 + 2
 
@@ -296,11 +302,11 @@ class PanelBuilder:
         return content
 
     # -- Genarate Panels --
-    def generate_panels_json(self, config_panels: list) -> list:
+    def generate_panels_json(self, dashboard_title: str, config_panels: list) -> list:
         """Build the panel jsons based on the given config file.
         """
         panels = []
-        self.assign_gridPos(config_panels)
+        self.assign_gridPos(dashboard_title, config_panels)
 
         # load information from config file
         for panel in config_panels:

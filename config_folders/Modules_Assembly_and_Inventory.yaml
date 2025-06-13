@@ -18,6 +18,13 @@ dashboards:
         groupby: ["assembled", "count"]
         filters: {"module_info": ["bp_material", "resolution", "roc_version", "geometry", "status", "assembled"]}
         distinct: False
+      - title: "Module Status"
+        table: "module_info"
+        chart_type: "piechart"
+        condition: 
+        groupby: []
+        filters: {"module_info": ["bp_material", "resolution", "roc_version", "geometry", "status"]}
+        distinct: False
 
   - title: "Module Inspect"
     panels:

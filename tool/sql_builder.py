@@ -399,6 +399,24 @@ class GaugeGenerator(BaseSQLGenerator):
         return ", ".join(groupby_fields)
 
 
+class PieChartGenerator(BaseSQLGenerator):
+    def generate_sql(self, table: str, condition: str, groupby: list, filters: list, distinct: bool) -> str:
+        pre_clause, target_table = self._build_pre_clause(table, distinct)
+        where_clause = self._build_where_clause(filters, condition, table, distinct)
+        join_clause = self._build_join_clause(table, filters, distinct)
+
+        sql = f"""
+        {pre_clause}
+        SELECT 
+            COUNT(*) FILTER (WHERE shipped_datetime IS NULL) AS not_shipped,
+            COUNT(*) FILTER (WHERE shipped_datetime IS NOT NULL) AS shipped
+        FROM {target_table}
+        {join_clause}
+        WHERE {where_clause}
+        """
+        return sql.strip()
+
+
 # ============================================================
 # === SQL Generator Factory ==================================
 # ============================================================
@@ -411,7 +429,8 @@ class ChartSQLFactory:
         "text": TextChartGenerator(),
         "stat": StatChartGenerator(),
         "table": TableGenerator(),
-        "gauge": GaugeGenerator()
+        "gauge": GaugeGenerator(),
+        "piechart": PieChartGenerator()
     }
 
     @classmethod

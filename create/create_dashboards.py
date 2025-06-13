@@ -37,6 +37,7 @@ for config in filelist:
     # Loop for every dashboard in a config file
     for dashboard in dashboards:
         config_panels = dashboard["panels"]
+        dashboard_title = dashboard["title"]
 
         # assign_gridPos(panels)  # Assign gridPos to each panel
         panels_array = []
@@ -51,10 +52,10 @@ for config in filelist:
                 filter_json = filter_builder.build_template_list(filters, exist_filter)
                 template_list.extend(filter_json)
             
-        panels_array = panel_builder.generate_panels_json(config_panels)
+        panels_array = panel_builder.generate_panels_json(dashboard_title, config_panels)
             
         # Generate the dashboard json
-        dashboard_json = dashboard_builder.build_dashboard(dashboard["title"], panels_array, template_list)
+        dashboard_json = dashboard_builder.build_dashboard(dashboard_title, panels_array, template_list)
         
         # Export the dashboard json to a file
         file_name = config.split(".")[0]
@@ -78,8 +79,3 @@ print(" >> Dashboards uploaded! ᕕ( ᐛ )ᕗ \n")
 remove_folder("Dashboards", dashboards_folder_path)
 remove_folder("IV_curves_plot", iv_plots_folder_path)
 print(" >> Dashboards json files removed! o(≧v≦)o \n")
-
-# Clear GF_FOLDER_UID map:
-gf_conn.set("GF_FOLDER_UIDS", {})
-gf_conn.save()
-gf_conn.reload()

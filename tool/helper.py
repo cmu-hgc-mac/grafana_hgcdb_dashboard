@@ -213,9 +213,10 @@ class GrafanaClient:
 # ============================================================
 def create_uid(title_name: str) -> str:
     """Create a unique uid based on its title.
-       - For `folder` and `dashboard`
+       - For `folder`, `dashboard`, and `alert`.
+       - The uid format is `lowercase-with-dash`.
     """
-    safe_uid = re.sub(r'[^a-zA-Z0-9 ]', '', title_name).lower().replace(' ', '-')
+    safe_uid = re.sub(r'[^a-zA-Z0-9_ ]', '', title_name).lower().replace(' ', '-')
     return safe_uid
 
 def remove_folder(folder_name: str, folder_path: str):
