@@ -117,7 +117,7 @@ class BaseSQLGenerator(ChartSQLGenerator):
 # === Chart SQL Generator ====================================
 # ============================================================
 
-# -- BarChart --
+# -- Bar Chart --
 class BarChartGenerator(BaseSQLGenerator):
     def generate_sql(self, table: str, condition: str, groupby: list, filters: list, distinct: bool) -> str:
         pre_clause, target_table = self._build_pre_clause(table, distinct)
@@ -399,6 +399,7 @@ class GaugeGenerator(BaseSQLGenerator):
         return ", ".join(groupby_fields)
 
 
+# -- Pie Chart --
 class PieChartGenerator(BaseSQLGenerator):
     def generate_sql(self, table: str, condition: str, groupby: list, filters: list, distinct: bool) -> str:
         pre_clause, target_table = self._build_pre_clause(table, distinct)

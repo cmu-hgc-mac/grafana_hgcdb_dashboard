@@ -11,19 +11,26 @@ dashboards:
         groupby: ["bp_material", "resolution", "roc_version", "geometry", "shipped_datetime"]
         filters: {"module_info": ["bp_material", "resolution", "roc_version", "geometry", "status", "assembled"]}
         distinct: False
-      - title: "Module Assmebly"
-        table: "module_info"
-        chart_type: "timeseries"
-        condition: "module_info.assembled IS NOT NULL"
-        groupby: ["assembled", "count"]
-        filters: {"module_info": ["bp_material", "resolution", "roc_version", "geometry", "status", "assembled"]}
-        distinct: False
       - title: "Module Status"
         table: "module_info"
         chart_type: "piechart"
         condition: 
         groupby: []
-        filters: {"module_info": ["bp_material", "resolution", "roc_version", "geometry", "status"]}
+        filters: {"module_info": ["bp_material", "resolution", "roc_version", "geometry", "status", "assembled"]}
+        distinct: False
+      - title: "Number of the Shipped Modules"
+        table: "module_info"
+        chart_type: "stat"
+        condition: "module_info.shipped_datetime IS NOT NULL"
+        groupby: []
+        filters: {"module_info": ["bp_material", "resolution", "roc_version", "geometry", "status", "assembled"]}
+        distinct: False
+      - title: "Number of the Not-Shipped Modules"
+        table: "module_info"
+        chart_type: "stat"
+        condition: "module_info.shipped_datetime IS NULL"
+        groupby: []
+        filters: {"module_info": ["bp_material", "resolution", "roc_version", "geometry", "status", "assembled"]}
         distinct: False
 
   - title: "Module Inspect"
@@ -87,7 +94,7 @@ dashboards:
         groupby: ["grade"]
         filters: {"baseplate": ["bp_material"], "sensor": ["resolution", "geometry"], "proto_assembly": ["ass_run_date"], "proto_inspect": ["grade"]}
         distinct: False
-      - title: "flatness"
+      - title: "Flatness"
         table: "proto_inspect"
         chart_type: "histogram"
         condition: "proto_inspect.flatness IS NOT NULL"
