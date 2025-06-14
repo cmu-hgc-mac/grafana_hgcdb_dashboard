@@ -2,85 +2,121 @@ from tool.helper import *
 
 """
 This file defines the class for building the alert json file in Grafana and upload the alert.
+Author: Xinyue (Joyce) Zhuang
 """
 
 class AlertBuilder:
     def __init__(self, datasource_uid: str):
         self.datasource_uid = datasource_uid
 
-    def generate_alerts(self, alert: dict):
+    def generate_alerts(self, alert: dict, folder_name: str):
         """Build all alerts based on the given alert_dict.
         """ 
         # generate alert json
         alert_sql = self._generate_alertSQL(alert['parameter'], alert['table'])
-        alert_json = self.generate_alert_rule(alert_sql, alert, alert['dashboard'])
+        alert_json = self.generate_alert_rule(alert_sql, alert, alert['dashboard'], folder_name)
         
         return alert_json
 
-    def generate_alert_rule(self, alertSQL: str, alertInfo: dict, dashboard_title: str) -> dict:
-        # Folder uid should be added to the alert json, new para input for it
+    def generate_alert_rule(self, alertSQL: str, alertInfo: dict, dashboard_title: str, folder_name: str) -> dict:
         """Generate a json of the alert rule based on the given info
         """
+        folderName = folder_name.replace("_", " ")
+
         # get dashboard uid
         dashboard_uid = create_uid(dashboard_title)
+
+        # get alert rule uid
+        alert_uid = create_uid(f"ALERT {alertInfo['title']}")
+
+        # get folder uid
+        if folderName == "General":  # invalid folder
+            raise ValueError("[Error] Alert rule in invalid folder: General folder can not store alert rule.")
+        else:
+            folder_uid_map = gf_conn.get("GF_FOLDER_UIDS", {})
+            if folderName not in folder_uid_map:
+                raise ValueError(f"Dashboard Folder '{folderName}' not in GF_FOLDER_UIDS")
+            folder_uid = folder_uid_map[folderName]
 
         # generate alert json
         alert_json =  {
             "title": f"ALERT: {alertInfo['title']}",
+            "uid": alert_uid,
             "ruleGroup": alertInfo['title'],
-            "noDataState": "Alerting",
-            "execErrState": "Alerting",
-            "for": alertInfo['duration'],
+            "folderUID": folder_uid,
+            "condition": "C",
             "orgId": 1,
-            "condition": "B",
+            "for": alertInfo["duration"],
+            "interval": alertInfo["interval"],
+            "noDataState": "NoData",
+            "execErrState": "Error",
             "annotations": {
-                "summary": alertInfo['summary']
+                "summary": "Auto-imported from UI"
             },
-            "labels": alertInfo['labels'],
+            "labels":alertInfo["labels"],
             "data": [
                 {
+                "refId": "A",
+                "relativeTimeRange": {
+                    "from": 600,
+                    "to": 0
+                },
+                "datasourceUid": self.datasource_uid,
+                "model": {
                     "refId": "A",
-                    "queryType": "",
-                    "relativeTimeRange": { 
-                        "from": 600, 
-                        "to": 0 
-                    }, # read the data in the time interval from 10 min before
-                    "datasourceUid": self.datasource_uid,
-                    "model": {
-                        "rawSql": alertSQL,
-                        "refId": "A",
-                        "intervalMs": 1000,
-                        "maxDataPoints": 43200,
-                        "hide": False, 
-                        "format": "table"
-                    }
+                    "format": "time_series",
+                    "rawQuery": "true",
+                    "rawSql": alertSQL
+                }
                 },
                 {
-                    "refId": "B",
-                    "queryType": "",
-                    "relativeTimeRange": { "from": 0, "to": 0 },
-                    "datasourceUid": self.datasource_uid,
-                    "model": {
-                        "conditions": [
-                            {
-                                "evaluator": { 
-                                    "type": alertInfo["logicType"], 
-                                    "params": [alertInfo['threshold']] 
-                                },
-                                "operator": { "type": "and" },
-                                "query": { "params": ["A"] },
-                                "reducer": { "type": "last", "params": [] },
-                                "type": "query"
-                            }
-                        ],
-                        "type": "classic_conditions",
-                        "hide": False,
-                        "intervalMs": 1000,
-                        "maxDataPoints": 43200
+                "refId": "B",
+                "relativeTimeRange": {
+                    "from": 0,
+                    "to": 0
+                },
+                "datasourceUid": "__expr__",
+                "model": {
+                    "expression": "A",
+                    "type": "reduce",
+                    "reducer": "last",
+                    "refId": "B"
+                }
+                },
+                {
+                "refId": "C",
+                "relativeTimeRange": {
+                    "from": 0,
+                    "to": 0
+                },
+                "datasourceUid": "__expr__",
+                "model": {
+                    "expression": "B",
+                    "type": "threshold",
+                    "refId": "C",
+                    "conditions": [
+                    {
+                        "type": "query",
+                        "evaluator": {
+                        "type": alertInfo["logicType"],
+                        "params": alertInfo["threshold"]
+                        },
+                        "operator": {
+                        "type": "and"
+                        },
+                        "query": {
+                        "params": ["C"]
+                        },
+                        "reducer": {
+                        "type": "last",
+                        "params": []
+                        }
                     }
+                    ]
+                }
                 }
             ]
-        }
+            } 
 
         return alert_json
     
@@ -140,8 +176,6 @@ class AlertBuilder:
 
         # upload alerts
         try:
-            # Add function to check if the alert already exists
-                # alerts cannot be overwritten
             client.upload_alert_json(alert_json)
 
         except requests.RequestException as e:

@@ -185,6 +185,7 @@ class PanelBuilder:
 
     def generate_plot(self):
         """Generate the IV_curve Plot.
+           Author: Andrew C. Roberts  
         """
         loop = asyncio.get_event_loop()
 
@@ -283,7 +284,7 @@ class PanelBuilder:
         return plt_path
 
     def convert_png_to_base64(self, image_path: str) -> str:
-        """convert the png to base64
+        """Convert the png to base64
         """
         # Compress the image
         img = Image.open(image_path)
@@ -296,7 +297,7 @@ class PanelBuilder:
         return encoded_string
 
     def generate_content(self, encoded_string: str) -> str:
-        """generate the markdown content for text panel
+        """Generate the markdown content for text panel
         """
         content = f'<img src=\"data:image/png;base64,{encoded_string}" style="width: auto; height: auto;"/>'
         return content

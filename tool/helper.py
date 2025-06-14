@@ -11,8 +11,8 @@ import yaml
 """
 This file contains all the helpers used in the dashboard.
     - The included helper classes/functions are:
+        - ConfigLoader: load and modify the config file
         - GrafanaClient: all API to Grafana server
-        - ConfigLoader: load the config file
         - create_uid: create a unique uid based on its title
         - remove_folder: remove the folder that contains all json files
         - information: loaded from config file
@@ -84,6 +84,7 @@ class GrafanaClient:
             "Authorization": f"Bearer {api_token}",
             "Content-Type": "application/json"
         }
+        self.api_token = api_token
     
     def create_service_account_and_token(self, sa_name: str, token_name: str, username: str, password: str) -> str:
         """Create a service account and return the API token string.
@@ -129,7 +130,6 @@ class GrafanaClient:
     ):
         """Add a PostgreSQL data source to Grafana using current API token.
         """
-
         payload = {
             "name": name,
             "type": "postgres",
@@ -149,6 +149,7 @@ class GrafanaClient:
             }
         }
 
+        # Add data source
         response = requests.post(
             f"{self.base_url}/api/datasources",
             headers=self.headers,
@@ -164,15 +165,18 @@ class GrafanaClient:
             print(response.text)
             response.raise_for_status()
     
-    def create_or_get_folder(self, title: str, uid: str) -> str:
+    def create_or_get_folder(self, folder_name: str, folder_uid: str) -> str:
         """Create a folder if it doesn't exist, or return the existing folder's uid.
         """
+        title, uid = folder_name, folder_uid
+
+        # Fetch folder
         url = f"{self.base_url}/api/folders/{uid}"
         response = requests.get(url, headers=self.headers)
 
-        if response.status_code == 200:
+        if response.status_code == 200:     # folder exist
             return response.json()['uid']
-        elif response.status_code == 404:
+        elif response.status_code == 404:   # create folder
             payload = {"title": title, "uid": uid}
             response = requests.post(f"{self.base_url}/api/folders", headers=self.headers, json=payload)
             response.raise_for_status()
@@ -188,6 +192,8 @@ class GrafanaClient:
             "folderUid": folder_uid,
             "overwrite": True
         }
+
+        # Upload dashboard
         url = f"{self.base_url}/api/dashboards/db"
         response = requests.post(url, headers=self.headers, json=payload)
         print(f"[Upload] Dashboard: {dashboard_json['title']} | Status: {response.status_code}")
@@ -197,15 +203,37 @@ class GrafanaClient:
             print(f"[Upload] Dashboard: {dashboard_json['title']} | Error: {response.text}")
     
     def upload_alert_json(self, alert_json: dict):
-        """Upload an alert to a folder.
+        """Upload an alert-rule to a folder. 
+           - Delete if the alert-rule uid already exist and upload the new one.
         """
+        # Upload alert rule
         url = f"{self.base_url}/api/v1/provisioning/alert-rules"
         response = requests.post(url, headers=self.headers, json=alert_json)
         print(f"[Upload] {alert_json['title']} | Status: {response.status_code}")
 
         # print out error message
-        if response.status_code != 200:
-            print(f"[Upload] {alert_json['title']} | Error: {response.text}")
+        if response.status_code not in [200, 201]:
+            if response.status_code == 409:     # alert uid exist
+                print("[Delete] Try deleting conflict Alert rule... (つД`)/")
+                self.delete_alert_rule(alert_uid)
+                self.upload_alert_json(alert_json, alert_uid)   # re-upload
+            else:
+                print(f"[Upload] {alert_json['title']} failed | Error: {response.text}")
+     
+    def delete_alert_rule(self, alert_uid: str):
+        """Delete the specified alert rule.
+           Author: Xinyue (Joyce) Zhuang
+        """
+        uid = alert_uid
+
+        # Delete alert rule
+        url = f"{self.base_url}/api/v1/provisioning/alert-rules/{uid}"
+        response = requests.delete(url, headers=self.headers)
+        print(f"[Delete] Alert rule UID: {uid} deleted | Status: {response.status_code}")
+
+        # print out error message
+        if not (response.status_code == 200 or response.status_code == 204):
+            print(f"[Delete] Alert rule UID: {uid} failed | Error: {response.text}")
 
 
 # ============================================================

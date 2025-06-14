@@ -8,7 +8,8 @@ from tool.helper import datasource_uid
 from tool.alert_builder import AlertBuilder
 
 """
-This file generates all the alerts json_file, saves them to a folder under `grafana_hgcdb_dashboard`, and uploads them to grafana.
+This script generates all alert JSON files, saves them to a folder under `grafana_hgcdb_dashboard`, and uploads them to Grafana.
+Author: Xinyue (Joyce) Zhuang
 """
 
 # Define the path of the config folders
@@ -36,7 +37,8 @@ for config in filelist:
     # Loop for every panel in a dashboard
     for alert in alerts:
         # Generate the alert json
-        alert_json = alert_builder.generate_alerts(alert)
+        folder_name = config.split(".")[0].replace("_", " ")
+        alert_json = alert_builder.generate_alerts(alert, folder_name)
 
         # Export the dashbaord json to a file
         file_name = config.split(".")[0]

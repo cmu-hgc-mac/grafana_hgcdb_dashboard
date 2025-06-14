@@ -4,8 +4,9 @@ import json
 from tool.helper import *
 
 """
-This file defines classes for building other features for Grafana, including:
+This file defines classes for building additional Grafana features, including:
     - Filters
+With support from Wen Li.
 """
 
 class FilterBuilder:

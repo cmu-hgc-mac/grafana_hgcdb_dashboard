@@ -7,7 +7,12 @@ import yaml
 from tool.helper import *
 
 """
-This file does EVERYTHING for you (*´ω`*)
+This file does EVERYTHING for you (*´ω`*) 
+    — from configuring Grafana to linking PostgreSQL and auto-generating dashboards.
+
+Special thanks to Sindhu Murthy and Manami Kanemura for the amazing database this is built on.
+
+I'm also sincerely thankful to the entire CMU-CMS team for trusting me with the responsibility of leading this project.
 """
 
 cmu_mcs_cms_logo = """
