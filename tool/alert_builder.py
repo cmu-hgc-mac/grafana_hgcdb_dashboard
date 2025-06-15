@@ -173,7 +173,7 @@ class AlertBuilder:
 
         # upload alerts
         try:
-            client.upload_alert_json(alert_json)
+            client.upload_alert_json(alert_json, alert_json["uid"])
 
         except requests.RequestException as e:
             print(f"[ERROR] Failed to upload alert '{file_name}': {e}")
