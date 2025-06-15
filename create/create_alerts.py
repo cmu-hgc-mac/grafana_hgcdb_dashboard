@@ -4,7 +4,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import yaml
 
-from tool.helper import datasource_uid
+from tool.helper import *
 from tool.alert_builder import AlertBuilder
 
 """
@@ -17,7 +17,7 @@ path = "./config_folders"
 filelist = os.listdir(path)
 
 # Define the builder
-alert_builder = AlertBuilder(datasource_uid)
+alert_builder = AlertBuilder(GF_DS_UID)
 
 # Loop for every config files
 for config in filelist:
@@ -59,7 +59,7 @@ for folder in folder_list:
 print(" >> Alerts json files uploaded! (*ˉ︶ˉ*) \n")
 
 # Delete the alert files
-remove_folder("Alerts", alerts_folder_path)
+remove_folder("Alerts", ALERTS_FOLDER_PATH)
 print(" >> Alerts json files removed! o(≧v≦)o \n")
 
 # Clear GF_FOLDER_UIDS and GF_ALERT_UIDs map:

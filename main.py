@@ -39,7 +39,7 @@ def main():
         # rebuild GrafanaClient with new token
         gf_conn.reload()
         new_token = gf_conn.get("GF_API_KEY")
-        client = GrafanaClient(new_token, gf_url)
+        client = GrafanaClient(new_token, GF_URL)
 
         subprocess.run(["python", "./preSteps/add_dbsource.py"], check=True)
 

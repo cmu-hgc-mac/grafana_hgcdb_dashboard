@@ -23,14 +23,8 @@ This file contains all the helpers used in the dashboard.
 # ============================================================
 
 class ConfigLoader:
-    def __init__(self, config_name: str):
-        if config_name == "gf_conn":
-            self.config_path = "./a_EverythingNeedToChange/gf_conn.yaml"
-        elif config_name == "db_conn":
-            self.config_path = "./a_EverythingNeedToChange/db_conn.yaml"
-        else:
-            raise ValueError(f"Invalid config name: {config_name}")
-        
+    def __init__(self, config_path: str):
+        self.config_path = config_path
         self._data = self._load()
     
     def _load(self) -> dict:
@@ -124,14 +118,14 @@ class GrafanaClient:
 
     def add_postgres_datasource(
         self, 
-        name: str, uid: str,
+        datasource_name: str, datasource_uid: str,
         db_host: str, db_port: str,
         db_name: str, db_user: str, db_password: str
     ):
         """Add a PostgreSQL data source to Grafana using current API token.
         """
         payload = {
-            "name": name,
+            "name": datasource_name,
             "type": "postgres",
             "access": "proxy",
             "url": f"{db_host}:{db_port}",
@@ -142,7 +136,7 @@ class GrafanaClient:
             },
             "isDefault": True,
             "editable": True,
-            "uid": uid,
+            "uid": datasource_uid,
             "jsonData": {
                 "sslmode": "disable",
                 "alerting": True
@@ -157,9 +151,9 @@ class GrafanaClient:
         )
 
         if response.status_code in [200, 201]:
-            print(f"[Grafana] PostgreSQL data source '{name}' added as default... (`∀´σ) \n")
+            print(f"[Grafana] PostgreSQL data source '{datasource_name}' added as default... (`∀´σ) \n")
         elif response.status_code == 409:
-            print(f"[Grafana] Data source '{name}' already exists.  (´･ω･`) \n")
+            print(f"[Grafana] Data source '{datasource_name}' already exists.  (´･ω･`) \n")
         else:
             print(f"[Grafana] Failed to add data source: {response.status_code} ヽ(`Д´)ﾉ \n")
             print(response.text)
@@ -202,7 +196,7 @@ class GrafanaClient:
         if response.status_code != 200:
             print(f"[Upload] Dashboard: {dashboard_json['title']} | Error: {response.text}")
     
-    def upload_alert_json(self, alert_json: dict):
+    def upload_alert_json(self, alert_json: dict, alert_uid: str, _retry=False):
         """Upload an alert-rule to a folder. 
            - Delete if the alert-rule uid already exist and upload the new one.
         """
@@ -213,13 +207,13 @@ class GrafanaClient:
 
         # print out error message
         if response.status_code not in [200, 201]:
-            if response.status_code == 409:     # alert uid exist
+            if response.status_code == 409 and not _retry:     # alert uid exist
                 print("[Delete] Try deleting conflict Alert rule... (つД`)/")
                 self.delete_alert_rule(alert_uid)
-                self.upload_alert_json(alert_json, alert_uid)   # re-upload
+                self.upload_alert_json(alert_json, alert_uid, _retry=True)   # re-upload
             else:
                 print(f"[Upload] {alert_json['title']} failed | Error: {response.text}")
-     
+
     def delete_alert_rule(self, alert_uid: str):
         """Delete the specified alert rule.
            Author: Xinyue (Joyce) Zhuang
@@ -261,32 +255,38 @@ def remove_folder(folder_name: str, folder_path: str):
 # === Loaded Info ============================================
 # ============================================================
 
-# -- Load YAML Configuration --
-gf_conn = ConfigLoader("gf_conn")
-db_conn = ConfigLoader("db_conn")
+# -- Path --
+CONFIG_FOLDER_PATH      = "./a_EverythingNeedToChange"
+DASHBOARDS_FOLDER_PATH  = "./Dashboards"
+IV_PLOTS_FOLDER_PATH    = "./IV_curves_plot"
+ALERTS_FOLDER_PATH      = "./Alerts"
 
-# -- gf_conn.yaml --
-gf_port         = gf_conn.get('GF_PORT')
-gf_url          = f"http://127.0.0.1:{gf_port}"
-api_token       = gf_conn.get('GF_API_KEY')
-gf_username     = gf_conn.get('GF_USER')
-gf_password     = gf_conn.get('GF_PASS')
-datasource_name = gf_conn.get('GF_DATA_SOURCE_NAME')
-datasource_uid  = gf_conn.get('GF_DATA_SOURCE_UID')
+DB_CONN_PATH            = f"{CONFIG_FOLDER_PATH}/db_conn.yaml"
+GF_CONN_PATH            = f"{CONFIG_FOLDER_PATH}/gf_conn.yaml"
 
-# -- db_conn.yaml --
-db_host         = db_conn.get("db_hostname")
-db_name         = db_conn.get("dbname")
-db_user         = db_conn.get("user")
-db_password     = db_conn.get("password")
-db_port         = db_conn.get("port")
-institution     = db_conn.get("institution_abbr").upper()
+# -- load YAML Configuration --
+db_conn = ConfigLoader(DB_CONN_PATH)
+gf_conn = ConfigLoader(GF_CONN_PATH)
 
-# -- define GrafanaClient --
-client = GrafanaClient(api_token, gf_url)
+# -- Grafana Connection Info --
+GF_PORT         = gf_conn.get('GF_PORT')
+GF_URL          = f"http://127.0.0.1:{GF_PORT}"
+GF_API_KEY      = gf_conn.get('GF_API_KEY')
+GF_USER         = gf_conn.get('GF_USER')
+GF_PASS         = gf_conn.get('GF_PASS')
+GF_DS_NAME      = gf_conn.get('GF_DATA_SOURCE_NAME')
+GF_DS_UID       = gf_conn.get('GF_DATA_SOURCE_UID')
 
-# -- set time zone --
-time_zone_dict = {
+# -- PostgreSQL Connection Info --
+DB_HOST         = db_conn.get("db_hostname")
+DB_NAME         = db_conn.get("dbname")
+DB_USER         = db_conn.get("user")
+DB_PASSWORD     = db_conn.get("password")
+DB_PORT         = db_conn.get("port")
+INSTITUTION     = db_conn.get("institution_abbr").upper()
+
+# -- Set time_zone --
+INSTITUTION_TIMEZONES = {
     "CMU": "America/New_York",
     "IHEP": "Asia/Shanghai",
     "NTU": "Asia/Taipei",
@@ -294,9 +294,7 @@ time_zone_dict = {
     "TIFR": "Asia/Kolkata",
     "UCSB": "America/Los_Angeles"
 }
-time_zone = time_zone_dict[institution]
+TIME_ZONE = INSTITUTION_TIMEZONES[INSTITUTION]
 
-# -- path --
-dashboards_folder_path = "./Dashboards"
-iv_plots_folder_path = "./IV_curves_plot"
-alerts_folder_path = "./Alerts"
+# -- Set GrafanaClient --
+client = GrafanaClient(GF_API_KEY, GF_URL)

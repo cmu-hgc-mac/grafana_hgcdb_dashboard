@@ -19,8 +19,8 @@ path = "./config_folders"
 filelist = os.listdir(path)
 
 # Define the builder
-panel_builder = PanelBuilder(datasource_uid)
-filter_builder = FilterBuilder(datasource_uid)
+panel_builder = PanelBuilder(GF_DS_UID)
+filter_builder = FilterBuilder(GF_DS_UID)
 dashboard_builder = DashboardBuilder()
 
 # Loop for every config files
@@ -76,6 +76,6 @@ for folder in folder_list:
 print(" >> Dashboards uploaded! ᕕ( ᐛ )ᕗ \n")
 
 # Remove dashboards json files
-remove_folder("Dashboards", dashboards_folder_path)
-remove_folder("IV_curves_plot", iv_plots_folder_path)
+remove_folder("Dashboards", DASHBOARDS_FOLDER_PATH)
+remove_folder("IV_curves_plot", IV_PLOTS_FOLDER_PATH)
 print(" >> Dashboards json files removed! o(≧v≦)o \n")

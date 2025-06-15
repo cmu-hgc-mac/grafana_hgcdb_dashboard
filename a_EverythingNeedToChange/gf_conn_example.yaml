@@ -3,7 +3,7 @@
 # Things might need to change:
 GF_USER: 'admin' # default
 GF_PASS: 'admin' # default
-GF_PORT: '3000' # default 
+GF_PORT: '3000' # default
 
 # Things will be auto-updated:
 GF_SA_NAME: ""
