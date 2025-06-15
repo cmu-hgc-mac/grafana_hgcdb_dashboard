@@ -10,7 +10,7 @@ from tool.other_builder import FilterBuilder
 from tool.dashboard_builder import DashboardBuilder
 
 """
-This file generates all the dashboards json_file, saves them to a folder under `grafana_hgcdb_dashboard`, and uploads them to grafana.
+This script generates all the dashboards json_file, saves them to a folder under `grafana_hgcdb_dashboard`, and uploads them to grafana.
     - The folders would have same names as the files in `config_folders`.
 """
 

@@ -7,8 +7,9 @@ import yaml
 from tool.helper import *
 
 """
-This file creates the folders from config_dashboard_folders. 
+This script generates the folders from config_dashboard_folders to Grafana. 
     - Each folder would be named by replacing '_' to ' ' of the yaml_filename.
+    - Dashboards in `General.yaml` will be upload to the general folder in Grafana
 """
 
 def generate_folder(folder_name: str):

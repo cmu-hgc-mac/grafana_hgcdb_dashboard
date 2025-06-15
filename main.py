@@ -12,19 +12,19 @@ This file does EVERYTHING for you (*´ω`*)
 
 Special thanks to Sindhu Murthy and Manami Kanemura for the amazing database this is built on.
 
-I'm also sincerely thankful to the entire CMU-CMS team for trusting me with the responsibility of leading this project.
+I'm also sincerely thankful to the entire CMU HGCal MAC for trusting me with the responsibility of leading this project.
 """
 
-cmu_mcs_cms_logo = """
- ▗▄▄▖▗▖  ▗▖▗▖ ▗▖    ▗▖  ▗▖ ▗▄▄▖ ▗▄▄▖     ▗▄▄▖▗▖  ▗▖ ▗▄▄▖
-▐▌   ▐▛▚▞▜▌▐▌ ▐▌    ▐▛▚▞▜▌▐▌   ▐▌       ▐▌   ▐▛▚▞▜▌▐▌   
-▐▌   ▐▌  ▐▌▐▌ ▐▌    ▐▌  ▐▌▐▌    ▝▀▚▖    ▐▌   ▐▌  ▐▌ ▝▀▚▖
-▝▚▄▄▖▐▌  ▐▌▝▚▄▞▘    ▐▌  ▐▌▝▚▄▄▖▗▄▄▞▘    ▝▚▄▄▖▐▌  ▐▌▗▄▄▞▘
-                                                                                              
+cmu_hgc_mac_logo = """
+ ▗▄▄▖▗▖  ▗▖▗▖ ▗▖    ▗▖ ▗▖ ▗▄▄▖ ▗▄▄▖    ▗▖  ▗▖ ▗▄▖  ▗▄▄▖
+▐▌   ▐▛▚▞▜▌▐▌ ▐▌    ▐▌ ▐▌▐▌   ▐▌       ▐▛▚▞▜▌▐▌ ▐▌▐▌   
+▐▌   ▐▌  ▐▌▐▌ ▐▌    ▐▛▀▜▌▐▌▝▜▌▐▌       ▐▌  ▐▌▐▛▀▜▌▐▌   
+▝▚▄▄▖▐▌  ▐▌▝▚▄▞▘    ▐▌ ▐▌▝▚▄▞▘▝▚▄▄▖    ▐▌  ▐▌▐▌ ▐▌▝▚▄▄▖
+
 """
 
 def main():
-    print(cmu_mcs_cms_logo)
+    print(cmu_hgc_mac_logo)
 
     run_times = int(gf_conn.get('GF_RUN_TIMES'))
 
