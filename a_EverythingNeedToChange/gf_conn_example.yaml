@@ -1,14 +1,14 @@
 # Setting for Grafana
 
 # Things might need to change:
-'GF_USER': 'admin' # default
-'GF_PASS': 'admin' # default
-'GF_PORT': '3000' # default 
+GF_USER: 'admin' # default
+GF_PASS: 'admin' # default
+GF_PORT: '3000' # default 
 
 # Things will be auto-updated:
-'GF_SA_NAME': ""
-'GF_SA_ID': ""
-'GF_DATA_SOURCE_NAME': ""
-'GF_API_KEY': ""
-'GF_DATA_SOURCE_UID': ""
-'GF_RUN_TIMES': 0 # this will be updated automatically according to the run time of the `main.py` script
+GF_SA_NAME: ""
+GF_SA_ID: ""
+GF_DATA_SOURCE_NAME: ""
+GF_API_KEY: ""
+GF_DATA_SOURCE_UID: ""
+GF_RUN_TIMES: 0 # this will be updated automatically according to the run time of the `main.py` script
