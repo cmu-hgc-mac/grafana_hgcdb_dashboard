@@ -177,4 +177,3 @@ class AlertBuilder:
 
         except requests.RequestException as e:
             print(f"[ERROR] Failed to upload alert '{file_name}': {e}")
-            raise

@@ -52,6 +52,7 @@ class PanelBuilder:
         else: 
             max_num = 3
 
+        # assign width and hight    
         if num_panels <= max_num:
             width = max_cols // num_panels
         else:
@@ -183,7 +184,7 @@ class PanelBuilder:
 
         return panel_json
 
-    def generate_plot(self):
+    def generate_plot(self) -> str:
         """Generate the IV_curve Plot.
            Author: Andrew C. Roberts  
         """
@@ -320,16 +321,21 @@ class PanelBuilder:
             gridPos = panel["gridPos"]
             distinct = panel["distinct"]
 
-            if chart_type == "text":
-                plt_path = self.generate_plot()
-                encoded_string = self.convert_png_to_base64(plt_path)
-                content = self.generate_content(encoded_string)
-                panel_json = self.generate_IV_curve_panel(title, content)
+            try:
+                if chart_type == "text":
+                    plt_path = self.generate_plot()
+                    encoded_string = self.convert_png_to_base64(plt_path)
+                    content = self.generate_content(encoded_string)
+                    panel_json = self.generate_IV_curve_panel(title, content)
 
-            else:
-                raw_sql = self.generate_sql(chart_type, table, condition, groupby, filters, distinct)
-                panel_json = self.generate_general_panel(title, raw_sql, table, chart_type, gridPos)
+                else:
+                    raw_sql = self.generate_sql(chart_type, table, condition, groupby, filters, distinct)
+                    panel_json = self.generate_general_panel(title, raw_sql, table, chart_type, gridPos)
 
-            panels.append(panel_json)
+                panels.append(panel_json)
+
+            except Exception as e:
+                print(f"[ERROR] Failed to generate panel '{title}' | Reason: {e}")
+                print(f"[WARNING] Skip panel: {title}")
 
         return panels

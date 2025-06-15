@@ -54,7 +54,10 @@ for folder in folder_list:
     for file_name in file_list:
         if file_name.endswith(".json"):
             file_path = f"./Alerts/{folder}/{file_name}"
-            alert_builder.upload_alerts(file_path)
+            try:
+                alert_builder.upload_alerts(file_path)
+            except Exception as e:
+                print(f"[SKIPPED] Error uploading alert rule: {file_name} | Status: {e}")
 
 print(" >> Alerts json files uploaded! (*ˉ︶ˉ*) \n")
 

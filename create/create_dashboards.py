@@ -71,7 +71,10 @@ for folder in folder_list:
     for file_name in file_list:
         if file_name.endswith(".json"):
             file_path = f"./Dashboards/{folder}/{file_name}"
-            dashboard_builder.upload_dashboards(file_path)
+            try:
+                dashboard_builder.upload_dashboards(file_path)
+            except Exception as e:
+                print(f"[SKIPPED] Error uploading dashboard: {file_name} | Status: {e}")
 
 print(" >> Dashboards uploaded! ᕕ( ᐛ )ᕗ \n")
 

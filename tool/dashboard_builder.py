@@ -114,4 +114,3 @@ class DashboardBuilder:
 
         except requests.RequestException as e:
             print(f"[ERROR] Failed to upload dashboard '{file_name}': {e}")
-            raise
