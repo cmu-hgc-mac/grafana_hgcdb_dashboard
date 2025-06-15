@@ -266,7 +266,8 @@ gf_conn = ConfigLoader("gf_conn")
 db_conn = ConfigLoader("db_conn")
 
 # -- gf_conn.yaml --
-gf_url          = gf_conn.get('GF_URL')
+gf_port         = gf_conn.get('GF_PORT')
+gf_url          = f"http://127.0.0.1:{gf_port}"
 api_token       = gf_conn.get('GF_API_KEY')
 gf_username     = gf_conn.get('GF_USER')
 gf_password     = gf_conn.get('GF_PASS')

@@ -24,18 +24,10 @@ db_conn = {
 gf_conn = {
     # Setting for Grafana
 
-    # Things must be changed:
-    'GF_IP': '127.0.0.1', # default
-    'GF_defaults_PATH': '', 
-        # For MacOs, the path should be './grafana-v12.0.0/conf/defaults.ini'
-        # For Linux, the path should be '/etc/grafana/grafana.ini'
-
-    # Things might be changed:
+    # Things might need to change:
     'GF_USER': 'admin', # default
     'GF_PASS': 'admin', # default
     'GF_PORT': '3000', # default 
-    'GF_URL': "http://127.0.0.1:3000", # default -> only change your port if you changed GF_PORT
-        # the url for login Grafana and uploading dashboards
 
     # Things will be auto-updated:
     'GF_SA_NAME': "",
