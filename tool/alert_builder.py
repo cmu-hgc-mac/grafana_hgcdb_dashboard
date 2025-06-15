@@ -123,13 +123,10 @@ class AlertBuilder:
     def _generate_alertSQL(self, parameter: str, source: str) -> str:
         alertSQL = f"""
         SELECT
-            $__time(time) AS time,
-            {parameter} AS value
+            {parameter}
         FROM
             {source}
-        WHERE
-            $__timeFilter(time)
-            AND temperature IS NOT NULL
+        LIMIT 1;
         """
         return alertSQL
     
