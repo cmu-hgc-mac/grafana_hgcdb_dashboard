@@ -64,7 +64,7 @@ class AlertBuilder:
                 "datasourceUid": self.datasource_uid,
                 "model": {
                     "refId": "A",
-                    "format": "time_series",
+                    "format": "table",
                     "rawQuery": "true",
                     "rawSql": alertSQL
                 }
@@ -116,7 +116,7 @@ class AlertBuilder:
                 }
                 }
             ]
-            } 
+        } 
 
         return alert_json
     

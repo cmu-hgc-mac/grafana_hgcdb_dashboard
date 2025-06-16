@@ -11,7 +11,7 @@ dashboards:
         groupby: ["log_timestamp", "temp_c"]
         filters: {"temp_humidity": ["log_location"]}
         distinct: False
-      - title: "Real Humidity"
+      - title: "Humidity"
         table: "temp_humidity"
         chart_type: "timeseries"
         condition: "temp_humidity.rel_hum IS NOT NULL"
@@ -28,7 +28,7 @@ dashboards:
         groupby: ["temp_c"]
         filters: {}
         distinct: False  
-      - title: "Real Humidity (main_clean_room)"
+      - title: "Humidity (main_clean_room)"
         table: "temp_humidity"
         chart_type: "gauge"
         condition: "temp_humidity.log_location = 'main_clean_room' AND (now() - log_timestamp AT TIME ZONE 'America/New_York') < INTERVAL '15 MINUTE'"
@@ -40,26 +40,28 @@ dashboards:
 alert:
   - title: "High Temperature Alert"
     table: "temp_humidity"
-    dashboard: "Enviorment Monitoring trend"
+    dashboard: "Enviorment Monitoring (trend)"
     parameter: "temp_c"
-    threshold: 25
+    threshold: [25]
     logicType: "gt"
-    duration: 5m
+    duration: "5m"
+    interval: "1m"
     summary: "Temperature exceeds 25°C"
     labels: 
         "severity": "critical"
         "sensor": "temp"
-        "location": "east"
+        "location": "main_clean_room"
       
   - title: "High Humidity Alert"
     table: "temp_humidity"
-    dashboard: "Enviorment Monitoring trend"
+    dashboard: "Enviorment Monitoring (trend)"
     parameter: "rel_hum"
-    threshold: 50
-    logicType: "gt"
-    duration: 5m
-    summary: "Humidity exceeds 50%"
+    threshold: [10,50]
+    logicType: "within_range"
+    duration: "5m"
+    interval: "1m"
+    summary: "Humidity abnormal"
     labels: 
         "severity": "critical"
         "sensor": "humidity"
-        "location": "east"
+        "location": "main_clean_room"

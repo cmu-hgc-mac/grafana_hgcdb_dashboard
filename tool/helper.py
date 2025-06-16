@@ -78,7 +78,6 @@ class GrafanaClient:
             "Authorization": f"Bearer {api_token}",
             "Content-Type": "application/json"
         }
-        self.api_token = api_token
     
     def create_service_account_and_token(self, sa_name: str, token_name: str, username: str, password: str) -> str:
         """Create a service account and return the API token string.
