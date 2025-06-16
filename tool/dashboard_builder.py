@@ -19,7 +19,7 @@ class DashboardBuilder:
         dashboard_uid = create_uid(dashboard_title)
 
         # define the time range
-        if "Enviorment Monitoring" in dashboard_title:
+        if "Environment Monitoring" in dashboard_title:
             time_range = "now-24h"
         else:
             time_range = "now-1y"
