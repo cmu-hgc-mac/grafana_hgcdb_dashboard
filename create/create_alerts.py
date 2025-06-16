@@ -61,12 +61,13 @@ for folder in folder_list:
 
 print(" >> Alerts json files uploaded! (*ˉ︶ˉ*) \n")
 
-# Delete the alert files
-remove_folder("Alerts", ALERTS_FOLDER_PATH)
-print(" >> Alerts json files removed! o(≧v≦)o \n")
-
-# Clear GF_FOLDER_UIDS and GF_ALERT_UIDs map:
+# Clear GF_FOLDER_UIDS and GF_ALERT_UIDS map:
 gf_conn.set("GF_FOLDER_UIDS", {})
 gf_conn.set("GF_ALERT_UIDS", {})
 gf_conn.save()
 gf_conn.reload()
+print(" >> GF_FOLDER_UIDS and GF_ALERT_UIDS map cleared! (๑•̀ㅂ•́)و✧ \n")
+
+# Delete the alert files
+remove_folder("Alerts", ALERTS_FOLDER_PATH)
+print(" >> Alerts json files removed! o(≧v≦)o \n")

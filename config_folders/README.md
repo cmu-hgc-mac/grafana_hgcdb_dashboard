@@ -87,12 +87,12 @@ The parameter you want to keep track of.
 A specific value that tells the bourdary between normal and abnormal situation. Please make sure this is a list. If there is both an upper boundary and a lower boundary, please make sure it is in the form of [lower,upper].
 
 ### logicTypes
-1. "gt": grater than
+1. "gt": greater than
 2. "lt": less than
 3. "eq": equal to
 4. "ne": not equal to
-5. "within_range": in the range
-6. "outside_range": out of range
+5. "within_range": fire when data in the range
+6. "outside_range": fire when data out of range
 
 ### duration
 How long should the situation hold before sending an alert.

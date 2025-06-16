@@ -59,7 +59,7 @@ alert:
     panelID: "2"
     parameter: "rel_hum"
     threshold: [10,50]
-    logicType: "within_range"
+    logicType: "outside_range"
     duration: "5m"
     interval: "1m"
     summary: "Humidity abnormal"

@@ -92,3 +92,11 @@ Thanks for reading and using my scripts! If you have any questions, please feel 
 2. Select the dashboards/folders you want to remove.
 3. Click the `Delete` button.
 4. Confirm the deletion - Type the `Delete` word in the input box.
+
+## To Remove the unwanted alert-rules
+1. Run `delete_alert_rule.py`
+```
+python delete_alert_rule.py
+```
+2. Choose and enter the `alert rule UID` you would like to delete.
+3. Press `Enter`

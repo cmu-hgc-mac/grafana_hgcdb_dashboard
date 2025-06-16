@@ -195,9 +195,9 @@ class GrafanaClient:
         if response.status_code != 200:
             print(f"[Upload] Dashboard: {dashboard_json['title']} | Error: {response.text}")
     
-    def upload_alert_json(self, alert_json: dict, alert_uid: str, _retry=False):
+    def upload_alert_json(self, alert_json: dict, alert_uid: str):
         """Upload an alert-rule to a folder. 
-           - Delete if the alert-rule uid already exist and upload the new one.
+           - Update if the alert rule uid exist.
         """
         # Upload alert rule
         url = f"{self.base_url}/api/v1/provisioning/alert-rules"
@@ -206,10 +206,13 @@ class GrafanaClient:
 
         # print out error message
         if response.status_code not in [200, 201]:
-            if response.status_code == 409 and not _retry:     # alert uid exist
-                print("[Delete] Try deleting conflict Alert rule... (つД`)/")
-                self.delete_alert_rule(alert_uid)
-                self.upload_alert_json(alert_json, alert_uid, _retry=True)   # re-upload
+            if response.status_code == 409:     # alert uid exist
+                print(f"[ERROR] {alert_json['title']} already exist. Trying update... (つД`)/")
+                update_url = f"{self.base_url}/api/v1/provisioning/alert-rules/{alert_uid}"
+                update_response = requests.put(update_url, headers=self.headers, json=alert_json)
+                print(f"[Update] {alert_json['title']} | Status: {update_response.status_code}")
+                if update_response.status_code != 200:
+                    print(f"[Update] {alert_json['title']} failed | Error: {update_response.text}")
             else:
                 print(f"[Upload] {alert_json['title']} failed | Error: {response.text}")
 
@@ -227,6 +230,23 @@ class GrafanaClient:
         # print out error message
         if not (response.status_code == 200 or response.status_code == 204):
             print(f"[Delete] Alert rule UID: {uid} failed | Error: {response.text}")
+    
+    def get_all_alert_rules(self) -> list:
+        """Get all alert rules from Grafana. Output all the uids.
+        """
+        # Get the list of all alert rules
+        url = f"{self.base_url}/api/v1/provisioning/alert-rules"
+        response = requests.get(url, headers=self.headers)
+
+        # Convert the response
+        data_json = json.loads(response.text)
+
+        # Output result
+        alert_uids = []
+        for rule in data_json:
+            alert_uids.append(rule['uid'])
+
+        return alert_uids       
 
 
 # ============================================================
