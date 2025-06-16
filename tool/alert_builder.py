@@ -51,6 +51,8 @@ class AlertBuilder:
             "noDataState": "NoData",
             "execErrState": "Error",
             "annotations": {
+                "__dashboardUid__": f"{dashboard_uid}",
+                "__panelId__": f"{alertInfo['panelID']}",
                 "summary": "Auto-imported from UI"
             },
             "labels":alertInfo["labels"],
@@ -114,7 +116,7 @@ class AlertBuilder:
                     }
                     ]
                 }
-                }
+            }
             ]
         } 
 

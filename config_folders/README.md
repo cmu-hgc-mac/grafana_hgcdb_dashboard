@@ -47,12 +47,14 @@ To generate a new panel, please add the following template under the dashboard h
   
 
 # Instructions for a new alert rule
-Xinyue (Joyce) Zhuang  
+Author: Xinyue (Joyce) Zhuang. 
+  
 To generate a new alert, please go to the corresponding dashboard yaml file (in the folder config_folders) and scroll down to alerts part. Copy the following code after the existing alert rules and make modification:
 
 ``` yaml
 - title: ""
     dashboard: ""
+    panelID: ""
     parameter: ""
     threshold: []
     logicType: ""
@@ -73,6 +75,10 @@ The title of the alert, normally would be a condensed summary of the situaion. S
 
 ### dashboard
 The dashboard that the alert is connected to.
+
+### panelID
+The panel that the alert is connected to.  
+The panelID (n) will be the n-th panel under dashboard. 
 
 ### parameter
 The parameter you want to keep track of.
