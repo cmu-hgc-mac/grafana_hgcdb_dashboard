@@ -386,7 +386,7 @@ class GaugeGenerator(BaseSQLGenerator):
             table = "temp_table"
         
         for elem in groupby:
-            arg = self._build_select_argument(table, elem)
+            arg = self._build_select_argument(table, elem, TYPE="")
             if arg:
                 groupby_fields.append(arg)
         
