@@ -100,7 +100,7 @@ class BaseSQLGenerator(ChartSQLGenerator):
                     (shipped_datetime IS NOT NULL AND 'shipped' = ANY(ARRAY[{param}])))"""
 
         # time: using the Grafana built-in time filter
-        elif elem == "assembled" or elem.endswith("time") or elem.endswith("date") or elem.endswith("timestamp") or elem.startswith("date"):
+        elif elem in TIME_COLUMNS:
             arg = f"$__timeFilter({filters_table}.{elem} AT TIME ZONE '{TIME_ZONE}')"
         
         # General Cases

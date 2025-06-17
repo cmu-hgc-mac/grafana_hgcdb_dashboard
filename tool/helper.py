@@ -314,6 +314,23 @@ DB_PASSWORD     = db_conn.get("password")
 DB_PORT         = db_conn.get("port")
 INSTITUTION     = db_conn.get("institution_abbr").upper()
 
+# -- HGCDB Info --
+TIME_COLUMNS = [
+    "date_encap", "time_encap", # back_endcap, front_endcap
+    "date_bond", "time_bond",   # back_wirebond, front_wirebond
+    "date_inspect", "time_inspect", # bp_inspect, hxb_inspect, module_inspect, proto_inspect
+    "bp_received", "bp_inspected",  # baseplate
+    "hxb_received", "hxb_inspected", "hxb_tested", # hexaboard
+    "sen_received", # sensor
+    "date_verify_received", # hexaboard, sensor, baseplate
+    "xml_gen_datetime",
+    "date_test", "time_test", # hxb_pedestal_test, mod_hxb_other_test, module_iv_test, module_pedestal_test
+    "ass_run_date", "ass_time_begin", "ass_time_end", "cure_date_end", "cure_time_end", # module_assembly, proto_assembly
+    "assembled", "inspected", "wb_front", "wb_back", "encap_front", "encap_back", 
+        "inspect_sec", "test_iv", "test_ped", "packed_datetime", "shipped_datetime",  # module_info
+    "log_timestamp" # particulate_counts, temp_humidity
+]
+
 # -- Set time_zone --
 INSTITUTION_TIMEZONES = {
     "CMU": "America/New_York",

@@ -68,7 +68,7 @@ class FilterBuilder:
             for elem in filters[filters_table]:
                 if elem in exist_filter:
                     continue    # filter exists
-                elif elem == "assembled" or elem.endswith("time") or elem.endswith("date") or elem.endswith("timestamp") or elem.startswith("date"):
+                elif elem in TIME_COLUMNS:
                     continue    # filter not used in dashboard
             
                 exist_filter.add(elem)
