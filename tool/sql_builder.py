@@ -43,8 +43,10 @@ class BaseSQLGenerator(ChartSQLGenerator):
         if distinct:
             # special case for dictionary groupby
             if isinstance(groupby, dict):
+                
                 temp_table_list = []
                 pre_clause_list = []
+
                 for n, table in enumerate(groupby):
                     temp_table_list.append(f"temp_table_{n}")
 
@@ -57,7 +59,9 @@ class BaseSQLGenerator(ChartSQLGenerator):
                     FROM {table}
                     ORDER BY {sort_column}, {distinct_column} DESC
                     )"""
+
                     pre_clause_list.append(arg)
+
                 pre_clause = "WITH" + ",\n".join(pre_clause_list)
                 target_table = temp_table_list[0]   # default: temp_table_0
 
