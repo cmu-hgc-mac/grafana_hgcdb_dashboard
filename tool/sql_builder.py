@@ -1,5 +1,4 @@
 import copy
-
 from abc import ABC, abstractmethod
 
 from tool.helper import *
@@ -10,11 +9,11 @@ This file defines the abstract class ChartSQLGenerator and the factory ChartSQLF
         - "barchart"
         - "histogram"
         - "timeseries"
-        - "text"
+        - "text": only available for IV_Curve Plot
         - "stat"
         - "table"
         - "gauge"
-        - "piechart"
+        - "piechart": only available for shipping status
 """
 
 # ============================================================
@@ -57,15 +56,14 @@ class BaseSQLGenerator(ChartSQLGenerator):
                     SELECT DISTINCT ON ({sort_column}) *
                     FROM {table}
                     ORDER BY {sort_column}, {distinct_column} DESC
-                    )
-                    """
+                    )"""
                     pre_clause_list.append(arg)
                 pre_clause = "WITH" + ",\n".join(pre_clause_list)
-                target_table = temp_table_list[0]
+                target_table = temp_table_list[0]   # default: temp_table_0
 
                 return pre_clause, target_table
 
-            # General case
+            # General Case:
             target_table = "temp_table"
 
             # fetch the column name for distinct modules
@@ -82,8 +80,8 @@ class BaseSQLGenerator(ChartSQLGenerator):
             """
             
         else:
-            target_table = table
             pre_clause = ""
+            target_table = table
     
         return pre_clause, target_table
     
@@ -101,7 +99,7 @@ class BaseSQLGenerator(ChartSQLGenerator):
         elif elem == "assembled" or elem.endswith("time") or elem.endswith("date") or elem.endswith("timestamp") or elem.startswith("date"):
             arg = f"$__timeFilter({filters_table}.{elem} AT TIME ZONE '{TIME_ZONE}')"
         
-        # general cases
+        # General Cases
         else:
             param = f"${{{elem}}}"
             arg = f"('All' = ANY(ARRAY[{param}]) OR {filters_table}.{elem}::text = ANY(ARRAY[{param}]))"
@@ -144,9 +142,11 @@ class BaseSQLGenerator(ChartSQLGenerator):
         return "\n          AND ".join(where_clauses)
 
     def _build_join_clause(self, table: str, filters: dict, distinct: bool, groupby=None) -> str:
-        """Builds the LEFT JOIN command by using the foreign key."""
+        """Builds the LEFT JOIN command by using the foreign key.
+        """
         join_clause = []
 
+        # define the main table for LEFT JOIN
         if isinstance(groupby, dict):
             main_table = "temp_table_0" if distinct else table
         else:
@@ -158,20 +158,21 @@ class BaseSQLGenerator(ChartSQLGenerator):
         filters_table_list = list(filters.keys())
 
         for filters_table in filters_table_list:
-            # Skip self-join by comparing raw table name
-            if filters_table == table:
+            # Skip self-join
+            if filters_table == main_table or filters_table == table:
                 continue
-
+            
+            # Special case for dictionary groupby
             if isinstance(groupby, dict) and distinct:
                 groupby_table_list = list(groupby.keys())
                 if filters_table in groupby_table_list:
-                    index = groupby_table_list.index(filters_table)
-                    filters[f"temp_table_{index}"] = filters.pop(f"{filters_table}")
-                    filters_table = f"temp_table_{index}"
+                    index = groupby_table_list.index(filters_table)     # get the index for temp_table_X
+                    filters[f"temp_table_{index}"] = filters.pop(f"{filters_table}")    # update the filters table name in `filters`
+                    filters_table = f"temp_table_{index}"   # update the filters table name in the join clause
             
-            join_clause.append(
-                f"LEFT JOIN {filters_table} ON {main_table}.{main_prefix}_no = {filters_table}.{main_prefix}_no"
-            )
+            arg = f"LEFT JOIN {filters_table} ON {main_table}.{main_prefix}_no = {filters_table}.{main_prefix}_no"
+
+            join_clause.append(arg)
         
         return "\n        ".join(join_clause)
     
@@ -318,7 +319,7 @@ class TimeseriesGenerator(BaseSQLGenerator):
             elem_arg = f"{table}.{elem} AS {elem}"
         select_clause.append(elem_arg)
 
-        return ", ".join(select_clause)
+        return ",\n            ".join(select_clause)
     
     def _build_orderby_clause(self, groupby: list) -> str:
         """Builds the ORDER BY clause from groupby.
@@ -333,7 +334,7 @@ class TimeseriesGenerator(BaseSQLGenerator):
         clause.append(groupby_arg)
         clause.append(orderby_arg)
 
-        return "\n        ".join(clause)
+        return "\n             ".join(clause)
 
 
 # -- Text Chart --
@@ -418,32 +419,7 @@ class TableGenerator(BaseSQLGenerator):
                         if arg:
                             groupby_fields.append(arg)
 
-        return ", ".join(groupby_fields)
-
-        #     if distinct:
-        #         table = "temp_table"
-        #     for elem in groupby:
-        #         arg = self._build_select_argument(table, elem)
-        #         if arg:
-        #             groupby_fields.append(arg)
-
-        # elif isinstance(groupby, dict):
-        #     groupby_table_list = list(groupby.keys())
-            
-        #     for groupby_table in groupby_table_list:
-        #         # update table name with distinct condition
-        #         if groupby_table == table:
-        #             if distinct:
-        #                 groupby["temp_table"] = groupby.pop(f"{groupby_table}")
-        #                 groupby_table = "temp_table"
-                
-        #         # build the SELECT clause for each groupby table
-        #         for elem in groupby[groupby_table]:
-        #             arg = self._build_select_argument(groupby_table, elem)
-        #             if arg:
-        #                 groupby_fields.append(arg)
-
-        # return ", ".join(groupby_fields)
+        return ",\n            ".join(groupby_fields)
 
 
 # -- Gauge Chart --
@@ -477,7 +453,7 @@ class GaugeGenerator(BaseSQLGenerator):
             if arg:
                 groupby_fields.append(arg)
         
-        return ", ".join(groupby_fields)
+        return ",\n               ".join(groupby_fields)
 
 
 # -- Pie Chart --
