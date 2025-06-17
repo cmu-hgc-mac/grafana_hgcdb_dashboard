@@ -2,6 +2,7 @@ import os
 import re
 import shutil
 
+import csv
 import json
 from typing import Any
 
@@ -269,19 +270,28 @@ def remove_folder(folder_name: str, folder_path: str):
     else:
         print(f"[Folder] Folder not found: {folder_name}")
 
+def get_distinct_column_name(table_name: str) -> str:
+    """Get the name of the distinct column in the given table.
+    """
+    with open(f"{DB_INFO_PATH}/{table_name}.csv", 'r') as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            return list(row.keys())[0]
 
 # ============================================================
 # === Loaded Info ============================================
 # ============================================================
 
 # -- Path --
-CONFIG_FOLDER_PATH      = "./a_EverythingNeedToChange"
+SETTING_FOLDER_PATH     = "./a_EverythingNeedToChange"
+CONFIG_FOLDER_PATH      = "./config_folders"
+DB_INFO_PATH            = "./tool/postgres_tables"
 DASHBOARDS_FOLDER_PATH  = "./Dashboards"
 IV_PLOTS_FOLDER_PATH    = "./IV_curves_plot"
 ALERTS_FOLDER_PATH      = "./Alerts"
 
-DB_CONN_PATH            = f"{CONFIG_FOLDER_PATH}/db_conn.yaml"
-GF_CONN_PATH            = f"{CONFIG_FOLDER_PATH}/gf_conn.yaml"
+DB_CONN_PATH            = f"{SETTING_FOLDER_PATH}/db_conn.yaml"
+GF_CONN_PATH            = f"{SETTING_FOLDER_PATH}/gf_conn.yaml"
 
 # -- load YAML Configuration --
 db_conn = ConfigLoader(DB_CONN_PATH)
