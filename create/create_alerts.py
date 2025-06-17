@@ -13,8 +13,7 @@ Author: Xinyue (Joyce) Zhuang
 """
 
 # Define the path of the config folders
-path = "./config_folders"
-filelist = os.listdir(path)
+filelist = os.listdir(CONFIG_FOLDER_PATH)
 
 # Define the builder
 alert_builder = AlertBuilder(GF_DS_UID)
@@ -27,7 +26,7 @@ for config in filelist:
         continue
     
     # Load the alerts
-    with open(os.path.join(path, config), mode = 'r') as file:
+    with open(os.path.join(CONFIG_FOLDER_PATH, config), mode = 'r') as file:
         tot_config = yaml.safe_load(file)
         # check if alerts exist:
         if "alert" not in tot_config:

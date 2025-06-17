@@ -15,8 +15,7 @@ This script generates all the dashboards json_file, saves them to a folder under
 """
 
 # Define the path of the config folders
-path = "./config_folders"
-filelist = os.listdir(path)
+filelist = os.listdir(CONFIG_FOLDER_PATH)
 
 # Define the builder
 panel_builder = PanelBuilder(GF_DS_UID)
@@ -31,7 +30,7 @@ for config in filelist:
         continue
     
     # Load the dashboards
-    with open(os.path.join(path, config), mode = 'r') as file:
+    with open(os.path.join(CONFIG_FOLDER_PATH, config), mode = 'r') as file:
         dashboards = yaml.safe_load(file)["dashboards"]
 
     # Loop for every dashboard in a config file

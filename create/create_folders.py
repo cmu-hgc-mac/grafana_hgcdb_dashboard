@@ -34,9 +34,9 @@ def generate_folder(folder_name: str):
 
 
 # Load all .yaml files in config_dashboard_folders/
-folder_configs = os.listdir("./config_folders")
+filelist = os.listdir(CONFIG_FOLDER_PATH)
 
-for config in folder_configs:
+for config in filelist:
     # skip non-yaml files
     if not config.endswith(".yaml"):
         continue
