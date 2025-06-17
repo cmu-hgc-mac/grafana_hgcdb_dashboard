@@ -43,8 +43,8 @@ alert:
     dashboard: "Environment Monitoring (trend)"
     panelID: "1"
     parameter: "temp_c"
-    threshold: [25]
-    logicType: "gt"
+    threshold: [18,30]
+    logicType: "outside_range"
     duration: "5m"
     interval: "1m"
     summary: "Temperature exceeds 25°C"
@@ -58,8 +58,8 @@ alert:
     dashboard: "Environment Monitoring (trend)"
     panelID: "2"
     parameter: "rel_hum"
-    threshold: [10,50]
-    logicType: "outside_range"
+    threshold: [30]
+    logicType: "lt"
     duration: "5m"
     interval: "1m"
     summary: "Humidity abnormal"

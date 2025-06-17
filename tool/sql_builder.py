@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from tool.helper import TIME_ZONE
+from tool.helper import *
 
 """
 This file defines the abstract class ChartSQLGenerator and the factory ChartSQLFactory.
@@ -12,6 +12,7 @@ This file defines the abstract class ChartSQLGenerator and the factory ChartSQLF
         - "stat"
         - "table"
         - "gauge"
+        - "piechart"
 """
 
 # ============================================================
@@ -42,8 +43,19 @@ class BaseSQLGenerator(ChartSQLGenerator):
         # fetch distinct modules from "module_qc_summary"
         if distinct:
             target_table = "temp_table"
-            if table == "module_qc_summary":
-                pre_clause = """WITH temp_table AS (SELECT DISTINCT ON (module_no) * FROM module_qc_summary ORDER BY module_no, mod_qc_no DESC)"""
+
+            # fetch the column name for distinct modules
+            distinct_column = get_distinct_column_name(table)
+            partname_column = f"{table.split('_')[0]}_name"
+
+            # build the pre_clause
+            pre_clause = f"""
+            WITH temp_table AS (
+                SELECT DISTINCT ON ({partname_column}) *
+                FROM {table}
+                ORDER BY {partname_column}, {distinct_column} DESC
+            )
+            """
         
         else:
             target_table = table
@@ -55,14 +67,14 @@ class BaseSQLGenerator(ChartSQLGenerator):
         """Builds the filter argument for the WHERE clause.
         """
         # shipped / not shipped
-        if elem == "status":
-            param = "${status}"
+        if elem == "shipping_status":
+            param = "${shipping_status}"
             arg = f"""('All' = ANY(ARRAY[{param}]) OR 
                     (shipped_datetime IS NULL AND 'not shipped' = ANY(ARRAY[{param}])) OR
                     (shipped_datetime IS NOT NULL AND 'shipped' = ANY(ARRAY[{param}])))"""
 
         # time: using the Grafana built-in time filter
-        elif elem == "assembled" or elem.endswith("time") or elem.endswith("date") or elem.endswith("timestamp"):
+        elif elem == "assembled" or elem.endswith("time") or elem.endswith("date") or elem.endswith("timestamp") or elem.startswith("date"):
             arg = f"$__timeFilter({filters_table}.{elem} AT TIME ZONE '{TIME_ZONE}')"
         
         # general cases
@@ -96,7 +108,7 @@ class BaseSQLGenerator(ChartSQLGenerator):
         return "\n          AND ".join(where_clauses)
 
     def _build_join_clause(self, table: str, filters: dict, distinct: bool) -> str:
-        """Builds the JOIN command by using the foriegn key.
+        """Builds the LEFT JOIN command by using the foriegn key.
         """
         join_clause = []
         
@@ -108,9 +120,34 @@ class BaseSQLGenerator(ChartSQLGenerator):
             if filters_table == main_table:
                 continue  # skip self-joining
             else:
-                join_clause.append(f"JOIN {filters_table} ON {main_table}.{main_prefix}_no = {filters_table}.{main_prefix}_no")
+                join_clause.append(f"LEFT JOIN {filters_table} ON {main_table}.{main_prefix}_no = {filters_table}.{main_prefix}_no")
 
         return "\n        ".join(join_clause)
+    
+    def _build_select_argument(self, table: str, elem: Any, TYPE="::text") -> str:
+        """Builds the select argument for the SELECT clause.
+        """
+        # Single element
+        if isinstance(elem, str):
+            if elem.endswith("time"):
+                return None
+            elif elem.startswith("list"):
+                arg = f"COALESCE(array_length({table}.{elem}::int[], 1), 0){TYPE}"
+            else:
+                arg = f"{table}.{elem}{TYPE}"
+
+        # COALESCE Case: join multiple columns into 1 column
+        elif isinstance(elem, list):
+            select_clause = []
+            for column in elem:
+                if column.startswith("list"):
+                    select_arg = f"COALESCE(array_length({table}.{column}::int[], 1), 0)"
+                else:
+                    select_arg = f"{table}.{column}{TYPE}"
+                select_clause.append(select_arg)
+            arg = f"COALESCE({', '.join(select_clause)}) as {elem[0]}"
+        
+        return arg
 
 
 # ============================================================
@@ -147,24 +184,9 @@ class BarChartGenerator(BaseSQLGenerator):
             table = "temp_table"
 
         for elem in groupby:
-            if isinstance(elem, str):
-                if elem.endswith("time"):
-                    continue
-                elif elem.startswith("list"):
-                    groupby_fields.append(f"COALESCE(array_length({table}.{elem}::int[], 1), 0)::text")
-                else:
-                    groupby_fields.append(f"{table}.{elem}::text")
-            # COALESCE Case: join multiple columns into 1 column
-            elif isinstance(elem, list):
-                select_clause = []
-                for column in elem:
-                    if column.startswith("list"):
-                        select_arg = f"COALESCE(array_length({table}.{column}::int[], 1), 0)"
-                    else:
-                        select_arg = f"{table}.{column}"
-                    select_clause.append(select_arg)
-                select_clause = f"COALESCE({', '.join(select_clause)}) as {elem[0]}"
-                groupby_fields.append(select_clause)
+            arg = self._build_select_argument(table, elem)
+            if arg:
+                groupby_fields.append(arg)
 
         return " || '/' || ".join(groupby_fields)
 
@@ -200,23 +222,7 @@ class HistogramGenerator(BaseSQLGenerator):
         
         # fetch the element from groupby
         elem = groupby[0]
-
-        if isinstance(elem, str):
-            elem = groupby[0]
-            if elem.startswith("list"):
-                groupby_fields = f"COALESCE(array_length({table}.{elem}::int[], 1), 0) AS {elem}"
-            else:
-                groupby_fields = f"{table}.{elem} AS {elem}"
-        # COALESCE Case: join multiple columns into 1 column
-        elif isinstance(elem, list):
-            select_clause = []
-            for column in groupby[0]:
-                if column.startswith("list"):
-                    select_arg = f"COALESCE(array_length({table}.{column}::int[], 1), 0)"
-                else:
-                    select_arg = f"{table}.{column}"
-                select_clause.append(select_arg)
-            groupby_fields = f"COALESCE({', '.join(select_clause)}) as {groupby[0][0]}"
+        groupby_fields = self._build_select_argument(table, elem, TYPE="")
 
         return groupby_fields
 
@@ -321,32 +327,34 @@ class TableGenerator(BaseSQLGenerator):
         """
         return sql.strip()
 
-    def _build_select_clause(self, table: str, groupby: list, distinct: bool) -> str:
+    def _build_select_clause(self, table: str, groupby: Any, distinct: bool) -> str:
         """Builds the SELECT clause by joining all groupby fields.
         """
         groupby_fields = []
 
-        if distinct:
-            table = "temp_table"
+        if isinstance(groupby, list):
+            if distinct:
+                table = "temp_table"
+            for elem in groupby:
+                arg = self._build_select_argument(table, elem)
+                if arg:
+                    groupby_fields.append(arg)
 
-        for elem in groupby:
-            if isinstance(elem, str):
-                if elem.endswith("time"):
-                    continue
-                elif elem.startswith("list"):
-                    groupby_fields.append(f"COALESCE(array_length({table}.{elem}::int[], 1), 0)::text")
-                else:
-                    groupby_fields.append(f"{table}.{elem}::text")
-            elif isinstance(elem, list):
-                select_clause = []
-                for column in elem:
-                    if column.startswith("list"):
-                        select_arg = f"COALESCE(array_length({table}.{column}::int[], 1), 0)"
-                    else:
-                        select_arg = f"{table}.{column}"
-                    select_clause.append(select_arg)
-                select_clause = f"COALESCE({', '.join(select_clause)}) as {elem[0]}"
-                groupby_fields.append(select_clause)
+        elif isinstance(groupby, dict):
+            groupby_table_list = list(groupby.keys())
+            
+            for groupby_table in groupby_table_list:
+                # update table name with distinct condition
+                if groupby_table == table:
+                    if distinct:
+                        groupby["temp_table"] = groupby.pop(f"{groupby_table}")
+                        groupby_table = "temp_table"
+                
+                # build the SELECT clause for each groupby table
+                for elem in groupby[groupby_table]:
+                    arg = self._build_select_argument(groupby_table, elem)
+                    if arg:
+                        groupby_fields.append(arg)
 
         return ", ".join(groupby_fields)
 
@@ -378,23 +386,9 @@ class GaugeGenerator(BaseSQLGenerator):
             table = "temp_table"
         
         for elem in groupby:
-            if isinstance(elem, str):
-                if elem.endswith("time"):
-                    continue
-                elif elem.startswith("list"):
-                    groupby_fields.append(f"COALESCE(array_length({table}.{elem}::int[], 1), 0)")
-                else:
-                    groupby_fields.append(f"{table}.{elem}")
-            elif isinstance(elem, list):
-                select_clause = []
-                for column in elem:
-                    if column.startswith("list"):
-                        select_arg = f"COALESCE(array_length({table}.{column}::int[], 1), 0)"
-                    else:
-                        select_arg = f"{table}.{column}"
-                    select_clause.append(select_arg)
-                select_clause = f"COALESCE({', '.join(select_clause)}) as {elem[0]}"
-                groupby_fields.append(select_clause)
+            arg = self._build_select_argument(table, elem)
+            if arg:
+                groupby_fields.append(arg)
         
         return ", ".join(groupby_fields)
 

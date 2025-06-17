@@ -5,8 +5,7 @@ from tool.helper import *
 
 """
 This file defines classes for building additional Grafana features, including:
-    - Filters
-With support from Wen Li.
+    - Filters: With support from Wen Li.
 """
 
 class FilterBuilder:
@@ -45,12 +44,12 @@ class FilterBuilder:
         """Generate a template SQL command based on the given filter name.
         """
         # check filter type:
-        if filter_name == "status":
+        if filter_name == "shipping_status":
             filter_sql = f"""
             SELECT DISTINCT 
-            CASE WHEN shipped_datetime IS NULL THEN 'not shipped' ELSE 'shipped' END AS status 
+            CASE WHEN shipped_datetime IS NULL THEN 'not shipped' ELSE 'shipped' END AS shipping_status 
             FROM {filters_table}
-            ORDER BY status
+            ORDER BY shipping_status
             """
         else:
             filter_sql = f"""
@@ -69,7 +68,7 @@ class FilterBuilder:
             for elem in filters[filters_table]:
                 if elem in exist_filter:
                     continue    # filter exists
-                elif elem == "assembled" or elem.endswith("time") or elem.endswith("date"):
+                elif elem == "assembled" or elem.endswith("time") or elem.endswith("date") or elem.endswith("timestamp") or elem.startswith("date"):
                     continue    # filter not used in dashboard
             
                 exist_filter.add(elem)

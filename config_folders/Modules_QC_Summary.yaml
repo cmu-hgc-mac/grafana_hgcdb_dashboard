@@ -68,7 +68,7 @@ dashboards:
           filters: {"module_qc_summary": ["final_grade"], "module_info": ["assembled"]}
           distinct: True
 
-  - title: "iv_curve plot"
+  - title: "IV_Curve Plot"
     panels:
         - title: "iv_curve plot"
           table:
