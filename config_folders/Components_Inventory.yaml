@@ -37,7 +37,7 @@ dashboards:
       - title: "Hexaboard Info"
         table: "hxb_pedestal_test"
         chart_type: "table"
-        condition: 
+        condition: "hexaboard.module_no is NULL"
         groupby: {"hxb_pedestal_test": ["hxb_name", "count_bad_cells", "status_desc", "date_test"], "hxb_inspect": ["flatness", "thickness"]}
-        filters: {"hxb_pedestal_test": ["status_desc", "date_test"], "hxb_inspect": []}
+        filters: {"hxb_pedestal_test": ["status_desc", "date_test"], "hxb_inspect": [], "hexaboard": []}
         distinct: True
