@@ -333,6 +333,12 @@ TIME_COLUMNS = [
     "log_timestamp" # particulate_counts, temp_humidity
 ]
 
+PREFIX = {
+    "baseplate": "bp",
+    "hexaboard": "hxb",
+    "sensor": "sen",
+}
+
 # -- Set time_zone --
 INSTITUTION_TIMEZONES = {
     "CMU": "America/New_York",

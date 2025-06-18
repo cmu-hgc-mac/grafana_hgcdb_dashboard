@@ -51,7 +51,13 @@ class BaseSQLGenerator(ChartSQLGenerator):
                     temp_table_list.append(f"temp_table_{n}")
 
                     distinct_column = get_distinct_column_name(table)   # first column name of the table
-                    sort_column = f"{table.split('_')[0]}_name"         # e.g.: hxb_no, module_no...
+                    
+                    if table in PREFIX:
+                        prefix = PREFIX[table]
+                    else:
+                        prefix = table.split("_")[0]
+
+                    sort_column = f"{prefix}_name"         # e.g.: hxb_no, module_no...
 
                     arg = f"""
                     {temp_table_list[n]} AS (
@@ -72,7 +78,13 @@ class BaseSQLGenerator(ChartSQLGenerator):
 
             # fetch the column name for distinct modules
             distinct_column = get_distinct_column_name(table)   # first column name of the table
-            sort_column = f"{table.split('_')[0]}_name"         # e.g.: hxb_no, module_no...
+            
+            if table in PREFIX:
+                prefix = PREFIX[table]
+            else:
+                prefix = table.split("_")[0]
+
+            sort_column = f"{prefix}_name"         # e.g.: hxb_no, module_no...
 
             # build the pre_clause
             pre_clause = f"""
@@ -156,7 +168,11 @@ class BaseSQLGenerator(ChartSQLGenerator):
         else:
             main_table = "temp_table" if distinct else table
 
-        main_prefix = "hxb" if table == "hexaboard" else table.split("_")[0]
+        # define the main prefix
+        if table in PREFIX:
+            main_prefix = PREFIX[table]
+        else:
+            main_prefix = table.split("_")[0]
 
         # Map table → temp_table_X
         filters_table_list = list(filters.keys())
