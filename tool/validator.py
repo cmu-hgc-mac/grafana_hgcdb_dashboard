@@ -57,6 +57,7 @@ class DashboardValidator:
                 passed = False
         return passed
 
+
     # ============================================================
     def _check_panel_keys(self) -> bool:
         """Check if each key in each panel has the correct value type.
@@ -222,6 +223,7 @@ class DashboardValidator:
         return passed
 
 
+    # ============================================================
     def run_all_checks(self) -> bool:
         """Run all validator checks and print a summary.
         """
@@ -253,7 +255,35 @@ class DashboardValidator:
 class AlertRuleValidator:
     def __init__(self, config_path: str):
         self._cfg = ConfigLoader(config_path)
+    
+    # ============================================================
+    def iter_dashboards(self) -> dict:
+        """Iterate over all dashboards in the config file.
+        """
+        return self._cfg.get("dashboards", [])
 
+    def iter_panels(self) -> tuple:
+        """Iterate over all panels in the config file.
+           - Yield (dash_title, panel_title, panel_dict)
+        """
+        for dash in self.iter_dashboards():
+            dash_title = dash.get("title", "<Untitled>")
+            for panel in dash.get("panels", []):
+                panel_title = panel.get("title", "<Unnamed Panel>")
+                yield dash_title, panel_title, panel
+    
+    def iter_alerts(self) -> dict:
+        """Iterate over all alerts in the config file.  
+        """
+        return self._cfg.get("alert", [])
+    
+    def print_error(self, alert_title: str, dash_title: str, panel_title: str, message: str):
+        """Print out the error message.
+        """
+        print(f"[Error] Alert Rule '{alert_title}' for Dashboard '{dash_title}', Panel '{panel_title}' — {message}")
+        
+
+    # ============================================================
     def _check_alert_keys(self) -> bool:
         """Check if each key in each alert rule has the correct value type.
         """
@@ -272,7 +302,7 @@ class AlertRuleValidator:
         }
 
         passed = True   # assume all checks pass
-        alerts = self._cfg.get("alerts", [])
+        alerts = self._cfg.get("alert", [])
 
         for alert_idx, alert in enumerate(alerts):
             alert_title = alert.get("title", f"<Alert {alert_idx + 1}>")
@@ -287,17 +317,56 @@ class AlertRuleValidator:
                     passed = False
 
         return passed
+    
+    def _check_panelID(self) -> bool:
+        """Check if the panelID is valid.
+        """
+        passed = True   # assert all checks passed
+        alerts = self.iter_alerts()
 
+        for idx, alert in enumerate(alerts):
+            alert_title = alert.get("title", f"<Alert {idx + 1}>")
+            dash_title = alert.get("dashboard", "<Untitled>")
+            panelID_raw = alert.get("panelID")
+
+            # Check if the panelID is an integer in str type
+            try:
+                panelID = int(panelID_raw)
+            except (ValueError, TypeError):
+                self.print_error(alert_title, dash_title, "<Unknown>", f"Invalid panelID '{panelID_raw}' — must be an integer.")
+                passed = False
+                continue
+
+            # Check dashboard existence
+            target_dashboard = None
+            for dash in self.iter_dashboards():
+                if dash.get("title", "<Untitled>") == dash_title:
+                    target_dashboard = dash
+                    break
+
+            if target_dashboard is None:
+                self.print_error(alert_title, dash_title, "<Unknown>", f"Dashboard '{dash_title}' not found.")
+                passed = False
+                continue
+
+            # Check panelID within range
+            panels = target_dashboard.get("panels", [])
+            if not (1 <= panelID <= len(panels)):
+                self.print_error(alert_title, dash_title, "<Unknown>", f"panelID '{panelID}' is out of range. This dashboard has {len(panels)} panel(s).")
+                passed = False
+                continue
+
+        return passed
+
+
+    # ============================================================
     def run_all_checks(self) -> bool:
         """Run all validator checks and print a summary.
         """
         checks = {
-            # "Check if dashboards exist": self._check_dashboards_exist,
-            # "Check if each dashboard has at least one panel": self._check_each_dashboard_has_panels,
-            "Check if alert keys have correct types": self._check_alert_keys
+            "Check if alert keys have correct types": self._check_alert_keys,
+            "Check if panelID is valid": self._check_panelID,
             # "Check if required fields are not empty": self._check_required_fields_not_empty,
-            # "Check if duplicate dashboard titles exist": self._check_duplicate_dashboard_titles,
-            # "Check for duplicate panel titles": self._check_duplicate_panel_titles,
         }
 
         overall_passed = True
