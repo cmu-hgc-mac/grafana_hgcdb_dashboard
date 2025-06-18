@@ -70,7 +70,7 @@ class DashboardValidator:
             'condition': (str, type(None)),
             'groupby': (list, dict, type(None)),
             'filters': (dict, type(None)),
-            'distinct': bool
+            'distinct': (list, type(None))
         }
 
         passed = True   # assume all checks pass
@@ -111,11 +111,11 @@ class DashboardValidator:
 
     def _check_required_fields_not_empty(self) -> bool:
         """Check if required fields in each panel are not empty.
-        - Skip 'text' chart_type panels.
+           - Skip 'text' and 'piechart' chart_type panels.
         """
         passed = True   # assume check pass
 
-        required_fields = ['title', 'table', 'chart_type', 'groupby', 'distinct']
+        required_fields = ['title', 'table', 'chart_type', 'groupby']
 
         for dash_title, panel_title, panel in self.iter_panels():
             if self.should_skip_panel(panel):
@@ -162,6 +162,7 @@ class DashboardValidator:
 
     def _check_table_and_fields_exist(self) -> bool:
         """Check if table exists and all groupby/filter fields are valid.
+           - Skip 'text' and 'piechart' chart_type panels.
         """
         passed = True   # assume check pass
 
@@ -182,9 +183,9 @@ class DashboardValidator:
             if isinstance(groupby, list):
                 for col in groupby:
                     cols = col if isinstance(col, list) else [col]
-                    for c in cols:
-                        if c not in valid_columns and c not in self.SPECIAL_CASES:
-                            self.print_error(dash_title, panel_title, f"GroupBy column '{c}' not in '{table}'")
+                    for sub_col in cols:
+                        if sub_col not in valid_columns and sub_col not in self.SPECIAL_CASES:
+                            self.print_error(dash_title, panel_title, f"GroupBy column '{sub_col}' not in '{table}'")
                             passed = False
 
             elif isinstance(groupby, dict):
@@ -195,9 +196,9 @@ class DashboardValidator:
                         self.print_error(dash_title, panel_title, f"GroupBy sub-table '{sub_table}' not found.")
                         passed = False
                         continue
-                    for c in cols:
-                        if c not in valid_sub_cols and c not in self.SPECIAL_CASES:
-                            self.print_error(dash_title, panel_title, f"GroupBy column '{c}' not in '{sub_table}'")
+                    for sub_col in cols:
+                        if sub_col not in valid_sub_cols and sub_col not in self.SPECIAL_CASES:
+                            self.print_error(dash_title, panel_title, f"GroupBy column '{sub_col}' not in '{sub_table}'")
                             passed = False
 
             # Check filters
@@ -221,7 +222,9 @@ class DashboardValidator:
         return passed
 
 
-    def run_all_checks(self):
+    def run_all_checks(self) -> bool:
+        """Run all validator checks and print a summary.
+        """
         checks = {
             "Check if dashboards exist": self._check_dashboards_exist,
             "Check if each dashboard has at least one panel": self._check_each_dashboard_has_panels,
@@ -233,11 +236,13 @@ class DashboardValidator:
         }
 
         all_passed = True
+
         for name, fn in checks.items():
             print(f"— {name}...", end=" ")
             passed = fn()
             print(">> Passed" if passed else ">> Failed")
             all_passed &= passed
+
         return all_passed
 
 

@@ -10,28 +10,28 @@ dashboards:
         condition: 
         groupby: ["bp_material", "resolution", "roc_version", "geometry", "shipped_datetime"]
         filters: {"module_info": ["bp_material", "resolution", "roc_version", "geometry", "shipping_status", "assembled"]}
-        distinct: False
+        distinct: 
       - title: "Module Shipping Status"
         table: "module_info"
         chart_type: "piechart"
         condition: 
         groupby: []
         filters: {"module_info": ["bp_material", "resolution", "roc_version", "geometry", "shipping_status", "assembled"]}
-        distinct: False
+        distinct: 
       - title: "Number of the Shipped Modules"
         table: "module_info"
         chart_type: "stat"
         condition: "shipped_datetime IS NOT NULL"
         groupby: ["shipping_status"]
         filters: {"module_info": ["bp_material", "resolution", "roc_version", "geometry", "shipping_status", "assembled"]}
-        distinct: False
+        distinct: 
       - title: "Number of the Not-Shipped Modules"
         table: "module_info"
         chart_type: "stat"
         condition: "shipped_datetime IS NULL"
         groupby: ["shipping_status"]
         filters: {"module_info": ["bp_material", "resolution", "roc_version", "geometry", "shipping_status", "assembled"]}
-        distinct: False
+        distinct: 
 
   - title: "Module Inspect"
     panels:
@@ -41,98 +41,98 @@ dashboards:
         condition: "grade IS NOT NULL"
         groupby: ["grade"]
         filters: {"module_info": ["bp_material", "resolution", "roc_version", "geometry", "assembled"], "module_inspect": ["grade"]}
-        distinct: True
+        distinct: ["module_inspect", "module_info"]
       - title: "Flatness"
         table: "module_inspect"
         chart_type: "histogram"
         condition: "flatness IS NOT NULL"
         groupby: ["flatness"]
         filters: {"module_info": ["bp_material", "resolution", "roc_version", "geometry", "assembled"], "module_inspect": ["grade"]}
-        distinct: True
+        distinct: ["module_inspect", "module_info"]
       - title: "average thickness (mm)"
         table: "module_inspect"
         chart_type: "histogram"
         condition: "avg_thickness IS NOT NULL"
         groupby: ["avg_thickness"]
         filters: {"module_info": ["bp_material", "resolution", "roc_version", "geometry", "assembled"], "module_inspect": ["grade"]}
-        distinct: True
+        distinct: ["module_inspect", "module_info"]
       - title: "x offset (μm)"
         table: "module_inspect"
         chart_type: "histogram"
         condition: "x_offset_mu IS NOT NULL"
         groupby: ["x_offset_mu"]
         filters: {"module_info": ["bp_material", "resolution", "roc_version", "geometry", "assembled"], "module_inspect": ["grade"]}
-        distinct: True
+        distinct: ["module_inspect", "module_info"]
       - title: "y offset (μm)"
         table: "module_inspect"
         chart_type: "histogram"
         condition: "y_offset_mu IS NOT NULL"
         groupby: ["y_offset_mu"]
         filters: {"module_info": ["bp_material", "resolution", "roc_version", "geometry", "assembled"], "module_inspect": ["grade"]}
-        distinct: True
+        distinct: ["module_inspect", "module_info"]
       - title: "max thickness (mm)"
         table: "module_inspect"
         chart_type: "histogram"
         condition: "max_thickness IS NOT NULL"
         groupby: ["max_thickness"]
         filters: {"module_info": ["bp_material", "resolution", "roc_version", "geometry", "assembled"], "module_inspect": ["grade"]}
-        distinct: True
+        distinct: ["module_inspect", "module_info"]
       - title: "ang offset (deg)"
         table: "module_inspect"
         chart_type: "histogram"
         condition: "ang_offset_deg IS NOT NULL"
         groupby: ["ang_offset_deg"]
         filters: {"module_info": ["bp_material", "resolution", "roc_version", "geometry", "assembled"], "module_inspect": ["grade"]}
-        distinct: True
+        distinct: ["module_inspect", "module_info"]
 
   - title: "Proto Inspect"
     panels:
       - title: "grade"
         table: "proto_inspect"
         chart_type: "barchart"
-        condition: "temp_table.grade IS NOT NULL"
+        condition: "temp_table_0.grade IS NOT NULL"
         groupby: ["grade"]
         filters: {"baseplate": ["bp_material"], "sensor": ["resolution", "geometry"], "proto_assembly": ["ass_run_date"], "proto_inspect": ["grade"]}
-        distinct: True
+        distinct: ["proto_inspect", "baseplate", "sensor", "proto_assembly"]
       - title: "Flatness"
         table: "proto_inspect"
         chart_type: "histogram"
         condition: "flatness IS NOT NULL"
         groupby: ["flatness"]
         filters: {"baseplate": ["bp_material"], "sensor": ["resolution", "geometry"], "proto_assembly": ["ass_run_date"], "proto_inspect": ["grade"]}
-        distinct: True
+        distinct: ["proto_inspect", "baseplate", "sensor", "proto_assembly"]
       - title: "average thickness (mm)"
         table: "proto_inspect"
         chart_type: "histogram"
         condition: "avg_thickness IS NOT NULL"
         groupby: ["avg_thickness"]
         filters: {"baseplate": ["bp_material"], "sensor": ["resolution", "geometry"], "proto_assembly": ["ass_run_date"], "proto_inspect": ["grade"]}
-        distinct: True
+        distinct: ["proto_inspect", "baseplate", "sensor", "proto_assembly"]
       - title: "x offset (μm)"
         table: "proto_inspect"
         chart_type: "histogram"
         condition: "x_offset_mu IS NOT NULL"
         groupby: ["x_offset_mu"]
         filters: {"baseplate": ["bp_material"], "sensor": ["resolution", "geometry"], "proto_assembly": ["ass_run_date"], "proto_inspect": ["grade"]}
-        distinct: True
+        distinct: ["proto_inspect", "baseplate", "sensor", "proto_assembly"]
       - title: "y offset (μm)"
         table: "proto_inspect"
         chart_type: "histogram"
         condition: "y_offset_mu IS NOT NULL"
         groupby: ["y_offset_mu"]
         filters: {"baseplate": ["bp_material"], "sensor": ["resolution", "geometry"], "proto_assembly": ["ass_run_date"], "proto_inspect": ["grade"]}
-        distinct: True
+        distinct: ["proto_inspect", "baseplate", "sensor", "proto_assembly"]
       - title: "max thickness (mm)"
         table: "proto_inspect"
         chart_type: "histogram"
         condition: "max_thickness IS NOT NULL"
         groupby: ["max_thickness"]
         filters: {"baseplate": ["bp_material"], "sensor": ["resolution", "geometry"], "proto_assembly": ["ass_run_date"], "proto_inspect": ["grade"]}
-        distinct: True
+        distinct: ["proto_inspect", "baseplate", "sensor", "proto_assembly"]
       - title: "ang offset (deg)"
         table: "proto_inspect"
         chart_type: "histogram"
         condition: "ang_offset_deg IS NOT NULL"
         groupby: ["ang_offset_deg"]
         filters: {"baseplate": ["bp_material"], "sensor": ["resolution", "geometry"], "proto_assembly": ["ass_run_date"], "proto_inspect": ["grade"]}
-        distinct: True
+        distinct: ["proto_inspect", "baseplate", "sensor", "proto_assembly"]

@@ -10,63 +10,63 @@ dashboards:
           condition: "final_grade IS NOT NULL"
           groupby: ["final_grade"]
           filters: {"module_qc_summary": ["final_grade"], "module_info": ["assembled"]}
-          distinct: True
+          distinct: ["module_qc_summary"]
         - title: "Count for bad cells"
           table: "module_qc_summary"
           chart_type: "barchart"
           condition: "final_grade IS NOT NULL"
           groupby: ["count_bad_cells"]
           filters: {"module_qc_summary": ["final_grade"], "module_info": ["assembled"]}
-          distinct: True
+          distinct: ["module_qc_summary"]
         - title: "Count for unbonded cells"
           table: "module_qc_summary"
           chart_type: "barchart"
           condition:
           groupby: ["list_cells_unbonded"]
           filters: {"module_qc_summary": ["final_grade"], "module_info": ["assembled"]}
-          distinct: True
+          distinct: ["module_qc_summary"]
         - title: "Count for grounded cells"
           table: "module_qc_summary"
           chart_type: "barchart"
           condition:
           groupby: ["list_cells_grounded"]
           filters: {"module_qc_summary": ["final_grade"], "module_info": ["assembled"]}
-          distinct: True
+          distinct: ["module_qc_summary"]
         - title: "Count for noisy cells"
           table: "module_qc_summary"
           chart_type: "barchart"
           condition:
           groupby: ["list_noisy_cells"]
           filters: {"module_qc_summary": ["final_grade"], "module_info": ["assembled"]}
-          distinct: True
+          distinct: ["module_qc_summary"]
         - title: "Count for dead cells"
           table: "module_qc_summary"
           chart_type: "barchart"
           condition:
           groupby: ["list_dead_cells"]
           filters: {"module_qc_summary": ["final_grade"], "module_info": ["assembled"]}
-          distinct: True
+          distinct: ["module_qc_summary"]
         - title: "i_at_ref_a < 1 μA"
           table: "module_qc_summary"
           chart_type: "histogram"
           condition: "i_at_600v < 1e-6 OR i_at_ref_a < 1e-6"
           groupby: [["i_at_ref_a", "i_at_600v"]]
           filters: {"module_qc_summary": ["final_grade"], "module_info": ["assembled"]}
-          distinct: True
+          distinct: ["module_qc_summary"]
         - title: "Count for i_at_ref_a > 1 μA"
           table: "module_qc_summary"
           chart_type: "stat"
           condition: "i_at_600v > 1e-6 OR i_at_ref_a > 1e-6"
           groupby: [["i_at_ref_a", "i_at_600v"]]
           filters: {"module_qc_summary": ["final_grade"], "module_info": ["assembled"]}
-          distinct: True
+          distinct: ["module_qc_summary"]
         - title: "Table for i_at_ref_a > 1 μA"
           table: "module_qc_summary"
           chart_type: "table"
           condition: "i_at_600v > 1e-6 OR i_at_ref_a > 1e-6"
           groupby: ["module_name", ["i_at_ref_a", "i_at_600v"]]
           filters: {"module_qc_summary": ["final_grade"], "module_info": ["assembled"]}
-          distinct: True
+          distinct: ["module_qc_summary"]
 
   - title: "IV_Curve Plot"
     panels:
@@ -76,4 +76,4 @@ dashboards:
           condition: 
           groupby:
           filters:
-          distinct: False
+          distinct: 

@@ -36,65 +36,38 @@ class BaseSQLGenerator(ChartSQLGenerator):
         pass
 
     # Base SQL for all chart types
-    def _build_pre_clause(self, table: str, distinct: bool, groupby=None) -> str:
+    def _build_pre_clause(self, table: str, distinct: list) -> str:
         """Builds the pre-SELECT clause for histogram. 
            - If distinct is True, it will select the distinct modules.
         """
         if distinct:
-            # special case for dictionary groupby
-            if isinstance(groupby, dict):
+            temp_table_list = []
+            pre_clause_list = []
+
+            for n, table in enumerate(distinct):
+                temp_table_list.append(f"temp_table_{n}")
+
+                distinct_column = get_distinct_column_name(table)   # first column name of the table
                 
-                temp_table_list = []
-                pre_clause_list = []
+                if table in PREFIX:
+                    prefix = PREFIX[table]
+                else:
+                    prefix = table.split("_")[0]
 
-                for n, table in enumerate(groupby):
-                    temp_table_list.append(f"temp_table_{n}")
+                sort_column = f"{prefix}_name"         # e.g.: hxb_no, module_no...
 
-                    distinct_column = get_distinct_column_name(table)   # first column name of the table
-                    
-                    if table in PREFIX:
-                        prefix = PREFIX[table]
-                    else:
-                        prefix = table.split("_")[0]
-
-                    sort_column = f"{prefix}_name"         # e.g.: hxb_no, module_no...
-
-                    arg = f"""
-                    {temp_table_list[n]} AS (
-                    SELECT DISTINCT ON ({sort_column}) *
-                    FROM {table}
-                    ORDER BY {sort_column}, {distinct_column} DESC
-                    )"""
-
-                    pre_clause_list.append(arg)
-
-                pre_clause = "WITH" + ",\n".join(pre_clause_list)
-                target_table = temp_table_list[0]   # default: temp_table_0
-
-                return pre_clause, target_table
-
-            # General Case:
-            target_table = "temp_table"
-
-            # fetch the column name for distinct modules
-            distinct_column = get_distinct_column_name(table)   # first column name of the table
-            
-            if table in PREFIX:
-                prefix = PREFIX[table]
-            else:
-                prefix = table.split("_")[0]
-
-            sort_column = f"{prefix}_name"         # e.g.: hxb_no, module_no...
-
-            # build the pre_clause
-            pre_clause = f"""
-            WITH temp_table AS (
+                arg = f"""
+                {temp_table_list[n]} AS (
                 SELECT DISTINCT ON ({sort_column}) *
                 FROM {table}
                 ORDER BY {sort_column}, {distinct_column} DESC
-            )
-            """
-            
+                )"""
+
+                pre_clause_list.append(arg)
+
+            pre_clause = "WITH" + ",\n".join(pre_clause_list)
+            target_table = temp_table_list[0]   # default: temp_table_0
+        
         else:
             pre_clause = ""
             target_table = table
@@ -122,7 +95,7 @@ class BaseSQLGenerator(ChartSQLGenerator):
 
         return arg
 
-    def _build_where_clause(self, filters: dict, condition: str, table: str, distinct: bool, groupby=None) -> str:
+    def _build_where_clause(self, filters: dict, condition: str, table: str, distinct: list) -> str:
         """Builds the WHERE clause from filters and condition. 
         """
         where_clauses = [] 
@@ -130,43 +103,29 @@ class BaseSQLGenerator(ChartSQLGenerator):
         if filters:
             filters_table_list = list(filters.keys())  
 
-            # special case for dictionary groupby
-            if isinstance(groupby, dict):
-                for filters_table in filters_table_list:
-                    if distinct:
-                        groupby_table_list = list(groupby.keys())
-                        if filters_table in groupby_table_list:
-                            index = groupby_table_list.index(filters_table)
-                            filters[f"temp_table_{index}"] = filters.pop(f"{filters_table}")
-                            filters_table = f"temp_table_{index}"
-            else:
-                # update table name with distinct condition
-                for filters_table in filters_table_list:
-                    if filters_table == table:
-                        if distinct:
-                            filters["temp_table"] = filters.pop(f"{filters_table}")
-                            filters_table = "temp_table"
-
-                # build the WHERE clause for each filter
+            # update table name with distinct condition
+            for filters_table in filters_table_list:
+                if distinct:
+                    if filters_table in distinct:
+                        index = distinct.index(filters_table)
+                        filters[f"temp_table_{index}"] = filters.pop(f"{filters_table}")
+                        filters_table = f"temp_table_{index}"
+            
                 for elem in filters[filters_table]:
                     arg = self._build_filter_argument(elem, filters_table)
-                    where_clauses.append(arg)   
-
+                    where_clauses.append(arg)
         if condition:
             where_clauses.append(condition) 
         
         return "\n          AND ".join(where_clauses)
 
-    def _build_join_clause(self, table: str, filters: dict, distinct: bool, groupby=None) -> str:
+    def _build_join_clause(self, table: str, filters: dict, distinct: list) -> str:
         """Builds the LEFT JOIN command by using the foreign key.
         """
         join_clause = []
 
         # define the main table for LEFT JOIN
-        if isinstance(groupby, dict):
-            main_table = "temp_table_0" if distinct else table
-        else:
-            main_table = "temp_table" if distinct else table
+        main_table = "temp_table_0" if distinct else table
 
         # define the main prefix
         if table in PREFIX:
@@ -179,14 +138,13 @@ class BaseSQLGenerator(ChartSQLGenerator):
 
         for filters_table in filters_table_list:
             # Skip self-join
-            if filters_table == main_table or filters_table == table:
+            if filters_table == table or filters_table == main_table:
                 continue
             
             # Special case for dictionary groupby
-            if isinstance(groupby, dict) and distinct:
-                groupby_table_list = list(groupby.keys())
-                if filters_table in groupby_table_list:
-                    index = groupby_table_list.index(filters_table)     # get the index for temp_table_X
+            if distinct:
+                if filters_table in distinct:
+                    index = distinctindex(filters_table)     # get the index for temp_table_X
                     filters[f"temp_table_{index}"] = filters.pop(f"{filters_table}")    # update the filters table name in `filters`
                     filters_table = f"temp_table_{index}"   # update the filters table name in the join clause
             
@@ -253,7 +211,7 @@ class BarChartGenerator(BaseSQLGenerator):
         groupby_fields = []
 
         if distinct:
-            table = "temp_table"
+            table = "temp_table_0"
 
         for elem in groupby:
             arg = self._build_select_argument(table, elem)
@@ -286,7 +244,7 @@ class HistogramGenerator(BaseSQLGenerator):
            - For histogram, there should only be 1 element in groupby.
         """
         if distinct:
-            table = "temp_table"
+            table = "temp_table_0"
 
         # check for the lenght of groupby:
         if len(groupby) > 1:
@@ -384,12 +342,10 @@ class StatChartGenerator(BaseSQLGenerator):
 # -- Table Chart --
 class TableGenerator(BaseSQLGenerator):
     def generate_sql(self, table: str, condition: str, groupby: list, filters: list, distinct: bool) -> str:
-        original_groupby = copy.deepcopy(groupby)
-
-        pre_clause, target_table = self._build_pre_clause(table, distinct, groupby=groupby)
+        pre_clause, target_table = self._build_pre_clause(table, distinct)
         select_clause = self._build_select_clause(table, groupby, distinct)
-        where_clause = self._build_where_clause(filters, condition, table, distinct, groupby=groupby)
-        join_clause = self._build_join_clause(table, filters, distinct, groupby=original_groupby)
+        where_clause = self._build_where_clause(filters, condition, table, distinct)
+        join_clause = self._build_join_clause(table, filters, distinct)
 
         sql = f"""
         {pre_clause}
@@ -406,38 +362,28 @@ class TableGenerator(BaseSQLGenerator):
         """
         groupby_fields = []
 
-        if distinct:
-            if isinstance(groupby, list):
-                table = "temp_table"
-                for elem in groupby:
-                    arg = self._build_select_argument(table, elem)
-                    if arg:
-                        groupby_fields.append(arg)
+        # Preprocess groupby into list of (table, column)
+        pairs = []
 
-            elif isinstance(groupby, dict):
-                groupby_table_list = list(groupby.keys())
+        if isinstance(groupby, list):
+            temp_table = "temp_table_0" if distinct else table
+            for elem in groupby:
+                cols = elem if isinstance(elem, list) else [elem]
+                for col in cols:
+                    pairs.append((temp_table, col))
 
-                for n, groupby_table in enumerate(groupby_table_list):
-                    groupby[f"temp_table_{n}"] = groupby.pop(f"{groupby_table}")
-                    groupby_table = f"temp_table_{n}"
+        elif isinstance(groupby, dict):
+            for i, (original_table, cols) in enumerate(groupby.items()):
+                temp_table = f"temp_table_{i}" if distinct else original_table
+                cols = cols if isinstance(cols, list) else [cols]
+                for col in cols:
+                    pairs.append((temp_table, col))
 
-                    for elem in groupby[groupby_table]:
-                        arg = self._build_select_argument(groupby_table, elem)
-                        if arg:
-                            groupby_fields.append(arg)
-        else:
-            if isinstance(groupby, list):
-                for elem in groupby:
-                    arg = self._build_select_argument(table, elem)
-                    if arg:
-                        groupby_fields.append(arg)
-
-            elif isinstance(groupby, dict):
-                for groupby_table in groupby:
-                    for elem in groupby[groupby_table]:
-                        arg = self._build_select_argument(groupby_table, elem)
-                        if arg:
-                            groupby_fields.append(arg)
+        # Now generate select arguments
+        for table_name, col in pairs:
+            arg = self._build_select_argument(table_name, col)
+            if arg:
+                groupby_fields.append(arg)
 
         return ",\n            ".join(groupby_fields)
 
