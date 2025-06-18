@@ -22,14 +22,14 @@ dashboards:
         table: "module_info"
         chart_type: "stat"
         condition: "module_info.shipped_datetime IS NOT NULL"
-        groupby: []
+        groupby: ["shipping_status"]
         filters: {"module_info": ["bp_material", "resolution", "roc_version", "geometry", "shipping_status", "assembled"]}
         distinct: False
       - title: "Number of the Not-Shipped Modules"
         table: "module_info"
         chart_type: "stat"
         condition: "module_info.shipped_datetime IS NULL"
-        groupby: []
+        groupby: ["shipping_status"]
         filters: {"module_info": ["bp_material", "resolution", "roc_version", "geometry", "shipping_status", "assembled"]}
         distinct: False
 

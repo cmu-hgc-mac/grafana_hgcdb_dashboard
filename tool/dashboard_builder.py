@@ -84,7 +84,7 @@ class DashboardBuilder:
         with open(path, "w", encoding="utf-8") as f:
             json.dump(dashboard_json, f, indent=2)
         
-        print(f"Dashboard saved to {path}")
+        print(f"[DASHBOARD] Saved to {path}")
 
     def upload_dashboards(self, file_path: str):
         """Upload one dashboard JSON file into Grafana folder.

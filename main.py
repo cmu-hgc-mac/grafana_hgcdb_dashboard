@@ -44,7 +44,7 @@ def main():
         subprocess.run(["python", "./preSteps/add_dbsource.py"], check=True)
 
     else:
-        print(" >> preSteps skipped. (<ゝω・）☆ \n")
+        print(" >>>> preSteps skipped. (<ゝω・）☆ \n")
 
     # Everything Need To Generate
     subprocess.run(["python", "create/create_folders.py"], check=True)
@@ -54,12 +54,12 @@ def main():
 
     # Add run times
     gf_conn.reload()
-    print(" >> And run_times updated! 乚(`ヮ´ ﾐэ)Э")
+    print(" >>>> GF_RUN_TIMES updated! 乚(`ヮ´ ﾐэ)Э")
     gf_conn.set('GF_RUN_TIMES', run_times + 1)
     gf_conn.save()
 
     # Done!!
-    print(" \n >> All done! (๑•̀ㅂ•́)و✧")
+    print("\n  >>>>>> All done! (๑•̀ㅂ•́)و✧")
 
 
 # allow run

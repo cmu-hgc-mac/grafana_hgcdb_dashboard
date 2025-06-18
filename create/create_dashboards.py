@@ -5,6 +5,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import yaml
 
 from tool.helper import *
+from tool.validator import Validator
 from tool.panel_builder import PanelBuilder
 from tool.other_builder import FilterBuilder
 from tool.dashboard_builder import DashboardBuilder
@@ -28,9 +29,25 @@ for config in filelist:
     # skip non-yaml files
     if not config.endswith(".yaml"):
         continue
-    
+
+    # Validate the config file
+    config_path = os.path.join(CONFIG_FOLDER_PATH, config)
+
+    try:
+        validator = Validator(config_path)
+        print(f"\n[VALIDATING] Checking if the config file: {config} is valid...")
+    except FileNotFoundError as e:
+        print(f"[ERROR] {e}")
+        continue
+
+    ok = validator.run_all_checks()
+
+    if not ok:  # skip invalid config file
+        print(f"[WARNING] Validation failed for config: {config}. Skipping this file.\n")
+        continue
+
     # Load the dashboards
-    with open(os.path.join(CONFIG_FOLDER_PATH, config), mode = 'r') as file:
+    with open(config_path, mode = 'r') as file:
         dashboards = yaml.safe_load(file)["dashboards"]
 
     # Loop for every dashboard in a config file
@@ -60,7 +77,7 @@ for config in filelist:
         file_name = config.split(".")[0]
         dashboard_builder.save_dashboard_json(dashboard, dashboard_json, file_name)
 
-print(" >> Dashboards generated successfully! =͟͟͞͞( 'ヮ' 三 'ヮ' =͟͟͞͞) \n")
+print("\n >>>> Dashboards generated! =͟͟͞͞( 'ヮ' 三 'ヮ' =͟͟͞͞) \n")
 
 
 # Upload dashboards
@@ -75,9 +92,9 @@ for folder in folder_list:
             except Exception as e:
                 print(f"[SKIPPED] Error uploading dashboard: {file_name} | Status: {e}")
 
-print(" >> Dashboards uploaded! ᕕ( ᐛ )ᕗ \n")
+print("\n >>>> Dashboards uploaded! ᕕ( ᐛ )ᕗ \n")
 
 # Remove dashboards json files
 remove_folder("Dashboards", DASHBOARDS_FOLDER_PATH)
 remove_folder("IV_curves_plot", IV_PLOTS_FOLDER_PATH)
-print(" >> Dashboards json files removed! o(≧v≦)o \n")
+print("\n >>>> Dashboards json files removed! o(≧v≦)o \n")
