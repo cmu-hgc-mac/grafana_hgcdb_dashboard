@@ -353,6 +353,12 @@ PREFIX = {
     "sensor": "sen",
 }
 
+# The table list that should use `no` as distinct postfix
+POSTFIX = [
+    "baseplate",
+    "sensor"
+]
+
 # -- Set time_zone --
 INSTITUTION_TIMEZONES = {
     "CMU": "America/New_York",

@@ -36,7 +36,7 @@ class BaseSQLGenerator(ChartSQLGenerator):
         pass
 
     # Base SQL for all chart types
-    def _build_pre_clause(self, table: str, distinct: list) -> str:
+    def _build_pre_clause(self, table: str, distinct: list) -> (str, str):
         """Builds the pre-SELECT clause for histogram. 
            - If distinct is True, it will select the distinct modules.
         """
@@ -95,9 +95,11 @@ class BaseSQLGenerator(ChartSQLGenerator):
 
         return arg
 
-    def _build_where_clause(self, filters: dict, condition: str, table: str, distinct: list) -> str:
+    def _build_where_clause(self, filters: dict, condition: str, table: str, distinct: list) -> (str, dict):
         """Builds the WHERE clause from filters and condition. 
         """
+        original_filters = copy.deepcopy(filters)   # make a copy of the original filters
+
         where_clauses = [] 
 
         if filters:
@@ -117,7 +119,7 @@ class BaseSQLGenerator(ChartSQLGenerator):
         if condition:
             where_clauses.append(condition) 
         
-        return "\n          AND ".join(where_clauses)
+        return "\n          AND ".join(where_clauses), original_filters
 
     def _build_join_clause(self, table: str, filters: dict, distinct: list) -> str:
         """Builds the LEFT JOIN command by using the foreign key.
@@ -133,7 +135,7 @@ class BaseSQLGenerator(ChartSQLGenerator):
         else:
             main_prefix = table.split("_")[0]
 
-        # Map table → temp_table_X
+        # Map table -> {main_prefix}_{postfix}
         filters_table_list = list(filters.keys())
 
         for filters_table in filters_table_list:
@@ -141,14 +143,20 @@ class BaseSQLGenerator(ChartSQLGenerator):
             if filters_table == table or filters_table == main_table:
                 continue
             
+            # assign postfix for special cases
+            if filters_table in POSTFIX:
+                postfix = "no"
+            else:
+                postfix = "name"
+            
             # Special case for dictionary groupby
             if distinct:
                 if filters_table in distinct:
-                    index = distinctindex(filters_table)     # get the index for temp_table_X
+                    index = distinct.index(filters_table)     # get the index for temp_table_X
                     filters[f"temp_table_{index}"] = filters.pop(f"{filters_table}")    # update the filters table name in `filters`
                     filters_table = f"temp_table_{index}"   # update the filters table name in the join clause
-            
-            arg = f"LEFT JOIN {filters_table} ON {main_table}.{main_prefix}_no = {filters_table}.{main_prefix}_no"
+
+            arg = f"LEFT JOIN {filters_table} ON {main_table}.{main_prefix}_{postfix} = {filters_table}.{main_prefix}_{postfix}"
 
             join_clause.append(arg)
         
@@ -189,8 +197,8 @@ class BarChartGenerator(BaseSQLGenerator):
     def generate_sql(self, table: str, condition: str, groupby: list, filters: list, distinct: bool) -> str:
         pre_clause, target_table = self._build_pre_clause(table, distinct)
         select_clause = self._build_select_clause(table, groupby, distinct)
-        where_clause = self._build_where_clause(filters, condition, table, distinct)
-        join_clause = self._build_join_clause(table, filters, distinct)
+        where_clause, original_filters = self._build_where_clause(filters, condition, table, distinct)
+        join_clause = self._build_join_clause(table, original_filters, distinct)
 
         sql = f"""
         {pre_clause}
@@ -226,8 +234,8 @@ class HistogramGenerator(BaseSQLGenerator):
     def generate_sql(self, table: str, condition: str, groupby: list, filters: list, distinct: bool) -> str:
         pre_clause, target_table = self._build_pre_clause(table, distinct)
         select_clause = self._build_select_clause(table, groupby, distinct)
-        where_clause = self._build_where_clause(filters, condition, table, distinct)
-        join_clause = self._build_join_clause(table, filters, distinct)
+        where_clause, original_filters = self._build_where_clause(filters, condition, table, distinct)
+        join_clause = self._build_join_clause(table, original_filters, distinct)
 
         sql = f"""
         {pre_clause}
@@ -261,8 +269,8 @@ class HistogramGenerator(BaseSQLGenerator):
 class TimeseriesGenerator(BaseSQLGenerator):
     def generate_sql(self, table: str, condition: str, groupby: list, filters: list, distinct: bool) -> str:
         select_clause = self._build_select_clause(table, groupby)
-        where_clause = self._build_where_clause(filters, condition, table, distinct)
-        join_clause = self._build_join_clause(table, filters, distinct)
+        where_clause, original_filters = self._build_where_clause(filters, condition, table, distinct)
+        join_clause = self._build_join_clause(table, original_filters, distinct)
         orderby_clause = self._build_orderby_clause(groupby)
 
         sql = f"""
@@ -325,8 +333,8 @@ class TextChartGenerator(BaseSQLGenerator):
 class StatChartGenerator(BaseSQLGenerator):
     def generate_sql(self, table: str, condition: str, groupby: list, filters: list, distinct: bool) -> str:
         pre_clause, target_table = self._build_pre_clause(table, distinct)        
-        where_clause = self._build_where_clause(filters, condition, table, distinct)
-        join_clause = self._build_join_clause(table, filters, distinct)
+        where_clause, original_filters = self._build_where_clause(filters, condition, table, distinct)
+        join_clause = self._build_join_clause(table, original_filters, distinct)
         
         sql = f"""
         {pre_clause}
@@ -344,8 +352,8 @@ class TableGenerator(BaseSQLGenerator):
     def generate_sql(self, table: str, condition: str, groupby: list, filters: list, distinct: bool) -> str:
         pre_clause, target_table = self._build_pre_clause(table, distinct)
         select_clause = self._build_select_clause(table, groupby, distinct)
-        where_clause = self._build_where_clause(filters, condition, table, distinct)
-        join_clause = self._build_join_clause(table, filters, distinct)
+        where_clause, original_filters = self._build_where_clause(filters, condition, table, distinct)
+        join_clause = self._build_join_clause(table, original_filters, distinct)
 
         sql = f"""
         {pre_clause}
@@ -393,8 +401,8 @@ class GaugeGenerator(BaseSQLGenerator):
     def generate_sql(self, table: str, condition: str, groupby: list, filters: list, distinct: bool) -> str:
         pre_clause, target_table = self._build_pre_clause(table, distinct)
         select_clause = self._build_select_clause(table, groupby, distinct)
-        where_clause = self._build_where_clause(filters, condition, table, distinct)
-        join_clause = self._build_join_clause(table, filters, distinct)
+        where_clause, original_filters = self._build_where_clause(filters, condition, table, distinct)
+        join_clause = self._build_join_clause(table, original_filters, distinct)
 
         sql = f"""
         {pre_clause}
@@ -426,8 +434,8 @@ class GaugeGenerator(BaseSQLGenerator):
 class PieChartGenerator(BaseSQLGenerator):
     def generate_sql(self, table: str, condition: str, groupby: list, filters: list, distinct: bool) -> str:
         pre_clause, target_table = self._build_pre_clause(table, distinct)
-        where_clause = self._build_where_clause(filters, condition, table, distinct)
-        join_clause = self._build_join_clause(table, filters, distinct)
+        where_clause, original_filters = self._build_where_clause(filters, condition, table, distinct)
+        join_clause = self._build_join_clause(table, original_filters, distinct)
 
         sql = f"""
         {pre_clause}
