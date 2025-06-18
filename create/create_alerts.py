@@ -6,13 +6,14 @@ import yaml
 
 from tool.helper import *
 from tool.alert_builder import AlertBuilder
+from tool.validator import AlertRuleValidator
 
 """
 This script generates all alert JSON files, saves them to a folder under `grafana_hgcdb_dashboard`, and uploads them to Grafana.
 Author: Xinyue (Joyce) Zhuang
 """
 
-# Define the path of the config folders
+# Get the filelist from the config folder
 filelist = os.listdir(CONFIG_FOLDER_PATH)
 
 # Define the builder
@@ -24,26 +25,43 @@ for config in filelist:
     # skip non-yaml files
     if not config.endswith(".yaml"):
         continue
+
+    # config file path
+    config_path = os.path.join(CONFIG_FOLDER_PATH, config)
     
     # Load the alerts
-    with open(os.path.join(CONFIG_FOLDER_PATH, config), mode = 'r') as file:
+    with open(config_path, mode = 'r') as file:
         tot_config = yaml.safe_load(file)
         # check if alerts exist:
         if "alert" not in tot_config:
             continue
+        # load alerts
         alerts = tot_config["alert"]
-    
-    # Loop for every panel in a dashboard
+
+    try:
+        validator = AlertRuleValidator(config_path)
+        print(f"\n[VALIDATING] Checking if the alert rules in the config file: {config} is valid...")
+    except FileNotFoundError as e:
+        print(f"[ERROR] {e}")
+        continue
+
+    ok = validator.run_all_checks()
+
+    if not ok:  # skip invalid config file
+        print(f"[WARNING] Validation failed for config: {config}. Skipping this file.\n")
+        continue
+        
+    # Loop for every alert
     for alert in alerts:
         # Generate the alert json
         folder_name = config.split(".")[0].replace("_", " ")
         alert_json = alert_builder.generate_alerts(alert, folder_name)
 
-        # Export the dashbaord json to a file
+        # Export the alert json to a file
         file_name = config.split(".")[0]
         alert_builder.save_alerts_json(alert, alert_json, file_name)
 
-print(" >> Alerts generated successfully! ↙(`ヮ´ )↗ \n")
+print("\n >>>> Alerts generated successfully! ↙(`ヮ´ )↗ \n")
 
 
 # Upload alerts
@@ -58,15 +76,15 @@ for folder in folder_list:
             except Exception as e:
                 print(f"[SKIPPED] Error uploading alert rule: {file_name} | Status: {e}")
 
-print(" >> Alerts json files uploaded! (*ˉ︶ˉ*) \n")
+print("\n >>>> Alerts json files uploaded! (*ˉ︶ˉ*) \n")
 
 # Clear GF_FOLDER_UIDS and GF_ALERT_UIDS map:
 gf_conn.set("GF_FOLDER_UIDS", {})
 gf_conn.set("GF_ALERT_UIDS", {})
 gf_conn.save()
 gf_conn.reload()
-print(" >> GF_FOLDER_UIDS and GF_ALERT_UIDS map cleared! (๑•̀ㅂ•́)و✧ \n")
+print(" >>>> GF_FOLDER_UIDS and GF_ALERT_UIDS map cleared! (๑•̀ㅂ•́)و✧ \n")
 
 # Delete the alert files
 remove_folder("Alerts", ALERTS_FOLDER_PATH)
-print(" >> Alerts json files removed! o(≧v≦)o \n")
+print("\n >>>> Alerts json files removed! o(≧v≦)o \n")

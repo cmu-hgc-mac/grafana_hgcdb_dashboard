@@ -5,7 +5,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import yaml
 
 from tool.helper import *
-from tool.validator import Validator
+from tool.validator import DashboardValidator
 from tool.panel_builder import PanelBuilder
 from tool.other_builder import FilterBuilder
 from tool.dashboard_builder import DashboardBuilder
@@ -15,7 +15,7 @@ This script generates all the dashboards json_file, saves them to a folder under
     - The folders would have same names as the files in `config_folders`.
 """
 
-# Define the path of the config folders
+# Get the filelist from the config folder
 filelist = os.listdir(CONFIG_FOLDER_PATH)
 
 # Define the builder
@@ -34,7 +34,7 @@ for config in filelist:
     config_path = os.path.join(CONFIG_FOLDER_PATH, config)
 
     try:
-        validator = Validator(config_path)
+        validator = DashboardValidator(config_path)
         print(f"\n[VALIDATING] Checking if the config file: {config} is valid...")
     except FileNotFoundError as e:
         print(f"[ERROR] {e}")
@@ -55,7 +55,7 @@ for config in filelist:
         config_panels = dashboard["panels"]
         dashboard_title = dashboard["title"]
 
-        # assign_gridPos(panels)  # Assign gridPos to each panel
+        # Initialize setting
         panels_array = []
         template_list = []
         exist_filter = set()    # avoid adding same filters

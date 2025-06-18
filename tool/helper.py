@@ -72,36 +72,6 @@ class ConfigLoader:
         """
         self._data = self._load()
 
-    # -- Dashboard Confiuration Functions --
-    def get_dashboards(self) -> list[str]:
-        """Return a list of dashboard titles.
-        """
-        dashboards = self._data.get("dashboards", [])
-        for d in dashboards:
-            if "title" not in d:
-                print(f"[Warning] Dashboard '{d}' has no title.")
-        return [d["title"] for d in dashboards]
-
-    def get_panels(self, dashboard_title: str) -> list[dict]:
-        """Return list of panels by dashboard title.
-        """
-        for d in self._data.get("dashboards", []):
-            if d["title"] == dashboard_title:
-                return d.get("panels", [])
-        print(f"[Warning] Dashboard '{dashboard_title}' not found.")
-        return []
-
-    def get_all_panel_keys(self) -> list:
-        """Return a list of all keys used in all panels.
-        """
-        dashboards = self._data.get("dashboards", [])
-        keys = []
-        for dashboard in dashboards:
-            panels = dashboard.get("panels", [])
-            for panel in panels:
-                keys.append(panel.keys())
-        return keys
-
 
 class GrafanaClient:
     def __init__(self, api_token: str, gf_url: str):
@@ -284,6 +254,7 @@ class GrafanaClient:
 # ============================================================
 # === Helper Functions =======================================
 # ============================================================
+
 def create_uid(title_name: str) -> str:
     """Create a unique uid based on its title.
        - For `folder`, `dashboard`, and `alert`.
