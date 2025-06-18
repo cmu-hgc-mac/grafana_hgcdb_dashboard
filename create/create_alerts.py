@@ -40,7 +40,7 @@ for config in filelist:
 
     try:
         validator = AlertRuleValidator(config_path)
-        print(f"\n[VALIDATING] Checking if the alert rules in the config file: {config} is valid...")
+        print(f"\n[VALIDATING] Checking if the alert rules in the config file: <{config}> is valid...")
     except FileNotFoundError as e:
         print(f"[ERROR] {e}")
         continue
@@ -48,7 +48,7 @@ for config in filelist:
     ok = validator.run_all_checks()
 
     if not ok:  # skip invalid config file
-        print(f"[WARNING] Validation failed for config: {config}. Skipping this file.\n")
+        print(f"[WARNING] Validation failed for config: <{config}>. Skipping this file.\n")
         continue
         
     # Loop for every alert
