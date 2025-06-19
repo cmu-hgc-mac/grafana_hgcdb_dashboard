@@ -284,7 +284,7 @@ class AlertRuleValidator:
         
 
     # ============================================================
-    def _check_alert_keys(self) -> bool:
+    def _check_alert_keys(self, alert: dict) -> bool:
         """Check if each key in each alert rule has the correct value type.
         """
         # Define the valid types for each key in a panel
@@ -302,82 +302,76 @@ class AlertRuleValidator:
         }
 
         passed = True   # assume all checks pass
-        alerts = self._cfg.get("alert", [])
-
-        for alert_idx, alert in enumerate(alerts):
-            alert_title = alert.get("title", f"<Alert {alert_idx + 1}>")
-
-            for key, expected_type in valid_types.items():
-                if key not in alert:
-                    print(f"[Missing Key] Alert '{alert_title}' — Missing required key '{key}'")
-                    passed = False
-                elif not isinstance(alert[key], expected_type):
-                    print(f"[Type Error] Alert '{alert_title}' — "
-                        f"Key '{key}' should be {expected_type}, but got {type(alert[key])}")
-                    passed = False
+        alert_title = alert.get("title", "<Untitled>")
+    
+        for key, expected_type in valid_types.items():
+            if key not in alert:
+                print(f"[Missing Key] Alert '{alert_title}' — Missing required key '{key}'")
+                passed = False
+            elif not isinstance(alert[key], expected_type):
+                print(f"[Type Error] Alert '{alert_title}' — "
+                    f"Key '{key}' should be {expected_type}, but got {type(alert[key])}")
+                passed = False
 
         return passed
     
-    def _check_panelID(self) -> bool:
+    def _check_panelID(self, alert: dict) -> bool:
         """Check if the panelID is valid.
         """
         passed = True   # assert all checks passed
-        alerts = self.iter_alerts()
 
-        for idx, alert in enumerate(alerts):
-            alert_title = alert.get("title", f"<Alert {idx + 1}>")
-            dash_title = alert.get("dashboard", "<Untitled>")
-            panelID_raw = alert.get("panelID")
+        alert_title = alert.get("title", "<Untitled>")
+        dash_title = alert.get("dashboard", "<Untitled>")
+        panelID_raw = alert.get("panelID")
 
-            # Check if the panelID is an integer in str type
-            try:
-                panelID = int(panelID_raw)
-            except (ValueError, TypeError):
-                self.print_error(alert_title, dash_title, "<Unknown>", f"Invalid panelID '{panelID_raw}' — must be an integer.")
-                passed = False
-                continue
+        # Check if the panelID is an integer in str type
+        try:
+            panelID = int(panelID_raw)
+        except (ValueError, TypeError):
+            self.print_error(alert_title, dash_title, "<Unknown>", f"Invalid panelID '{panelID_raw}' — must be an integer.")
+            passed = False
+            return passed
 
-            # Check dashboard existence
-            target_dashboard = None
-            for dash in self.iter_dashboards():
-                if dash.get("title", "<Untitled>") == dash_title:
-                    target_dashboard = dash
-                    break
+        # Check dashboard existence
+        target_dashboard = None
+        for dash in self.iter_dashboards():
+            if dash.get("title", "<Untitled>") == dash_title:
+                target_dashboard = dash
+                break
 
-            if target_dashboard is None:
-                self.print_error(alert_title, dash_title, "<Unknown>", f"Dashboard '{dash_title}' not found.")
-                passed = False
-                continue
+        if target_dashboard is None:
+            self.print_error(alert_title, dash_title, "<Unknown>", f"Dashboard '{dash_title}' not found.")
+            passed = False
 
-            # Check panelID within range
-            panels = target_dashboard.get("panels", [])
-            if not (1 <= panelID <= len(panels)):
-                self.print_error(alert_title, dash_title, "<Unknown>", f"panelID '{panelID}' is out of range. This dashboard has {len(panels)} panel(s).")
-                passed = False
-                continue
+        # Check panelID within range
+        panels = target_dashboard.get("panels", [])
+        if not (1 <= panelID <= len(panels)):
+            self.print_error(alert_title, dash_title, "<Unknown>", f"panelID '{panelID}' is out of range. This dashboard has {len(panels)} panel(s).")
+            passed = False
 
         return passed
 
 
     # ============================================================
-    def run_all_checks(self) -> bool:
-        """Run all validator checks and print a summary.
+    def check_single_alert(self, idx: int, alert: dict) -> bool:
+        """Check every single alert rule.
         """
+        alert_title = alert.get("title", "<Untitled>")
+        print(f"— Validating {idx+1} Alert Rule: '{alert_title}'...", end=" \n")
+
+        all_passed = True
+
         checks = {
-            "Check if alert keys have correct types": self._check_alert_keys,
-            "Check if panelID is valid": self._check_panelID,
-            # "Check if required fields are not empty": self._check_required_fields_not_empty,
+            "Check if alert rule keys have correct types": lambda: self._check_alert_keys(alert),
+            "Check if alert rule's panelID is correct": lambda: self._check_panelID(alert)
         }
 
-        overall_passed = True
+        all_passed = True
 
-        for description, check_fn in checks.items():
-            print(f"— {description}...", end=" ")
-            passed = check_fn()
-            if passed:
-                print(" >> Passed")
-            else:
-                print(" >> Failed")
-                overall_passed = False
+        for name, fn in checks.items():
+            print(f"— {name}...", end=" ")
+            passed = fn()
+            print(">> Passed" if passed else ">> Failed")
+            all_passed &= passed
 
-        return overall_passed
+        return all_passed

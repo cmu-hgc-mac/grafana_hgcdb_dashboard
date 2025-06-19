@@ -23,6 +23,10 @@ panel_builder = PanelBuilder(GF_DS_UID)
 filter_builder = FilterBuilder(GF_DS_UID)
 dashboard_builder = DashboardBuilder()
 
+# Check if succeed:
+succeed = True      # assert every file generated successfully
+failed_count = 0
+
 # Loop for every config files
 for config in filelist:
 
@@ -44,6 +48,8 @@ for config in filelist:
 
     if not ok:  # skip invalid config file
         print(f"[WARNING] Validation failed for config: <{config}>. Skipping this file.\n")
+        succeed = False
+        failed_count += 1
         continue
 
     # Load the dashboards
@@ -77,22 +83,31 @@ for config in filelist:
         file_name = config.split(".")[0]
         dashboard_builder.save_dashboard_json(dashboard, dashboard_json, file_name)
 
-print("\n >>>> Dashboards generated! =͟͟͞͞( 'ヮ' 三 'ヮ' =͟͟͞͞) \n")
+if succeed:
+    print("\n >>>> All Dashboards json generated successfully! =͟͟͞͞( 'ヮ' 三 'ヮ' =͟͟͞͞) \n")
+else:
+    print(f"\n >>>> {failed_count} Dashboards json failed to generate. \n")
 
 
 # Upload dashboards
-folder_list = os.listdir("./Dashboards")
-for folder in folder_list:
-    file_list = os.listdir(f"./Dashboards/{folder}")
-    for file_name in file_list:
-        if file_name.endswith(".json"):
-            file_path = f"./Dashboards/{folder}/{file_name}"
-            try:
-                dashboard_builder.upload_dashboards(file_path)
-            except Exception as e:
-                print(f"[SKIPPED] Error uploading dashboard: {file_name} | Status: {e}")
+try: 
+    folder_list = os.listdir("./Dashboards")
+    for folder in folder_list:
+        file_list = os.listdir(f"./Dashboards/{folder}")
+        for file_name in file_list:
+            if file_name.endswith(".json"):
+                file_path = f"./Dashboards/{folder}/{file_name}"
+                try:
+                    dashboard_builder.upload_dashboards(file_path)
+                except Exception as e:
+                    print(f"[SKIPPED] Error uploading dashboard: {file_name} | Status: {e}")
 
-print("\n >>>> Dashboards uploaded! ᕕ( ᐛ )ᕗ \n")
+    print("\n >>>> Dashboards uploaded! ᕕ( ᐛ )ᕗ \n")
+
+except:
+    print("\n >>>> Dashboards upload failed. \n")
+    raise 
+
 
 # Remove dashboards json files
 remove_folder("Dashboards", DASHBOARDS_FOLDER_PATH)

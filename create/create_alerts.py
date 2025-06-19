@@ -19,6 +19,10 @@ filelist = os.listdir(CONFIG_FOLDER_PATH)
 # Define the builder
 alert_builder = AlertBuilder(GF_DS_UID)
 
+# Define if success
+succeed = True      # assume every file success 
+failed_count = 0    # assume no file failed
+
 # Loop for every config files
 for config in filelist:
 
@@ -37,22 +41,26 @@ for config in filelist:
             continue
         # load alerts
         alerts = tot_config["alert"]
-
+    
     try:
         validator = AlertRuleValidator(config_path)
         print(f"\n[VALIDATING] Checking if the alert rules in the config file: <{config}> is valid...")
+        valid_alerts = []
     except FileNotFoundError as e:
         print(f"[ERROR] {e}")
         continue
-
-    ok = validator.run_all_checks()
-
-    if not ok:  # skip invalid config file
-        print(f"[WARNING] Validation failed for config: <{config}>. Skipping this file.\n")
-        continue
         
     # Loop for every alert
-    for alert in alerts:
+    for idx, alert in enumerate(alerts):
+        alert_title = alert.get("title", f"<Alert {idx}>")
+        ok = validator.check_single_alert(idx, alert)
+
+        if not ok:  # skip invalid config file
+            print(f"[WARNING] Validation failed for config: <{config}>. Skipping this file.\n")
+            succeed = False
+            failed_count += 1
+            continue
+        
         # Generate the alert json
         folder_name = config.split(".")[0].replace("_", " ")
         alert_json = alert_builder.generate_alerts(alert, folder_name)
@@ -61,22 +69,30 @@ for config in filelist:
         file_name = config.split(".")[0]
         alert_builder.save_alerts_json(alert, alert_json, file_name)
 
-print("\n >>>> Alerts generated successfully! ↙(`ヮ´ )↗ \n")
+if succeed:
+    print("\n >>>> All Alerts json generated successfully! ↙(`ヮ´ )↗ \n")
+else:
+    print(f"\n >>>> {failed_count} Alerts json failed to generate. \n")
 
 
 # Upload alerts
-folder_list = os.listdir("./Alerts")
-for folder in folder_list:
-    file_list = os.listdir(f"./Alerts/{folder}")
-    for file_name in file_list:
-        if file_name.endswith(".json"):
-            file_path = f"./Alerts/{folder}/{file_name}"
-            try:
-                alert_builder.upload_alerts(file_path)
-            except Exception as e:
-                print(f"[SKIPPED] Error uploading alert rule: {file_name} | Status: {e}")
+try:
+    folder_list = os.listdir("./Alerts")
+    for folder in folder_list:
+        file_list = os.listdir(f"./Alerts/{folder}")
+        for file_name in file_list:
+            if file_name.endswith(".json"):
+                file_path = f"./Alerts/{folder}/{file_name}"
+                try:
+                    alert_builder.upload_alerts(file_path)
+                except Exception as e:
+                    print(f"[SKIPPED] Error uploading alert rule: {file_name} | Status: {e}")
 
-print("\n >>>> Alerts json files uploaded! (*ˉ︶ˉ*) \n")
+    print("\n >>>> Alerts json files uploaded! (*ˉ︶ˉ*) \n")
+
+except:
+    print("\n >>>> Alerts json files not found...\n")
+
 
 # Clear GF_FOLDER_UIDS and GF_ALERT_UIDS map:
 gf_conn.set("GF_FOLDER_UIDS", {})
