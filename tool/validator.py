@@ -291,8 +291,8 @@ class AlertRuleValidator:
         for dash in self.iter_dashboards():
             if dash.get("title", "") == dash_title:
                 panels = dash.get("panels", [])
-                if 1 <= panelID <= len(panels):
-                    return panels[panelID-1].get("title", "")
+                return panels[panelID-1].get("title", "")
+
         return ""
     
     def print_error(self, alert_title: str, dash_title: str, panel_title: str, message: str):
@@ -426,10 +426,10 @@ class AlertRuleValidator:
 
         alert_title = alert.get("title", "<Untitled>")
         dash_title = alert.get("dashboard", "<Untitled>")
-        panel_title = self.convert_panelID_to_title(int(alert.get("panelID", None)), dash_title)
-        
+        target_panel_title = self.convert_panelID_to_title(int(alert.get("panelID", None)), dash_title)
+
         for dash_title, panel_title, panel in self.iter_panels():
-            if panel.get("title", "") == panel_title:
+            if dash_title == dash_title and panel_title == target_panel_title:
                 chart_type = panel.get("chart_type", "")
                 if chart_type != "timeseries":
                     self.print_error(alert_title, dash_title, panel_title, f"Invalid panel type '{chart_type}' — must be 'timeseries'.")
