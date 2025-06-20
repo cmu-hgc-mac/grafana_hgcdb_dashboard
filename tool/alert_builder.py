@@ -149,7 +149,7 @@ class AlertBuilder:
         with open(path, "w", encoding="utf-8") as f:
             json.dump(alert_json, f, indent=2)
 
-        print(f"Alerts saved to {path}")
+        print(f"Alerts saved to {path} \n")
 
     def upload_alerts(self, file_path: str):
         """Upload one alert JSON file into Grafana folder.

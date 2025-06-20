@@ -70,9 +70,9 @@ for config in filelist:
         alert_builder.save_alerts_json(alert, alert_json, file_name)
 
 if succeed:
-    print("\n >>>> All Alerts json generated successfully! ↙(`ヮ´ )↗ \n")
+    print(" >>>> All Alerts json generated successfully! ↙(`ヮ´ )↗ \n")
 else:
-    print(f"\n >>>> {failed_count} Alerts json failed to generate. \n")
+    print(f" >>>> {failed_count} Alerts json failed to generate. \n")
 
 
 # Upload alerts

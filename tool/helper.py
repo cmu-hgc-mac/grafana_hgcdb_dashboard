@@ -280,19 +280,6 @@ def get_distinct_column_name(table_name: str) -> str:
         for row in reader:
             return list(row.keys())[0]
 
-def get_valid_columns(table_name: str) -> list:
-    """Return the list of valid column names from a given table CSV.
-    """
-    table_path = os.path.join(DB_INFO_PATH, f"{table_name}.csv")
-
-    try:
-        with open(table_path, newline='') as f:
-            reader = csv.reader(f)
-            return [row[0].strip() for row in reader if row and row[0].strip()]
-    except FileNotFoundError:
-        print(f"[Error] Table not found: {table_path}")
-        return []
-
 
 # ============================================================
 # === Loaded Info ============================================

@@ -31,6 +31,19 @@ class DashboardValidator:
             for panel in dash.get("panels", []):
                 panel_title = panel.get("title", "<Unnamed Panel>")
                 yield dash_title, panel_title, panel
+    
+    def get_valid_columns(self, table_name: str) -> list:
+        """Return the list of valid column names from a given table CSV.
+        """
+        table_path = os.path.join(DB_INFO_PATH, f"{table_name}.csv")
+
+        try:
+            with open(table_path, newline='') as f:
+                reader = csv.reader(f)
+                return [row[0].strip() for row in reader if row and row[0].strip()]
+        except FileNotFoundError:
+            print(f"[Error] Table not found: {table_path}")
+            return []
 
     def should_skip_panel(self, panel: dict) -> bool:
         """Check the panel chart_type to determine if it should be skipped.
@@ -38,11 +51,6 @@ class DashboardValidator:
         chart_type = str(panel.get("chart_type", "")).strip().lower()
 
         return chart_type in ("text", "piechart")
-
-    def print_error(self, dash_title: str, panel_title: str, message: str):
-        """Print out the error message.
-        """
-        print(f"[Error] Dashboard '{dash_title}', Panel '{panel_title}' — {message}")
 
     def validate_types(self, data: dict, expected: dict, dash_title: str, panel_title: str) -> bool:
         """Check if the keys in the data dictionary have the expected value type.
@@ -56,6 +64,11 @@ class DashboardValidator:
                 self.print_error(dash_title, panel_title, f"Key '{key}' should be {expected_type}, got {type(data[key])}")
                 passed = False
         return passed
+    
+    def print_error(self, dash_title: str, panel_title: str, message: str):
+        """Print out the error message.
+        """
+        print(f"[Error] Dashboard '{dash_title}', Panel '{panel_title}' — {message}")
 
 
     # ============================================================
@@ -82,6 +95,67 @@ class DashboardValidator:
 
             if not self.validate_types(panel, valid_types, dash_title, panel_title):
                 passed = False
+
+        return passed
+    
+    def _check_table_and_columns_exist(self) -> bool:
+        """Check if table exists and all groupby/filter fields are valid.
+           - Skip 'text' and 'piechart' chart_type panels.
+        """
+        passed = True   # assume check pass
+
+        for dash_title, panel_title, panel in self.iter_panels():
+            if self.should_skip_panel(panel):
+                continue
+
+            # Check table
+            table = panel.get("table")
+            valid_columns = self.get_valid_columns(table)
+            if not valid_columns:
+                self.print_error(dash_title, panel_title, f"Table '{table}' not found.")
+                passed = False
+                continue
+
+            # Check groupby
+            groupby = panel.get("groupby")
+            if isinstance(groupby, list):
+                for col in groupby:
+                    cols = col if isinstance(col, list) else [col]
+                    for sub_col in cols:
+                        if sub_col not in valid_columns and sub_col not in self.SPECIAL_CASES:
+                            self.print_error(dash_title, panel_title, f"GroupBy column '{sub_col}' not in '{table}'")
+                            passed = False
+
+            elif isinstance(groupby, dict):
+                for sub_table, cols in groupby.items():
+                    cols = cols if isinstance(cols, list) else [cols]
+                    valid_sub_cols = self.get_valid_columns(sub_table)
+                    if not valid_sub_cols:
+                        self.print_error(dash_title, panel_title, f"GroupBy sub-table '{sub_table}' not found.")
+                        passed = False
+                        continue
+                    for sub_col in cols:
+                        if sub_col not in valid_sub_cols and sub_col not in self.SPECIAL_CASES:
+                            self.print_error(dash_title, panel_title, f"GroupBy column '{sub_col}' not in '{sub_table}'")
+                            passed = False
+
+            # Check filters
+            filters = panel.get("filters", {})
+            if isinstance(filters, dict):
+                for filter_table, filter_cols in filters.items():
+                    filter_columns = self.get_valid_columns(filter_table)
+                    if not filter_columns:
+                        self.print_error(dash_title, panel_title, f"Filter table '{filter_table}' not found.")
+                        passed = False
+                        continue
+                    if not isinstance(filter_cols, list):
+                        self.print_error(dash_title, panel_title, f"Filters for '{filter_table}' must be a list.")
+                        passed = False
+                        continue
+                    for col in filter_cols:
+                        if col not in filter_columns and col not in self.SPECIAL_CASES:
+                            self.print_error(dash_title, panel_title, f"Filter column '{col}' not in '{filter_table}'")
+                            passed = False
 
         return passed
 
@@ -161,67 +235,6 @@ class DashboardValidator:
 
         return passed
 
-    def _check_table_and_fields_exist(self) -> bool:
-        """Check if table exists and all groupby/filter fields are valid.
-           - Skip 'text' and 'piechart' chart_type panels.
-        """
-        passed = True   # assume check pass
-
-        for dash_title, panel_title, panel in self.iter_panels():
-            if self.should_skip_panel(panel):
-                continue
-
-            # Check table
-            table = panel.get("table")
-            valid_columns = get_valid_columns(table)
-            if not valid_columns:
-                self.print_error(dash_title, panel_title, f"Table '{table}' not found.")
-                passed = False
-                continue
-
-            # Check groupby
-            groupby = panel.get("groupby")
-            if isinstance(groupby, list):
-                for col in groupby:
-                    cols = col if isinstance(col, list) else [col]
-                    for sub_col in cols:
-                        if sub_col not in valid_columns and sub_col not in self.SPECIAL_CASES:
-                            self.print_error(dash_title, panel_title, f"GroupBy column '{sub_col}' not in '{table}'")
-                            passed = False
-
-            elif isinstance(groupby, dict):
-                for sub_table, cols in groupby.items():
-                    cols = cols if isinstance(cols, list) else [cols]
-                    valid_sub_cols = get_valid_columns(sub_table)
-                    if not valid_sub_cols:
-                        self.print_error(dash_title, panel_title, f"GroupBy sub-table '{sub_table}' not found.")
-                        passed = False
-                        continue
-                    for sub_col in cols:
-                        if sub_col not in valid_sub_cols and sub_col not in self.SPECIAL_CASES:
-                            self.print_error(dash_title, panel_title, f"GroupBy column '{sub_col}' not in '{sub_table}'")
-                            passed = False
-
-            # Check filters
-            filters = panel.get("filters", {})
-            if isinstance(filters, dict):
-                for filter_table, filter_cols in filters.items():
-                    filter_columns = get_valid_columns(filter_table)
-                    if not filter_columns:
-                        self.print_error(dash_title, panel_title, f"Filter table '{filter_table}' not found.")
-                        passed = False
-                        continue
-                    if not isinstance(filter_cols, list):
-                        self.print_error(dash_title, panel_title, f"Filters for '{filter_table}' must be a list.")
-                        passed = False
-                        continue
-                    for col in filter_cols:
-                        if col not in filter_columns and col not in self.SPECIAL_CASES:
-                            self.print_error(dash_title, panel_title, f"Filter column '{col}' not in '{filter_table}'")
-                            passed = False
-
-        return passed
-
 
     # ============================================================
     def run_all_checks(self) -> bool:
@@ -229,23 +242,25 @@ class DashboardValidator:
         """
         checks = {
             "Check if dashboards exist": self._check_dashboards_exist,
+            "Check if table and columns exist": self._check_table_and_columns_exist,            
             "Check if each dashboard has at least one panel": self._check_each_dashboard_has_panels,
             "Check if panel keys have correct types": self._check_panel_keys,
             "Check if required fields are not empty": self._check_required_fields_not_empty,
             "Check if duplicate dashboard titles exist": self._check_duplicate_dashboard_titles,
-            "Check if duplicate panel titles exist": self._check_duplicate_panel_titles,
-            "Check if table and columns exist": self._check_table_and_fields_exist
+            "Check if duplicate panel titles exist": self._check_duplicate_panel_titles
         }
 
-        all_passed = True
-
+        # loop all checks
         for name, fn in checks.items():
             print(f"— {name}...", end=" ")
             passed = fn()
             print(">> Passed" if passed else ">> Failed")
-            all_passed &= passed
+            
+            if not passed:
+                return False    # exit checking
 
-        return all_passed
+        return True
+
 
 
 # ============================================================
@@ -276,6 +291,19 @@ class AlertRuleValidator:
         """Iterate over all alerts in the config file.  
         """
         return self._cfg.get("alert", [])
+    
+    def get_valid_columns(self, table_name: str) -> list:
+        """Return the list of valid column names from a given table CSV.
+        """
+        table_path = os.path.join(DB_INFO_PATH, f"{table_name}.csv")
+
+        try:
+            with open(table_path, newline='') as f:
+                reader = csv.reader(f)
+                return [row[0].strip() for row in reader if row and row[0].strip()]
+        except FileNotFoundError:
+            print(f"[Error] Table not found: {table_path}")
+            return []
     
     def print_error(self, alert_title: str, dash_title: str, panel_title: str, message: str):
         """Print out the error message.
@@ -315,6 +343,38 @@ class AlertRuleValidator:
 
         return passed
     
+    def _check_table_exist(self, alert: dict) -> bool:
+        """Check if the table exists.
+        """
+        passed = True   # assume all checks passed
+
+        table = alert.get("table", "<Unknown>")
+        valid_columns = self.get_valid_columns(table)
+
+        if not valid_columns:
+            self.print_error(dash_title, panel_title, f"Table '{table}' not found.")
+            passed = False
+        
+        return passed
+    
+    def _check_dashboard_exist(self, alert: dict) -> bool:
+        """Check if the dashboard exists.
+        """
+        passed = True   # assume all checks passed
+        alert_title = alert.get("title", "<Untitled>")
+
+        dash_title = alert.get("dashboard", "")
+        dash_list = []
+
+        for dash in self.iter_dashboards():
+            dash_list.append(dash.get("title", "<Untitled>"))
+        
+        if dash_title not in dash_list:
+            self.print_error(alert_title, dash_title, "<Unknown>", f"Dashboard '{dash_title}' not found.")
+            passed = False
+        
+        return passed
+    
     def _check_panelID(self, alert: dict) -> bool:
         """Check if the panelID is valid.
         """
@@ -351,27 +411,27 @@ class AlertRuleValidator:
 
         return passed
 
-
     # ============================================================
     def check_single_alert(self, idx: int, alert: dict) -> bool:
         """Check every single alert rule.
         """
         alert_title = alert.get("title", "<Untitled>")
-        print(f"— Validating {idx+1} Alert Rule: '{alert_title}'...", end=" \n")
-
-        all_passed = True
+        print(f"— Validating Alert Rule {idx+1}: '{alert_title}'...", end=" \n")
 
         checks = {
             "Check if alert rule keys have correct types": lambda: self._check_alert_keys(alert),
+            "Check if alert rule's table exists": lambda: self._check_table_exist(alert),
+            "Check if alert rule's dashboard exists": lambda: self._check_dashboard_exist(alert),
             "Check if alert rule's panelID is correct": lambda: self._check_panelID(alert)
         }
 
-        all_passed = True
-
+        # loop all checks
         for name, fn in checks.items():
             print(f"— {name}...", end=" ")
             passed = fn()
             print(">> Passed" if passed else ">> Failed")
-            all_passed &= passed
+            
+            if not passed:
+                return False    # exit checking
 
-        return all_passed
+        return True
