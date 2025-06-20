@@ -53,13 +53,12 @@ def main():
     # subprocess.run(["python", "create/create_alerts.py"], check=True)
 
     # Add run times
-    gf_conn.reload()
-    print(" >>>> GF_RUN_TIMES updated! 乚(`ヮ´ ﾐэ)Э")
     gf_conn.set('GF_RUN_TIMES', run_times + 1)
     gf_conn.save()
+    print(" >>>> GF_RUN_TIMES updated! 乚(`ヮ´ ﾐэ)Э")
 
     # Done!!
-    print("\n  >>>>>> All done! (๑•̀ㅂ•́)و✧")
+    print("\n >>>>>> All done! (๑•̀ㅂ•́)و✧")
 
 
 # allow run
