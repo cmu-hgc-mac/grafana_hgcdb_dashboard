@@ -184,25 +184,6 @@ class DashboardValidator:
 
         return passed
 
-    def _check_required_fields_not_empty(self) -> bool:
-        """Check if required fields in each panel are not empty.
-           - Skip 'text' and 'piechart' chart_type panels.
-        """
-        passed = True   # assume check pass
-
-        required_fields = ['title', 'table', 'chart_type', 'groupby']
-
-        for dash_title, panel_title, panel in self.iter_panels():
-            if self.should_skip_panel(panel):
-                continue
-            for field in required_fields:
-                val = panel.get(field)
-                if val is None or (isinstance(val, (str, list, dict)) and not val):
-                    self.print_error(dash_title, panel_title, f"Field '{field}' is empty or missing.")
-                    passed = False
-
-        return passed
-
     def _check_duplicate_dashboard_titles(self) -> bool:
         """Check if there are duplicate dashboard titles in the config file.
         """
@@ -245,7 +226,6 @@ class DashboardValidator:
             "Check if table and columns exist": self._check_table_and_columns_exist,            
             "Check if each dashboard has at least one panel": self._check_each_dashboard_has_panels,
             "Check if panel keys have correct types": self._check_panel_keys,
-            "Check if required fields are not empty": self._check_required_fields_not_empty,
             "Check if duplicate dashboard titles exist": self._check_duplicate_dashboard_titles,
             "Check if duplicate panel titles exist": self._check_duplicate_panel_titles
         }
@@ -304,6 +284,16 @@ class AlertRuleValidator:
         except FileNotFoundError:
             print(f"[Error] Table not found: {table_path}")
             return []
+        
+    def convert_panelID_to_title(self, panelID: int, dash_title: str) -> str:
+        """Convert the panelID to panel title.
+        """
+        for dash in self.iter_dashboards():
+            if dash.get("title", "") == dash_title:
+                panels = dash.get("panels", [])
+                if 1 <= panelID <= len(panels):
+                    return panels[panelID-1].get("title", "")
+        return ""
     
     def print_error(self, alert_title: str, dash_title: str, panel_title: str, message: str):
         """Print out the error message.
@@ -411,18 +401,58 @@ class AlertRuleValidator:
 
         return passed
 
+    def _check_alert_logicType(self, alert: dict) -> bool:
+        """Check if the logicType is valid.
+        """
+        valid_logicTypes = ["gt", "lt", "eq", "nq", "within_range", "outside_range"]
+
+        passed = True   # assume all checks passed
+
+        alert_title = alert.get("title", "<Untitled>")
+        dash_title = alert.get("dashboard", "<Untitled>")
+        panel_title = self.convert_panelID_to_title(int(alert.get("panelID", None)), dash_title)
+        logicType = alert.get("logicType", "")
+
+        if logicType not in valid_logicTypes:
+            self.print_error(alert_title, dash_title, panel_title, f"Invalid logicType '{logicType}' — must be one of {valid_logicTypes}.")
+            passed = False
+
+        return passed
+    
+    def _check_alert_panelType(self, alert: dict) -> bool:
+        """Check if the panel type is valid.
+        """
+        passed = True   # assume all checks passed
+
+        alert_title = alert.get("title", "<Untitled>")
+        dash_title = alert.get("dashboard", "<Untitled>")
+        panel_title = self.convert_panelID_to_title(int(alert.get("panelID", None)), dash_title)
+        
+        for dash_title, panel_title, panel in self.iter_panels():
+            if panel.get("title", "") == panel_title:
+                chart_type = panel.get("chart_type", "")
+                if chart_type != "timeseries":
+                    self.print_error(alert_title, dash_title, panel_title, f"Invalid panel type '{chart_type}' — must be 'timeseries'.")
+                    passed = False
+                    break
+
+        return passed
+
+
     # ============================================================
     def check_single_alert(self, idx: int, alert: dict) -> bool:
         """Check every single alert rule.
         """
         alert_title = alert.get("title", "<Untitled>")
-        print(f"— Validating Alert Rule {idx+1}: '{alert_title}'...", end=" \n")
+        print(f" >> Validating Alert Rule {idx+1}: '{alert_title}'...", end=" \n")
 
         checks = {
             "Check if alert rule keys have correct types": lambda: self._check_alert_keys(alert),
             "Check if alert rule's table exists": lambda: self._check_table_exist(alert),
             "Check if alert rule's dashboard exists": lambda: self._check_dashboard_exist(alert),
-            "Check if alert rule's panelID is correct": lambda: self._check_panelID(alert)
+            "Check if alert rule's panelID is correct": lambda: self._check_panelID(alert),
+            "Check if alert rule's logicType is valid": lambda: self._check_alert_logicType(alert),
+            "Check if alert rule's panel chart_type is valid": lambda: self._check_alert_panelType(alert)
         }
 
         # loop all checks

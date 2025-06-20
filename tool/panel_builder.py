@@ -186,13 +186,12 @@ class PanelBuilder:
 
         return panel_json
 
-    def generate_plot(self) -> str:
+    def generate_plot(self, TIMEOUT=5) -> str:
         """Generate the IV_curve Plot.
            Author: Andrew C. Roberts  
         """
         loop = asyncio.get_event_loop()
-
-        # functions for interating with db
+        
         async def connect_db():
             return await asyncpg.create_pool(
                 host = DB_HOST,
@@ -201,8 +200,19 @@ class PanelBuilder:
                 password = DB_PASSWORD
             )
 
-        pool = loop.run_until_complete(connect_db())
+        # try connecting to db
+        try:
+            pool = loop.run_until_complete(asyncio.wait_for(connect_db(), timeout=TIMEOUT))
 
+        except asyncio.TimeoutError:
+            print(f"[ERROR] Failed to connect to database: Timeout after {TIMEOUT} seconds.")
+            raise
+
+        except Exception as e:
+            print(f"[ERROR] Failed to connect to database: {str(e)}")
+            raise
+
+        # functions for interating with db
         async def fetch_modules(pool):
             query = """SELECT * FROM module_info;"""
             async with pool.acquire() as conn:
