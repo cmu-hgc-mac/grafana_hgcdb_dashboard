@@ -5,8 +5,8 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import yaml
 
 from tool.helper import *
-from tool.alert_builder import AlertBuilder
-from tool.validator import AlertRuleValidator
+from tool import AlertBuilder
+from tool import AlertRuleValidator
 
 """
 This script generates all alert JSON files, saves them to a folder under `grafana_hgcdb_dashboard`, and uploads them to Grafana.

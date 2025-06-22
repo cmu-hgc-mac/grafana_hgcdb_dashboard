@@ -13,7 +13,7 @@ from matplotlib import patches
 from matplotlib.lines import Line2D
 
 from tool.helper import *
-from tool.sql_builder import ChartSQLFactory
+from tool.builders.sql_builder import ChartSQLFactory
 
 """
 This file defines the class for building the panels json file in Grafana.

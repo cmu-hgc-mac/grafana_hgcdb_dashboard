@@ -5,10 +5,8 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import yaml
 
 from tool.helper import *
-from tool.validator import DashboardValidator
-from tool.panel_builder import PanelBuilder
-from tool.other_builder import FilterBuilder
-from tool.dashboard_builder import DashboardBuilder
+from tool import DashboardValidator
+from tool import PanelBuilder, FilterBuilder, DashboardBuilder
 
 """
 This script generates all the dashboards json_file, saves them to a folder under `grafana_hgcdb_dashboard`, and uploads them to grafana.
