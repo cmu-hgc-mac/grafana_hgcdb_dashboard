@@ -8,6 +8,10 @@ This file defines classes for building additional Grafana features, including:
     - Filters: With support from Wen Li.
 """
 
+# ============================================================
+# === Filert Builder =========================================
+# ============================================================
+
 class FilterBuilder:
     def __init__(self, datasource_uid):
         self.datasource_uid = datasource_uid

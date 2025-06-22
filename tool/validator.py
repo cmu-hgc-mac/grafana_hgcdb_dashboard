@@ -1,13 +1,35 @@
 import csv
+from difflib import get_close_matches
 
 from tool.helper import *
 
 """
-This file defines the validator for the input for the config files used to generate Grafana dashboards/panels and alert-rules.
+This file defines the validator and auto_match classes for the input for the config files used to generate Grafana dashboards/panels and alert-rules.
 """
 
 # ============================================================
-# === Dashboards Validator ===================================
+# === Validator ==============================================
+# ============================================================
+"""
+The Validator class is used to validate the input config files for the Grafana dashboards/panels and alert-rules.
+    - Dashboards:
+        - Check if dashboards exist
+        - Check if table and columns exist           
+        - Check if each dashboard has at least one panel
+        - Check if panel keys have correct types
+        - Check if duplicate dashboard titles exist
+        - Check if duplicate panel titles exist
+
+    - Alert_rules:
+        - Check if alert rule keys have correct types
+        - Check if alert rule's table exists
+        - Check if alert rule's dashboard exists
+        - Check if alert rule's panelID is correct
+        - Check if alert rule's logicType is valid
+        - Check if alert rule's panel chart_type is valid
+"""
+
+# ============================================================
 # ============================================================
 
 class DashboardValidator:
@@ -247,9 +269,7 @@ class DashboardValidator:
         return True
 
 
-
 # ============================================================
-# === Alert Rules Validator ==================================
 # ============================================================
 
 class AlertRuleValidator:
