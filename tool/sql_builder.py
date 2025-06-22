@@ -256,7 +256,7 @@ class HistogramGenerator(BaseSQLGenerator):
 
         # check for the lenght of groupby:
         if len(groupby) > 1:
-            raise ValueError("The groupby list should have only 1 element.")
+            raise ValueError("Histogram groupby list should have only 1 element.")
         
         # fetch the element from groupby
         elem = groupby[0]
@@ -286,10 +286,21 @@ class TimeseriesGenerator(BaseSQLGenerator):
     def _build_select_clause(self, table: str, groupby: list) -> str:
         """Builds the SELECT clause from groupby.    
         """
-        # Currently, it is setted to have the first element as time and the second element as the element to be counted.
-        # It is definetly not ideal, I will try to come up with a better solution later.
-        time = groupby[0]
-        elem = groupby[1]
+        # Check lenghth of groupby:
+        if len(groupby) != 2:
+            raise ValueError("Timeseries groupby list should have 2 elements.")
+        
+        # Check if groupby contains time:
+        if not any(col in TIME_COLUMNS for col in groupby):
+            raise ValueError("Timeseries groupby list should contain time column.")
+        
+        # assign time and element
+        for col in groupby:
+            if col in TIME_COLUMNS:
+                time = col
+            else:
+                elem = col
+
         select_clause = []
 
         # Time
@@ -310,8 +321,13 @@ class TimeseriesGenerator(BaseSQLGenerator):
     def _build_orderby_clause(self, groupby: list) -> str:
         """Builds the ORDER BY clause from groupby.
         """
-        time = groupby[0]
-        elem = groupby[1]
+        # assign time and element
+        for col in groupby:
+            if col in TIME_COLUMNS:
+                time = col
+            else:
+                elem = col
+
         clause = []
 
         groupby_arg = f"GROUP BY {time}" if elem == "count" else ""
@@ -376,7 +392,7 @@ class TableGenerator(BaseSQLGenerator):
         if isinstance(groupby, list):
             temp_table = "temp_table_0" if distinct else table
             for elem in groupby:
-                cols = elem if isinstance(elem, list) else [elem]
+                cols = [elem]
                 for col in cols:
                     pairs.append((temp_table, col))
 

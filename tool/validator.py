@@ -11,8 +11,6 @@ This file defines the validator for the input for the config files used to gener
 # ============================================================
 
 class DashboardValidator:
-    SPECIAL_CASES = ["shipping_status", "count"]
-
     def __init__(self, config_path: str):
         self._cfg = ConfigLoader(config_path)
 
@@ -103,6 +101,7 @@ class DashboardValidator:
            - Skip 'text' and 'piechart' chart_type panels.
         """
         passed = True   # assume check pass
+        SPECIAL_CASES = ["shipping_status", "count"]
 
         for dash_title, panel_title, panel in self.iter_panels():
             if self.should_skip_panel(panel):
@@ -122,7 +121,7 @@ class DashboardValidator:
                 for col in groupby:
                     cols = col if isinstance(col, list) else [col]
                     for sub_col in cols:
-                        if sub_col not in valid_columns and sub_col not in self.SPECIAL_CASES:
+                        if sub_col not in valid_columns and sub_col not in SPECIAL_CASES:
                             self.print_error(dash_title, panel_title, f"GroupBy column '{sub_col}' not in '{table}'")
                             passed = False
 
@@ -135,9 +134,15 @@ class DashboardValidator:
                         passed = False
                         continue
                     for sub_col in cols:
-                        if sub_col not in valid_sub_cols and sub_col not in self.SPECIAL_CASES:
-                            self.print_error(dash_title, panel_title, f"GroupBy column '{sub_col}' not in '{sub_table}'")
-                            passed = False
+                        if isinstance(sub_col, list):
+                            for sub_sub_col in sub_col:
+                                if sub_sub_col not in valid_sub_cols and sub_sub_col not in SPECIAL_CASES:
+                                    self.print_error(dash_title, panel_title, f"GroupBy column '{sub_sub_col}' not in '{sub_table}'")
+                                    passed = False
+                        else:
+                            if sub_col not in valid_sub_cols and sub_col not in SPECIAL_CASES:
+                                self.print_error(dash_title, panel_title, f"GroupBy column '{sub_col}' not in '{sub_table}'")
+                                passed = False
 
             # Check filters
             filters = panel.get("filters", {})
@@ -153,7 +158,7 @@ class DashboardValidator:
                         passed = False
                         continue
                     for col in filter_cols:
-                        if col not in filter_columns and col not in self.SPECIAL_CASES:
+                        if col not in filter_columns and col not in SPECIAL_CASES:
                             self.print_error(dash_title, panel_title, f"Filter column '{col}' not in '{filter_table}'")
                             passed = False
 
