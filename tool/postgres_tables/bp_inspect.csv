@@ -3,7 +3,7 @@ bp_no,INT,fk_bp_insp,baseplate
 bp_name,TEXT,fk_identifier,
 grade,TEXT,,
 flatness,REAL,,
-avg_thickness,REAL,,
+thickness,REAL,,
 max_thickness,REAL,,
 weight,REAL,,
 comment,TEXT,,
