@@ -87,10 +87,11 @@ alert:
     parameter: "temp_c"
     threshold: [18,30]
     logicType: "outside_range"
-    duration: "5m"
-    interval: "1m"
+    duration: "3s"
+    interval: "10m"
     summary: "Temperature exceeds 25°C"
     labels: 
+        "team": "inspectors"
         "severity": "critical"
         "sensor": "temp"
         "location": "main_clean_room"
@@ -102,10 +103,11 @@ alert:
     parameter: "rel_hum"
     threshold: [30]
     logicType: "lt"
-    duration: "5m"
-    interval: "1m"
+    duration: "3s"
+    interval: "10m"
     summary: "Humidity abnormal"
     labels: 
+        "team": "inspectors"
         "severity": "critical"
         "sensor": "humidity"
         "location": "main_clean_room"

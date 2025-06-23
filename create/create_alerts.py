@@ -94,6 +94,32 @@ except:
     print("\n >>>> Alerts json files not found...\n")
 
 
+# clear all the notification rules and contact points
+client.delete_notification_policy_tree()
+client.delete_all_contact_points()
+
+# get file:
+try:
+    contact_filelist = os.listdir(CONTACT_FOLDER_PATH)
+except:
+    print(f"Contact config folder not found: {CONTACT_FOLDER_PATH}")
+
+for config in contact_filelist:
+    contact_path = os.path.join(CONTACT_FOLDER_PATH, config)
+
+    with open(contact_path, 'r') as f:
+            config = yaml.safe_load(f)
+
+    for cp in config.get("contactPoints", []):
+        client.create_contact_point(cp["name"], cp["addresses"])
+
+    # upload notification policy (contact points)
+    tree = config.get('policies')[0]
+    client.put_policy_tree(tree)
+
+    print("\n >>>> Notification system uploaded! \(≧▽≦)/\n")
+
+
 # Clear GF_FOLDER_UIDS and GF_ALERT_UIDS map:
 gf_conn.set("GF_FOLDER_UIDS", {})
 gf_conn.set("GF_ALERT_UIDS", {})

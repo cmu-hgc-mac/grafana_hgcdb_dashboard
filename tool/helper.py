@@ -248,7 +248,137 @@ class GrafanaClient:
         for rule in data_json:
             alert_uids.append(rule['uid'])
 
-        return alert_uids       
+        return alert_uids
+    
+    def create_contact_point(self, name: str, addresses: list):
+        """ Create email contact points.
+            - Also, check if there exists contact point with the same name, 
+              if so, delete the existing one and upload a new one.
+        """
+        uid = create_uid(name)
+
+        existing_cps = self.list_contact_points_uid()
+        to_delete_uid = None
+
+        for cp_uid in existing_cps:
+            if cp_uid == uid:
+                to_delete_uid = cp_uid
+                print(f"Found existing contact point: {name} (UID: {cp_uid}) — will delete")
+                break
+
+        if to_delete_uid:
+            self.delete_contact_point(to_delete_uid)
+
+        payload = {
+            "name": name,
+            "type": "email",
+            "uid": uid,
+            "settings": {
+                "addresses": ",".join(addresses)
+            }
+        }
+
+        url = f"{self.base_url}/api/v1/provisioning/contact-points"
+        response = requests.post(url, headers=self.headers, json=payload)
+        if response.status_code == 202:
+            print(f"[Create] {response.status_code} | Contact Point {name} successfully created.(=ﾟωﾟ)ﾉ")
+        else:
+            print(f"[Create] {response.status_code} | {response.text}")
+
+    def list_contact_points_uid(self):
+        """ This function asks grafana to return all the uids for contact points.
+        """
+
+        url = f"{self.base_url}/api/v1/provisioning/contact-points"
+        response = requests.get(url, headers=self.headers)
+
+        # Convert the response
+        data_json = json.loads(response.text)
+
+        # Output result
+        contacts_uids = []
+        for rule in data_json:
+            contacts_uids.append(rule['uid'])
+
+        return contacts_uids
+
+    def delete_contact_point(self, uid, fallback_receiver: str = "grafana-default-email"):
+        """ Delete one contact point with uid.
+        """
+        tree = self.get_policy_tree()
+        routes = tree.get("routes", [])
+        if tree.get("receiver") == uid:
+            tree["receiver"] = fallback_receiver
+            print(f"[Update] Root receiver changed from {uid} → {fallback_receiver}")
+        #filter the route with the contact point that we want to delete
+        new_routes = [r for r in routes if r.get("receiver") != uid]
+
+        if len(new_routes) < len(routes):
+            tree["routes"] = new_routes
+            self.put_policy_tree(tree)
+            print(f"[Delete] removed {uid} from routes")
+        else:
+            print(f"[Delete] No policy used {uid}")
+
+        url = f"{self.base_url}/api/v1/provisioning/contact-points/{uid}"
+        response = requests.delete(url, headers=self.headers)
+        if response.status_code in [200, 202, 204]:
+            print(f"[Delete] Deleted contact point UID: {uid}")
+        else:
+            print(f"[Delete] Failed to delete UID {uid} | {response.status_code} | {response.text}")
+
+    def delete_all_contact_points(self):
+        """Delete all contact points that are deletable via API.
+        """
+        url = f"{self.base_url}/api/v1/provisioning/contact-points"
+        response = requests.get(url, headers=self.headers)
+        
+        if response.status_code != 200:
+            print(f"[Error] Failed to fetch contact points | {response.status_code} | {response.text}")
+            return
+
+        contact_points = response.json()
+
+        for cp in contact_points:
+            uid = cp.get("uid")
+
+            if not uid:
+                print(f"[Skip] Skipping unnamed or malformed contact point: {cp}")
+                continue
+
+            self.delete_contact_point(uid)
+
+    def get_policy_tree(self):
+        """Get current policy tree
+        """
+        url = f"{self.base_url}/api/v1/provisioning/policies"
+        r = requests.get(url, headers=self.headers)
+        r.raise_for_status()
+        return r.json()
+
+    def put_policy_tree(self, tree: dict):
+        """Update policy tree
+        """
+        url = f"{self.base_url}/api/v1/provisioning/policies"
+        response = requests.put(url, headers=self.headers, json=tree)
+        response.raise_for_status()
+
+        if response.status_code in [204,202]:
+            print("[Update] Notification policies successfully updated.")
+        else:
+            print(f"[Update] Failed to set up notification system|{response.status_code}|{response.text}")
+
+    def delete_notification_policy_tree(self):
+        """Delete the entire notification policy tree.
+        """
+        url = f"{self.base_url}/api/v1/provisioning/policies"
+        response = requests.delete(url, headers=self.headers)
+
+        if response.status_code in [200, 202, 204]:
+            print("[Delete] Notification policy tree deleted successfully.")
+        else:
+            print(f"[Delete] Failed to delete policy tree | {response.status_code} | {response.text}")
+            response.raise_for_status()
 
 
 # ============================================================
@@ -292,6 +422,7 @@ DB_INFO_PATH            = "./tool/postgres_tables"
 DASHBOARDS_FOLDER_PATH  = "./Dashboards"
 IV_PLOTS_FOLDER_PATH    = "./IV_curves_plot"
 ALERTS_FOLDER_PATH      = "./Alerts"
+CONTACT_FOLDER_PATH     = f"{CONFIG_FOLDER_PATH}/contact_configs"
 
 DB_CONN_PATH            = f"{SETTING_FOLDER_PATH}/db_conn.yaml"
 GF_CONN_PATH            = f"{SETTING_FOLDER_PATH}/gf_conn.yaml"

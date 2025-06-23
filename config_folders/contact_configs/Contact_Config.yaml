@@ -1,0 +1,17 @@
+contactPoints:
+
+  - name: inspectors
+    type: email
+    addresses:
+      - <your_email_address>
+
+policies:
+  - receiver: inspectors
+    group_by: 
+      - grafana_folder
+      - alertname
+    object_matchers: 
+      - ["team", "=", "inspectors"]
+    group_wait: 20s
+    group_interval: 1m
+    repeat_interval: 4h

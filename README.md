@@ -44,11 +44,33 @@ hide_version = true
 # Setting this limits the number of anonymous devices in your instance. Any new anonymous devices added after the limit has been reached will be denied access.
 device_limit =
 ```
-- Restart the Grafana server by running the following command:
+- More Info: [Grafana Anonymous Access](https://grafana.com/docs/grafana/latest/setup-grafana/configure-security/configure-authentication/anonymous-auth/)
+
+5. Set the SMTP server for Grafana email notification:
+- In the same configuration file, modify the `smtp` section to set the SMTP server:
+```            
+[smtp]
+enabled = true
+host = smtp.gmail.com:587
+user =
+# If the password contains # or ; you have to wrap it with triple quotes. Ex """#password;"""                                                                                                               
+password =      # application password - see attached link below
+cert_file =
+key_file =
+skip_verify = false
+from_address =       # the email address to send from
+from_name = Grafana
+ehlo_identity =
+startTLS_policy =
+enable_tracing = false
+```
+- More Info on SMTP Configuration: [Grafana SMTP Configuration](https://grafana.com/docs/grafana-cloud/alerting-and-irm/alerting/configure-notifications/manage-contact-points/integrations/configure-email/)
+- More Info on application password: [Google Application Password](https://support.google.com/accounts/answer/185833?hl=en)
+
+6. Restart the Grafana server by running the following command:
 ```
 sudo systemctl restart grafana-server
 ```
-- More Info: [Grafana Anonymous Access](https://grafana.com/docs/grafana/latest/setup-grafana/configure-security/configure-authentication/anonymous-auth/)
 
 ## Run Steps
 1. Run `main.py` to generate the dashboards to Grafana.
