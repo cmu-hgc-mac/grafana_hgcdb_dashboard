@@ -125,7 +125,6 @@ async def main():
 
             for line in response.iter_lines(decode_unicode=True):
                 if line.strip():
-                    print(f"Raw Line: {line}")
                     data = json.loads(line.decode('utf-8'))
                     token = data.get("response", "")
                     reply += token
