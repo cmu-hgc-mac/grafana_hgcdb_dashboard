@@ -1,9 +1,11 @@
-from nicegui import ui
-import requests
+import asyncio
 import json
+import subprocess
 from datetime import datetime
 from uuid import uuid4
-import asyncio
+
+import requests
+from nicegui import ui
 
 messages = []
 
@@ -59,6 +61,7 @@ async def main():
             - currently blank due to the very bad design skills of the author.
             """
             ui.markdown(info).classes('text-lg text-gray-600')
+            ui.button('Execute main.py', on_click=lambda: asyncio.create_task(execute_main())).classes('mt-4')
 
         # === Right side: chat area with LLM ===
         with ui.column().classes('w-[25%] min-w-[320px] max-w-[400px] h-[calc(100vh-4rem)] bg-gray-50 p-4 border-l gap-2'):
@@ -72,14 +75,16 @@ async def main():
 
             # input area
             with ui.row().classes('items-center border-t pt-2'):
-                user_input = ui.input(placeholder='Say something...') \
-                    .on('keydown.enter', lambda _: send()) \
-                    .props('rounded outlined input-class=mx-3').classes('flex-grow')
-                ui.button('Send', on_click=lambda: send()).classes('ml-2')
+                user_input = ui.textarea(placeholder='Say something...') \
+                        .on('keydown.enter', lambda _: handle_send()) \
+                        .props('rounded outlined autogrow input-class=mx-3') \
+                        .classes('flex-grow max-h-[120px] overflow-y-auto text-left break-words')
+                ui.button('Send', on_click=lambda: handle_send()).classes('ml-2')
+
 
     ######################################################
     # === send function ===
-    def send():
+    def handle_send():
         """Handle the `sending` message event
         """
         prompt = user_input.value
@@ -89,11 +94,11 @@ async def main():
         stamp = datetime.now().strftime('%X')
         messages.append((user_id, prompt, stamp))
         chat_messages.refresh()
+
         user_input.value = ''
 
         # placeholder for llm reply
         placeholder_stamp = datetime.now().strftime('%X')
-        placeholder = ('ollama', '', placeholder_stamp)
         messages.append(('ollama', '', placeholder_stamp))
         chat_messages.refresh()
         placeholder_index = len(messages) - 1
@@ -108,17 +113,19 @@ async def main():
 
         try:
             response = requests.post(
-                "http://localhost:11434/api/generate",
+                "http://127.0.0.1:11434/api/generate",
                 json={
                     "model": "llama3.2",
                     "prompt": prompt,
                     "stream": True
                 },
-                stream=True
+                stream=True,
+                timeout=30
             )
 
-            for line in response.iter_lines():
-                if line:
+            for line in response.iter_lines(decode_unicode=True):
+                if line.strip():
+                    print(f"Raw Line: {line}")
                     data = json.loads(line.decode('utf-8'))
                     token = data.get("response", "")
                     reply += token
@@ -138,6 +145,20 @@ async def main():
                 messages[placeholder_index][2],
             )
             chat_messages.refresh()
+    
+    # === main.py ===
+    async def execute_main():
+        loop = asyncio.get_running_loop()
+
+        def run_sync():
+            try:
+                subprocess.run(["python", "main.py"], check=True, cwd="..")
+            except subprocess.CalledProcessError as e:
+                print(f"[ERROR] {e.stderr.decode('utf-8')}")
+
+        # execute main.py in a separate thread
+        await loop.run_in_executor(None, run_sync)
+
 
 if __name__ in {"__main__", "__mp_main__"}:
     ui.run()
