@@ -42,7 +42,7 @@ class DashboardValidator:
         """
         return self._cfg.get("dashboards", [])
 
-    def iter_panels(self) -> tuple:
+    def iter_panels(self):
         """Iterate over all panels in the config file.
            - Yield (dash_title, panel_title, panel_dict)
         """
@@ -282,7 +282,7 @@ class AlertRuleValidator:
         """
         return self._cfg.get("dashboards", [])
 
-    def iter_panels(self) -> tuple:
+    def iter_panels(self):
         """Iterate over all panels in the config file.
            - Yield (dash_title, panel_title, panel_dict)
         """
@@ -366,8 +366,13 @@ class AlertRuleValidator:
         table = alert.get("table", "<Unknown>")
         valid_columns = self.get_valid_columns(table)
 
+        # get name
+        alert_title = alert.get("title", "<Untitled>")
+        dash_title = alert.get("dashboard", "<Untitled>")
+        panel_title = self.convert_panelID_to_title(int(alert.get("panelID", None)), dash_title)
+
         if not valid_columns:
-            self.print_error(dash_title, panel_title, f"Table '{table}' not found.")
+            self.print_error(alert_title, dash_title, panel_title, f"Table '{table}' not found.")
             passed = False
         
         return passed
