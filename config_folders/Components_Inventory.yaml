@@ -37,7 +37,7 @@ dashboards:
         chart_type: "barchart"
         condition: "module_no is NULL"
         groupby: ["roc_version", "resolution", "geometry"]
-        filters: {"hexaboard": ["roc_version", "resolution", "geometry"]}
+        filters: {"hexaboard": ["roc_version", "resolution", "geometry"], "hxb_pedestal_test": ["status_desc", "date_test"]}
         distinct: ["hexaboard", "hxb_pedestal_test"]
 
       - title: "Free Hexaboards Info"
@@ -45,5 +45,5 @@ dashboards:
         chart_type: "table"
         condition: "module_no is NULL"
         groupby: {"hexaboard": ["hxb_name"], "hxb_pedestal_test": ["count_bad_cells", "status_desc", "date_test", "comment"], "hxb_inspect": ["flatness", "thickness"]}
-        filters: {"hexaboard": ["roc_version", "resolution", "geometry"], "hxb_pedestal_test": [], "hxb_inspect": []}
+        filters: {"hexaboard": ["roc_version", "resolution", "geometry"], "hxb_pedestal_test": ["status_desc", "date_test"], "hxb_inspect": []}
         distinct: ["hexaboard", "hxb_pedestal_test", "hxb_inspect"]
