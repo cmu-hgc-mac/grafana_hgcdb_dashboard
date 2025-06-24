@@ -57,7 +57,10 @@ class FilterBuilder:
             """
         else:
             filter_sql = f"""
-            SELECT DISTINCT {filter_name} FROM {filters_table} ORDER BY {filter_name}
+            SELECT DISTINCT 
+                COALESCE({filter_name}::text, 'NULL') AS {filter_name} 
+            FROM {filters_table} 
+            ORDER BY {filter_name}
             """
 
         return filter_sql

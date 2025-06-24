@@ -9,7 +9,7 @@ dashboards:
         chart_type: "barchart"
         condition: "proto_no is NULL"
         groupby: ["bp_material", "resolution", "geometry"]
-        filters: {"baseplate": ["bp_material", "resolution", "geometry"]}
+        filters: {"baseplate": ["bp_material", "resolution", "geometry"], "bp_inspect": ["grade"]}
         distinct: ["baseplate"]
       
       - title: "Free Baseplates Info"
@@ -17,7 +17,7 @@ dashboards:
         chart_type: "table"
         condition: "proto_no is NULL"
         groupby: {"baseplate": ["bp_name"], "bp_inspect": ["grade", "comment", "date_inspect", "flatness", "thickness"]}
-        filters: {"baseplate": ["bp_material", "resolution", "geometry"], "bp_inspect": []}
+        filters: {"baseplate": ["bp_material", "resolution", "geometry"], "bp_inspect": ["grade"]}
         distinct: ["baseplate", "bp_inspect"]
 
   - title: "Free Sensors"

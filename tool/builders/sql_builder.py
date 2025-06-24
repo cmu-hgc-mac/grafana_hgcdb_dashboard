@@ -36,7 +36,7 @@ class BaseSQLGenerator(ChartSQLGenerator):
         pass
 
     # Base SQL for all chart types
-    def _build_pre_clause(self, table: str, distinct: list) -> (str, str):
+    def _build_pre_clause(self, table: str, distinct: list):
         """Builds the pre-SELECT clause for histogram. 
            - If distinct is True, it will select the distinct modules.
         """
@@ -91,11 +91,15 @@ class BaseSQLGenerator(ChartSQLGenerator):
         # General Cases
         else:
             param = f"${{{elem}}}"
-            arg = f"('All' = ANY(ARRAY[{param}]) OR {filters_table}.{elem}::text = ANY(ARRAY[{param}]))"
+            arg = f"""(
+                'All' = ANY(ARRAY[{param}]) OR 
+                ({filters_table}.{elem} IS NULL AND 'NULL' = ANY(ARRAY[{param}])) OR 
+                {filters_table}.{elem}::text = ANY(ARRAY[{param}])
+            )"""
 
         return arg
 
-    def _build_where_clause(self, filters: dict, condition: str, table: str, distinct: list) -> (str, dict):
+    def _build_where_clause(self, filters: dict, condition: str, table: str, distinct: list):
         """Builds the WHERE clause from filters and condition. 
         """
         original_filters = copy.deepcopy(filters)   # make a copy of the original filters
