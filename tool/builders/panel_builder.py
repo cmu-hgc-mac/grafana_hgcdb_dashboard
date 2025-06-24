@@ -219,9 +219,12 @@ class PanelBuilder:
                 return await conn.fetch(query)
 
         async def fetch_iv(pool, moduleserial):
-            query = f"""SELECT *  
+            query = rf"""SELECT *  
                         FROM module_iv_test                                                                  
-                        WHERE REPLACE(module_name,'-','') = '{moduleserial}'                                       
+                        WHERE 
+                            REPLACE(module_name,'-','') = '{moduleserial}'
+                            AND (rel_hum ~ '^[-+]?[0-9]+(\.[0-9]+)?$')
+                            AND (temp_c ~ '^[-+]?[0-9]+(\.[0-9]+)?$')                                      
                         ORDER BY date_test, time_test;"""
             async with pool.acquire() as conn:
                 return await conn.fetch(query)
@@ -240,8 +243,6 @@ class PanelBuilder:
                     runs.append(r)
 
             return runs
-
-        N_MODULE_SHOW = 15
 
         result = loop.run_until_complete(fetch_modules(pool))
 
