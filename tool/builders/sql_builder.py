@@ -91,11 +91,10 @@ class BaseSQLGenerator(ChartSQLGenerator):
         # General Cases
         else:
             param = f"${{{elem}}}"
-            arg = f"""(
-                'All' = ANY(ARRAY[{param}]) OR 
+            arg = f"""
+                ('All' = ANY(ARRAY[{param}]) OR 
                 ({filters_table}.{elem} IS NULL AND 'NULL' = ANY(ARRAY[{param}])) OR 
-                {filters_table}.{elem}::text = ANY(ARRAY[{param}])
-            )"""
+                {filters_table}.{elem}::text = ANY(ARRAY[{param}]))"""
 
         return arg
 
