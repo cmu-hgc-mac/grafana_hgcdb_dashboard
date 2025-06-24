@@ -1,7 +1,0 @@
-pattern_no,serial PRIMARY KEY,,
-adhesive_type,TEXT,,
-date,DATE,,
-pattern_version,INT,,
-pattern_file,BYTEA,,
-stack_type,TEXT,,
-comment,TEXT,,
