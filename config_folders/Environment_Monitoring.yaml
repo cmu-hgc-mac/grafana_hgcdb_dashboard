@@ -111,3 +111,35 @@ alert:
         "severity": "critical"
         "sensor": "humidity"
         "location": "main_clean_room"
+
+  - title: "High 500nm Particle Count Alert"
+    table: "particulate_counts"
+    dashboard: "Environment Monitoring (trend)"
+    panelID: "3"
+    parameter: "prtcls_per_cubic_m_500nm"
+    threshold: [352000]
+    logicType: "gt"
+    duration: "3s"
+    interval: "60m"
+    summary: "500nm Particle Count abnormal"
+    labels: 
+        "team": "inspectors"
+        "severity": "critical"
+        "sensor": "500nm_particle_count"
+        "location": "main_clean_room"
+
+  - title: "High 1um Particle Count Alert"
+    table: "particulate_counts"
+    dashboard: "Environment Monitoring (trend)"
+    panelID: "4"
+    parameter: "prtcls_per_cubic_m_1um"
+    threshold: [83200]
+    logicType: "gt"
+    duration: "3s"
+    interval: "60m"
+    summary: "1um Particle Count abnormal"
+    labels: 
+        "team": "inspectors"
+        "severity": "critical"
+        "sensor": "1um_particle_count"
+        "location": "main_clean_room"

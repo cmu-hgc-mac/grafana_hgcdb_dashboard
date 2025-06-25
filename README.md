@@ -52,7 +52,7 @@ device_limit =
 [smtp]
 enabled = true
 host = smtp.gmail.com:587
-user =
+user =          # your gmail account - usually is the same one as your email address
 # If the password contains # or ; you have to wrap it with triple quotes. Ex """#password;"""                                                                                                               
 password =      # application password - see attached link below
 cert_file =

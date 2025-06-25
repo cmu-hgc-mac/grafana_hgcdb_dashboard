@@ -19,6 +19,9 @@ filelist = os.listdir(CONFIG_FOLDER_PATH)
 # Define the builder
 alert_builder = AlertBuilder(GF_DS_UID)
 
+# Delete all the alerts generated previously
+client.delete_all_alert_rules()
+
 # Define if success
 succeed = True      # assume every file success 
 failed_count = 0    # assume no file failed

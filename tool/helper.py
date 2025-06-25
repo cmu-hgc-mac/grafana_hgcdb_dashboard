@@ -14,9 +14,10 @@ This file contains all the helpers used in the dashboard.
     - The included helper classes/functions are:
         - ConfigLoader: load and modify the config file
         - GrafanaClient: all API to Grafana server
+            - Co-author: Xinyue (Joyce) Zhuang (everything below: `get_all_alert_rules`)
         - create_uid: create a unique uid based on its title
         - remove_folder: remove the folder that contains all json files
-        - information: loaded from config file
+        - information: global variables
 """
 
 # ============================================================
@@ -220,7 +221,6 @@ class GrafanaClient:
 
     def delete_alert_rule(self, alert_uid: str):
         """Delete the specified alert rule.
-           Author: Xinyue (Joyce) Zhuang
         """
         uid = alert_uid
 
@@ -249,6 +249,17 @@ class GrafanaClient:
             alert_uids.append(rule['uid'])
 
         return alert_uids
+
+    def delete_all_alert_rules(self):
+        """Get all existing alert rules from Grafana and delete all of them.
+        """
+        # get the list of all alert rule uids
+        rules = self.get_all_alert_rules()
+
+        for rule in rules:
+            self.delete_alert_rule(rule)
+        
+        print("[Delete] All alert rules deleted.")
     
     def create_contact_point(self, name: str, addresses: list):
         """ Create email contact points.
