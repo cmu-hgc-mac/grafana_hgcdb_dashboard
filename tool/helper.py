@@ -418,7 +418,8 @@ def get_distinct_column_name(table_name: str) -> str:
 # -- Path --
 SETTING_FOLDER_PATH     = "./a_EverythingNeedToChange"
 CONFIG_FOLDER_PATH      = "./config_folders"
-DB_INFO_PATH            = "../HGC_DB_postgres/dbase_info/postgres_tables"
+# DB_INFO_PATH            = "../HGC_DB_postgres/dbase_info/postgres_tables"
+DB_INFO_PATH            = "./tool/postgres_tables"
 DASHBOARDS_FOLDER_PATH  = "./Dashboards"
 IV_PLOTS_FOLDER_PATH    = "./IV_curves_plot"
 ALERTS_FOLDER_PATH      = "./Alerts"
