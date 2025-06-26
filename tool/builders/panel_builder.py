@@ -1,7 +1,5 @@
 import os
 
-import glob
-import pickle
 import asyncio
 import base64
 import datetime
@@ -9,8 +7,6 @@ import datetime
 import asyncpg
 from PIL import Image
 from matplotlib import pyplot as plt
-from matplotlib import patches
-from matplotlib.lines import Line2D
 
 from tool.helper import *
 from tool.builders.sql_builder import ChartSQLFactory
@@ -78,6 +74,32 @@ class PanelBuilder:
             x += width
 
         return config_panels
+
+    def get_info(self, panel: dict, chart_type: str) -> tuple:
+        """Get the information from the panel config by chart_type.
+        """
+        if chart_type == "text":
+            year = panel.get("year", None)
+            month = panel.get("month", None)
+            day = panel.get("day", None)
+
+            if year and month and day:
+                time = f"{year}-{month}-{day}"
+            else:
+                time = None
+
+            print(time)
+            return time
+        
+        else:
+            title = panel.get("title")
+            table = panel.get("table")
+            condition = panel.get("condition")
+            groupby = panel.get("groupby")
+            filters = panel.get("filters")
+            gridPos = panel.get("gridPos")
+            distinct = panel.get("distinct")
+            return title, table, condition, groupby, filters, gridPos, distinct
     
     def generate_general_panel(self, title: str, raw_sql: str, table: str, chart_type: str, gridPos: dict) -> dict:
         """Generate a panel json based on the given title, raw_sql, table, chart_type, and gridPos.
@@ -186,7 +208,7 @@ class PanelBuilder:
 
         return panel_json
 
-    def generate_plot(self, TIMEOUT=5) -> str:
+    def generate_plot(self, time=None, TIMEOUT=5) -> str:
         """Generate the IV_curve Plot.
            Author: Andrew C. Roberts  
         """
@@ -212,6 +234,12 @@ class PanelBuilder:
             print(f"[ERROR] Failed to connect to database: {str(e)}")
             raise
 
+        # get time info
+        if time:
+            time_arg = f"AND date_test >= '{time}'"
+        else:
+            time_arg = ""
+
         # functions for interating with db
         async def fetch_modules(pool):
             query = """SELECT * FROM module_info;"""
@@ -224,7 +252,8 @@ class PanelBuilder:
                         WHERE 
                             REPLACE(module_name,'-','') = '{moduleserial}'
                             AND (rel_hum ~ '^[-+]?[0-9]+(\.[0-9]+)?$')
-                            AND (temp_c ~ '^[-+]?[0-9]+(\.[0-9]+)?$')                                      
+                            AND (temp_c ~ '^[-+]?[0-9]+(\.[0-9]+)?$') 
+                            {time_arg}                                     
                         ORDER BY date_test, time_test;"""
             async with pool.acquire() as conn:
                 return await conn.fetch(query)
@@ -326,22 +355,19 @@ class PanelBuilder:
         # load information from config file
         for panel in config_panels:
             title = panel["title"]
-            table = panel["table"]
             chart_type = panel["chart_type"]
-            condition = panel["condition"]
-            groupby = panel["groupby"]
-            filters = panel["filters"]
-            gridPos = panel["gridPos"]
-            distinct = panel["distinct"]
 
             try:
                 if chart_type == "text":
-                    plt_path = self.generate_plot()
-                    encoded_string = self.convert_png_to_base64(plt_path)
-                    content = self.generate_content(encoded_string)
+                    time = self.get_info(panel, chart_type)     # get limited time range
+                    plt_path = self.generate_plot(time)         # generate plot
+                    encoded_string = self.convert_png_to_base64(plt_path)   # encode plot to base64
+                    content = self.generate_content(encoded_string)         # generate content for text panel
                     panel_json = self.generate_IV_curve_panel(title, content)
 
                 else:
+                    title, table, condition, groupby, filters, gridPos, distinct = self.get_info(panel, chart_type)
+
                     raw_sql = self.generate_sql(chart_type, table, condition, groupby, filters, distinct)
                     panel_json = self.generate_general_panel(title, raw_sql, table, chart_type, gridPos)
 

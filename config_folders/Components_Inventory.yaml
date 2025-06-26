@@ -10,7 +10,7 @@ dashboards:
         condition: "proto_no IS NULL AND bp_material IS NOT NULL AND resolution IS NOT NULL AND geometry IS NOT NULL"
         groupby: ["bp_material", "resolution", "geometry"]
         filters: {"baseplate": ["bp_material", "resolution", "geometry"], "bp_inspect": ["grade"]}
-        distinct: ["baseplate"]
+        distinct: ["baseplate", "bp_inspect"]
       
       - title: "Free Baseplates Info"
         table: "baseplate"

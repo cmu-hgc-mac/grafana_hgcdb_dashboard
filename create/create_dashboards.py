@@ -67,10 +67,11 @@ for config in filelist:
         # Loop for every panel in a dashboard
         for panel in config_panels:
             # Generate the template json
-            filters = panel["filters"]
-            if filters:
-                filter_json = filter_builder.build_template_list(filters, exist_filter)
-                template_list.extend(filter_json)
+            if panel["chart_type"] != "text":   # skip `text` panel
+                filters = panel["filters"]
+                if filters:
+                    filter_json = filter_builder.build_template_list(filters, exist_filter)
+                    template_list.extend(filter_json)
             
         panels_array = panel_builder.generate_panels_json(dashboard_title, config_panels)
             
