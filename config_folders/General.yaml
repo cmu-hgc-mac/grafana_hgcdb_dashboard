@@ -11,11 +11,3 @@ dashboards:
         groupby: ["assembled", "count"]
         filters: {"module_info": ["bp_material", "resolution", "roc_version", "geometry", "shipping_status", "assembled"]}
         distinct: 
-
-      - title: "Module Info table"
-        table: "module_info"
-        chart_type: "table"
-        condition: "assembled IS NOT NULL"
-        groupby: {module_info: ["row_count", "module_name", "shipped_datetime", "assembled"], module_qc_summary: ["final_grade", "count_bad_cells"]}
-        filters: {"module_info": ["bp_material", "resolution", "roc_version", "geometry", "shipping_status", "assembled"], module_qc_summary: []}
-        distinct: ["module_info", "module_qc_summary"]

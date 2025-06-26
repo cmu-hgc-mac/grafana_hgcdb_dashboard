@@ -402,7 +402,7 @@ class TableGenerator(BaseSQLGenerator):
             for elem in groupby:
                 if elem == "row_count":
                     prefix = table.split("_")[0]
-                    arg = f"ROW_NUMBER() OVER (ORDER BY {temp_table}.{prefix}_name) AS count"
+                    arg = f"ROW_NUMBER() OVER (ORDER BY {temp_table}.{prefix}_name) AS no"
                     groupby_fields.append(arg)
                 else:
                     cols = [elem]
@@ -416,7 +416,7 @@ class TableGenerator(BaseSQLGenerator):
                 for col in cols:
                     if col == "row_count":
                         prefix = original_table.split("_")[0]
-                        arg = f"ROW_NUMBER() OVER (ORDER BY {temp_table}.{prefix}_name) AS count"
+                        arg = f"ROW_NUMBER() OVER (ORDER BY {temp_table}.{prefix}_name) AS no"
                         groupby_fields.append(arg)
                     else:
                         pairs.append((temp_table, col))
