@@ -86,7 +86,7 @@ class PanelBuilder:
             if year and month and day:
                 time = f"{year}-{month}-{day}"
             else:
-                time = None
+                time = str(datetime.datetime.now()).split(' ')[0]
 
             return time
         
@@ -207,7 +207,7 @@ class PanelBuilder:
 
         return panel_json
 
-    def generate_plot(self, time=None, TIMEOUT=5) -> str:
+    def generate_plot(self, time: str, TIMEOUT=5) -> str:
         """Generate the IV_curve Plot.
            Author: Andrew C. Roberts  
         """
@@ -234,14 +234,16 @@ class PanelBuilder:
             raise
 
         # get time info
-        if time:
-            time_arg = f"AND date_test >= '{time}'"
-        else:
-            time_arg = ""
+        time_arg = f"AND module_iv_test.date_test <= '{time}'"
 
         # functions for interating with db
         async def fetch_modules(pool):
-            query = """SELECT * FROM module_info;"""
+            query = f"""SELECT DISTINCT ON (module_info.module_name) * 
+                        FROM module_info
+                        LEFT JOIN module_iv_test ON module_info.module_name = module_iv_test.module_name
+                        WHERE 
+                            module_info.module_name IS NOT NULL
+                            {time_arg}"""
             async with pool.acquire() as conn:
                 return await conn.fetch(query)
 
@@ -252,11 +254,11 @@ class PanelBuilder:
                             REPLACE(module_name,'-','') = '{moduleserial}'
                             AND (rel_hum ~ '^[-+]?[0-9]+(\.[0-9]+)?$')
                             AND (temp_c ~ '^[-+]?[0-9]+(\.[0-9]+)?$') 
-                            {time_arg}                                     
+                            {time_arg}                     
                         ORDER BY date_test, time_test;"""
             async with pool.acquire() as conn:
                 return await conn.fetch(query)
-
+ 
 
         def select_iv(moduleserial, modulestatus, dry=True, roomtemp=True):
             result = loop.run_until_complete(fetch_iv(pool, moduleserial))
@@ -307,7 +309,7 @@ class PanelBuilder:
                         
         ax.set_yscale('log')
         dryname = 'Dry' if dry else 'Ambient'
-        ax.set_title(f'{dryname} Module IV Curves [Log Scale]-{datetoday}', fontsize=30)
+        ax.set_title(f'{dryname} Module IV Curves [Log Scale] - test before {time}', fontsize=30)
         ax.set_xlabel('Reverse Bias [V]', fontsize=25)
         ax.set_ylabel(r'Leakage Current [A]', fontsize=25)
         ax.set_ylim(1e-9, 1e-03)
