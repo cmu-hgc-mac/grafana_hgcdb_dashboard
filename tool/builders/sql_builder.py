@@ -271,22 +271,24 @@ class HistogramGenerator(BaseSQLGenerator):
 # -- Timeseries --
 class TimeseriesGenerator(BaseSQLGenerator):
     def generate_sql(self, table: str, condition: str, groupby: list, filters: list, distinct: bool) -> str:
-        select_clause = self._build_select_clause(table, groupby)
+        pre_clause, target_table = self._build_pre_clause(table, distinct)
+        select_clause = self._build_select_clause(table, groupby, distinct)
         where_clause, original_filters = self._build_where_clause(filters, condition, table, distinct)
         join_clause = self._build_join_clause(table, original_filters, distinct)
         orderby_clause = self._build_orderby_clause(groupby)
 
         sql = f"""
+        {pre_clause}
         SELECT 
             {select_clause}
-        FROM {table}
+        FROM {target_table}
         {join_clause}
         WHERE {where_clause}
         {orderby_clause};
         """
         return sql.strip()
 
-    def _build_select_clause(self, table: str, groupby: list) -> str:
+    def _build_select_clause(self, table: str, groupby: list, distinct: bool) -> str:
         """Builds the SELECT clause from groupby.    
         """
         # Check lenghth of groupby:
@@ -305,6 +307,9 @@ class TimeseriesGenerator(BaseSQLGenerator):
                 elem = col
 
         select_clause = []
+
+        if distinct:
+            table = "temp_table_0"
 
         # Time
         time_arg = f"{table}.{time} AT TIME ZONE '{TIME_ZONE}' AS date"
@@ -395,16 +400,26 @@ class TableGenerator(BaseSQLGenerator):
         if isinstance(groupby, list):
             temp_table = "temp_table_0" if distinct else table
             for elem in groupby:
-                cols = [elem]
-                for col in cols:
-                    pairs.append((temp_table, col))
+                if elem == "row_count":
+                    prefix = table.split("_")[0]
+                    arg = f"ROW_NUMBER() OVER (ORDER BY {temp_table}.{prefix}_name) AS count"
+                    groupby_fields.append(arg)
+                else:
+                    cols = [elem]
+                    for col in cols:
+                        pairs.append((temp_table, col))
 
         elif isinstance(groupby, dict):
             for i, (original_table, cols) in enumerate(groupby.items()):
                 temp_table = f"temp_table_{i}" if distinct else original_table
                 cols = cols if isinstance(cols, list) else [cols]
                 for col in cols:
-                    pairs.append((temp_table, col))
+                    if col == "row_count":
+                        prefix = original_table.split("_")[0]
+                        arg = f"ROW_NUMBER() OVER (ORDER BY {temp_table}.{prefix}_name) AS count"
+                        groupby_fields.append(arg)
+                    else:
+                        pairs.append((temp_table, col))
 
         # Now generate select arguments
         for table_name, col in pairs:

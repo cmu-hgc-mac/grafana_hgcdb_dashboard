@@ -43,7 +43,7 @@ class PanelBuilder:
         num_panels = len(config_panels)
 
         # set up the max number of panels per line:
-        if dashboard_title.startswith("Free"):
+        if dashboard_title.startswith("Free") or "Module Assembly" in dashboard_title:
             max_num = 1
         elif dashboard_title == "Module Info" or "Environment Monitoring" in dashboard_title:
             max_num = 2
