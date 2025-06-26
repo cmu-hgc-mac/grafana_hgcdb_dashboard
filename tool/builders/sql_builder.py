@@ -83,6 +83,12 @@ class BaseSQLGenerator(ChartSQLGenerator):
             arg = f"""('All' = ANY(ARRAY[{param}]) OR 
                     (shipped_datetime IS NULL AND 'not shipped' = ANY(ARRAY[{param}])) OR
                     (shipped_datetime IS NOT NULL AND 'shipped' = ANY(ARRAY[{param}])))"""
+        elif elem == "wirebond_status":
+            param = "${wirebond_status}"
+            arg = f"""('All' = ANY(ARRAY[{param}]) OR 
+                    (wb_front IS NULL AND 'not front bonded' = ANY(ARRAY[{param}])) OR
+                    (wb_front IS NOT NULL AND 'front bonded' = ANY(ARRAY[{param}])))"""
+
 
         # time: using the Grafana built-in time filter
         elif elem in TIME_COLUMNS:

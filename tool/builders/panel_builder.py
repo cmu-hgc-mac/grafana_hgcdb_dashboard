@@ -88,7 +88,6 @@ class PanelBuilder:
             else:
                 time = None
 
-            print(time)
             return time
         
         else:

@@ -55,6 +55,13 @@ class FilterBuilder:
             FROM {filters_table}
             ORDER BY shipping_status
             """
+        elif filter_name == "wirebond_status":
+            filter_sql = f"""
+            SELECT DISTINCT 
+            CASE WHEN wb_front IS NULL THEN 'not front bonded' ELSE 'front bonded' END AS wirebond_status 
+            FROM {filters_table}
+            ORDER BY wirebond_status
+            """
         else:
             filter_sql = f"""
             SELECT DISTINCT 
