@@ -392,10 +392,7 @@ class PanelBuilder:
             v,
             i
         FROM best_per_module,
-        UNNEST(meas_v, meas_i) WITH ORDINALITY AS t(v, i, idx)
-        WHERE 
-            (v >= -5 AND v <= 505)
-            AND (i >= 1e-09 AND i <= 1e-03)
+        UNNEST(meas_v, meas_i) AS t(v, i)
         )
 
         SELECT *
@@ -427,12 +424,12 @@ class PanelBuilder:
                     }
                 },
                 {
-                    "id": "custom.axisSoftMin",
-                    "value": 1e-9
+                    "id": "max",
+                    "value": 1e-03
                 },
                 {
-                    "id": "custom.axisSoftMax",
-                    "value": 0.001
+                    "id": "min",
+                    "value": 1e-09
                 },
                 {
                     "id": "unit",
