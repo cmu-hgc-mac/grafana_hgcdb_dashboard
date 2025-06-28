@@ -67,12 +67,17 @@ for config in filelist:
         # Loop for every panel in a dashboard
         for panel in config_panels:
             special_chart_type = ["text", "xychart"]    # skip `text` and `xychart` panels
+            chart_type = panel["chart_type"]
+
             # Generate the template json
-            if panel["chart_type"] not in special_chart_type:
+            if chart_type not in special_chart_type:
                 filters = panel["filters"]
                 if filters:
                     filter_json = filter_builder.build_template_list(filters, exist_filter)
                     template_list.extend(filter_json)
+            elif chart_type == "xychart":
+                filter_json = filter_builder.build_iv_curve_filters(exist_filter)
+                template_list.extend(filter_json)
             
         panels_array = panel_builder.generate_panels_json(dashboard_title, config_panels)
             

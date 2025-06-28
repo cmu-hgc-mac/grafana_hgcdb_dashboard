@@ -354,7 +354,7 @@ class PanelBuilder:
         return content
     
     # -- IV Curve Plot Version 2.0 --
-    def IV_curve_panel_sql(self, temp_condition: str, rel_hum_condition: str) -> str:
+    def IV_curve_panel_sql(self, temp_condition: str, rel_hum_condition: str, N_MODULE_SHOW="${N_MODULE_SHOW}") -> str:
         """Generate the SQL command for IV curve plot based on temp_condition and rel_hum_condition.
         """
         raw_sql = f"""
@@ -366,7 +366,7 @@ class PanelBuilder:
             $__timeFilter(test_iv) 
             AND test_iv IS NOT NULL
         ORDER BY module_no DESC
-        LIMIT 15
+        LIMIT {N_MODULE_SHOW}
         ),
 
         filtered_iv AS (

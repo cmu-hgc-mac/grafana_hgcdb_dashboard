@@ -93,3 +93,29 @@ class FilterBuilder:
                 template_list.append(filter_json)
         
         return template_list
+    
+    def build_iv_curve_filters(self, exist_filter: set) -> list:
+        """Build all filters for IV curve plot.
+        """
+        template_list = []
+
+        if not exist_filter:
+            temp_arg = [
+                        {
+                "name": "N_MODULE_SHOW",
+                "type": "textbox",
+                "label": "Number of Modules to Show",
+                "hide": 0,
+                "query": "",
+                "current": {
+                    "text": "15",
+                    "value": "15"
+                },
+                "options": [],
+                "refresh": 0
+                }
+            ]
+            template_list.extend(temp_arg)
+            exist_filter.add("N_MODULE_SHOW")
+
+        return template_list
