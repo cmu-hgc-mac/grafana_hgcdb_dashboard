@@ -43,7 +43,7 @@ class PanelBuilder:
         num_panels = len(config_panels)
 
         # set up the max number of panels per line:
-        if dashboard_title.startswith("Free") or "Module Assembly" in dashboard_title:
+        if dashboard_title.startswith("Free") or "Module Assembly" in dashboard_title or 'IV_Curve Plot' in dashboard_title:
             max_num = 1
         elif dashboard_title == "Module Info" or "Environment Monitoring" in dashboard_title:
             max_num = 2
@@ -93,8 +93,9 @@ class PanelBuilder:
         elif chart_type == "xychart":
             temp_condition = panel.get("temp_condition", None)
             rel_hum_condition = panel.get("rel_hum_condition", None)
+            gridPos = panel.get("gridPos")
             
-            return temp_condition, rel_hum_condition
+            return temp_condition, rel_hum_condition, gridPos
         
         else:
             title = panel.get("title")
@@ -377,6 +378,7 @@ class PanelBuilder:
             AND meas_v IS NOT NULL AND meas_i IS NOT NULL
             AND {temp_condition}
             AND {rel_hum_condition}
+            AND (status_desc = 'Completely Encapsulated' OR status_desc = 'Frontside Encapsulated')
             AND array_length(meas_v, 1) = array_length(meas_i, 1)
         ),
 
@@ -465,19 +467,14 @@ class PanelBuilder:
         
         return override
 
-    def generate_IV_curve_panel_new(self, title: str, raw_sql: str, override: list) -> dict:
+    def generate_IV_curve_panel_new(self, title: str, raw_sql: str, override: list, gridPos: dict) -> dict:
         """A new version of IV curve panel JSON.
         """
         panel_json = {
         "id": 1,
         "type": "xychart",
         "title": f"{title}",
-        "gridPos": {
-            "x": 0,
-            "y": 0,
-            "h": 15,
-            "w": 18
-        },
+        "gridPos": gridPos,
         "fieldConfig": {
             "defaults": {
             "custom": {
@@ -610,10 +607,10 @@ class PanelBuilder:
                     panel_json = self.generate_IV_curve_panel(title, content)
                 
                 elif chart_type == "xychart":
-                    temp_condition, rel_hum_condition = self.get_info(panel, chart_type)    # get conditions for SQL
+                    temp_condition, rel_hum_condition, gridPos = self.get_info(panel, chart_type)    # get conditions for SQL
                     raw_sql = self.IV_curve_panel_sql(temp_condition, rel_hum_condition)    # generate SQL
                     override = self.IV_curve_panel_override()   # generate override for xy axises
-                    panel_json = self.generate_IV_curve_panel_new(title, raw_sql, override)
+                    panel_json = self.generate_IV_curve_panel_new(title, raw_sql, override, gridPos)
 
                 else:
                     title, table, condition, groupby, filters, gridPos, distinct = self.get_info(panel, chart_type)

@@ -78,7 +78,11 @@ dashboards:
   
   - title: "IV_Curve Plot-v2"
     panels:
-          - title: "Dry Module IV Curves [Log Scale]"
-            chart_type: "xychart"
-            temp_condition: "(temp_c::int >= 10 AND temp_c::int <= 30)"
-            rel_hum_condition: "(rel_hum::int <= 12)"
+        - title: "Dry-Roomtemp Module IV Curves [Log Scale]"
+          chart_type: "xychart"
+          temp_condition: "(temp_c::int >= 10 AND temp_c::int <= 30)"
+          rel_hum_condition: "(rel_hum::int <= 12)"
+        - title: "Ambient-Roomtemp Module IV Curves [Log Scale]"
+          chart_type: "xychart"
+          temp_condition: "(temp_c::int >= 10 AND temp_c::int <= 30)"
+          rel_hum_condition: "(rel_hum::int >= 20)"
