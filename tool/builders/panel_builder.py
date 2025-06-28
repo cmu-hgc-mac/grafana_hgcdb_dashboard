@@ -90,6 +90,12 @@ class PanelBuilder:
 
             return time
         
+        elif chart_type == "xychart":
+            temp_condition = panel.get("temp_condition", None)
+            rel_hum_condition = panel.get("rel_hum_condition", None)
+            
+            return temp_condition, rel_hum_condition
+        
         else:
             title = panel.get("title")
             table = panel.get("table")
@@ -345,6 +351,246 @@ class PanelBuilder:
         """
         content = f'<img src=\"data:image/png;base64,{encoded_string}" style="width: auto; height: auto;"/>'
         return content
+    
+    # -- IV Curve Plot Version 2.0 --
+    def IV_curve_panel_sql(self, temp_condition: str, rel_hum_condition: str) -> str:
+        """Generate the SQL command for IV curve plot based on temp_condition and rel_hum_condition.
+        """
+        raw_sql = f"""
+        WITH selected_modules AS (
+        SELECT 
+            module_name
+        FROM module_info
+        WHERE 
+            $__timeFilter(test_iv) 
+            AND test_iv IS NOT NULL
+        ORDER BY module_no DESC
+        LIMIT 15
+        ),
+
+        filtered_iv AS (
+        SELECT *,
+            meas_i[array_length(meas_i, 1)] AS i_last
+        FROM module_iv_test
+        WHERE
+            module_name IN (SELECT module_name FROM selected_modules)
+            AND meas_v IS NOT NULL AND meas_i IS NOT NULL
+            AND {temp_condition}
+            AND {rel_hum_condition}
+            AND array_length(meas_v, 1) = array_length(meas_i, 1)
+        ),
+
+        best_per_module AS (
+        SELECT DISTINCT ON (module_name) *
+        FROM filtered_iv
+        ORDER BY module_name, i_last ASC
+        ),
+
+        unnested AS (
+        SELECT 
+            module_name,
+            v,
+            i
+        FROM best_per_module,
+        UNNEST(meas_v, meas_i) WITH ORDINALITY AS t(v, i, idx)
+        WHERE 
+            (v >= -5 AND v <= 505)
+            AND (i >= 1e-09 AND i <= 1e-03)
+        )
+
+        SELECT *
+        FROM unnested
+        ORDER BY module_name ASC;
+        """
+
+        return raw_sql
+
+    def IV_curve_panel_override(self) -> list:
+        """Override the default config for IV curve plot.
+        """
+        override = [
+            {
+                "matcher": {
+                "id": "byName",
+                "options": "i"
+                },
+                "properties": [
+                {
+                    "id": "custom.axisPlacement",
+                    "value": "left"
+                },
+                {
+                    "id": "custom.scaleDistribution",
+                    "value": {
+                    "log": 10,
+                    "type": "log"
+                    }
+                },
+                {
+                    "id": "custom.axisSoftMin",
+                    "value": 1e-9
+                },
+                {
+                    "id": "custom.axisSoftMax",
+                    "value": 0.001
+                },
+                {
+                    "id": "unit",
+                    "value": "sci"
+                },
+                {
+                    "id": "custom.axisLabel",
+                    "value": "Leakage Current [A]"
+                }
+                ]
+            },
+            {
+                "matcher": {
+                "id": "byName",
+                "options": "v"
+                },
+                "properties": [
+                {
+                    "id": "max",
+                    "value": 500
+                },
+                {
+                    "id": "min",
+                    "value": 0
+                },
+                {
+                    "id": "custom.axisLabel",
+                    "value": "Reverse Bias [V]"
+                }
+                ]
+            }
+        ]
+        
+        return override
+
+    def generate_IV_curve_panel_new(self, title: str, raw_sql: str, override: list) -> dict:
+        """A new version of IV curve panel JSON.
+        """
+        panel_json = {
+        "id": 1,
+        "type": "xychart",
+        "title": f"{title}",
+        "gridPos": {
+            "x": 0,
+            "y": 0,
+            "h": 15,
+            "w": 18
+        },
+        "fieldConfig": {
+            "defaults": {
+            "custom": {
+                "show": "lines",
+                "pointSize": {
+                "fixed": 5
+                },
+                "pointShape": "circle",
+                "pointStrokeWidth": 1,
+                "fillOpacity": 50,
+                "axisPlacement": "auto",
+                "axisLabel": "",
+                "axisColorMode": "text",
+                "axisBorderShow": False,
+                "scaleDistribution": {
+                "type": "linear"
+                },
+                "axisCenteredZero": False,
+                "hideFrom": {
+                "tooltip": False,
+                "viz": False,
+                "legend": False
+                }
+            },
+            "color": {
+                "mode": "palette-classic"
+            },
+            "mappings": [],
+            },
+            "overrides": override
+        },
+        "transformations": [
+            {
+            "id": "partitionByValues",
+            "options": {
+                "fields": [
+                "module_name"
+                ],
+                "keepFields": False
+            }
+            }
+        ],
+        "pluginVersion": "12.0.0",
+        "targets": [
+            {
+            "datasource": {
+                "type": "grafana-postgresql-datasource",
+                "uid": f"{self.datasource_uid}"
+            },
+            "editorMode": "code",
+            "format": "table",
+            "rawQuery": True,
+            "rawSql": f"{raw_sql}",
+            "refId": "A",
+            "sql": {
+                "columns": [
+                {
+                    "parameters": [],
+                    "type": "function"
+                }
+                ],
+                "groupBy": [
+                {
+                    "property": {
+                    "type": "string"
+                    },
+                    "type": "groupBy"
+                }
+                ],
+                "limit": 50
+            }
+            }
+        ],
+        "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": f"{self.datasource_uid}"
+        },
+        "options": {
+            "mapping": "auto",
+            "series": [
+            {
+                "x": {
+                "matcher": {
+                    "id": "byName",
+                    "options": "v"
+                }
+                },
+                "y": {
+                "matcher": {
+                    "id": "byName",
+                    "options": "i"
+                }
+                }
+            }
+            ],
+            "tooltip": {
+            "mode": "single",
+            "sort": "none",
+            "hideZeros": False
+            },
+            "legend": {
+            "showLegend": True,
+            "displayMode": "list",
+            "placement": "right",
+            "calcs": []
+            }
+        }
+        }
+
+        return panel_json
 
     # -- Genarate Panels --
     def generate_panels_json(self, dashboard_title: str, config_panels: list) -> list:
@@ -365,6 +611,12 @@ class PanelBuilder:
                     encoded_string = self.convert_png_to_base64(plt_path)   # encode plot to base64
                     content = self.generate_content(encoded_string)         # generate content for text panel
                     panel_json = self.generate_IV_curve_panel(title, content)
+                
+                elif chart_type == "xychart":
+                    temp_condition, rel_hum_condition = self.get_info(panel, chart_type)    # get conditions for SQL
+                    raw_sql = self.IV_curve_panel_sql(temp_condition, rel_hum_condition)    # generate SQL
+                    override = self.IV_curve_panel_override()   # generate override for xy axises
+                    panel_json = self.generate_IV_curve_panel_new(title, raw_sql, override)
 
                 else:
                     title, table, condition, groupby, filters, gridPos, distinct = self.get_info(panel, chart_type)

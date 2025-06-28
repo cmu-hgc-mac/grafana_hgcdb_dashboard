@@ -66,8 +66,10 @@ for config in filelist:
 
         # Loop for every panel in a dashboard
         for panel in config_panels:
+            special_chart_type = ["text", "xychart"]    # skip `text` and `xychart` panels
+            
             # Generate the template json
-            if panel["chart_type"] != "text":   # skip `text` panel
+            if panel["chart_type"] not in special_chart_type:
                 filters = panel["filters"]
                 if filters:
                     filter_json = filter_builder.build_template_list(filters, exist_filter)

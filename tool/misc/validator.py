@@ -70,7 +70,7 @@ class DashboardValidator:
         """
         chart_type = str(panel.get("chart_type", "")).strip().lower()
 
-        return chart_type in ("text", "piechart")
+        return chart_type in ("text", "piechart", "xychart")
 
     def validate_types(self, data: dict, expected: dict, dash_title: str, panel_title: str) -> bool:
         """Check if the keys in the data dictionary have the expected value type.
@@ -94,7 +94,7 @@ class DashboardValidator:
     # ============================================================
     def _check_panel_keys(self) -> bool:
         """Check if each key in each panel has the correct value type.
-           - Skip 'text' and 'piechart' chart_type panels.
+           - Skip 'text', 'piechart', and 'xychart' chart_type panels.
         """
         # Define the valid types for each key in a panel
         valid_types = {
@@ -120,7 +120,7 @@ class DashboardValidator:
     
     def _check_table_and_columns_exist(self) -> bool:
         """Check if table exists and all groupby/filter fields are valid.
-           - Skip 'text' and 'piechart' chart_type panels.
+           - Skip 'text', 'piechart', and 'xychart' chart_type panels.
         """
         passed = True   # assume check pass
         SPECIAL_CASES = ["shipping_status", "count", "row_count", "wirebond_status"]
