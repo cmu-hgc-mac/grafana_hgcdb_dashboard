@@ -68,7 +68,7 @@ dashboards:
           filters: {"module_qc_summary": ["final_grade"], "module_info": ["assembled"]}
           distinct: ["module_qc_summary"]
 
-  - title: "IV_Curve Plot-v2"
+  - title: "IV_Curve Plot"
     panels:
         - title: "Dry-Roomtemp (0-12% RH, 10-30°C) Module IV Curves [Log Scale]"
           chart_type: "xychart"

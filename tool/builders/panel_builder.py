@@ -399,7 +399,6 @@ class PanelBuilder:
             AND $__timeFilter(test_iv) 
             AND test_iv IS NOT NULL
         ORDER BY module_no DESC
-        LIMIT {N_MODULE_SHOW}
         ),
 
         filtered_iv AS (
@@ -419,6 +418,7 @@ class PanelBuilder:
         SELECT DISTINCT ON (filtered_iv.module_name) *
         FROM filtered_iv
         ORDER BY filtered_iv.module_name, i_last ASC
+        LIMIT {N_MODULE_SHOW}
         ),
 
         unnested AS (
