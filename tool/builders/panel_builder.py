@@ -9,7 +9,7 @@ from PIL import Image
 from matplotlib import pyplot as plt
 
 from tool.helper import *
-from tool.builders.sql_builder import ChartSQLFactory
+from tool.builders.sql_builder import ChartSQLFactory, BaseSQLGenerator
 
 """
 This file defines the class for building the panels json file in Grafana.
@@ -20,6 +20,7 @@ This file defines the class for building the panels json file in Grafana.
 class PanelBuilder:
     def __init__(self, datasource_uid):
         self.datasource_uid = datasource_uid
+        self.SQLgenerator = BaseSQLGenerator()
     
     # -- Regular Panels --
     def generate_sql(self, chart_type: str, table: str, condition: str, groupby: list, filters: list, distinct: bool) -> str:
@@ -91,11 +92,12 @@ class PanelBuilder:
             return time
         
         elif chart_type == "xychart":
+            filters = panel.get("filters", None)
             temp_condition = panel.get("temp_condition", None)
             rel_hum_condition = panel.get("rel_hum_condition", None)
             gridPos = panel.get("gridPos")
             
-            return temp_condition, rel_hum_condition, gridPos
+            return filters, temp_condition, rel_hum_condition, gridPos
         
         else:
             title = panel.get("title")
@@ -354,16 +356,47 @@ class PanelBuilder:
         return content
     
     # -- IV Curve Plot Version 2.0 --
-    def IV_curve_panel_sql(self, temp_condition: str, rel_hum_condition: str, N_MODULE_SHOW="${N_MODULE_SHOW}") -> str:
+    def IV_curve_panel_filter(self, filters: dict) -> str:
+        """Build the WHERE clause for IV curve plot based on the given filters.
+        """
+        module_where_clauses = []
+        iv_where_clauses = []
+
+        for filter_table, _ in filters.items():
+            if filter_table == "module_info":
+                for elem in filters[filter_table]:
+                    arg = self.SQLgenerator._build_filter_argument(elem, filter_table)
+                    module_where_clauses.append(arg)
+                    module_where_arg = " AND ".join(module_where_clauses)
+            elif filter_table == "module_qc_summary":
+                for elem in filters[filter_table]:
+                    arg = self.SQLgenerator._build_filter_argument(elem, filter_table)
+                    iv_where_clauses.append(arg)
+                    iv_where_arg = " AND ".join(iv_where_clauses)
+
+        return module_where_arg, iv_where_arg
+
+    def IV_curve_panel_sql(self, filters: dict, temp_condition: str, rel_hum_condition: str, N_MODULE_SHOW="${N_MODULE_SHOW}") -> str:
         """Generate the SQL command for IV curve plot based on temp_condition and rel_hum_condition.
         """
+        # build the WHERE clause
+        module_where_arg, iv_where_arg = self.IV_curve_panel_filter(filters)
+
+        # generate the SQL command
         raw_sql = f"""
-        WITH selected_modules AS (
+        WITH selected_iv_test AS (
+        SELECT module_iv_test.*
+        FROM module_iv_test
+        JOIN module_qc_summary ON module_iv_test.module_name = module_qc_summary.module_name
+        WHERE {iv_where_arg}
+        ),
+
+        selected_modules AS (
         SELECT 
-            module_name
+            module_info.module_name
         FROM module_info
-        WHERE 
-            $__timeFilter(test_iv) 
+        WHERE {module_where_arg}
+            AND $__timeFilter(test_iv) 
             AND test_iv IS NOT NULL
         ORDER BY module_no DESC
         LIMIT {N_MODULE_SHOW}
@@ -372,7 +405,7 @@ class PanelBuilder:
         filtered_iv AS (
         SELECT *,
             meas_i[array_length(meas_i, 1)] AS i_last
-        FROM module_iv_test
+        FROM selected_iv_test
         WHERE
             module_name IN (SELECT module_name FROM selected_modules)
             AND meas_v IS NOT NULL AND meas_i IS NOT NULL
@@ -383,9 +416,9 @@ class PanelBuilder:
         ),
 
         best_per_module AS (
-        SELECT DISTINCT ON (module_name) *
+        SELECT DISTINCT ON (filtered_iv.module_name) *
         FROM filtered_iv
-        ORDER BY module_name, i_last ASC
+        ORDER BY filtered_iv.module_name, i_last ASC
         ),
 
         unnested AS (
@@ -607,8 +640,8 @@ class PanelBuilder:
                     panel_json = self.generate_IV_curve_panel(title, content)
                 
                 elif chart_type == "xychart":
-                    temp_condition, rel_hum_condition, gridPos = self.get_info(panel, chart_type)    # get conditions for SQL
-                    raw_sql = self.IV_curve_panel_sql(temp_condition, rel_hum_condition)    # generate SQL
+                    filters, temp_condition, rel_hum_condition, gridPos = self.get_info(panel, chart_type)    # get conditions for SQL
+                    raw_sql = self.IV_curve_panel_sql(filters, temp_condition, rel_hum_condition)    # generate SQL
                     override = self.IV_curve_panel_override()   # generate override for xy axises
                     panel_json = self.generate_IV_curve_panel_new(title, raw_sql, override, gridPos)
 

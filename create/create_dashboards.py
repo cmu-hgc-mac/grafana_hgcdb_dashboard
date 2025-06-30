@@ -76,7 +76,12 @@ for config in filelist:
                     filter_json = filter_builder.build_template_list(filters, exist_filter)
                     template_list.extend(filter_json)
             elif chart_type == "xychart":
-                filter_json = filter_builder.build_iv_curve_filters(exist_filter)
+                filters = panel["filters"]
+                # special case for IV curve
+                module_num_input = filter_builder.build_iv_curve_filters(exist_filter)
+                template_list.extend(module_num_input)
+                # regular filters
+                filter_json = filter_builder.build_template_list(filters, exist_filter)
                 template_list.extend(filter_json)
             
         panels_array = panel_builder.generate_panels_json(dashboard_title, config_panels)
