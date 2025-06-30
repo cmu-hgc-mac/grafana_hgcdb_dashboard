@@ -10,8 +10,16 @@ policies:
     group_by: 
       - grafana_folder
       - alertname
-    object_matchers: 
-      - ["team", "=", "inspectors"]
     group_wait: 20s
     group_interval: 1m
     repeat_interval: 4h
+    routes:
+      - receiver: inspectors
+        group_by: 
+          - grafana_folder
+          - alertname
+        object_matchers: 
+          - ["team", "=", "inspectors"]
+        group_wait: 20s
+        group_interval: 1m
+        repeat_interval: 4h
