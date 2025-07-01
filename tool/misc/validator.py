@@ -1,5 +1,4 @@
 import csv
-from difflib import get_close_matches
 
 from tool.helper import *
 
