@@ -443,15 +443,6 @@ GF_CONN_PATH            = f"{SETTING_FOLDER_PATH}/gf_conn.yaml"
 db_conn = ConfigLoader(DB_CONN_PATH)
 gf_conn = ConfigLoader(GF_CONN_PATH)
 
-# -- Grafana Connection Info --
-GF_PORT         = gf_conn.get('GF_PORT')
-GF_URL          = f"http://127.0.0.1:{GF_PORT}"
-GF_API_KEY      = gf_conn.get('GF_API_KEY')
-GF_USER         = gf_conn.get('GF_USER')
-GF_PASS         = gf_conn.get('GF_PASS')
-GF_DS_NAME      = gf_conn.get('GF_DATA_SOURCE_NAME')
-GF_DS_UID       = gf_conn.get('GF_DATA_SOURCE_UID')
-
 # -- PostgreSQL Connection Info --
 DB_HOST         = db_conn.get("db_hostname")
 DB_NAME         = db_conn.get("dbname")
@@ -459,6 +450,16 @@ DB_USER         = db_conn.get("user")
 DB_PASSWORD     = db_conn.get("password")
 DB_PORT         = db_conn.get("port")
 INSTITUTION     = db_conn.get("institution_abbr").upper()
+
+# -- Grafana Connection Info --
+GF_PORT         = gf_conn.get('GF_PORT')
+GF_URL          = f"https://{DB_HOST}:{GF_PORT}"
+# GF_URL          = f"http://127.0.0.1:{GF_PORT}"
+GF_API_KEY      = gf_conn.get('GF_API_KEY')
+GF_USER         = gf_conn.get('GF_USER')
+GF_PASS         = gf_conn.get('GF_PASS')
+GF_DS_NAME      = gf_conn.get('GF_DATA_SOURCE_NAME')
+GF_DS_UID       = gf_conn.get('GF_DATA_SOURCE_UID')
 
 # -- HGCDB Info --
 TIME_COLUMNS = [
@@ -488,9 +489,6 @@ POSTFIX = [
     "baseplate",
     "sensor"
 ]
-
-# number of modules show:
-N_MODULE_SHOW = 15
 
 # -- Set time_zone --
 INSTITUTION_TIMEZONES = {
