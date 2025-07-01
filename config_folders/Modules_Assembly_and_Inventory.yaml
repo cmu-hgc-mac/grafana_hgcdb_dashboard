@@ -9,42 +9,42 @@ dashboards:
         chart_type: "barchart"
         condition: "bp_material IS NOT NULL AND resolution IS NOT NULL AND roc_version IS NOT NULL AND geometry IS NOT NULL"
         groupby: ["bp_material", "resolution", "roc_version", "geometry", "shipped_datetime"]
-        filters: {"module_info": ["bp_material", "resolution", "roc_version", "geometry", "shipping_status", "assembled"]}
+        filters: {"module_info": ["bp_material", "resolution", "roc_version", "sen_thickness", "geometry", "shipping_status", "assembled"]}
         distinct: 
       - title: "Module Shipping Status"
         table: "module_info"
         chart_type: "piechart"
         condition: "bp_material IS NOT NULL AND resolution IS NOT NULL AND roc_version IS NOT NULL AND geometry IS NOT NULL"
         groupby: []
-        filters: {"module_info": ["bp_material", "resolution", "roc_version", "geometry", "shipping_status", "assembled"]}
-        distinct: 
-      - title: "Number of the Shipped Modules"
-        table: "module_info"
-        chart_type: "stat"
-        condition: "shipped_datetime IS NOT NULL AND bp_material IS NOT NULL AND resolution IS NOT NULL AND roc_version IS NOT NULL AND geometry IS NOT NULL"
-        groupby: ["shipping_status"]
-        filters: {"module_info": ["bp_material", "resolution", "roc_version", "geometry", "shipping_status", "assembled"]}
+        filters: {"module_info": ["bp_material", "resolution", "roc_version", "sen_thickness", "geometry", "shipping_status", "assembled"]}
         distinct: 
       - title: "Number of the Not-Shipped Modules"
         table: "module_info"
         chart_type: "stat"
         condition: "shipped_datetime IS NULL AND bp_material IS NOT NULL AND resolution IS NOT NULL AND roc_version IS NOT NULL AND geometry IS NOT NULL"
         groupby: ["shipping_status"]
-        filters: {"module_info": ["bp_material", "resolution", "roc_version", "geometry", "shipping_status", "assembled"]}
+        filters: {"module_info": ["bp_material", "resolution", "roc_version", "sen_thickness", "geometry", "shipping_status", "assembled"]}
         distinct: 
-      - title: "Shipped Modules Info"
+      - title: "Number of the Shipped Modules"
         table: "module_info"
-        chart_type: "table"
+        chart_type: "stat"
         condition: "shipped_datetime IS NOT NULL AND bp_material IS NOT NULL AND resolution IS NOT NULL AND roc_version IS NOT NULL AND geometry IS NOT NULL"
-        groupby: {"module_info": ["row_count", "module_name"], "module_qc_summary": ["final_grade"]}
-        filters: {"module_info": ["bp_material", "resolution", "roc_version", "geometry", "shipping_status", "assembled"], "module_qc_summary": []}
-        distinct: ["module_info", "module_qc_summary"]
+        groupby: ["shipping_status"]
+        filters: {"module_info": ["bp_material", "resolution", "roc_version", "sen_thickness", "geometry", "shipping_status", "assembled"]}
+        distinct: 
       - title: "Not-Shipped Modules Info"
         table: "module_info"
         chart_type: "table"
         condition: "shipped_datetime IS NULL AND bp_material IS NOT NULL AND resolution IS NOT NULL AND roc_version IS NOT NULL AND geometry IS NOT NULL"
         groupby: {"module_info": ["row_count", "module_name"], "module_qc_summary": ["final_grade"]}
-        filters: {"module_info": ["bp_material", "resolution", "roc_version", "geometry", "shipping_status", "assembled"], "module_qc_summary": []}
+        filters: {"module_info": ["bp_material", "resolution", "roc_version", "sen_thickness", "geometry", "shipping_status", "assembled"], "module_qc_summary": []}
+        distinct: ["module_info", "module_qc_summary"]
+      - title: "Shipped Modules Info"
+        table: "module_info"
+        chart_type: "table"
+        condition: "shipped_datetime IS NOT NULL AND bp_material IS NOT NULL AND resolution IS NOT NULL AND roc_version IS NOT NULL AND geometry IS NOT NULL"
+        groupby: {"module_info": ["row_count", "module_name"], "module_qc_summary": ["final_grade"]}
+        filters: {"module_info": ["bp_material", "resolution", "roc_version", "sen_thickness", "geometry", "shipping_status", "assembled"], "module_qc_summary": []}
         distinct: ["module_info", "module_qc_summary"]
 
   - title: "Module Inspect"
@@ -54,63 +54,63 @@ dashboards:
         chart_type: "barchart"
         condition: "grade IS NOT NULL"
         groupby: ["grade"]
-        filters: {"module_info": ["bp_material", "resolution", "roc_version", "geometry", "assembled", "wirebond_status", "shipping_status"], "module_inspect": ["grade"]}
+        filters: {"module_info": ["bp_material", "resolution", "roc_version", "sen_thickness", "geometry", "assembled", "wirebond_status", "shipping_status"], "module_inspect": ["grade"]}
         distinct: ["module_inspect", "module_info"]
       - title: "counts of grade B and C"
         table: "module_inspect"
         chart_type: "stat"
         condition: "(grade = 'C' OR grade = 'B')"
         groupby: []
-        filters: {"module_info": ["bp_material", "resolution", "roc_version", "geometry", "assembled", "wirebond_status", "shipping_status"], "module_inspect": ["grade"]}
+        filters: {"module_info": ["bp_material", "resolution", "roc_version", "sen_thickness", "geometry", "assembled", "wirebond_status", "shipping_status"], "module_inspect": ["grade"]}
         distinct: ["module_inspect", "module_info"]
       - title: "module inspect Info"
         table: "module_inspect"
         chart_type: "table"
         condition: "grade IS NOT NULL"
         groupby: {"module_inspect": ["module_name", "grade"]}
-        filters: {"module_info": ["bp_material", "resolution", "roc_version", "geometry", "assembled", "wirebond_status", "shipping_status"], "module_inspect": ["grade"]}
+        filters: {"module_info": ["bp_material", "resolution", "roc_version", "sen_thickness", "geometry", "assembled", "wirebond_status", "shipping_status"], "module_inspect": ["grade"]}
         distinct: ["module_inspect", "module_info"]
       - title: "Flatness"
         table: "module_inspect"
         chart_type: "histogram"
         condition: "flatness IS NOT NULL"
         groupby: ["flatness"]
-        filters: {"module_info": ["bp_material", "resolution", "roc_version", "geometry", "assembled", "wirebond_status", "shipping_status"], "module_inspect": ["grade"]}
+        filters: {"module_info": ["bp_material", "resolution", "roc_version", "sen_thickness", "geometry", "assembled", "wirebond_status", "shipping_status"], "module_inspect": ["grade"]}
         distinct: ["module_inspect", "module_info"]
       - title: "average thickness (mm)"
         table: "module_inspect"
         chart_type: "histogram"
         condition: "avg_thickness IS NOT NULL"
         groupby: ["avg_thickness"]
-        filters: {"module_info": ["bp_material", "resolution", "roc_version", "geometry", "assembled", "wirebond_status", "shipping_status"], "module_inspect": ["grade"]}
+        filters: {"module_info": ["bp_material", "resolution", "roc_version", "sen_thickness", "geometry", "assembled", "wirebond_status", "shipping_status"], "module_inspect": ["grade"]}
         distinct: ["module_inspect", "module_info"]
       - title: "max thickness (mm)"
         table: "module_inspect"
         chart_type: "histogram"
         condition: "max_thickness IS NOT NULL"
         groupby: ["max_thickness"]
-        filters: {"module_info": ["bp_material", "resolution", "roc_version", "geometry", "assembled", "wirebond_status", "shipping_status"], "module_inspect": ["grade"]}
+        filters: {"module_info": ["bp_material", "resolution", "roc_version", "sen_thickness", "geometry", "assembled", "wirebond_status", "shipping_status"], "module_inspect": ["grade"]}
         distinct: ["module_inspect", "module_info"]
       - title: "x offset (μm)"
         table: "module_inspect"
         chart_type: "histogram"
         condition: "x_offset_mu IS NOT NULL"
         groupby: ["x_offset_mu"]
-        filters: {"module_info": ["bp_material", "resolution", "roc_version", "geometry", "assembled", "wirebond_status", "shipping_status"], "module_inspect": ["grade"]}
+        filters: {"module_info": ["bp_material", "resolution", "roc_version", "sen_thickness", "geometry", "assembled", "wirebond_status", "shipping_status"], "module_inspect": ["grade"]}
         distinct: ["module_inspect", "module_info"]
       - title: "y offset (μm)"
         table: "module_inspect"
         chart_type: "histogram"
         condition: "y_offset_mu IS NOT NULL"
         groupby: ["y_offset_mu"]
-        filters: {"module_info": ["bp_material", "resolution", "roc_version", "geometry", "assembled", "wirebond_status", "shipping_status"], "module_inspect": ["grade"]}
+        filters: {"module_info": ["bp_material", "resolution", "roc_version", "sen_thickness", "geometry", "assembled", "wirebond_status", "shipping_status"], "module_inspect": ["grade"]}
         distinct: ["module_inspect", "module_info"]
       - title: "ang offset (deg)"
         table: "module_inspect"
         chart_type: "histogram"
         condition: "ang_offset_deg IS NOT NULL"
         groupby: ["ang_offset_deg"]
-        filters: {"module_info": ["bp_material", "resolution", "roc_version", "geometry", "assembled", "wirebond_status", "shipping_status"], "module_inspect": ["grade"]}
+        filters: {"module_info": ["bp_material", "resolution", "roc_version", "sen_thickness", "geometry", "assembled", "wirebond_status", "shipping_status"], "module_inspect": ["grade"]}
         distinct: ["module_inspect", "module_info"]
 
   - title: "Proto Inspect"

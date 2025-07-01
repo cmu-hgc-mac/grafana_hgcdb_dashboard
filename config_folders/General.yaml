@@ -9,5 +9,5 @@ dashboards:
         chart_type: "timeseries"
         condition: "assembled IS NOT NULL"
         groupby: ["assembled", "count"]
-        filters: {"module_info": ["bp_material", "resolution", "roc_version", "geometry", "shipping_status", "assembled"]}
+        filters: {"module_info": ["bp_material", "resolution", "roc_version", "sen_thickness", "geometry", "shipping_status", "assembled"]}
         distinct: 
