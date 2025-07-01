@@ -80,7 +80,7 @@ dashboards:
 
 
 alert:
-  - title: "High Temperature Alert"
+  - title: "Abnormal Temperature Alert"
     table: "temp_humidity"
     dashboard: "Environment Monitoring (trend)"
     panelID: "1"
@@ -96,7 +96,7 @@ alert:
         "sensor": "temp"
         "location": "main_clean_room"
       
-  - title: "High Humidity Alert"
+  - title: "Abnormal Humidity Alert"
     table: "temp_humidity"
     dashboard: "Environment Monitoring (trend)"
     panelID: "2"
