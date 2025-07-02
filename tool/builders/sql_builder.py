@@ -298,17 +298,20 @@ class TimeseriesGenerator(BaseSQLGenerator):
         """Builds the SELECT clause from groupby.    
         """
         # Check lenghth of groupby:
-        if len(groupby) != 2:
-            raise ValueError("Timeseries groupby list should have 2 elements.")
+        if len(groupby) > 3:
+            raise ValueError("Timeseries groupby list contains more elements than 3.")
         
         # Check if groupby contains time:
         if not any(col in TIME_COLUMNS for col in groupby):
             raise ValueError("Timeseries groupby list should contain time column.")
         
         # assign time and element
+        partition = None    # initialize
         for col in groupby:
             if col in TIME_COLUMNS:
                 time = col
+            elif col in PARTITION_GROUP:
+                partition = col
             else:
                 elem = col
 
@@ -329,6 +332,11 @@ class TimeseriesGenerator(BaseSQLGenerator):
         else:
             elem_arg = f"{table}.{elem} AS {elem}"
         select_clause.append(elem_arg)
+
+        # Partition
+        if partition:
+            elem_arg = f"{table}.{partition} AS {partition}"
+            select_clause.append(elem_arg)
 
         return ",\n            ".join(select_clause)
     

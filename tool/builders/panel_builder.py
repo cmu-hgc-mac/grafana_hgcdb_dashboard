@@ -1,5 +1,3 @@
-import datetime
-
 from tool.helper import *
 from tool.builders.sql_builder import ChartSQLFactory
 from tool.builders.other_builder import IVCurveBuilder
@@ -72,19 +70,7 @@ class PanelBuilder:
     def get_info(self, panel: dict, chart_type: str) -> tuple:
         """Get the information from the panel config by chart_type.
         """
-        if chart_type == "text":
-            year = panel.get("year", None)
-            month = panel.get("month", None)
-            day = panel.get("day", None)
-
-            if year and month and day:
-                time = f"{year}-{month}-{day}"
-            else:
-                time = str(datetime.datetime.now()).split(' ')[0]
-
-            return time
-        
-        elif chart_type == "xychart":
+        if chart_type == "xychart":
             filters = panel.get("filters", None)
             temp_condition = panel.get("temp_condition", None)
             rel_hum_condition = panel.get("rel_hum_condition", None)
@@ -169,6 +155,15 @@ class PanelBuilder:
             {
             "id": "filterFieldsByName",
             "options": {}
+            },
+            {
+            "id": "partitionByValues",
+            "options": {
+                "fields": [
+                    "log_location"
+                ],
+                "keepFields": False
+              }
             }
         ],
         "type": f"{chart_type}"
@@ -189,14 +184,7 @@ class PanelBuilder:
             chart_type = panel["chart_type"]
 
             try:
-                if chart_type == "text":
-                    time = self.get_info(panel, chart_type)     # get limited time range
-                    plt_path = IVCurveBuilder.generate_plot(time)         # generate plot
-                    encoded_string = IVCurveBuilder.convert_png_to_base64(plt_path)   # encode plot to base64
-                    content = IVCurveBuilder.generate_content(encoded_string)         # generate content for text panel
-                    panel_json = IVCurveBuilder.generate_IV_curve_panel(title, content)
-                
-                elif chart_type == "xychart":
+                if chart_type == "xychart":
                     filters, temp_condition, rel_hum_condition, gridPos = self.get_info(panel, chart_type)    # get conditions for SQL
                     raw_sql = self.IVCurveBuilder.IV_curve_panel_sql(filters, temp_condition, rel_hum_condition)    # generate SQL
                     override = self.IVCurveBuilder.IV_curve_panel_override()   # generate override for xy axises

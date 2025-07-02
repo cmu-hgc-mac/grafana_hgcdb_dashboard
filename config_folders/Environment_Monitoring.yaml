@@ -8,35 +8,35 @@ dashboards:
         table: "temp_humidity"
         chart_type: "timeseries"
         condition: "temp_humidity.temp_c IS NOT NULL"
-        groupby: ["log_timestamp", "temp_c"]
+        groupby: ["log_timestamp", "temp_c", "log_location"]
         filters: {"temp_humidity": ["log_location"]}
         distinct: 
       - title: "Humidity"
         table: "temp_humidity"
         chart_type: "timeseries"
         condition: "temp_humidity.rel_hum IS NOT NULL"
-        groupby: ["log_timestamp", "rel_hum"]
+        groupby: ["log_timestamp", "rel_hum", "log_location"]
         filters: {"temp_humidity": ["log_location"]}
         distinct: 
       - title: "500nm Particle Count"
         table: "particulate_counts"
         chart_type: "timeseries"
         condition: "particulate_counts.prtcls_per_cubic_m_500nm IS NOT NULL"
-        groupby: ["log_timestamp", "prtcls_per_cubic_m_500nm"]
+        groupby: ["log_timestamp", "prtcls_per_cubic_m_500nm", "log_location"]
         filters: {"particulate_counts": ["log_location"]}
         distinct: 
       - title: "1um Particle Count"
         table: "particulate_counts"
         chart_type: "timeseries"
         condition: "particulate_counts.prtcls_per_cubic_m_1um IS NOT NULL"
-        groupby: ["log_timestamp", "prtcls_per_cubic_m_1um"]
+        groupby: ["log_timestamp", "prtcls_per_cubic_m_1um", "log_location"]
         filters: {"particulate_counts": ["log_location"]}
         distinct: 
       - title: "5um Particle Count"
         table: "particulate_counts"
         chart_type: "timeseries"
         condition: "particulate_counts.prtcls_per_cubic_m_5um IS NOT NULL"
-        groupby: ["log_timestamp", "prtcls_per_cubic_m_5um"]
+        groupby: ["log_timestamp", "prtcls_per_cubic_m_5um", "log_location"]
         filters: {"particulate_counts": ["log_location"]}
         distinct: 
   
