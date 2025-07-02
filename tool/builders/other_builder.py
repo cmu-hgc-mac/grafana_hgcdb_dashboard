@@ -150,6 +150,7 @@ class IVCurveBuilder:
 
     def IV_curve_panel_sql(self, filters: dict, temp_condition: str, rel_hum_condition: str, N_MODULE_SHOW="${N_MODULE_SHOW}") -> str:
         """Generate the SQL command for IV curve plot based on temp_condition and rel_hum_condition.
+           Core filtering logic: Andrew C. Roberts
         """
         # build the WHERE clause
         module_where_arg, iv_where_arg = self.IV_curve_panel_filter(filters)
