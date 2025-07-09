@@ -1,6 +1,13 @@
-# Grafana_HGCDB_Dashboard ε=ε=(<ゝω・)☆
+# Grafana_HGCDB_Dashboard
 This is a dashboard provided by [Grafana](https://github.com/grafana/grafana?tab=readme-ov-file) to monitor the HGC Postgres database.  
 Chinese Version README: [读我.md](a_EverythingNeedToChange/读我.md)
+
+**Developers**:   
+-Siyu (Rain) Chen: Overall structure and Dashboards  
+-Xinyue (Joyce) Zhuang: Alert System
+
+**Example**:
+[CMU Dashboards](https://cmuhgcdashboard.phys.cmu.edu:3000/dashboards)
 
 ## Before Run 
 1. Download Grafana.
@@ -47,11 +54,14 @@ device_limit =
 - More Info: [Grafana Anonymous Access](https://grafana.com/docs/grafana/latest/setup-grafana/configure-security/configure-authentication/anonymous-auth/)
 
 5. Set the SMTP server for Grafana email notification:
-- In the same configuration file, modify the `smtp` section to set the SMTP server:
+- For lab use:
+  - Please contact the IT department to set the lab server as an email sender and modify the same configuration file accordingly.
+- For personal/developing perpose:
+  - In the same configuration file, modify the `smtp` section to set the SMTP server:
 ```            
 [smtp]
 enabled = true
-host = smtp.gmail.com:587
+host = smtp.gmail.com:587 # Gmail SMTP server
 user =          # your gmail account - usually is the same one as your email address
 # If the password contains # or ; you have to wrap it with triple quotes. Ex """#password;"""                                                                                                               
 password =      # application password - see attached link below

@@ -46,8 +46,7 @@ To generate a new panel, please add the following template under the dashboard h
 7. distinct: only avaiable for `module_qc_summary` table
   
 
-# Instructions for a new alert rule
-Author: Xinyue (Joyce) Zhuang. 
+# How to add an alert rule 
   
 To generate a new alert, please go to the corresponding dashboard yaml file (in the folder config_folders) and scroll down to alerts part. Copy the following code after the existing alert rules and make modification:
 
@@ -71,7 +70,7 @@ To generate a new alert, please go to the corresponding dashboard yaml file (in 
 ## Explanations of each parameter
 
 ### title
-The title of the alert, normally would be a condensed summary of the situaion. Such as "temperature high".
+The title of the alert, normally would be a condensed summary of the situaion. Such as "High Temperature Alert".
 
 ### dashboard
 The dashboard that the alert is connected to.
@@ -105,3 +104,49 @@ A more detailed message of the alert.
 
 ### labels
 Labels for the alert, such as the severity of the alert.
+
+
+
+# How to add a contact point
+There is only one contact point "inspectors" by default. Users can create another group of people with different members by adding a new contact point.
+
+To add a new contact point, go to Contact_Config.yaml (Contact_Config_example.yaml at first) in the contact_configs folder, copy, and paste the following code after the contact point "inspectors".
+
+```
+- name: <the name of this contact point>
+  type: email
+  addresses:
+    - <your_email_address>
+```
+
+
+# How to add a notification policy
+By default, all email notifications will be sent to the contact point "inspectors". If the user wants to send emails to different people based on labels of the alert rule, the user would need a more detailed notification policy.
+
+Same as the contact point, go to Contact_Config.yaml file. Modify, copy, and paste the following code under "routes".
+```
+- receiver: <contact point name>
+  group_by: 
+    - grafana_folder
+    - alertname
+  object_matchers: 
+    - ["", "", ""]
+    - ["", "", ""]
+  group_wait: 
+  group_interval: 
+  repeat_interval: 
+```
+### parameters:
+- receiver: the name of the contact point
+- group_by: how alerts are grouped together into a single notification. By default, we use "grafana folder" and "alertname".
+  - common group_by:
+    - alertname: the name of the alert rule
+    - instance: the host/IP triggering the alert
+    - severity: alert level (e.g., warning, critical)
+    - grafana_folder: the folder where the alert is defined
+- object_matchers: [key,operator,value]
+  - key: the label that we care for this notification policy
+  - operator: it can be `"=","!=","=~","!~"`
+- group_wait: the time period grafana will wait after receiving the first alert message. Grafana will gather all the alert messages received in this time period and send all of them to the contact point in one notification.
+- group_interval: The minimum time to wait before sending a new notification for a different group of alerts
+- repeat_interval: How often Grafana repeats a notification for an alert that is still firing.
