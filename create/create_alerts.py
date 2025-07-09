@@ -73,7 +73,7 @@ for config in filelist:
         alert_builder.save_alerts_json(alert, alert_json, file_name)
 
 if succeed:
-    print(" >>>> All Alerts json generated successfully! ↙(`ヮ´ )↗ \n")
+    print(" >>>> All Alerts json generated successfully!\n")
 else:
     print(f" >>>> {failed_count} Alerts json failed to generate. \n")
 
@@ -91,7 +91,7 @@ try:
                 except Exception as e:
                     print(f"[SKIPPED] Error uploading alert rule: {file_name} | Status: {e}")
 
-    print("\n >>>> Alerts json files uploaded! (*ˉ︶ˉ*) \n")
+    print("\n >>>> Alerts json files uploaded!\n")
 
 except:
     print("\n >>>> Alerts json files not found...\n")
@@ -120,7 +120,7 @@ for config in contact_filelist:
     tree = config.get('policies')[0]
     client.put_policy_tree(tree)
 
-    print("\n >>>> Notification system uploaded! \(≧▽≦)/\n")
+    print("\n >>>> Notification system uploaded!\n")
 
 
 # Clear GF_FOLDER_UIDS and GF_ALERT_UIDS map:
@@ -128,8 +128,8 @@ gf_conn.set("GF_FOLDER_UIDS", {})
 gf_conn.set("GF_ALERT_UIDS", {})
 gf_conn.save()
 gf_conn.reload()
-print(" >>>> GF_FOLDER_UIDS and GF_ALERT_UIDS map cleared! (๑•̀ㅂ•́)و✧ \n")
+print(" >>>> GF_FOLDER_UIDS and GF_ALERT_UIDS map cleared!\n")
 
 # Delete the alert files
 remove_folder("Alerts", ALERTS_FOLDER_PATH)
-print("\n >>>> Alerts json files removed! o(≧v≦)o \n")
+print("\n >>>> Alerts json files removed!\n")

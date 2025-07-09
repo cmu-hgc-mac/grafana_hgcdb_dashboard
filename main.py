@@ -7,7 +7,7 @@ import yaml
 from tool.helper import *
 
 """
-This file does EVERYTHING for you (*´ω`*) 
+This file does EVERYTHING for you.
     — from configuring Grafana to linking PostgreSQL and auto-generating dashboards.
 
 Special thanks to Sindhu Murthy and Manami Kanemura for the amazing database this is built on.
@@ -30,7 +30,7 @@ def main():
 
     # First run
     if run_times == 0:
-        print(" >> First run, preSteps will be executed. (<ゝω・）☆ \n")
+        print(" >> First run, preSteps will be executed.\n")
 
         # preSteps in order
         subprocess.run(["python", "./preSteps/get_api_key.py"], check=True)
@@ -44,7 +44,7 @@ def main():
         subprocess.run(["python", "./preSteps/add_dbsource.py"], check=True)
 
     else:
-        print(" >>>> preSteps skipped. (<ゝω・）☆ \n")
+        print(" >>>> preSteps skipped.\n")
 
     # Everything Need To Generate
     subprocess.run(["python", "create/create_folders.py"], check=True)
@@ -55,10 +55,10 @@ def main():
     # Add run times
     gf_conn.set('GF_RUN_TIMES', run_times + 1)
     gf_conn.save()
-    print(" >>>> GF_RUN_TIMES updated! 乚(`ヮ´ ﾐэ)Э")
+    print(" >>>> GF_RUN_TIMES updated!")
 
     # Done!!
-    print("\n >>>>>> All done! (๑•̀ㅂ•́)و✧")
+    print("\n >>>>>> All done!")
 
 
 # allow run

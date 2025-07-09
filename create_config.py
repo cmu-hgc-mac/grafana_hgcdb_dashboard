@@ -25,11 +25,12 @@ gf_conn = {
     # Setting for Grafana
 
     # Things might need to change:
-    'GF_USER': 'admin', # default
-    'GF_PASS': 'admin', # default
     'GF_PORT': '3000', # default 
+    'GF_PROTOCAL': 'http', # default
 
     # Things will be auto-updated:
+    'GF_USER': 'admin', # default
+    'GF_PASS': 'admin', # default
     'GF_SA_NAME': "",
     'GF_SA_ID': "",
     'GF_DATA_SOURCE_NAME': "",

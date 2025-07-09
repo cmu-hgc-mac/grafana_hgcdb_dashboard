@@ -94,7 +94,7 @@ for config in filelist:
         dashboard_builder.save_dashboard_json(dashboard, dashboard_json, file_name)
 
 if succeed:
-    print("\n >>>> All Dashboards json generated successfully! =͟͟͞͞( 'ヮ' 三 'ヮ' =͟͟͞͞) \n")
+    print("\n >>>> All Dashboards json generated successfully!\n")
 else:
     print(f"\n >>>> {failed_count} Dashboards json failed to generate. \n")
 
@@ -112,7 +112,7 @@ try:
                 except Exception as e:
                     print(f"[SKIPPED] Error uploading dashboard: {file_name} | Status: {e}")
 
-    print("\n >>>> Dashboards uploaded! ᕕ( ᐛ )ᕗ \n")
+    print("\n >>>> Dashboards uploaded!\n")
 
 except:
     print("\n >>>> Dashboards upload failed. \n")
@@ -122,4 +122,4 @@ except:
 # Remove dashboards json files
 remove_folder("Dashboards", DASHBOARDS_FOLDER_PATH)
 remove_folder("IV_curves_plot", IV_PLOTS_FOLDER_PATH)
-print("\n >>>> Dashboards json files removed! o(≧v≦)o \n")
+print("\n >>>> Dashboards json files removed!\n")

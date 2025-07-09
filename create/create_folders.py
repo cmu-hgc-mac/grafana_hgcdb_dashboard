@@ -42,4 +42,4 @@ for config in filelist:
     folder_name = config.split(".")[0].replace("_", " ")
     generate_folder(folder_name)
 
-print("\n >>>> Dashboard Folders are in Grafana! (ゝ∀･)")
+print("\n >>>> Dashboard Folders are in Grafana!")
