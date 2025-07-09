@@ -2,6 +2,13 @@
 This is a dashboard provided by [Grafana](https://github.com/grafana/grafana?tab=readme-ov-file) to monitor the HGC Postgres database.  
 Chinese Version README: [读我.md](a_EverythingNeedToChange/读我.md)
 
+**Developers**:   
+-Siyu (Rain) Chen: Overall structure and Dashboards  
+-Xinyue (Joyce) Zhuang: Alert System
+
+**Example**:
+[CMU Dashboards](https://cmuhgcdashboard.phys.cmu.edu:3000/dashboards)
+
 ## Before Run 
 1. Download Grafana.
 - [Get Grafana](https://grafana.com/get)
