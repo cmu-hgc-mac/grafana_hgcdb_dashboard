@@ -178,4 +178,20 @@ dashboards:
         groupby: ["ang_offset_deg"]
         filters: {"baseplate": ["bp_material"], "sensor": ["thickness", "resolution", "geometry"], "proto_assembly": ["ass_run_date"], "proto_inspect": ["grade"], "module_info": ["shipping_status"]}
         distinct: ["proto_inspect", "baseplate", "sensor", "proto_assembly"]
-      
+
+  - title: "Packed/Shipped Modules Info"  
+    panels: 
+      - title: "Packed Modules Info"
+        table: "module_info"
+        chart_type: "table"
+        condition: "now() - packed_datetime AT TIME ZONE 'America/New_York') < INTERVAL '1440 MINUTE'"
+        groupby: {"module_info": ["row_count", "module_name", "hxb_name", "bp_name", "sen_name", "proto_name"], "module_qc_summary": ["final_grade"]}
+        filters: 
+        distinct: 
+      - title: "Shipped Modules Info"
+        table: "module_info"
+        chart_type: "table"
+        condition: "now() - packed_datetime AT TIME ZONE 'America/New_York') < INTERVAL '1440 MINUTE'"
+        groupby: {"module_info": ["row_count", "module_name", "hxb_name", "bp_name", "sen_name", "proto_name"], "module_qc_summary": ["final_grade"]}
+        filters: 
+        distinct: 
