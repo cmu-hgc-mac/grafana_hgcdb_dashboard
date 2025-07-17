@@ -11,3 +11,13 @@ dashboards:
         groupby: ["assembled", "count"]
         filters: {"module_info": ["bp_material", "resolution", "roc_version", "sen_thickness", "geometry", "shipping_status", "assembled"]}
         distinct: 
+  
+  - title: "Components Look-up Form"
+    panels:
+      - title: "Components Look-up Form"
+        table: "module_info"
+        chart_type: "table"
+        condition:
+        groupby: []
+        filters: {"module_info": []}
+        distinct:

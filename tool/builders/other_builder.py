@@ -391,3 +391,731 @@ class IVCurveBuilder:
         }
 
         return panel_json
+
+
+# ============================================================
+# === Components Look-up Form Builder ========================
+# ============================================================
+
+class ComponentsLookUpFormBuilder:
+    def __init__(self, datasource_uid):
+        self.datasource_uid = datasource_uid
+        self.dashboard_uid = create_uid("Components Look-up Form")
+
+    def generate_dashboard_json(self):
+        """Generate the dashboard JSON for the components look-up form.
+        """
+        dashboard_json = {
+        "annotations": {
+            "list": [
+            {
+                "builtIn": 1,
+                "datasource": {
+                "type": "grafana",
+                "uid": "-- Grafana --"
+                },
+                "enable": True,
+                "hide": True,
+                "iconColor": "rgba(0, 211, 255, 1)",
+                "name": "Annotations & Alerts",
+                "type": "dashboard"
+            }
+            ]
+        },
+        "editable": True,
+        "fiscalYearStartMonth": 0,
+        "graphTooltip": 0,
+        "id": None,
+        "links": [],
+        "panels": [
+            {
+            "datasource": {
+                "type": "grafana-postgresql-datasource",
+                "uid": f"{self.datasource_uid}"
+            },
+            "fieldConfig": {
+                "defaults": {
+                "color": {
+                    "mode": "thresholds"
+                },
+                "custom": {
+                    "align": "auto",
+                    "cellOptions": {
+                    "type": "auto"
+                    },
+                    "inspect": False
+                },
+                "mappings": [],
+                "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                    {
+                        "color": "green"
+                    },
+                    {
+                        "color": "red",
+                        "value": 80
+                    }
+                    ]
+                }
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 4,
+                "w": 24,
+                "x": 0,
+                "y": 0
+            },
+            "id": 1,
+            "options": {
+                "cellHeight": "sm",
+                "footer": {
+                "countRows": False,
+                "fields": "",
+                "reducer": [
+                    "sum"
+                ],
+                "show": False
+                },
+                "showHeader": True
+            },
+            "pluginVersion": "12.0.1",
+            "targets": [
+                {
+                "datasource": {
+                    "type": "grafana-postgresql-datasource",
+                    "uid": f"{self.datasource_uid}"
+                },
+                "editorMode": "code",
+                "format": "table",
+                "rawQuery": True,
+                "rawSql": "WITH selected_module_inspect AS (\n    SELECT DISTINCT ON (module_name) *\n    FROM module_inspect\n    ORDER BY module_name, module_row_no DESC\n)\n\nSELECT \n    module_info.*,\n    selected_module_inspect.flatness,\n    selected_module_inspect.avg_thickness,\n    selected_module_inspect.x_offset_mu,\n    selected_module_inspect.y_offset_mu,\n    selected_module_inspect.ang_offset_deg\nFROM module_info \nLEFT JOIN selected_module_inspect ON module_info.module_name = selected_module_inspect.module_name\nWHERE (hxb_name = '${hxb_name}')\n    OR (bp_name = '${bp_name}')\n    OR (sen_name = '${sen_name}')\n    OR (proto_name = '${proto_name}')\n    OR (module_info.module_name = '${module_name}')\n",
+                "refId": "A",
+                "sql": {
+                    "columns": [
+                    {
+                        "parameters": [],
+                        "type": "function"
+                    }
+                    ],
+                    "groupBy": [
+                    {
+                        "property": {
+                        "type": "string"
+                        },
+                        "type": "groupBy"
+                    }
+                    ],
+                    "limit": 50
+                }
+                }
+            ],
+            "title": "module_info",
+            "type": "table"
+            },
+            {
+            "datasource": {
+                "type": "grafana-postgresql-datasource",
+                "uid": f"{self.datasource_uid}"
+            },
+            "fieldConfig": {
+                "defaults": {
+                "color": {
+                    "mode": "thresholds"
+                },
+                "custom": {
+                    "align": "auto",
+                    "cellOptions": {
+                    "type": "auto"
+                    },
+                    "inspect": False
+                },
+                "mappings": [],
+                "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                    {
+                        "color": "green"
+                    },
+                    {
+                        "color": "red",
+                        "value": 80
+                    }
+                    ]
+                }
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 4,
+                "w": 24,
+                "x": 0,
+                "y": 4
+            },
+            "id": 3,
+            "options": {
+                "cellHeight": "sm",
+                "footer": {
+                "countRows": False,
+                "fields": "",
+                "reducer": [
+                    "sum"
+                ],
+                "show": False
+                },
+                "showHeader": True
+            },
+            "pluginVersion": "12.0.1",
+            "targets": [
+                {
+                "editorMode": "code",
+                "format": "table",
+                "rawQuery": True,
+                "rawSql": "WITH selected_proto_inspect AS (\n    SELECT DISTINCT ON (proto_name) *\n    FROM proto_inspect\n    ORDER BY proto_name, proto_row_no DESC\n)\n\nSELECT \n    proto_assembly.*,\n    selected_proto_inspect.flatness,\n    selected_proto_inspect.avg_thickness,\n    selected_proto_inspect.x_offset_mu,\n    selected_proto_inspect.y_offset_mu,\n    selected_proto_inspect.ang_offset_deg\nFROM proto_assembly \nLEFT JOIN module_info ON module_info.proto_name = proto_assembly.proto_name\nLEFT JOIN selected_proto_inspect ON module_info.proto_name = selected_proto_inspect.proto_name\nWHERE (proto_assembly.bp_name = '${bp_name}')\n    OR (proto_assembly.sen_name = '${sen_name}')\n    OR (proto_assembly.proto_name = '${proto_name}')\n    OR (module_info.module_name = '${module_name}')\n    OR (module_info.hxb_name = '${hxb_name}')\n",
+                "refId": "A",
+                "sql": {
+                    "columns": [
+                    {
+                        "parameters": [],
+                        "type": "function"
+                    }
+                    ],
+                    "groupBy": [
+                    {
+                        "property": {
+                        "type": "string"
+                        },
+                        "type": "groupBy"
+                    }
+                    ],
+                    "limit": 50
+                }
+                }
+            ],
+            "title": "proto_info",
+            "type": "table"
+            },
+            {
+            "datasource": {
+                "type": "grafana-postgresql-datasource",
+                "uid": f"{self.datasource_uid}"
+            },
+            "fieldConfig": {
+                "defaults": {
+                "color": {
+                    "mode": "thresholds"
+                },
+                "custom": {
+                    "align": "auto",
+                    "cellOptions": {
+                    "type": "auto"
+                    },
+                    "inspect": False
+                },
+                "mappings": [],
+                "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                    {
+                        "color": "green"
+                    },
+                    {
+                        "color": "red",
+                        "value": 80
+                    }
+                    ]
+                }
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 4,
+                "w": 24,
+                "x": 0,
+                "y": 8
+            },
+            "id": 4,
+            "options": {
+                "cellHeight": "sm",
+                "footer": {
+                "countRows": False,
+                "fields": "",
+                "reducer": [
+                    "sum"
+                ],
+                "show": False
+                },
+                "showHeader": True
+            },
+            "pluginVersion": "12.0.1",
+            "targets": [
+                {
+                "editorMode": "code",
+                "format": "table",
+                "rawQuery": True,
+                "rawSql": "SELECT sensor.*\nFROM sensor\nLEFT JOIN module_info ON module_info.sen_name = sensor.sen_name\nLEFT JOIN proto_assembly ON proto_assembly.sen_name = sensor.sen_name\nWHERE (sensor.sen_name = '${sen_name}')\n    OR (proto_assembly.proto_name = '${proto_name}')\n    OR (module_name = '${module_name}')\n    OR (module_info.bp_name = '${bp_name}')\n    OR (module_info.hxb_name = '${hxb_name}')\n",
+                "refId": "A",
+                "sql": {
+                    "columns": [
+                    {
+                        "parameters": [],
+                        "type": "function"
+                    }
+                    ],
+                    "groupBy": [
+                    {
+                        "property": {
+                        "type": "string"
+                        },
+                        "type": "groupBy"
+                    }
+                    ],
+                    "limit": 50
+                }
+                }
+            ],
+            "title": "sensor info",
+            "type": "table"
+            },
+            {
+            "datasource": {
+                "type": "grafana-postgresql-datasource",
+                "uid": f"{self.datasource_uid}"
+            },
+            "fieldConfig": {
+                "defaults": {
+                "color": {
+                    "mode": "thresholds"
+                },
+                "custom": {
+                    "align": "auto",
+                    "cellOptions": {
+                    "type": "auto"
+                    },
+                    "inspect": False
+                },
+                "mappings": [],
+                "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                    {
+                        "color": "green"
+                    },
+                    {
+                        "color": "red",
+                        "value": 80
+                    }
+                    ]
+                }
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 4,
+                "w": 24,
+                "x": 0,
+                "y": 12
+            },
+            "id": 5,
+            "options": {
+                "cellHeight": "sm",
+                "footer": {
+                "countRows": False,
+                "fields": "",
+                "reducer": [
+                    "sum"
+                ],
+                "show": False
+                },
+                "showHeader": True
+            },
+            "pluginVersion": "12.0.1",
+            "targets": [
+                {
+                "editorMode": "code",
+                "format": "table",
+                "rawQuery": True,
+                "rawSql": "WITH selected_bp AS (\n    SELECT DISTINCT ON (bp_name) *\n    FROM baseplate\n    ORDER BY bp_name, bp_no DESC\n    ),\n    \n    selected_bp_inspect AS (\n    SELECT DISTINCT ON (bp_name) *\n            FROM bp_inspect\n            ORDER BY bp_name, bp_row_no DESC\n    )\n\nSELECT \n    selected_bp.*,\n    selected_bp_inspect.flatness,\n    selected_bp_inspect.thickness\nFROM selected_bp\nLEFT JOIN module_info ON module_info.bp_name = selected_bp.bp_name\nLEFT JOIN proto_assembly ON proto_assembly.bp_name = selected_bp.bp_name\nLEFT JOIN selected_bp_inspect ON selected_bp_inspect.bp_name = selected_bp.bp_name\nWHERE (selected_bp.bp_name = '${bp_name}')\n    OR (proto_assembly.proto_name = '${proto_name}')\n    OR (module_info.module_name = '${module_name}')\n    OR (module_info.hxb_name = '${hxb_name}')\n    OR (module_info.sen_name = '${sen_name}')\n",
+                "refId": "A",
+                "sql": {
+                    "columns": [
+                    {
+                        "parameters": [],
+                        "type": "function"
+                    }
+                    ],
+                    "groupBy": [
+                    {
+                        "property": {
+                        "type": "string"
+                        },
+                        "type": "groupBy"
+                    }
+                    ],
+                    "limit": 50
+                }
+                }
+            ],
+            "title": "bp_info",
+            "type": "table"
+            },
+            {
+            "datasource": {
+                "type": "grafana-postgresql-datasource",
+                "uid": f"{self.datasource_uid}"
+            },
+            "fieldConfig": {
+                "defaults": {
+                "color": {
+                    "mode": "thresholds"
+                },
+                "custom": {
+                    "align": "auto",
+                    "cellOptions": {
+                    "type": "auto"
+                    },
+                    "inspect": False
+                },
+                "mappings": [],
+                "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                    {
+                        "color": "green"
+                    },
+                    {
+                        "color": "red",
+                        "value": 80
+                    }
+                    ]
+                }
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 4,
+                "w": 24,
+                "x": 0,
+                "y": 16
+            },
+            "id": 2,
+            "options": {
+                "cellHeight": "sm",
+                "footer": {
+                "countRows": False,
+                "fields": "",
+                "reducer": [
+                    "sum"
+                ],
+                "show": False
+                },
+                "showHeader": True
+            },
+            "pluginVersion": "12.0.1",
+            "targets": [
+                {
+                "editorMode": "code",
+                "format": "table",
+                "rawQuery": True,
+                "rawSql": "WITH selected_hxb_inspect AS (\n    SELECT DISTINCT ON (hxb_name) *\n    FROM hxb_inspect\n    ORDER BY hxb_name, hxb_row_no DESC\n)\n\nSELECT \n    hexaboard.*,\n    selected_hxb_inspect.flatness,\n    selected_hxb_inspect.thickness\nFROM hexaboard\nLEFT JOIN module_info ON module_info.hxb_name = hexaboard.hxb_name\nLEFT JOIN selected_hxb_inspect ON selected_hxb_inspect.hxb_name = hexaboard.hxb_name\nWHERE (hexaboard.hxb_name = '${hxb_name}')\n    OR (module_info.module_name = '${module_name}')\n    OR (module_info.proto_name = '${proto_name}')\n    OR (module_info.sen_name = '${sen_name}')\n    OR (module_info.bp_name = '${bp_name}')\n\n",
+                "refId": "A",
+                "sql": {
+                    "columns": [
+                    {
+                        "parameters": [],
+                        "type": "function"
+                    }
+                    ],
+                    "groupBy": [
+                    {
+                        "property": {
+                        "type": "string"
+                        },
+                        "type": "groupBy"
+                    }
+                    ],
+                    "limit": 50
+                }
+                }
+            ],
+            "title": "hxb_info",
+            "type": "table"
+            },
+            {
+            "datasource": {
+                "type": "grafana-postgresql-datasource",
+                "uid": f"{self.datasource_uid}"
+            },
+            "fieldConfig": {
+                "defaults": {
+                "color": {
+                    "mode": "thresholds"
+                },
+                "custom": {
+                    "align": "auto",
+                    "cellOptions": {
+                    "type": "auto"
+                    },
+                    "inspect": False
+                },
+                "mappings": [],
+                "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                    {
+                        "color": "green"
+                    },
+                    {
+                        "color": "red",
+                        "value": 80
+                    }
+                    ]
+                }
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 9,
+                "w": 24,
+                "x": 0,
+                "y": 20
+            },
+            "id": 6,
+            "options": {
+                "cellHeight": "sm",
+                "footer": {
+                "countRows": False,
+                "fields": "",
+                "reducer": [
+                    "sum"
+                ],
+                "show": False
+                },
+                "showHeader": True
+            },
+            "pluginVersion": "12.0.1",
+            "targets": [
+                {
+                "datasource": {
+                    "type": "grafana-postgresql-datasource",
+                    "uid": f"{self.datasource_uid}"
+                },
+                "editorMode": "code",
+                "format": "table",
+                "rawQuery": True,
+                "rawSql": "SELECT \n    module_pedestal_test.mod_pedtest_no,\n    module_pedestal_test.module_no,\n    module_pedestal_test.module_name,\n    module_pedestal_test.bias_vol,\n    module_pedestal_test.count_bad_cells,\n    module_pedestal_test.list_dead_cells,\n    module_pedestal_test.list_noisy_cells,\n    module_pedestal_test.list_disconnected_cells,\n    module_pedestal_test.comment,\n    module_pedestal_test.rel_hum,\n    module_pedestal_test.temp_c,\n    module_pedestal_test.date_test,\n    module_pedestal_test.time_test,\n    module_pedestal_test.inspector,\n    module_pedestal_test.trim_bias_voltage,\n    module_pedestal_test.status_desc,\n    module_pedestal_test.run_no,\n    module_pedestal_test.xml_gen_datetime,\n    module_pedestal_test.xml_upload_success,\n    module_pedestal_test.meas_leakage_current,\n    module_pedestal_test.inverse_sqrt_n,\n    module_pedestal_test.pedestal_config_json\nFROM module_pedestal_test\nLEFT JOIN module_info ON module_info.module_name = module_pedestal_test.module_name\nWHERE (module_info.hxb_name = '${hxb_name}')\n    OR (module_info.module_name = '${module_name}')\n    OR (module_info.proto_name = '${proto_name}')\n    OR (module_info.sen_name = '${sen_name}')\n    OR (module_info.bp_name = '${bp_name}')\nORDER BY module_pedestal_test.mod_pedtest_no DESC\n",
+                "refId": "A",
+                "sql": {
+                    "columns": [
+                    {
+                        "parameters": [],
+                        "type": "function"
+                    }
+                    ],
+                    "groupBy": [
+                    {
+                        "property": {
+                        "type": "string"
+                        },
+                        "type": "groupBy"
+                    }
+                    ],
+                    "limit": 50
+                }
+                }
+            ],
+            "title": "Module Pedestal Test",
+            "type": "table"
+            },
+            {
+            "datasource": {
+                "type": "grafana-postgresql-datasource",
+                "uid": f"{self.datasource_uid}"
+            },
+            "fieldConfig": {
+                "defaults": {
+                "color": {
+                    "mode": "thresholds"
+                },
+                "custom": {
+                    "align": "auto",
+                    "cellOptions": {
+                    "type": "auto"
+                    },
+                    "inspect": False
+                },
+                "mappings": [],
+                "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                    {
+                        "color": "green"
+                    },
+                    {
+                        "color": "red",
+                        "value": 80
+                    }
+                    ]
+                }
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 9,
+                "w": 24,
+                "x": 0,
+                "y": 29
+            },
+            "id": 7,
+            "options": {
+                "cellHeight": "sm",
+                "footer": {
+                "countRows": False,
+                "fields": "",
+                "reducer": [
+                    "sum"
+                ],
+                "show": False
+                },
+                "showHeader": True
+            },
+            "pluginVersion": "12.0.1",
+            "targets": [
+                {
+                "datasource": {
+                    "type": "grafana-postgresql-datasource",
+                    "uid": f"{self.datasource_uid}"
+                },
+                "editorMode": "code",
+                "format": "table",
+                "rawQuery": True,
+                "rawSql": "SELECT \n    hxb_pedestal_test.hxb_pedtest_no,\n    hxb_pedestal_test.hxb_no,\n    hxb_pedestal_test.hxb_name,\n    hxb_pedestal_test.count_bad_cells,\n    hxb_pedestal_test.list_dead_cells,\n    hxb_pedestal_test.list_noisy_cells,\n    hxb_pedestal_test.comment,\n    hxb_pedestal_test.rel_hum,\n    hxb_pedestal_test.temp_c,\n    hxb_pedestal_test.date_test,\n    hxb_pedestal_test.time_test,\n    hxb_pedestal_test.inspector,\n    hxb_pedestal_test.trim_bias_voltage,\n    hxb_pedestal_test.xml_gen_datetime,\n    hxb_pedestal_test.xml_upload_success,\n    hxb_pedestal_test.status_desc,\n    hxb_pedestal_test.inverse_sqrt_n,\n    hxb_pedestal_test.pedestal_config_json\nFROM hxb_pedestal_test\nLEFT JOIN module_info ON module_info.hxb_name = hxb_pedestal_test.hxb_name\nWHERE (hxb_pedestal_test.hxb_name = '${hxb_name}')\n    OR (module_info.module_name = '${module_name}')\n    OR (module_info.proto_name = '${proto_name}')\n    OR (module_info.sen_name = '${sen_name}')\n    OR (module_info.bp_name = '${bp_name}')\nORDER BY hxb_pedestal_test.hxb_pedtest_no DESC\n\n",
+                "refId": "A",
+                "sql": {
+                    "columns": [
+                    {
+                        "parameters": [],
+                        "type": "function"
+                    }
+                    ],
+                    "groupBy": [
+                    {
+                        "property": {
+                        "type": "string"
+                        },
+                        "type": "groupBy"
+                    }
+                    ],
+                    "limit": 50
+                }
+                }
+            ],
+            "title": "Hexaboard Pedestal Test",
+            "type": "table"
+            }
+        ],
+        "preload": False,
+        "schemaVersion": 41,
+        "tags": [],
+        "templating": {
+            "list": [
+            {
+                "current": {
+                "text": "",
+                "value": ""
+                },
+                "label": "Baseplate serial",
+                "name": "bp_name",
+                "options": [
+                {
+                    "selected": True,
+                    "text": "",
+                    "value": ""
+                }
+                ],
+                "query": "",
+                "type": "textbox"
+            },
+            {
+                "current": {
+                "text": "",
+                "value": ""
+                },
+                "label": "Hexaboard serial",
+                "name": "hxb_name",
+                "options": [
+                {
+                    "selected": True,
+                    "text": "320XLF4CQH00375",
+                    "value": "320XLF4CQH00375"
+                }
+                ],
+                "query": "320XLF4CQH00375",
+                "type": "textbox"
+            },
+            {
+                "current": {
+                "text": "",
+                "value": ""
+                },
+                "label": "Proto serial",
+                "name": "proto_name",
+                "options": [
+                {
+                    "selected": True,
+                    "text": "",
+                    "value": ""
+                }
+                ],
+                "query": "",
+                "type": "textbox"
+            },
+            {
+                "current": {
+                "text": "",
+                "value": ""
+                },
+                "label": "Sensor serial",
+                "name": "sen_name",
+                "options": [
+                {
+                    "selected": True,
+                    "text": "",
+                    "value": ""
+                }
+                ],
+                "query": "",
+                "type": "textbox"
+            },
+            {
+                "current": {
+                "text": "",
+                "value": ""
+                },
+                "label": "Module serial",
+                "name": "module_name",
+                "options": [
+                {
+                    "selected": True,
+                    "text": "",
+                    "value": ""
+                }
+                ],
+                "query": "",
+                "type": "textbox"
+            }
+            ]
+        },
+        "time": {
+            "from": "now-6h",
+            "to": "now"
+        },
+        "timepicker": {},
+        "timezone": "browser",
+        "title": "Components Look-up Form",
+        "uid": f"{self.dashboard_uid}",
+        "version": 1
+        }
+
+        return dashboard_json

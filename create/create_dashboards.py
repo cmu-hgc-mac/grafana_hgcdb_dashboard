@@ -6,7 +6,7 @@ import yaml
 
 from tool.helper import *
 from tool import DashboardValidator
-from tool import PanelBuilder, FilterBuilder, DashboardBuilder
+from tool import PanelBuilder, FilterBuilder, DashboardBuilder, ComponentsLookUpFormBuilder
 
 """
 This script generates all the dashboards json_file, saves them to a folder under `grafana_hgcdb_dashboard`, and uploads them to grafana.
@@ -20,6 +20,7 @@ filelist = os.listdir(CONFIG_FOLDER_PATH)
 panel_builder = PanelBuilder(GF_DS_UID)
 filter_builder = FilterBuilder(GF_DS_UID)
 dashboard_builder = DashboardBuilder()
+components_form_builder = ComponentsLookUpFormBuilder(GF_DS_UID)
 
 # Check if succeed:
 succeed = True      # assert every file generated successfully
@@ -63,6 +64,14 @@ for config in filelist:
         panels_array = []
         template_list = []
         exist_filter = set()    # avoid adding same filters
+
+        # special case for components look-up form
+        if dashboard_title == "Components Look-up Form":
+            dashboard_json = components_form_builder.generate_dashboard_json()
+            # Export the dashboard json to a file
+            file_name = config.split(".")[0]
+            dashboard_builder.save_dashboard_json(dashboard, dashboard_json, file_name)
+            break
 
         # Loop for every panel in a dashboard
         for panel in config_panels:
