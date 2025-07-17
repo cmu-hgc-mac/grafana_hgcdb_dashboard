@@ -60,6 +60,13 @@ class FilterBuilder:
             FROM {filters_table}
             ORDER BY wirebond_status
             """
+        elif filter_name == "iv_grade":
+            filter_sql = f"""
+            SELECT DISTINCT iv_grade FROM module_qc_summary
+            UNION
+            SELECT 'NULL'
+            ORDER BY iv_grade
+            """
         else:
             filter_sql = f"""
             SELECT DISTINCT 
@@ -160,7 +167,7 @@ class IVCurveBuilder:
         WITH selected_iv_test AS (
         SELECT module_iv_test.*
         FROM module_iv_test
-        JOIN module_qc_summary ON module_iv_test.module_name = module_qc_summary.module_name
+        LEFT JOIN module_qc_summary ON module_iv_test.module_name = module_qc_summary.module_name
         WHERE {iv_where_arg}
         ),
 
@@ -172,6 +179,7 @@ class IVCurveBuilder:
             AND $__timeFilter(test_iv) 
             AND test_iv IS NOT NULL
         ORDER BY module_no DESC
+        LIMIT {N_MODULE_SHOW}
         ),
 
         filtered_iv AS (
@@ -183,6 +191,8 @@ class IVCurveBuilder:
             AND meas_v IS NOT NULL AND meas_i IS NOT NULL
             AND {temp_condition}
             AND {rel_hum_condition}
+            AND temp_c ~ '^[-+]?[0-9]+(\.[0-9]+)?$'
+            AND rel_hum ~ '^[-+]?[0-9]+(\.[0-9]+)?$'
             AND (status_desc = 'Completely Encapsulated' OR status_desc = 'Frontside Encapsulated')
             AND array_length(meas_v, 1) = array_length(meas_i, 1)
         ),
@@ -191,7 +201,6 @@ class IVCurveBuilder:
         SELECT DISTINCT ON (filtered_iv.module_name) *
         FROM filtered_iv
         ORDER BY filtered_iv.module_name, i_last ASC
-        LIMIT {N_MODULE_SHOW}
         ),
 
         unnested AS (
