@@ -73,10 +73,10 @@ dashboards:
         - title: "Dry-Roomtemp (0-12% RH, 10-30°C) Module IV Curves [Log Scale]"
           chart_type: "xychart"
           filters: {"module_info": ["bp_material", "resolution", "roc_version", "geometry", "sen_thickness"], "module_qc_summary": ["iv_grade"]}
-          temp_condition: "(temp_c::int >= 10 AND temp_c::int <= 30)"
-          rel_hum_condition: "(rel_hum::int <= 12)"
+          temp_condition: "(temp_c::float >= 10 AND temp_c::float <= 30)"
+          rel_hum_condition: "(rel_hum::float <= 12)"
         - title: "Ambient-Roomtemp (>20% RH, 10-30°C) Module IV Curves [Log Scale]"
           chart_type: "xychart"
           filters: {"module_info": ["bp_material", "resolution", "roc_version", "geometry", "sen_thickness"], "module_qc_summary": ["iv_grade"]}
-          temp_condition: "(temp_c::int >= 10 AND temp_c::int <= 30)"
-          rel_hum_condition: "(rel_hum::int >= 20)"
+          temp_condition: "(temp_c::float >= 10 AND temp_c::float <= 30)"
+          rel_hum_condition: "(rel_hum::float >= 20)"
