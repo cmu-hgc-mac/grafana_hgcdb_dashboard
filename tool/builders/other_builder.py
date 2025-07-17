@@ -1047,11 +1047,11 @@ class ComponentsLookUpFormBuilder:
                 "options": [
                 {
                     "selected": True,
-                    "text": "320XLF4CQH00375",
-                    "value": "320XLF4CQH00375"
+                    "text": "",
+                    "value": ""
                 }
                 ],
-                "query": "320XLF4CQH00375",
+                "query": "",
                 "type": "textbox"
             },
             {
