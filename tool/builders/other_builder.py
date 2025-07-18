@@ -149,7 +149,8 @@ class IVCurveBuilder:
                     module_where_arg = " AND ".join(module_where_clauses)
             elif filter_table == "module_qc_summary":
                 for elem in filters[filter_table]:
-                    arg = self.SQLgenerator._build_filter_argument(elem, filter_table)
+                    arg = self.SQLgenerator._build_filter_argument(elem, "latest_qc_summary")   
+                        # filter_table rename due to the distinct fetch for `module_qc_summary` table
                     iv_where_clauses.append(arg)
                     iv_where_arg = " AND ".join(iv_where_clauses)
 
@@ -163,12 +164,18 @@ class IVCurveBuilder:
         module_where_arg, iv_where_arg = self.IV_curve_panel_filter(filters)
 
         # generate the SQL command
-        raw_sql = f"""
-        WITH selected_modules AS (
+        raw_sql = rf"""
+        WITH latest_qc_summary AS (
+            SELECT DISTINCT ON (module_name) *
+            FROM module_qc_summary
+            ORDER BY module_name, mod_qc_no DESC
+        ), 
+
+        selected_modules AS (
         SELECT 
             module_info.module_name
         FROM module_info
-        LEFT JOIN module_qc_summary ON module_info.module_name = module_qc_summary.module_name
+        LEFT JOIN latest_qc_summary ON module_info.module_name = latest_qc_summary.module_name
         WHERE {module_where_arg}
             AND {iv_where_arg}
             AND $__timeFilter(test_iv) 
