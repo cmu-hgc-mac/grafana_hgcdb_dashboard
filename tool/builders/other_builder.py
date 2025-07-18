@@ -1022,6 +1022,161 @@ class ComponentsLookUpFormBuilder:
             ],
             "title": "Hexaboard Pedestal Test",
             "type": "table"
+            },
+            {
+            "type": "xychart",
+            "title": "Module IV Curves [Log Scale]",
+            "gridPos": {
+                "x": 0,
+                "y": 38,
+                "h": 11,
+                "w": 24
+            },
+            "fieldConfig": {
+                "defaults": {
+                "custom": {
+                    "show": "lines",
+                    "pointSize": {
+                    "fixed": 5
+                    },
+                    "pointShape": "circle",
+                    "pointStrokeWidth": 1,
+                    "fillOpacity": 50,
+                    "axisPlacement": "auto",
+                    "axisLabel": "",
+                    "axisColorMode": "text",
+                    "axisBorderShow": False,
+                    "scaleDistribution": {
+                    "type": "linear"
+                    },
+                    "axisCenteredZero": False,
+                    "hideFrom": {
+                    "tooltip": False,
+                    "viz": False,
+                    "legend": False
+                    }
+                },
+                "color": {
+                    "mode": "palette-classic"
+                },
+                "mappings": [],
+                },
+                "overrides": [
+                {
+                    "matcher": {
+                    "id": "byName",
+                    "options": "i"
+                    },
+                    "properties": [
+                    {
+                        "id": "custom.axisPlacement",
+                        "value": "left"
+                    },
+                    {
+                        "id": "custom.scaleDistribution",
+                        "value": {
+                        "log": 10,
+                        "type": "log"
+                        }
+                    },
+                    {
+                        "id": "max",
+                        "value": 0.001
+                    },
+                    {
+                        "id": "min",
+                        "value": 1e-9
+                    },
+                    {
+                        "id": "unit",
+                        "value": "sci"
+                    },
+                    {
+                        "id": "custom.axisLabel",
+                        "value": "Leakage Current [A]"
+                    }
+                    ]
+                },
+                {
+                    "matcher": {
+                    "id": "byName",
+                    "options": "v"
+                    },
+                    "properties": [
+                    {
+                        "id": "max",
+                        "value": 500
+                    },
+                    {
+                        "id": "min",
+                        "value": 0
+                    },
+                    {
+                        "id": "custom.axisLabel",
+                        "value": "Reverse Bias [V]"
+                    }
+                    ]
+                }
+                ]
+            },
+            "transformations": [
+                {
+                "id": "partitionByValues",
+                "options": {
+                    "keepFields": False,
+                    "fields": [
+                    "status_desc"
+                    ]
+                }
+                }
+            ],
+            "pluginVersion": "12.0.0",
+            "targets": [
+                {
+                "refId": "A",
+                "format": "table",
+                "rawSql": "WITH filtered_iv AS (\n  SELECT DISTINCT ON (module_iv_test.status) module_iv_test.*\n  FROM module_iv_test\n  JOIN module_info ON module_iv_test.module_name = module_info.module_name\n  WHERE module_info.module_name = '${module_name}'\n    OR module_info.proto_name = '${proto_name}'\n    OR module_info.sen_name = '${sen_name}'\n    OR module_info.bp_name = '${bp_name}'\n    OR module_info.hxb_name = '$(hxb_name)'\n    AND (meas_v IS NOT NULL AND meas_i IS NOT NULL)\n  ORDER BY module_iv_test.status DESC\n),\n\n  unnested AS (\n    SELECT\n      status_desc,\n      v,\n      i\n    FROM filtered_iv,\n    UNNEST(meas_v, meas_i) AS t(v, i)\n  )\n\n  SELECT *\n  FROM unnested;",
+                "sql": {
+                    "columns": [
+                    {
+                        "type": "function",
+                        "parameters": []
+                    }
+                    ],
+                    "groupBy": [
+                    {
+                        "type": "groupBy",
+                        "property": {
+                        "type": "string"
+                        }
+                    }
+                    ],
+                    "limit": 50
+                },
+                "rawQuery": True
+                }
+            ],
+            "datasource": {
+                "uid": f"{self.datasource_uid}",
+                "type": "grafana-postgresql-datasource"
+            },
+            "options": {
+                "mapping": "auto",
+                "series": [
+                {}
+                ],
+                "tooltip": {
+                "mode": "single",
+                "sort": "none",
+                "hideZeros": False
+                },
+                "legend": {
+                "showLegend": True,
+                "displayMode": "list",
+                "placement": "right",
+                "calcs": []
+                }
+            }
             }
         ],
         "preload": False,
