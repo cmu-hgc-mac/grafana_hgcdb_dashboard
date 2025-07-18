@@ -405,11 +405,11 @@ class ComponentsLookUpFormBuilder:
     def __init__(self, datasource_uid):
         self.datasource_uid = datasource_uid
         self.dashboard_uid = create_uid("Components Look-up Form")
-        self.hxb_name = "'${hxb_name}'"
-        self.bp_name = "'${bp_name}'"
-        self.sen_name = "'${sen_name}'"
-        self.proto_name = "'${proto_name}'"
-        self.module_name = "'${module_name}'"
+        self.hxb_name = "UPPER('${hxb_name}')"
+        self.bp_name = "UPPER('${bp_name}')"
+        self.sen_name = "UPPER('${sen_name}')"
+        self.proto_name = "UPPER('${proto_name}')"
+        self.module_name = "UPPER('${module_name}')"
 
     def generate_dashboard_json(self):
         """Generate the dashboard JSON for the components look-up form.
@@ -1135,7 +1135,7 @@ class ComponentsLookUpFormBuilder:
                 {
                 "refId": "A",
                 "format": "table",
-                "rawSql": "WITH filtered_iv AS (\n  SELECT DISTINCT ON (module_iv_test.status) module_iv_test.*\n  FROM module_iv_test\n  JOIN module_info ON module_iv_test.module_name = module_info.module_name\n  WHERE module_info.module_name = '${module_name}'\n    OR module_info.proto_name = '${proto_name}'\n    OR module_info.sen_name = '${sen_name}'\n    OR module_info.bp_name = '${bp_name}'\n    OR module_info.hxb_name = '${hxb_name}'\n    AND (meas_v IS NOT NULL AND meas_i IS NOT NULL)\n  ORDER BY module_iv_test.status DESC\n),\n\n  unnested AS (\n    SELECT\n      status_desc,\n      v,\n      i\n    FROM filtered_iv,\n    UNNEST(meas_v, meas_i) AS t(v, i)\n  )\n\n  SELECT *\n  FROM unnested;",
+                "rawSql": f"WITH filtered_iv AS (\n  SELECT DISTINCT ON (module_iv_test.status) module_iv_test.*\n  FROM module_iv_test\n  JOIN module_info ON module_iv_test.module_name = module_info.module_name\n  WHERE module_info.module_name = {self.module_name}\n    OR module_info.proto_name = {self.proto_name}\n    OR module_info.sen_name = {self.sen_name}\n    OR module_info.bp_name = {self.bp_name}\n    OR module_info.hxb_name = {self.hxb_name}\n    AND (meas_v IS NOT NULL AND meas_i IS NOT NULL)\n  ORDER BY module_iv_test.status DESC\n),\n\n  unnested AS (\n    SELECT\n      status_desc,\n      v,\n      i\n    FROM filtered_iv,\n    UNNEST(meas_v, meas_i) AS t(v, i)\n  )\n\n  SELECT *\n  FROM unnested;",
                 "sql": {
                     "columns": [
                     {
