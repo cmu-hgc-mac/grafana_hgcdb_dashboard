@@ -164,28 +164,23 @@ class IVCurveBuilder:
 
         # generate the SQL command
         raw_sql = f"""
-        WITH selected_iv_test AS (
-        SELECT module_iv_test.*
-        FROM module_iv_test
-        LEFT JOIN module_qc_summary ON module_iv_test.module_name = module_qc_summary.module_name
-        WHERE {iv_where_arg}
-        ),
-
-        selected_modules AS (
+        WITH selected_modules AS (
         SELECT 
             module_info.module_name
         FROM module_info
+        LEFT JOIN module_qc_summary ON module_info.module_name = module_qc_summary.module_name
         WHERE {module_where_arg}
+            AND {iv_where_arg}
             AND $__timeFilter(test_iv) 
             AND test_iv IS NOT NULL
-        ORDER BY module_no DESC
+        ORDER BY module_info.module_no DESC
         LIMIT {N_MODULE_SHOW}
         ),
 
         filtered_iv AS (
         SELECT *,
             meas_i[array_length(meas_i, 1)] AS i_last
-        FROM selected_iv_test
+        FROM module_iv_test
         WHERE
             module_name IN (SELECT module_name FROM selected_modules)
             AND meas_v IS NOT NULL AND meas_i IS NOT NULL
