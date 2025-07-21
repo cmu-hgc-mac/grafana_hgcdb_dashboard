@@ -62,7 +62,7 @@ class FilterBuilder:
             """
         elif filter_name == "iv_grade":
             filter_sql = f"""
-            SELECT DISTINCT iv_grade FROM module_qc_summary
+            SELECT DISTINCT iv_grade::text FROM module_qc_summary
             UNION
             SELECT 'NULL'
             ORDER BY iv_grade
