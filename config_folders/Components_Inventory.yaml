@@ -32,14 +32,14 @@ dashboards:
       - title: "Assigned (not recieved) Sensors"
         table: "sensor"
         chart_type: "table"
-        condition: "date_verify_received IS NULL"
+        condition: "proto_no IS NULL AND date_verify_received IS NULL"
         groupby: {"sensor": ["row_count", "sen_name", "geometry", "resolution", "thickness", "kind", "date_verify_received"]}
         filters: {"sensor": ["thickness", "resolution", "geometry"]}
         distinct: ["sensor"]
       - title: "Recieved (not assigned) Sensors"
         table: "sensor"
         chart_type: "table"
-        condition: "kind IS NULL"
+        condition: "proto_no IS NULL AND kind IS NULL"
         groupby: {"sensor": ["row_count", "sen_name", "geometry", "resolution", "thickness", "kind", "date_verify_received"]}
         filters: {"sensor": ["thickness", "resolution", "geometry"]}
         distinct: ["sensor"]
