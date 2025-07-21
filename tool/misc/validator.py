@@ -122,7 +122,7 @@ class DashboardValidator:
            - Skip 'text', 'piechart', and 'xychart' chart_type panels.
         """
         passed = True   # assume check pass
-        SPECIAL_CASES = ["shipping_status", "count", "row_count", "wirebond_status"]
+        SPECIAL_CASES = ["shipping_status", "count", "row_count", "wirebond_status", "*"]
 
         for dash_title, panel_title, panel in self.iter_panels():
             if self.should_skip_panel(panel):

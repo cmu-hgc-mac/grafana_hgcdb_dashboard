@@ -483,6 +483,8 @@ PREFIX = {
     "baseplate": "bp",
     "hexaboard": "hxb",
     "sensor": "sen",
+    "module": "module",
+    "proto": "proto"
 }
 
 # table list that should use `no` as distinct postfix
