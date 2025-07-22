@@ -1340,7 +1340,7 @@ class ComponentsLookUpFormBuilder:
                     },
                     {
                         "id": "max",
-                        "value": 0.01
+                        "value": 0.001
                     },
                     {
                         "id": "min",
