@@ -617,7 +617,7 @@ class ComponentsLookUpFormBuilder:
         """
 
         self.noise_channel_sql = f"""
-        SELECT DISTINCT ON (module_pedestal_plots.module_name) noise_channel_chip
+        SELECT DISTINCT ON (module_pedestal_plots.module_name) encode(noise_channel_chip[1], 'base64') AS noise_channel_base64
         FROM module_pedestal_plots
         JOIN module_info ON module_pedestal_plots.module_name = module_info.module_name
         WHERE (module_info.module_name = {self.module_name}
@@ -1395,32 +1395,32 @@ class ComponentsLookUpFormBuilder:
                 "calcs": []
                 }
             }
+            },
+            {
+            "fieldConfig": {
+                "defaults": {},
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 8,
+                "w": 10,
+                "x": 0,
+                "y": 49
+            },
+            "id": 9,
+            "options": {
+                "code": {
+                "language": "plaintext",
+                "showLineNumbers": False,
+                "showMiniMap": False
+                },
+                "content": self.noise_channel_chip_md,
+                "mode": "markdown"
+            },
+            "pluginVersion": "12.0.0",
+            "title": "Noise Channel Chip",
+            "type": "text"
             }
-            # {
-            # "fieldConfig": {
-            #     "defaults": {},
-            #     "overrides": []
-            # },
-            # "gridPos": {
-            #     "h": 8,
-            #     "w": 12,
-            #     "x": 0,
-            #     "y": 49
-            # },
-            # "id": 9,
-            # "options": {
-            #     "code": {
-            #     "language": "plaintext",
-            #     "showLineNumbers": False,
-            #     "showMiniMap": False
-            #     },
-            #     "content": self.noise_channel_chip_md,
-            #     "mode": "markdown"
-            # },
-            # "pluginVersion": "12.0.0",
-            # "title": "Noise Channel Chip",
-            # "type": "text"
-            # }
         ],
         "preload": False,
         "schemaVersion": 41,
@@ -1517,7 +1517,7 @@ class ComponentsLookUpFormBuilder:
                 "label": "Noise Channel Byte",
                 "type": "query",
                 "hide": 2,
-                "refresh": 2,
+                "refresh": 1,
                 "datasource": {
                     "type": "postgres",
                     "uid": f"{self.datasource_uid}"
