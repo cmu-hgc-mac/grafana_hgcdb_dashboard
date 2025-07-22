@@ -417,6 +417,7 @@ class ComponentsLookUpFormBuilder:
         self.sen_name = "UPPER('${sen_name}')"
         self.proto_name = "UPPER('${proto_name}')"
         self.module_name = "UPPER('${module_name}')"
+        self.noise_channel_byte = "${noise_channel}"
 
         self.module_info_sql = f"""
         WITH selected_module_inspect AS (
@@ -591,11 +592,11 @@ class ComponentsLookUpFormBuilder:
                 meas_i[array_length(meas_i, 1)] AS i_last
             FROM module_iv_test
             JOIN module_info ON module_iv_test.module_name = module_info.module_name
-            WHERE  module_info.module_name = {self.module_name}
+            WHERE (module_info.module_name = {self.module_name}
                 OR module_info.proto_name = {self.proto_name}
                 OR module_info.sen_name = {self.sen_name}
                 OR module_info.bp_name = {self.bp_name}
-                OR module_info.hxb_name = {self.hxb_name}
+                OR module_info.hxb_name = {self.hxb_name})
                 AND (meas_v IS NOT NULL AND meas_i IS NOT NULL)
                 AND temp_c ~ '^[-+]?[0-9]+(\.[0-9]+)?$'
                 AND rel_hum ~ '^[-+]?[0-9]+(\.[0-9]+)?$'
@@ -614,6 +615,19 @@ class ComponentsLookUpFormBuilder:
         SELECT *
         FROM unnested;
         """
+
+        self.noise_channel_sql = f"""
+        SELECT DISTINCT ON (module_pedestal_plots.module_name) noise_channel_chip
+        FROM module_pedestal_plots
+        JOIN module_info ON module_pedestal_plots.module_name = module_info.module_name
+        WHERE (module_info.module_name = {self.module_name}
+            OR module_info.proto_name = {self.proto_name}
+            OR module_info.sen_name = {self.sen_name}
+            OR module_info.bp_name = {self.bp_name}
+            OR module_info.hxb_name = {self.hxb_name})
+        """
+
+        self.noise_channel_chip_md = f'<img src=\"data:image/png;base64,{self.noise_channel_byte}" style="width: auto; height: auto;"/>'
 
     def generate_dashboard_json(self):
         """Generate the dashboard JSON for the components look-up form.
@@ -1382,6 +1396,31 @@ class ComponentsLookUpFormBuilder:
                 }
             }
             }
+            # {
+            # "fieldConfig": {
+            #     "defaults": {},
+            #     "overrides": []
+            # },
+            # "gridPos": {
+            #     "h": 8,
+            #     "w": 12,
+            #     "x": 0,
+            #     "y": 49
+            # },
+            # "id": 9,
+            # "options": {
+            #     "code": {
+            #     "language": "plaintext",
+            #     "showLineNumbers": False,
+            #     "showMiniMap": False
+            #     },
+            #     "content": self.noise_channel_chip_md,
+            #     "mode": "markdown"
+            # },
+            # "pluginVersion": "12.0.0",
+            # "title": "Noise Channel Chip",
+            # "type": "text"
+            # }
         ],
         "preload": False,
         "schemaVersion": 41,
@@ -1472,7 +1511,23 @@ class ComponentsLookUpFormBuilder:
                 ],
                 "query": "",
                 "type": "textbox"
-            }
+            },
+            {
+                "name": "noise_channel",
+                "label": "Noise Channel Byte",
+                "type": "query",
+                "hide": 2,
+                "refresh": 2,
+                "datasource": {
+                    "type": "postgres",
+                    "uid": f"{self.datasource_uid}"
+                },
+                "query": self.noise_channel_sql,
+                "current": {
+                "text": "",
+                "value": ""
+                }
+            }  
             ]
         },
         "time": {
