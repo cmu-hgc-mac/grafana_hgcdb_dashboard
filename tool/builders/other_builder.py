@@ -1418,8 +1418,8 @@ class ComponentsLookUpFormBuilder:
                 "overrides": []
             },
             "gridPos": {
-                "h": 12,
-                "w": 12,
+                "h": 15,
+                "w": 15,
                 "x": 0,
                 "y": 49
             },
@@ -1443,10 +1443,10 @@ class ComponentsLookUpFormBuilder:
                 "overrides": []
             },
             "gridPos": {
-                "h": 12,
-                "w": 12,
-                "x": 12,
-                "y": 49
+                "h": 15,
+                "w": 15,
+                "x": 0,
+                "y": 64
             },
             "id": 10,
             "options": {
