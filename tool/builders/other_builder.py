@@ -1340,7 +1340,7 @@ class ComponentsLookUpFormBuilder:
                     },
                     {
                         "id": "max",
-                        "value": 0.001
+                        "value": 0.01
                     },
                     {
                         "id": "min",
@@ -1443,7 +1443,7 @@ class ComponentsLookUpFormBuilder:
                 "overrides": []
             },
             "gridPos": {
-                "h": 20,
+                "h": 18,
                 "w": 12,
                 "x": 0,
                 "y": 49
@@ -1468,7 +1468,7 @@ class ComponentsLookUpFormBuilder:
                 "overrides": []
             },
             "gridPos": {
-                "h": 20,
+                "h": 18,
                 "w": 12,
                 "x": 12,
                 "y": 49
