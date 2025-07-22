@@ -418,6 +418,203 @@ class ComponentsLookUpFormBuilder:
         self.proto_name = "UPPER('${proto_name}')"
         self.module_name = "UPPER('${module_name}')"
 
+        self.module_info_sql = f"""
+        WITH selected_module_inspect AS (
+            SELECT DISTINCT ON (module_name) *
+            FROM module_inspect    
+            ORDER BY module_name, module_row_no DESC\
+        )
+        SELECT
+            module_info.*,
+            selected_module_inspect.flatness,
+            selected_module_inspect.avg_thickness,
+            selected_module_inspect.x_offset_mu,
+            selected_module_inspect.y_offset_mu,
+            selected_module_inspect.ang_offset_deg
+        FROM module_info
+        LEFT JOIN selected_module_inspect ON module_info.module_name = selected_module_inspect.module_name
+        WHERE  (hxb_name = {self.hxb_name})
+            OR (bp_name = {self.bp_name})
+            OR (sen_name = {self.sen_name})
+            OR (proto_name = {self.proto_name})
+            OR (module_info.module_name = {self.module_name})
+        """
+
+        self.proto_info_sql = f"""
+        WITH selected_proto_inspect AS (
+            SELECT DISTINCT ON (proto_name) *
+            FROM proto_inspect
+            ORDER BY proto_name, proto_row_no DESC
+        )
+        SELECT    
+            proto_assembly.*,
+            selected_proto_inspect.flatness,
+            selected_proto_inspect.avg_thickness,
+            selected_proto_inspect.x_offset_mu,
+            selected_proto_inspect.y_offset_mu,
+            selected_proto_inspect.ang_offset_deg
+        FROM proto_assembly 
+        LEFT JOIN module_info ON module_info.proto_name = proto_assembly.proto_name
+        LEFT JOIN selected_proto_inspect ON module_info.proto_name = selected_proto_inspect.proto_name
+        WHERE  (proto_assembly.bp_name = {self.bp_name})
+            OR (proto_assembly.sen_name = {self.sen_name})
+            OR (proto_assembly.proto_name = {self.proto_name})
+            OR (module_info.module_name = {self.module_name})
+            OR (module_info.hxb_name = {self.hxb_name})
+        """
+
+        self.sensor_info_sql = f"""
+        SELECT sensor.*
+        FROM sensor
+        LEFT JOIN module_info ON module_info.sen_name = sensor.sen_name
+        LEFT JOIN proto_assembly ON proto_assembly.sen_name = sensor.sen_name
+        WHERE  (sensor.sen_name = {self.sen_name})    
+            OR (proto_assembly.proto_name = {self.proto_name})
+            OR (module_name = {self.module_name})
+            OR (module_info.bp_name = {self.bp_name})
+            OR (module_info.hxb_name = {self.hxb_name})
+        """
+
+        self.bp_info_sql = f"""
+        WITH selected_bp AS (
+            SELECT DISTINCT ON (bp_name) *
+            FROM baseplate
+            ORDER BY bp_name, bp_no DESC
+        ),
+            selected_bp_inspect AS (
+                SELECT DISTINCT ON (bp_name) *
+                FROM bp_inspect
+                ORDER BY bp_name, bp_row_no DESC
+        )
+        SELECT
+            selected_bp.*,
+            selected_bp_inspect.flatness,
+            selected_bp_inspect.thickness
+        FROM selected_bp
+        LEFT JOIN module_info ON module_info.bp_name = selected_bp.bp_name
+        LEFT JOIN proto_assembly ON proto_assembly.bp_name = selected_bp.bp_name
+        LEFT JOIN selected_bp_inspect ON selected_bp_inspect.bp_name = selected_bp.bp_name
+        WHERE  (selected_bp.bp_name = {self.bp_name})
+            OR (proto_assembly.proto_name = {self.proto_name})
+            OR (module_info.module_name = {self.module_name})
+            OR (module_info.hxb_name = {self.hxb_name})
+            OR (module_info.sen_name = {self.sen_name})
+        """
+    
+        self.hxb_info_sql = f"""
+        WITH selected_hxb_inspect AS (
+            SELECT DISTINCT ON (hxb_name) *
+            FROM hxb_inspect
+            ORDER BY hxb_name, hxb_row_no DESC
+        )
+        SELECT
+            hexaboard.*,
+            selected_hxb_inspect.flatness,
+            selected_hxb_inspect.thickness
+        FROM hexaboard
+        LEFT JOIN module_info ON module_info.hxb_name = hexaboard.hxb_name
+        LEFT JOIN selected_hxb_inspect ON selected_hxb_inspect.hxb_name = hexaboard.hxb_name
+        WHERE  (hexaboard.hxb_name = {self.hxb_name})
+            OR (module_info.module_name = {self.module_name})
+            OR (module_info.proto_name = {self.proto_name})
+            OR (module_info.sen_name = {self.sen_name})
+            OR (module_info.bp_name = {self.bp_name})
+        """
+
+        self.module_pedestal_sql = f"""
+        SELECT 
+            module_pedestal_test.mod_pedtest_no,
+            module_pedestal_test.module_no,
+            module_pedestal_test.module_name,
+            module_pedestal_test.bias_vol,
+            module_pedestal_test.count_bad_cells,
+            module_pedestal_test.list_dead_cells,
+            module_pedestal_test.list_noisy_cells,
+            module_pedestal_test.list_disconnected_cells,
+            module_pedestal_test.comment,
+            module_pedestal_test.rel_hum,
+            module_pedestal_test.temp_c,
+            module_pedestal_test.date_test,
+            module_pedestal_test.time_test AT TIME ZONE '{TIME_ZONE}' AS time_test,
+            module_pedestal_test.inspector,
+            module_pedestal_test.trim_bias_voltage,
+            module_pedestal_test.status_desc,
+            module_pedestal_test.run_no,
+            module_pedestal_test.xml_gen_datetime,
+            module_pedestal_test.xml_upload_success,
+            module_pedestal_test.meas_leakage_current,
+            module_pedestal_test.inverse_sqrt_n,
+            module_pedestal_test.pedestal_config_json
+        FROM module_pedestal_test
+        LEFT JOIN module_info ON module_info.module_name = module_pedestal_test.module_name
+        WHERE  (module_info.hxb_name = {self.hxb_name})
+            OR (module_info.module_name = {self.module_name})
+            OR (module_info.proto_name = {self.proto_name})
+            OR (module_info.sen_name = {self.sen_name})
+            OR (module_info.bp_name = {self.bp_name})
+        ORDER BY module_pedestal_test.mod_pedtest_no DESC
+        """
+
+        self.hxb_pedestal_sql = f"""
+        SELECT
+            hxb_pedestal_test.hxb_pedtest_no,
+            hxb_pedestal_test.hxb_no,
+            hxb_pedestal_test.hxb_name,
+            hxb_pedestal_test.count_bad_cells,
+            hxb_pedestal_test.list_dead_cells,
+            hxb_pedestal_test.list_noisy_cells,
+            hxb_pedestal_test.comment,
+            hxb_pedestal_test.rel_hum,
+            hxb_pedestal_test.temp_c,
+            hxb_pedestal_test.date_test,
+            hxb_pedestal_test.time_test AT TIME ZONE '{TIME_ZONE}' AS time_test,
+            hxb_pedestal_test.inspector,
+            hxb_pedestal_test.trim_bias_voltage,
+            hxb_pedestal_test.xml_gen_datetime,
+            hxb_pedestal_test.xml_upload_success,
+            hxb_pedestal_test.status_desc,
+            hxb_pedestal_test.inverse_sqrt_n,
+            hxb_pedestal_test.pedestal_config_json
+        FROM hxb_pedestal_test
+        LEFT JOIN module_info ON module_info.hxb_name = hxb_pedestal_test.hxb_name
+        WHERE  (hxb_pedestal_test.hxb_name = {self.hxb_name})
+            OR (module_info.module_name = {self.module_name})
+            OR (module_info.proto_name = {self.proto_name})
+            OR (module_info.sen_name = {self.sen_name})
+            OR (module_info.bp_name = {self.bp_name})
+        ORDER BY hxb_pedestal_test.hxb_pedtest_no DESC
+        """
+
+        self.module_iv_curve_sql = rf"""
+        WITH filtered_iv AS (
+            SELECT DISTINCT ON (module_iv_test.status) module_iv_test.*,
+                meas_i[array_length(meas_i, 1)] AS i_last
+            FROM module_iv_test
+            JOIN module_info ON module_iv_test.module_name = module_info.module_name
+            WHERE  module_info.module_name = {self.module_name}
+                OR module_info.proto_name = {self.proto_name}
+                OR module_info.sen_name = {self.sen_name}
+                OR module_info.bp_name = {self.bp_name}
+                OR module_info.hxb_name = {self.hxb_name}
+                AND (meas_v IS NOT NULL AND meas_i IS NOT NULL)
+                AND temp_c ~ '^[-+]?[0-9]+(\.[0-9]+)?$'
+                AND rel_hum ~ '^[-+]?[0-9]+(\.[0-9]+)?$'
+                AND (temp_c::float >= 10 AND temp_c::float <= 30)
+                AND (rel_hum::float <= 12)
+            ORDER BY module_iv_test.status, i_last ASC
+        ),
+            unnested AS (
+                SELECT
+                    status_desc,
+                    v,
+                    i
+                FROM filtered_iv,
+                UNNEST(meas_v, meas_i) AS t(v, i)
+        )
+        SELECT *
+        FROM unnested;
+        """
+
     def generate_dashboard_json(self):
         """Generate the dashboard JSON for the components look-up form.
         """
@@ -506,7 +703,7 @@ class ComponentsLookUpFormBuilder:
                 "editorMode": "code",
                 "format": "table",
                 "rawQuery": True,
-                "rawSql": f"WITH selected_module_inspect AS (\n    SELECT DISTINCT ON (module_name) *\n    FROM module_inspect\n    ORDER BY module_name, module_row_no DESC\n)\n\nSELECT \n    module_info.*,\n    selected_module_inspect.flatness,\n    selected_module_inspect.avg_thickness,\n    selected_module_inspect.x_offset_mu,\n    selected_module_inspect.y_offset_mu,\n    selected_module_inspect.ang_offset_deg\nFROM module_info \nLEFT JOIN selected_module_inspect ON module_info.module_name = selected_module_inspect.module_name\nWHERE (hxb_name = {self.hxb_name})\n    OR (bp_name = {self.bp_name})\n    OR (sen_name = {self.sen_name})\n    OR (proto_name = {self.proto_name})\n    OR (module_info.module_name = {self.module_name})\n",
+                "rawSql": self.module_info_sql,
                 "refId": "A",
                 "sql": {
                     "columns": [
@@ -527,7 +724,7 @@ class ComponentsLookUpFormBuilder:
                 }
                 }
             ],
-            "title": "module_info",
+            "title": "Module Info",
             "type": "table"
             },
             {
@@ -588,7 +785,7 @@ class ComponentsLookUpFormBuilder:
                 "editorMode": "code",
                 "format": "table",
                 "rawQuery": True,
-                "rawSql": f"WITH selected_proto_inspect AS (\n    SELECT DISTINCT ON (proto_name) *\n    FROM proto_inspect\n    ORDER BY proto_name, proto_row_no DESC\n)\n\nSELECT \n    proto_assembly.*,\n    selected_proto_inspect.flatness,\n    selected_proto_inspect.avg_thickness,\n    selected_proto_inspect.x_offset_mu,\n    selected_proto_inspect.y_offset_mu,\n    selected_proto_inspect.ang_offset_deg\nFROM proto_assembly \nLEFT JOIN module_info ON module_info.proto_name = proto_assembly.proto_name\nLEFT JOIN selected_proto_inspect ON module_info.proto_name = selected_proto_inspect.proto_name\nWHERE (proto_assembly.bp_name = {self.bp_name})\n    OR (proto_assembly.sen_name = {self.sen_name})\n    OR (proto_assembly.proto_name = {self.proto_name})\n    OR (module_info.module_name = {self.module_name})\n    OR (module_info.hxb_name = {self.hxb_name})\n",
+                "rawSql": self.proto_info_sql,
                 "refId": "A",
                 "sql": {
                     "columns": [
@@ -609,7 +806,7 @@ class ComponentsLookUpFormBuilder:
                 }
                 }
             ],
-            "title": "proto_info",
+            "title": "Proto Info",
             "type": "table"
             },
             {
@@ -670,7 +867,7 @@ class ComponentsLookUpFormBuilder:
                 "editorMode": "code",
                 "format": "table",
                 "rawQuery": True,
-                "rawSql": f"SELECT sensor.*\nFROM sensor\nLEFT JOIN module_info ON module_info.sen_name = sensor.sen_name\nLEFT JOIN proto_assembly ON proto_assembly.sen_name = sensor.sen_name\nWHERE (sensor.sen_name = {self.sen_name})\n    OR (proto_assembly.proto_name = {self.proto_name})\n    OR (module_name = {self.module_name})\n    OR (module_info.bp_name = {self.bp_name})\n    OR (module_info.hxb_name = {self.hxb_name})\n",
+                "rawSql": self.sensor_info_sql,
                 "refId": "A",
                 "sql": {
                     "columns": [
@@ -691,7 +888,7 @@ class ComponentsLookUpFormBuilder:
                 }
                 }
             ],
-            "title": "sensor info",
+            "title": "Sensor Info",
             "type": "table"
             },
             {
@@ -752,7 +949,7 @@ class ComponentsLookUpFormBuilder:
                 "editorMode": "code",
                 "format": "table",
                 "rawQuery": True,
-                "rawSql": f"WITH selected_bp AS (\n    SELECT DISTINCT ON (bp_name) *\n    FROM baseplate\n    ORDER BY bp_name, bp_no DESC\n    ),\n    \n    selected_bp_inspect AS (\n    SELECT DISTINCT ON (bp_name) *\n            FROM bp_inspect\n            ORDER BY bp_name, bp_row_no DESC\n    )\n\nSELECT \n    selected_bp.*,\n    selected_bp_inspect.flatness,\n    selected_bp_inspect.thickness\nFROM selected_bp\nLEFT JOIN module_info ON module_info.bp_name = selected_bp.bp_name\nLEFT JOIN proto_assembly ON proto_assembly.bp_name = selected_bp.bp_name\nLEFT JOIN selected_bp_inspect ON selected_bp_inspect.bp_name = selected_bp.bp_name\nWHERE (selected_bp.bp_name = {self.bp_name})\n    OR (proto_assembly.proto_name = {self.proto_name})\n    OR (module_info.module_name = {self.module_name})\n    OR (module_info.hxb_name = {self.hxb_name})\n    OR (module_info.sen_name = {self.sen_name})\n",
+                "rawSql": self.bp_info_sql,
                 "refId": "A",
                 "sql": {
                     "columns": [
@@ -773,7 +970,7 @@ class ComponentsLookUpFormBuilder:
                 }
                 }
             ],
-            "title": "bp_info",
+            "title": "Baseplate Info",
             "type": "table"
             },
             {
@@ -834,7 +1031,7 @@ class ComponentsLookUpFormBuilder:
                 "editorMode": "code",
                 "format": "table",
                 "rawQuery": True,
-                "rawSql": f"WITH selected_hxb_inspect AS (\n    SELECT DISTINCT ON (hxb_name) *\n    FROM hxb_inspect\n    ORDER BY hxb_name, hxb_row_no DESC\n)\n\nSELECT \n    hexaboard.*,\n    selected_hxb_inspect.flatness,\n    selected_hxb_inspect.thickness\nFROM hexaboard\nLEFT JOIN module_info ON module_info.hxb_name = hexaboard.hxb_name\nLEFT JOIN selected_hxb_inspect ON selected_hxb_inspect.hxb_name = hexaboard.hxb_name\nWHERE (hexaboard.hxb_name = {self.hxb_name})\n    OR (module_info.module_name = {self.module_name})\n    OR (module_info.proto_name = {self.proto_name})\n    OR (module_info.sen_name = {self.sen_name})\n    OR (module_info.bp_name = {self.bp_name})\n\n",
+                "rawSql": self.hxb_info_sql,
                 "refId": "A",
                 "sql": {
                     "columns": [
@@ -855,7 +1052,7 @@ class ComponentsLookUpFormBuilder:
                 }
                 }
             ],
-            "title": "hxb_info",
+            "title": "Hexaboard Info",
             "type": "table"
             },
             {
@@ -920,7 +1117,7 @@ class ComponentsLookUpFormBuilder:
                 "editorMode": "code",
                 "format": "table",
                 "rawQuery": True,
-                "rawSql": f"SELECT \n    module_pedestal_test.mod_pedtest_no,\n    module_pedestal_test.module_no,\n    module_pedestal_test.module_name,\n    module_pedestal_test.bias_vol,\n    module_pedestal_test.count_bad_cells,\n    module_pedestal_test.list_dead_cells,\n    module_pedestal_test.list_noisy_cells,\n    module_pedestal_test.list_disconnected_cells,\n    module_pedestal_test.comment,\n    module_pedestal_test.rel_hum,\n    module_pedestal_test.temp_c,\n    module_pedestal_test.date_test,\n    module_pedestal_test.time_test AT TIME ZONE '{TIME_ZONE}' AS time_test,\n    module_pedestal_test.inspector,\n    module_pedestal_test.trim_bias_voltage,\n    module_pedestal_test.status_desc,\n    module_pedestal_test.run_no,\n    module_pedestal_test.xml_gen_datetime,\n    module_pedestal_test.xml_upload_success,\n    module_pedestal_test.meas_leakage_current,\n    module_pedestal_test.inverse_sqrt_n,\n    module_pedestal_test.pedestal_config_json\nFROM module_pedestal_test\nLEFT JOIN module_info ON module_info.module_name = module_pedestal_test.module_name\nWHERE (module_info.hxb_name = {self.hxb_name})\n    OR (module_info.module_name = {self.module_name})\n    OR (module_info.proto_name = {self.proto_name})\n    OR (module_info.sen_name = {self.sen_name})\n    OR (module_info.bp_name = {self.bp_name})\nORDER BY module_pedestal_test.mod_pedtest_no DESC\n",
+                "rawSql": self.module_pedestal_sql,
                 "refId": "A",
                 "sql": {
                     "columns": [
@@ -1006,7 +1203,7 @@ class ComponentsLookUpFormBuilder:
                 "editorMode": "code",
                 "format": "table",
                 "rawQuery": True,
-                "rawSql": f"SELECT \n    hxb_pedestal_test.hxb_pedtest_no,\n    hxb_pedestal_test.hxb_no,\n    hxb_pedestal_test.hxb_name,\n    hxb_pedestal_test.count_bad_cells,\n    hxb_pedestal_test.list_dead_cells,\n    hxb_pedestal_test.list_noisy_cells,\n    hxb_pedestal_test.comment,\n    hxb_pedestal_test.rel_hum,\n    hxb_pedestal_test.temp_c,\n    hxb_pedestal_test.date_test,\n    hxb_pedestal_test.time_test AT TIME ZONE '{TIME_ZONE}' AS time_test,\n    hxb_pedestal_test.inspector,\n    hxb_pedestal_test.trim_bias_voltage,\n    hxb_pedestal_test.xml_gen_datetime,\n    hxb_pedestal_test.xml_upload_success,\n    hxb_pedestal_test.status_desc,\n    hxb_pedestal_test.inverse_sqrt_n,\n    hxb_pedestal_test.pedestal_config_json\nFROM hxb_pedestal_test\nLEFT JOIN module_info ON module_info.hxb_name = hxb_pedestal_test.hxb_name\nWHERE (hxb_pedestal_test.hxb_name = {self.hxb_name})\n    OR (module_info.module_name = {self.module_name})\n    OR (module_info.proto_name = {self.proto_name})\n    OR (module_info.sen_name = {self.sen_name})\n    OR (module_info.bp_name = {self.bp_name})\nORDER BY hxb_pedestal_test.hxb_pedtest_no DESC\n\n",
+                "rawSql": self.hxb_pedestal_sql,
                 "refId": "A",
                 "sql": {
                     "columns": [
@@ -1032,7 +1229,7 @@ class ComponentsLookUpFormBuilder:
             },
             {
             "type": "xychart",
-            "title": "Module IV Curves [Log Scale]",
+            "title": "Dry-Roomtemp Module IV Curves [Log Scale]",
             "gridPos": {
                 "x": 0,
                 "y": 38,
@@ -1142,7 +1339,7 @@ class ComponentsLookUpFormBuilder:
                 {
                 "refId": "A",
                 "format": "table",
-                "rawSql": f"WITH filtered_iv AS (\n  SELECT DISTINCT ON (module_iv_test.status) module_iv_test.*\n  FROM module_iv_test\n  JOIN module_info ON module_iv_test.module_name = module_info.module_name\n  WHERE module_info.module_name = {self.module_name}\n    OR module_info.proto_name = {self.proto_name}\n    OR module_info.sen_name = {self.sen_name}\n    OR module_info.bp_name = {self.bp_name}\n    OR module_info.hxb_name = {self.hxb_name}\n    AND (meas_v IS NOT NULL AND meas_i IS NOT NULL)\n  ORDER BY module_iv_test.status DESC\n),\n\n  unnested AS (\n    SELECT\n      status_desc,\n      v,\n      i\n    FROM filtered_iv,\n    UNNEST(meas_v, meas_i) AS t(v, i)\n  )\n\n  SELECT *\n  FROM unnested;",
+                "rawSql": self.module_iv_curve_sql,
                 "sql": {
                     "columns": [
                     {
