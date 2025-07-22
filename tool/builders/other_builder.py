@@ -1459,7 +1459,7 @@ class ComponentsLookUpFormBuilder:
                 "mode": "markdown"
             },
             "pluginVersion": "12.0.0",
-            "title": "Mean Hexamap",
+            "title": "Pedestal Hexmap",
             "type": "text"
             },
             {
@@ -1484,7 +1484,7 @@ class ComponentsLookUpFormBuilder:
                 "mode": "markdown"
             },
             "pluginVersion": "12.0.0",
-            "title": "Std Hexamap",
+            "title": "Noise Hexmap",
             "type": "text"
             }
         ],
