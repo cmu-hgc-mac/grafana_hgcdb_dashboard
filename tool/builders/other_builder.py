@@ -418,6 +418,7 @@ class ComponentsLookUpFormBuilder:
         self.proto_name = "UPPER('${proto_name}')"
         self.module_name = "UPPER('${module_name}')"
         self.mean_hex_map_base64 = "${mean_hex_map}"
+        self.std_hex_map_base64 = "${std_hex_map}"
 
         self.module_info_sql = f"""
         WITH selected_module_inspect AS (
@@ -628,7 +629,21 @@ class ComponentsLookUpFormBuilder:
         ORDER BY module_pedestal_plots.module_name, module_pedestal_plots.mod_plottest_no DESC
         """
 
+        self.std_hexmap_sql = f"""
+        SELECT DISTINCT ON (module_pedestal_plots.module_name) encode(adc_std_hexmap, 'base64') AS noise_channel_base64
+        FROM module_pedestal_plots
+        JOIN module_info ON module_pedestal_plots.module_name = module_info.module_name
+        WHERE (module_info.module_name = {self.module_name}
+            OR module_info.proto_name = {self.proto_name}
+            OR module_info.sen_name = {self.sen_name}
+            OR module_info.bp_name = {self.bp_name}
+            OR module_info.hxb_name = {self.hxb_name})
+        ORDER BY module_pedestal_plots.module_name, module_pedestal_plots.mod_plottest_no DESC
+        """
+
         self.mean_hexmap_md = f'<img src=\"data:image/png;base64,{self.mean_hex_map_base64}" style="width: auto; height: auto;"/>'
+        
+        self.std_hexmap_md = f'<img src=\"data:image/png;base64,{self.std_hex_map_base64}" style="width: auto; height: auto;"/>'
 
     def generate_dashboard_json(self):
         """Generate the dashboard JSON for the components look-up form.
@@ -1403,8 +1418,8 @@ class ComponentsLookUpFormBuilder:
                 "overrides": []
             },
             "gridPos": {
-                "h": 10,
-                "w": 10,
+                "h": 12,
+                "w": 12,
                 "x": 0,
                 "y": 49
             },
@@ -1420,6 +1435,31 @@ class ComponentsLookUpFormBuilder:
             },
             "pluginVersion": "12.0.0",
             "title": "Mean Hexamap",
+            "type": "text"
+            },
+            {
+            "fieldConfig": {
+                "defaults": {},
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 12,
+                "w": 12,
+                "x": 12,
+                "y": 49
+            },
+            "id": 10,
+            "options": {
+                "code": {
+                "language": "plaintext",
+                "showLineNumbers": False,
+                "showMiniMap": False
+                },
+                "content": self.std_hexmap_md,
+                "mode": "markdown"
+            },
+            "pluginVersion": "12.0.0",
+            "title": "Std Hexamap",
             "type": "text"
             }
         ],
@@ -1528,7 +1568,23 @@ class ComponentsLookUpFormBuilder:
                 "text": "",
                 "value": ""
                 }
-            }  
+            },
+            {
+                "name": "std_hex_map",
+                "label": "Std Hex Map",
+                "type": "query",
+                "hide": 2,
+                "refresh": 1,
+                "datasource": {
+                    "type": "postgres",
+                    "uid": f"{self.datasource_uid}"
+                },
+                "query": self.std_hexmap_sql,
+                "current": {
+                "text": "",
+                "value": ""
+                }
+            }    
             ]
         },
         "time": {
