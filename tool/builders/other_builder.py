@@ -417,7 +417,7 @@ class ComponentsLookUpFormBuilder:
         self.sen_name = "UPPER('${sen_name}')"
         self.proto_name = "UPPER('${proto_name}')"
         self.module_name = "UPPER('${module_name}')"
-        self.noise_channel_byte = "${noise_channel}"
+        self.mean_hex_map_base64 = "${mean_hex_map}"
 
         self.module_info_sql = f"""
         WITH selected_module_inspect AS (
@@ -616,8 +616,8 @@ class ComponentsLookUpFormBuilder:
         FROM unnested;
         """
 
-        self.noise_channel_sql = f"""
-        SELECT DISTINCT ON (module_pedestal_plots.module_name) encode(noise_channel_chip[1], 'base64') AS noise_channel_base64
+        self.mean_hexmap_sql = f"""
+        SELECT DISTINCT ON (module_pedestal_plots.module_name) encode(adc_mean_hexmap, 'base64') AS noise_channel_base64
         FROM module_pedestal_plots
         JOIN module_info ON module_pedestal_plots.module_name = module_info.module_name
         WHERE (module_info.module_name = {self.module_name}
@@ -625,9 +625,10 @@ class ComponentsLookUpFormBuilder:
             OR module_info.sen_name = {self.sen_name}
             OR module_info.bp_name = {self.bp_name}
             OR module_info.hxb_name = {self.hxb_name})
+        ORDER BY module_pedestal_plots.module_name, module_pedestal_plots.mod_plottest_no DESC
         """
 
-        self.noise_channel_chip_md = f'<img src=\"data:image/png;base64,{self.noise_channel_byte}" style="width: auto; height: auto;"/>'
+        self.mean_hexmap_md = f'<img src=\"data:image/png;base64,{self.mean_hex_map_base64}" style="width: auto; height: auto;"/>'
 
     def generate_dashboard_json(self):
         """Generate the dashboard JSON for the components look-up form.
@@ -1402,7 +1403,7 @@ class ComponentsLookUpFormBuilder:
                 "overrides": []
             },
             "gridPos": {
-                "h": 8,
+                "h": 10,
                 "w": 10,
                 "x": 0,
                 "y": 49
@@ -1414,11 +1415,11 @@ class ComponentsLookUpFormBuilder:
                 "showLineNumbers": False,
                 "showMiniMap": False
                 },
-                "content": self.noise_channel_chip_md,
+                "content": self.mean_hexmap_md,
                 "mode": "markdown"
             },
             "pluginVersion": "12.0.0",
-            "title": "Noise Channel Chip",
+            "title": "Mean Hexamap",
             "type": "text"
             }
         ],
@@ -1513,8 +1514,8 @@ class ComponentsLookUpFormBuilder:
                 "type": "textbox"
             },
             {
-                "name": "noise_channel",
-                "label": "Noise Channel Byte",
+                "name": "mean_hex_map",
+                "label": "Mean Hex Map",
                 "type": "query",
                 "hide": 2,
                 "refresh": 1,
@@ -1522,7 +1523,7 @@ class ComponentsLookUpFormBuilder:
                     "type": "postgres",
                     "uid": f"{self.datasource_uid}"
                 },
-                "query": self.noise_channel_sql,
+                "query": self.mean_hexmap_sql,
                 "current": {
                 "text": "",
                 "value": ""
