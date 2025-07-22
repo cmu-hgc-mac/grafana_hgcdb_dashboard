@@ -1444,7 +1444,7 @@ class ComponentsLookUpFormBuilder:
             },
             "gridPos": {
                 "h": 12,
-                "w": 12,
+                "w": 20,
                 "x": 0,
                 "y": 49
             },
@@ -1469,7 +1469,7 @@ class ComponentsLookUpFormBuilder:
             },
             "gridPos": {
                 "h": 12,
-                "w": 12,
+                "w": 20,
                 "x": 12,
                 "y": 49
             },
