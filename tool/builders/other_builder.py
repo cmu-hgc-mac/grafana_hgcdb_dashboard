@@ -631,7 +631,7 @@ class ComponentsLookUpFormBuilder:
         ),
             unnested AS (
                 SELECT
-                    status_desc || ' / ' || temp_c || '˚C / ' || rel_hum || '%RH' AS status_desc,
+                    mod_ivtest_no || ' / ' || status_desc || ' / ' || temp_c || '˚C / ' || rel_hum || '%RH' AS status_desc,
                     v,
                     i
                 FROM filtered_iv,
