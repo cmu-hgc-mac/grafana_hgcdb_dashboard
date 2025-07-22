@@ -617,6 +617,30 @@ class ComponentsLookUpFormBuilder:
         FROM unnested;
         """
 
+        self.all_module_iv_curve_sql = rf"""
+        WITH filtered_iv AS (
+            SELECT module_iv_test.*
+            FROM module_iv_test
+            JOIN module_info ON module_iv_test.module_name = module_info.module_name
+            WHERE (module_info.module_name = {self.module_name}
+                OR module_info.proto_name = {self.proto_name}
+                OR module_info.sen_name = {self.sen_name}
+                OR module_info.bp_name = {self.bp_name}
+                OR module_info.hxb_name = {self.hxb_name})
+                AND (meas_v IS NOT NULL AND meas_i IS NOT NULL)
+        ),
+            unnested AS (
+                SELECT
+                    status_desc || ' / ' || temp_c || '˚C / ' || rel_hum || '%RH' AS status_desc,
+                    v,
+                    i
+                FROM filtered_iv,
+                UNNEST(meas_v, meas_i) AS t(v, i)
+        )
+        SELECT *
+        FROM unnested;
+        """
+
         self.mean_hexmap_sql = f"""
         SELECT DISTINCT ON (module_pedestal_plots.module_name) encode(adc_mean_hexmap, 'base64') AS noise_channel_base64
         FROM module_pedestal_plots
@@ -1259,7 +1283,8 @@ class ComponentsLookUpFormBuilder:
             },
             {
             "type": "xychart",
-            "title": "Dry-Roomtemp Module IV Curves [Log Scale]",
+            # "title": "Dry-Roomtemp Module IV Curves [Log Scale]",
+            "title": "All Module IV Curves [Log Scale]",
             "gridPos": {
                 "x": 0,
                 "y": 38,
@@ -1369,7 +1394,7 @@ class ComponentsLookUpFormBuilder:
                 {
                 "refId": "A",
                 "format": "table",
-                "rawSql": self.module_iv_curve_sql,
+                "rawSql": self.all_module_iv_curve_sql,
                 "sql": {
                     "columns": [
                     {
@@ -1418,8 +1443,8 @@ class ComponentsLookUpFormBuilder:
                 "overrides": []
             },
             "gridPos": {
-                "h": 15,
-                "w": 15,
+                "h": 12,
+                "w": 12,
                 "x": 0,
                 "y": 49
             },
@@ -1443,10 +1468,10 @@ class ComponentsLookUpFormBuilder:
                 "overrides": []
             },
             "gridPos": {
-                "h": 15,
-                "w": 15,
-                "x": 0,
-                "y": 64
+                "h": 12,
+                "w": 12,
+                "x": 12,
+                "y": 49
             },
             "id": 10,
             "options": {
