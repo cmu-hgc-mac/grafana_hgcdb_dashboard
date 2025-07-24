@@ -424,7 +424,12 @@ class ComponentsLookUpFormBuilder:
         WITH selected_module_inspect AS (
             SELECT DISTINCT ON (module_name) *
             FROM module_inspect    
-            ORDER BY module_name, module_row_no DESC\
+            ORDER BY module_name, module_row_no DESC
+        ),
+            selected_front_wirebond AS (
+                SELECT DISTINCT ON (module_name) *
+                FROM front_wirebond
+                ORDER BY module_name, frwirebond_no DESC
         )
         SELECT
             module_info.*,
@@ -432,9 +437,15 @@ class ComponentsLookUpFormBuilder:
             selected_module_inspect.avg_thickness,
             selected_module_inspect.x_offset_mu,
             selected_module_inspect.y_offset_mu,
-            selected_module_inspect.ang_offset_deg
+            selected_module_inspect.ang_offset_deg,
+            selected_front_wirebond.list_grounded_cells,
+            selected_front_wirebond.list_unbonded_cells,
+            selected_front_wirebond.bond_count_for_cell,
+            selected_front_wirebond.bond_type,
+            selected_front_wirebond.comment AS wirebond_comment
         FROM module_info
         LEFT JOIN selected_module_inspect ON module_info.module_name = selected_module_inspect.module_name
+        LEFT JOIN selected_front_wirebond ON module_info.module_name = selected_front_wirebond.module_name
         WHERE  (hxb_name = {self.hxb_name})
             OR (bp_name = {self.bp_name})
             OR (sen_name = {self.sen_name})
