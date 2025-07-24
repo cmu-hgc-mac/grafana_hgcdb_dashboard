@@ -425,11 +425,6 @@ class ComponentsLookUpFormBuilder:
             SELECT DISTINCT ON (module_name) *
             FROM module_inspect    
             ORDER BY module_name, module_row_no DESC
-        ),
-            selected_front_wirebond AS (
-                SELECT DISTINCT ON (module_name) *
-                FROM front_wirebond
-                ORDER BY module_name, frwirebond_no DESC
         )
         SELECT
             module_info.*,
@@ -437,15 +432,9 @@ class ComponentsLookUpFormBuilder:
             selected_module_inspect.avg_thickness,
             selected_module_inspect.x_offset_mu,
             selected_module_inspect.y_offset_mu,
-            selected_module_inspect.ang_offset_deg,
-            selected_front_wirebond.list_grounded_cells,
-            selected_front_wirebond.list_unbonded_cells,
-            selected_front_wirebond.bond_count_for_cell,
-            selected_front_wirebond.bond_type,
-            selected_front_wirebond.comment AS wirebond_comment
+            selected_module_inspect.ang_offset_deg
         FROM module_info
         LEFT JOIN selected_module_inspect ON module_info.module_name = selected_module_inspect.module_name
-        LEFT JOIN selected_front_wirebond ON module_info.module_name = selected_front_wirebond.module_name
         WHERE  (hxb_name = {self.hxb_name})
             OR (bp_name = {self.bp_name})
             OR (sen_name = {self.sen_name})
@@ -679,6 +668,28 @@ class ComponentsLookUpFormBuilder:
         self.mean_hexmap_md = f'<img src=\"data:image/png;base64,{self.mean_hex_map_base64}" style="width: auto; height: auto;"/>'
         
         self.std_hexmap_md = f'<img src=\"data:image/png;base64,{self.std_hex_map_base64}" style="width: auto; height: auto;"/>'
+
+        self.wirebond_info_sql = f"""
+        WITH selected_front_wirebond AS (
+            SELECT DISTINCT ON (module_name) *
+            FROM front_wirebond
+            ORDER BY module_name, frwirebond_no DESC
+        )
+        SELECT
+            selected_front_wirebond.module_name,
+            selected_front_wirebond.list_grounded_cells,
+            selected_front_wirebond.list_unbonded_cells,
+            selected_front_wirebond.bond_count_for_cell,
+            selected_front_wirebond.bond_type,
+            selected_front_wirebond.comment
+        FROM selected_front_wirebond
+        JOIN module_info ON selected_front_wirebond.module_name = module_info.module_name
+        WHERE (module_info.module_name = {self.module_name}
+            OR module_info.proto_name = {self.proto_name}
+            OR module_info.sen_name = {self.sen_name}
+            OR module_info.bp_name = {self.bp_name}
+            OR module_info.hxb_name = {self.hxb_name})
+        """
 
     def generate_dashboard_json(self):
         """Generate the dashboard JSON for the components look-up form.
@@ -1497,6 +1508,92 @@ class ComponentsLookUpFormBuilder:
             "pluginVersion": "12.0.0",
             "title": "Noise Hexmap",
             "type": "text"
+            },
+            {
+            "datasource": {
+                "type": "grafana-postgresql-datasource",
+                "uid": f"{self.datasource_uid}"
+            },
+            "fieldConfig": {
+                "defaults": {
+                "color": {
+                    "mode": "thresholds"
+                },
+                "custom": {
+                    "align": "auto",
+                    "cellOptions": {
+                    "type": "auto"
+                    },
+                    "inspect": False
+                },
+                "mappings": [],
+                "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                    {
+                        "color": "green"
+                    },
+                    {
+                        "color": "red",
+                        "value": 80
+                    }
+                    ]
+                }
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 4,
+                "w": 24,
+                "x": 0,
+                "y": 68
+            },
+            "id": 11,
+            "options": {
+                "cellHeight": "sm",
+                "footer": {
+                "countRows": False,
+                "fields": "",
+                "reducer": [
+                    "sum"
+                ],
+                "show": False
+                },
+                "showHeader": True
+            },
+            "pluginVersion": "12.0.1",
+            "targets": [
+                {
+                "datasource": {
+                    "type": "grafana-postgresql-datasource",
+                    "uid": f"{self.datasource_uid}"
+                },
+                "editorMode": "code",
+                "format": "table",
+                "rawQuery": True,
+                "rawSql": self.wirebond_info_sql,
+                "refId": "A",
+                "sql": {
+                    "columns": [
+                    {
+                        "parameters": [],
+                        "type": "function"
+                    }
+                    ],
+                    "groupBy": [
+                    {
+                        "property": {
+                        "type": "string"
+                        },
+                        "type": "groupBy"
+                    }
+                    ],
+                    "limit": 50
+                }
+                }
+            ],
+            "title": "Wirebond Info",
+            "type": "table"
             }
         ],
         "preload": False,
