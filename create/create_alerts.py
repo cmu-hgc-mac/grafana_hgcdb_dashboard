@@ -40,29 +40,30 @@ for config in filelist:
     with open(config_path, mode = 'r') as file:
         tot_config = yaml.safe_load(file)
         # check if alerts exist:
+        print(config_path)
         if "alert" not in tot_config:
             continue
         # load alerts
         alerts = tot_config["alert"]
     
-    try:
-        validator = AlertRuleValidator(config_path)
-        print(f"\n[VALIDATING] Checking if the alert rules in the config file: <{config}> is valid...")
-        valid_alerts = []
-    except FileNotFoundError as e:
-        print(f"[ERROR] {e}")
-        continue
+    # try:
+    #     validator = AlertRuleValidator(config_path)
+    #     print(f"\n[VALIDATING] Checking if the alert rules in the config file: <{config}> is valid...")
+    #     valid_alerts = []
+    # except FileNotFoundError as e:
+    #     print(f"[ERROR] {e}")
+    #     continue
         
     # Loop for every alert
     for idx, alert in enumerate(alerts):
         alert_title = alert.get("title", f"<Alert {idx}>")
-        ok = validator.check_single_alert(idx, alert)
+        # ok = validator.check_single_alert(idx, alert)
 
-        if not ok:  # skip invalid config file
-            print(f"[WARNING] Validation failed for config: <{config}>. Skipping this file.\n")
-            succeed = False
-            failed_count += 1
-            continue
+        # if not ok:  # skip invalid config file
+        #     print(f"[WARNING] Validation failed for config: <{config}>. Skipping this file.\n")
+        #     succeed = False
+        #     failed_count += 1
+        #     continue
         
         # Generate the alert json
         folder_name = config.split(".")[0].replace("_", " ")

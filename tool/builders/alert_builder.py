@@ -13,9 +13,16 @@ class AlertBuilder:
         """Build all alerts based on the given alert_dict.
         """ 
         # generate alert json
-        alert_sql = self._generate_alertSQL(alert['parameter'], alert['table'])
-        alert_json = self.generate_alert_rule(alert_sql, alert, alert['dashboard'], folder_name)
+        if "sql" not in alert:
+            alert_sql = self._generate_alertSQL(alert['parameter'], alert['table'])
+            alert_json = self.generate_alert_rule(alert_sql, alert, alert['dashboard'], folder_name)
+        else:
+            alert_sql = alert["sql"]
+            # fetch the dashboard name of the data source
+            match = re.search(r'\bFROM\s+([a-zA-Z_][\w]*)', alert_sql, re.IGNORECASE)
+            alert_json = self.generate_alert_rule(alert_sql,alert, match.group(1),folder_name)
         
+
         return alert_json
 
     def generate_alert_rule(self, alertSQL: str, alertInfo: dict, dashboard_title: str, folder_name: str) -> dict:
@@ -51,9 +58,7 @@ class AlertBuilder:
             "noDataState": "NoData",
             "execErrState": "Error",
             "annotations": {
-                "__dashboardUid__": f"{dashboard_uid}",
-                "__panelId__": f"{alertInfo['panelID']}",
-                "summary": "Auto-imported from UI"
+                "summary": "Auto-imported from UI",
             },
             "labels":alertInfo["labels"],
             "data": [
