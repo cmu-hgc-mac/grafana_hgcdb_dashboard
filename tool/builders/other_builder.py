@@ -1305,7 +1305,6 @@ class ComponentsLookUpFormBuilder:
             },
             {
             "type": "xychart",
-            # "title": "Dry-Roomtemp Module IV Curves [Log Scale]",
             "title": "All Module IV Curves [Log Scale]",
             "gridPos": {
                 "x": 0,
