@@ -670,6 +670,7 @@ class ComponentsLookUpFormBuilder:
             ORDER BY module_name, frwirebond_no DESC
         )
         SELECT
+            selected_front_wirebond.frwirebond_no,
             selected_front_wirebond.module_name,
             selected_front_wirebond.list_grounded_cells,
             selected_front_wirebond.list_unbonded_cells,
@@ -678,6 +679,23 @@ class ComponentsLookUpFormBuilder:
             selected_front_wirebond.comment
         FROM selected_front_wirebond
         JOIN module_info ON selected_front_wirebond.module_name = module_info.module_name
+        WHERE (module_info.module_name = {self.module_name}
+            OR module_info.proto_name = {self.proto_name}
+            OR module_info.sen_name = {self.sen_name}
+            OR module_info.bp_name = {self.bp_name}
+            OR module_info.hxb_name = {self.hxb_name})
+        """
+        
+        self.bond_pull_info_sql = f"""
+        SELECT
+            bond_pull_test.pulltest_no,
+            bond_pull_test.module_name,
+            bond_pull_test.avg_pull_strg_g,
+            bond_pull_test.std_pull_strg_g,
+            bond_pull_test.date_bond,
+            bond_pull_test.comment
+        FROM bond_pull_test
+        JOIN module_info ON bond_pull_test.module_name = module_info.module_name
         WHERE (module_info.module_name = {self.module_name}
             OR module_info.proto_name = {self.proto_name}
             OR module_info.sen_name = {self.sen_name}
@@ -1550,6 +1568,92 @@ class ComponentsLookUpFormBuilder:
                 }
             ],
             "title": "Wirebond Info",
+            "type": "table"
+            },
+            {
+            "datasource": {
+                "type": "grafana-postgresql-datasource",
+                "uid": f"{self.datasource_uid}"
+            },
+            "fieldConfig": {
+                "defaults": {
+                "color": {
+                    "mode": "thresholds"
+                },
+                "custom": {
+                    "align": "auto",
+                    "cellOptions": {
+                    "type": "auto"
+                    },
+                    "inspect": False
+                },
+                "mappings": [],
+                "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                    {
+                        "color": "green"
+                    },
+                    {
+                        "color": "red",
+                        "value": 80
+                    }
+                    ]
+                }
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 4,
+                "w": 24,
+                "x": 0,
+                "y": 53
+            },
+            "id": 12,
+            "options": {
+                "cellHeight": "sm",
+                "footer": {
+                "countRows": False,
+                "fields": "",
+                "reducer": [
+                    "sum"
+                ],
+                "show": False
+                },
+                "showHeader": True
+            },
+            "pluginVersion": "12.0.1",
+            "targets": [
+                {
+                "datasource": {
+                    "type": "grafana-postgresql-datasource",
+                    "uid": f"{self.datasource_uid}"
+                },
+                "editorMode": "code",
+                "format": "table",
+                "rawQuery": True,
+                "rawSql": self.bond_pull_info_sql,
+                "refId": "A",
+                "sql": {
+                    "columns": [
+                    {
+                        "parameters": [],
+                        "type": "function"
+                    }
+                    ],
+                    "groupBy": [
+                    {
+                        "property": {
+                        "type": "string"
+                        },
+                        "type": "groupBy"
+                    }
+                    ],
+                    "limit": 50
+                }
+                }
+            ],
+            "title": "Bond Pull Info",
             "type": "table"
             }
         ],
