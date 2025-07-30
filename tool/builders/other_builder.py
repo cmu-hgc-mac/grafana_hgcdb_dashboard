@@ -417,8 +417,6 @@ class ComponentsLookUpFormBuilder:
         self.sen_name = "UPPER('${sen_name}')"
         self.proto_name = "UPPER('${proto_name}')"
         self.module_name = "UPPER('${module_name}')"
-        self.mean_hex_map_base64 = "${mean_hex_map}"
-        self.std_hex_map_base64 = "${std_hex_map}"
 
         self.module_info_sql = f"""
         WITH selected_module_inspect AS (
@@ -665,10 +663,6 @@ class ComponentsLookUpFormBuilder:
         ORDER BY module_pedestal_plots.module_name, module_pedestal_plots.mod_plottest_no DESC
         """
 
-        self.mean_hexmap_md = f'<img src=\"data:image/png;base64,{self.mean_hex_map_base64}" style="width: auto; height: auto;"/>'
-        
-        self.std_hexmap_md = f'<img src=\"data:image/png;base64,{self.std_hex_map_base64}" style="width: auto; height: auto;"/>'
-
         self.wirebond_info_sql = f"""
         WITH selected_front_wirebond AS (
             SELECT DISTINCT ON (module_name) *
@@ -676,6 +670,7 @@ class ComponentsLookUpFormBuilder:
             ORDER BY module_name, frwirebond_no DESC
         )
         SELECT
+            selected_front_wirebond.frwirebond_no,
             selected_front_wirebond.module_name,
             selected_front_wirebond.list_grounded_cells,
             selected_front_wirebond.list_unbonded_cells,
@@ -684,6 +679,23 @@ class ComponentsLookUpFormBuilder:
             selected_front_wirebond.comment
         FROM selected_front_wirebond
         JOIN module_info ON selected_front_wirebond.module_name = module_info.module_name
+        WHERE (module_info.module_name = {self.module_name}
+            OR module_info.proto_name = {self.proto_name}
+            OR module_info.sen_name = {self.sen_name}
+            OR module_info.bp_name = {self.bp_name}
+            OR module_info.hxb_name = {self.hxb_name})
+        """
+        
+        self.bond_pull_info_sql = f"""
+        SELECT
+            bond_pull_test.pulltest_no,
+            bond_pull_test.module_name,
+            bond_pull_test.avg_pull_strg_g,
+            bond_pull_test.std_pull_strg_g,
+            bond_pull_test.date_bond,
+            bond_pull_test.comment
+        FROM bond_pull_test
+        JOIN module_info ON bond_pull_test.module_name = module_info.module_name
         WHERE (module_info.module_name = {self.module_name}
             OR module_info.proto_name = {self.proto_name}
             OR module_info.sen_name = {self.sen_name}
@@ -1215,7 +1227,14 @@ class ComponentsLookUpFormBuilder:
                 }
             ],
             "title": "Module Pedestal Test",
-            "type": "table"
+            "type": "table",
+            "links":[
+                {
+                "title": "All Hexmap Plots",
+                "url": f"{GF_URL}/d/hexmap-plots",
+                "targetBlank": True
+                }
+            ]
             },
             {
             "datasource": {
@@ -1301,11 +1320,17 @@ class ComponentsLookUpFormBuilder:
                 }
             ],
             "title": "Hexaboard Pedestal Test",
-            "type": "table"
+            "type": "table",
+            "links":[
+                {
+                "title": "All Hexmap Plots",
+                "url": f"{GF_URL}/d/hexmap-plots",
+                "targetBlank": True
+                }
+            ]
             },
             {
             "type": "xychart",
-            # "title": "Dry-Roomtemp Module IV Curves [Log Scale]",
             "title": "All Module IV Curves [Log Scale]",
             "gridPos": {
                 "x": 0,
@@ -1460,56 +1485,6 @@ class ComponentsLookUpFormBuilder:
             }
             },
             {
-            "fieldConfig": {
-                "defaults": {},
-                "overrides": []
-            },
-            "gridPos": {
-                "h": 18,
-                "w": 12,
-                "x": 0,
-                "y": 49
-            },
-            "id": 9,
-            "options": {
-                "code": {
-                "language": "plaintext",
-                "showLineNumbers": False,
-                "showMiniMap": False
-                },
-                "content": self.mean_hexmap_md,
-                "mode": "markdown"
-            },
-            "pluginVersion": "12.0.0",
-            "title": "Pedestal Hexmap",
-            "type": "text"
-            },
-            {
-            "fieldConfig": {
-                "defaults": {},
-                "overrides": []
-            },
-            "gridPos": {
-                "h": 18,
-                "w": 12,
-                "x": 12,
-                "y": 49
-            },
-            "id": 10,
-            "options": {
-                "code": {
-                "language": "plaintext",
-                "showLineNumbers": False,
-                "showMiniMap": False
-                },
-                "content": self.std_hexmap_md,
-                "mode": "markdown"
-            },
-            "pluginVersion": "12.0.0",
-            "title": "Noise Hexmap",
-            "type": "text"
-            },
-            {
             "datasource": {
                 "type": "grafana-postgresql-datasource",
                 "uid": f"{self.datasource_uid}"
@@ -1546,7 +1521,7 @@ class ComponentsLookUpFormBuilder:
                 "h": 4,
                 "w": 24,
                 "x": 0,
-                "y": 68
+                "y": 49
             },
             "id": 11,
             "options": {
@@ -1593,6 +1568,92 @@ class ComponentsLookUpFormBuilder:
                 }
             ],
             "title": "Wirebond Info",
+            "type": "table"
+            },
+            {
+            "datasource": {
+                "type": "grafana-postgresql-datasource",
+                "uid": f"{self.datasource_uid}"
+            },
+            "fieldConfig": {
+                "defaults": {
+                "color": {
+                    "mode": "thresholds"
+                },
+                "custom": {
+                    "align": "auto",
+                    "cellOptions": {
+                    "type": "auto"
+                    },
+                    "inspect": False
+                },
+                "mappings": [],
+                "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                    {
+                        "color": "green"
+                    },
+                    {
+                        "color": "red",
+                        "value": 80
+                    }
+                    ]
+                }
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 4,
+                "w": 24,
+                "x": 0,
+                "y": 53
+            },
+            "id": 12,
+            "options": {
+                "cellHeight": "sm",
+                "footer": {
+                "countRows": False,
+                "fields": "",
+                "reducer": [
+                    "sum"
+                ],
+                "show": False
+                },
+                "showHeader": True
+            },
+            "pluginVersion": "12.0.1",
+            "targets": [
+                {
+                "datasource": {
+                    "type": "grafana-postgresql-datasource",
+                    "uid": f"{self.datasource_uid}"
+                },
+                "editorMode": "code",
+                "format": "table",
+                "rawQuery": True,
+                "rawSql": self.bond_pull_info_sql,
+                "refId": "A",
+                "sql": {
+                    "columns": [
+                    {
+                        "parameters": [],
+                        "type": "function"
+                    }
+                    ],
+                    "groupBy": [
+                    {
+                        "property": {
+                        "type": "string"
+                        },
+                        "type": "groupBy"
+                    }
+                    ],
+                    "limit": 50
+                }
+                }
+            ],
+            "title": "Bond Pull Info",
             "type": "table"
             }
         ],
@@ -1729,6 +1790,190 @@ class ComponentsLookUpFormBuilder:
         "title": "Components Look-up Form",
         "uid": f"{self.dashboard_uid}",
         "version": 1
+        }
+
+        return dashboard_json
+
+class HexmapPlotsBuilder:
+    def __init__(self, datasource_uid):
+        self.datasource_uid = datasource_uid
+        self.dashboard_uid = create_uid("Hexmap Plots")
+
+        self.mean_hex_map_base64 = "${mean_hex_map}"
+        self.std_hex_map_base64 = "${std_hex_map}"
+
+        self.mean_hexmap_md = f'<img src=\"data:image/png;base64,{self.mean_hex_map_base64}" style="width: auto; height: auto;"/>'
+        self.std_hexmap_md = f'<img src=\"data:image/png;base64,{self.std_hex_map_base64}" style="width: auto; height: auto;"/>'
+
+    
+    def generate_dashboard_json(self):
+        dashboard_json = {
+            "annotations": {
+                "list": [
+                {
+                    "builtIn": 1,
+                    "datasource": {
+                    "type": "grafana",
+                    "uid": "-- Grafana --"
+                    },
+                    "enable": True,
+                    "hide": True,
+                    "iconColor": "rgba(0, 211, 255, 1)",
+                    "name": "Annotations & Alerts",
+                    "type": "dashboard"
+                }
+                ]
+            },
+            "editable": True,
+            "fiscalYearStartMonth": 0,
+            "graphTooltip": 0,
+            "links": [],
+            "panels": [
+                {
+                "fieldConfig": {
+                    "defaults": {},
+                    "overrides": []
+                },
+                "gridPos": {
+                    "h": 18,
+                    "w": 12,
+                    "x": 0,
+                    "y": 0
+                },
+                "id": 1,
+                "options": {
+                    "code": {
+                    "language": "plaintext",
+                    "showLineNumbers": False,
+                    "showMiniMap": False
+                    },
+                    "content": self.mean_hexmap_md,
+                    "mode": "markdown"
+                },
+                "pluginVersion": "12.0.0",
+                "repeat": "mean_hex_map",
+                "repeatDirection": "v",
+                "title": "Pedestal Hexmap",
+                "type": "text"
+                },
+                {
+                "fieldConfig": {
+                    "defaults": {},
+                    "overrides": []
+                },
+                "gridPos": {
+                    "h": 18,
+                    "w": 12,
+                    "x": 12,
+                    "y": 0
+                },
+                "id": 2,
+                "options": {
+                    "code": {
+                    "language": "plaintext",
+                    "showLineNumbers": False,
+                    "showMiniMap": False
+                    },
+                    "content": self.std_hexmap_md,
+                    "mode": "markdown"
+                },
+                "pluginVersion": "12.0.0",
+                "repeat": "std_hex_map",
+                "repeatDirection": "v",
+                "title": "Noise Hexmap",
+                "type": "text"
+                }
+            ],
+            "preload": False,
+            "schemaVersion": 41,
+            "tags": [],
+            "templating": {
+                "list": [
+                {
+                    "current": {
+                    "text": "",
+                    "value": ""
+                    },
+                    "label": "Serial Name",
+                    "name": "module_name",
+                    "options": [
+                    {
+                        "selected": True,
+                        "text": "",
+                        "value": ""
+                    }
+                    ],
+                    "query": "",
+                    "type": "textbox"
+                },
+                {
+                    "allowCustomValue": True,
+                    "current": {
+                    "text": "All",
+                    "value": [
+                        "$__all"
+                    ]
+                    },
+                    "datasource": {
+                        "type": "postgres",
+                        "uid": f"{self.datasource_uid}"
+                    },
+                    "definition": "SELECT status_desc\nFROM module_pedestal_plots\nGROUP BY status_desc\nORDER BY COUNT(*) DESC;",
+                    "description": "",
+                    "includeAll": True,
+                    "label": "Status",
+                    "multi": True,
+                    "name": "status_desc",
+                    "options": [],
+                    "query": "SELECT status_desc\nFROM module_pedestal_plots\nGROUP BY status_desc\nORDER BY COUNT(*) DESC;",
+                    "refresh": 1,
+                    "regex": "",
+                    "type": "query"
+                },
+                {
+                    "current": {
+                    "text": "All",
+                    "value": "$__all"
+                    },
+                    "definition": "SELECT encode(adc_mean_hexmap, 'base64') AS hex_img\nFROM module_pedestal_plots\nWHERE module_name = '${module_name}'\nAND ('All' = ANY(ARRAY[${status_desc}]) OR \n                (module_pedestal_plots.status_desc IS NULL AND 'NULL' = ANY(ARRAY[${status_desc}])) OR \n                module_pedestal_plots.status_desc::text = ANY(ARRAY[${status_desc}]))\nORDER BY mod_plottest_no DESC;",
+                    "hide": 2,
+                    "includeAll": True,
+                    "multi": True,
+                    "name": "mean_hex_map",
+                    "options": [],
+                    "query": "SELECT encode(adc_mean_hexmap, 'base64') AS hex_img\nFROM module_pedestal_plots\nWHERE module_name = '${module_name}'\nAND ('All' = ANY(ARRAY[${status_desc}]) OR \n                (module_pedestal_plots.status_desc IS NULL AND 'NULL' = ANY(ARRAY[${status_desc}])) OR \n                module_pedestal_plots.status_desc::text = ANY(ARRAY[${status_desc}]))\nORDER BY mod_plottest_no DESC;",
+                    "refresh": 1,
+                    "regex": "",
+                    "type": "query"
+                },
+                {
+                    "current": {
+                    "text": "All",
+                    "value": "$__all"
+                    },
+                    "definition": "SELECT encode(adc_std_hexmap, 'base64') AS hex_img\nFROM module_pedestal_plots\nWHERE module_name = '${module_name}'\n             AND ('All' = ANY(ARRAY[${status_desc}]) OR \n                (module_pedestal_plots.status_desc IS NULL AND 'NULL' = ANY(ARRAY[${status_desc}])) OR \n                module_pedestal_plots.status_desc::text = ANY(ARRAY[${status_desc}]))\nORDER BY mod_plottest_no DESC;",
+                    "description": "",
+                    "hide": 2,
+                    "includeAll": True,
+                    "multi": True,
+                    "name": "std_hex_map",
+                    "options": [],
+                    "query": "SELECT encode(adc_std_hexmap, 'base64') AS hex_img\nFROM module_pedestal_plots\nWHERE module_name = '${module_name}'\n             AND ('All' = ANY(ARRAY[${status_desc}]) OR \n                (module_pedestal_plots.status_desc IS NULL AND 'NULL' = ANY(ARRAY[${status_desc}])) OR \n                module_pedestal_plots.status_desc::text = ANY(ARRAY[${status_desc}]))\nORDER BY mod_plottest_no DESC;",
+                    "refresh": 1,
+                    "regex": "",
+                    "type": "query"
+                }
+                ]
+            },
+            "time": {
+                "from": "now-6h",
+                "to": "now"
+            },
+            "timepicker": {},
+            "timezone": "browser",
+            "title": "Hexmap Plots",
+            "uid": f"{self.dashboard_uid}",
+            "version": 1
         }
 
         return dashboard_json

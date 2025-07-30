@@ -4,7 +4,8 @@ Chinese Version README: [读我.md](a_EverythingNeedToChange/读我.md)
 
 **Developers**:   
 -Siyu (Rain) Chen: Overall structure and Dashboards  
--Xinyue (Joyce) Zhuang: Alert System
+-Xinyue (Joyce) Zhuang: Alert System  
+With support from the entire CMU HGCal MAC.
 
 **Example**:
 [CMU Dashboards](https://cmuhgcdashboard.phys.cmu.edu:3000/dashboards)
