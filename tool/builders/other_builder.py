@@ -1215,7 +1215,14 @@ class ComponentsLookUpFormBuilder:
                 }
             ],
             "title": "Module Pedestal Test",
-            "type": "table"
+            "type": "table",
+            "links":[
+                {
+                "title": "All Hexmap Plots",
+                "url": f"{GF_URL}/d/hexmap-plots",
+                "targetBlank": True
+                }
+            ]
             },
             {
             "datasource": {
@@ -1458,56 +1465,56 @@ class ComponentsLookUpFormBuilder:
                 }
             }
             },
-            {
-            "fieldConfig": {
-                "defaults": {},
-                "overrides": []
-            },
-            "gridPos": {
-                "h": 18,
-                "w": 12,
-                "x": 0,
-                "y": 49
-            },
-            "id": 9,
-            "options": {
-                "code": {
-                "language": "plaintext",
-                "showLineNumbers": False,
-                "showMiniMap": False
-                },
-                "content": self.mean_hexmap_md,
-                "mode": "markdown"
-            },
-            "pluginVersion": "12.0.0",
-            "title": "Pedestal Hexmap",
-            "type": "text"
-            },
-            {
-            "fieldConfig": {
-                "defaults": {},
-                "overrides": []
-            },
-            "gridPos": {
-                "h": 18,
-                "w": 12,
-                "x": 12,
-                "y": 49
-            },
-            "id": 10,
-            "options": {
-                "code": {
-                "language": "plaintext",
-                "showLineNumbers": False,
-                "showMiniMap": False
-                },
-                "content": self.std_hexmap_md,
-                "mode": "markdown"
-            },
-            "pluginVersion": "12.0.0",
-            "title": "Noise Hexmap",
-            "type": "text"
-            },
+            # {
+            # "fieldConfig": {
+            #     "defaults": {},
+            #     "overrides": []
+            # },
+            # "gridPos": {
+            #     "h": 18,
+            #     "w": 12,
+            #     "x": 0,
+            #     "y": 49
+            # },
+            # "id": 9,
+            # "options": {
+            #     "code": {
+            #     "language": "plaintext",
+            #     "showLineNumbers": False,
+            #     "showMiniMap": False
+            #     },
+            #     "content": self.mean_hexmap_md,
+            #     "mode": "markdown"
+            # },
+            # "pluginVersion": "12.0.0",
+            # "title": "Pedestal Hexmap",
+            # "type": "text"
+            # },
+            # {
+            # "fieldConfig": {
+            #     "defaults": {},
+            #     "overrides": []
+            # },
+            # "gridPos": {
+            #     "h": 18,
+            #     "w": 12,
+            #     "x": 12,
+            #     "y": 49
+            # },
+            # "id": 10,
+            # "options": {
+            #     "code": {
+            #     "language": "plaintext",
+            #     "showLineNumbers": False,
+            #     "showMiniMap": False
+            #     },
+            #     "content": self.std_hexmap_md,
+            #     "mode": "markdown"
+            # },
+            # "pluginVersion": "12.0.0",
+            # "title": "Noise Hexmap",
+            # "type": "text"
+            # },
             {
             "datasource": {
                 "type": "grafana-postgresql-datasource",
@@ -1545,7 +1552,7 @@ class ComponentsLookUpFormBuilder:
                 "h": 4,
                 "w": 24,
                 "x": 0,
-                "y": 68
+                "y": 49
             },
             "id": 11,
             "options": {
@@ -1728,6 +1735,183 @@ class ComponentsLookUpFormBuilder:
         "title": "Components Look-up Form",
         "uid": f"{self.dashboard_uid}",
         "version": 1
+        }
+
+        return dashboard_json
+
+class HexmapPlotsBuilder:
+    def __init__(self, datasource_uid):
+        self.datasource_uid = datasource_uid
+        self.dashboard_uid = create_uid("Hexmap Plots")
+    
+    def generate_dashboard_json(self):
+        dashboard_json = {
+            "annotations": {
+                "list": [
+                {
+                    "builtIn": 1,
+                    "datasource": {
+                    "type": "grafana",
+                    "uid": "-- Grafana --"
+                    },
+                    "enable": True,
+                    "hide": True,
+                    "iconColor": "rgba(0, 211, 255, 1)",
+                    "name": "Annotations & Alerts",
+                    "type": "dashboard"
+                }
+                ]
+            },
+            "editable": True,
+            "fiscalYearStartMonth": 0,
+            "graphTooltip": 0,
+            "links": [],
+            "panels": [
+                {
+                "fieldConfig": {
+                    "defaults": {},
+                    "overrides": []
+                },
+                "gridPos": {
+                    "h": 18,
+                    "w": 12,
+                    "x": 0,
+                    "y": 0
+                },
+                "id": 1,
+                "options": {
+                    "code": {
+                    "language": "plaintext",
+                    "showLineNumbers": False,
+                    "showMiniMap": False
+                    },
+                    "content": "<img src=\"data:image/png;base64,${mean_hex_map}\" style=\"width: auto; height: auto;\"/>",
+                    "mode": "markdown"
+                },
+                "pluginVersion": "12.0.0",
+                "repeat": "mean_hex_map",
+                "repeatDirection": "v",
+                "title": "Pedestal Hexmap",
+                "type": "text"
+                },
+                {
+                "fieldConfig": {
+                    "defaults": {},
+                    "overrides": []
+                },
+                "gridPos": {
+                    "h": 18,
+                    "w": 12,
+                    "x": 12,
+                    "y": 0
+                },
+                "id": 2,
+                "options": {
+                    "code": {
+                    "language": "plaintext",
+                    "showLineNumbers": False,
+                    "showMiniMap": False
+                    },
+                    "content": "<img src=\"data:image/png;base64,${std_hex_map}\" style=\"width: auto; height: auto;\"/>",
+                    "mode": "markdown"
+                },
+                "pluginVersion": "12.0.0",
+                "repeat": "std_hex_map",
+                "repeatDirection": "v",
+                "title": "Noise Hexmap",
+                "type": "text"
+                }
+            ],
+            "preload": False,
+            "schemaVersion": 41,
+            "tags": [],
+            "templating": {
+                "list": [
+                {
+                    "current": {
+                    "text": "",
+                    "value": ""
+                    },
+                    "label": "Serial Name",
+                    "name": "module_name",
+                    "options": [
+                    {
+                        "selected": True,
+                        "text": "",
+                        "value": ""
+                    }
+                    ],
+                    "query": "",
+                    "type": "textbox"
+                },
+                {
+                    "allowCustomValue": True,
+                    "current": {
+                    "text": "All",
+                    "value": [
+                        "$__all"
+                    ]
+                    },
+                    "datasource": {
+                        "type": "postgres",
+                        "uid": f"{self.datasource_uid}"
+                    },
+                    "definition": "SELECT status_desc\nFROM module_pedestal_plots\nGROUP BY status_desc\nORDER BY COUNT(*) DESC;",
+                    "description": "",
+                    "includeAll": True,
+                    "label": "Status",
+                    "multi": True,
+                    "name": "status_desc",
+                    "options": [],
+                    "query": "SELECT status_desc\nFROM module_pedestal_plots\nGROUP BY status_desc\nORDER BY COUNT(*) DESC;",
+                    "refresh": 1,
+                    "regex": "",
+                    "type": "query"
+                },
+                {
+                    "current": {
+                    "text": "All",
+                    "value": "$__all"
+                    },
+                    "definition": "SELECT encode(adc_mean_hexmap, 'base64') AS hex_img\nFROM module_pedestal_plots\nWHERE module_name = '${module_name}'\nAND ('All' = ANY(ARRAY[${status_desc}]) OR \n                (module_pedestal_plots.status_desc IS NULL AND 'NULL' = ANY(ARRAY[${status_desc}])) OR \n                module_pedestal_plots.status_desc::text = ANY(ARRAY[${status_desc}]))\nORDER BY mod_plottest_no DESC;",
+                    "hide": 2,
+                    "includeAll": True,
+                    "multi": True,
+                    "name": "mean_hex_map",
+                    "options": [],
+                    "query": "SELECT encode(adc_mean_hexmap, 'base64') AS hex_img\nFROM module_pedestal_plots\nWHERE module_name = '${module_name}'\nAND ('All' = ANY(ARRAY[${status_desc}]) OR \n                (module_pedestal_plots.status_desc IS NULL AND 'NULL' = ANY(ARRAY[${status_desc}])) OR \n                module_pedestal_plots.status_desc::text = ANY(ARRAY[${status_desc}]))\nORDER BY mod_plottest_no DESC;",
+                    "refresh": 1,
+                    "regex": "",
+                    "type": "query"
+                },
+                {
+                    "current": {
+                    "text": "All",
+                    "value": "$__all"
+                    },
+                    "definition": "SELECT encode(adc_std_hexmap, 'base64') AS hex_img\nFROM module_pedestal_plots\nWHERE module_name = '${module_name}'\n             AND ('All' = ANY(ARRAY[${status_desc}]) OR \n                (module_pedestal_plots.status_desc IS NULL AND 'NULL' = ANY(ARRAY[${status_desc}])) OR \n                module_pedestal_plots.status_desc::text = ANY(ARRAY[${status_desc}]))\nORDER BY mod_plottest_no DESC;",
+                    "description": "",
+                    "hide": 2,
+                    "includeAll": True,
+                    "multi": True,
+                    "name": "std_hex_map",
+                    "options": [],
+                    "query": "SELECT encode(adc_std_hexmap, 'base64') AS hex_img\nFROM module_pedestal_plots\nWHERE module_name = '${module_name}'\n             AND ('All' = ANY(ARRAY[${status_desc}]) OR \n                (module_pedestal_plots.status_desc IS NULL AND 'NULL' = ANY(ARRAY[${status_desc}])) OR \n                module_pedestal_plots.status_desc::text = ANY(ARRAY[${status_desc}]))\nORDER BY mod_plottest_no DESC;",
+                    "refresh": 1,
+                    "regex": "",
+                    "type": "query"
+                }
+                ]
+            },
+            "time": {
+                "from": "now-6h",
+                "to": "now"
+            },
+            "timepicker": {},
+            "timezone": "browser",
+            "title": "Hexmap Plots",
+            "uid": f"{self.dashboard_uid}",
+            "version": 1
         }
 
         return dashboard_json
