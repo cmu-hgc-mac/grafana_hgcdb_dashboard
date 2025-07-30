@@ -412,11 +412,11 @@ class ComponentsLookUpFormBuilder:
     def __init__(self, datasource_uid):
         self.datasource_uid = datasource_uid
         self.dashboard_uid = create_uid("Components Look-up Form")
-        self.hxb_name = "UPPER('${hxb_name}')"
-        self.bp_name = "UPPER('${bp_name}')"
-        self.sen_name = "UPPER('${sen_name}')"
-        self.proto_name = "UPPER('${proto_name}')"
-        self.module_name = "UPPER('${module_name}')"
+        self.hxb_name = "'${hxb_name}'"
+        self.bp_name = "'${bp_name}'"
+        self.sen_name = "'${sen_name}'"
+        self.proto_name = "'${proto_name}'"
+        self.module_name = "'${module_name}'"
 
         self.module_info_sql = f"""
         WITH selected_module_inspect AS (
@@ -639,30 +639,6 @@ class ComponentsLookUpFormBuilder:
         FROM unnested;
         """
 
-        self.mean_hexmap_sql = f"""
-        SELECT DISTINCT ON (module_pedestal_plots.module_name) encode(adc_mean_hexmap, 'base64') AS noise_channel_base64
-        FROM module_pedestal_plots
-        JOIN module_info ON module_pedestal_plots.module_name = module_info.module_name
-        WHERE (module_info.module_name = {self.module_name}
-            OR module_info.proto_name = {self.proto_name}
-            OR module_info.sen_name = {self.sen_name}
-            OR module_info.bp_name = {self.bp_name}
-            OR module_info.hxb_name = {self.hxb_name})
-        ORDER BY module_pedestal_plots.module_name, module_pedestal_plots.mod_plottest_no DESC
-        """
-
-        self.std_hexmap_sql = f"""
-        SELECT DISTINCT ON (module_pedestal_plots.module_name) encode(adc_std_hexmap, 'base64') AS noise_channel_base64
-        FROM module_pedestal_plots
-        JOIN module_info ON module_pedestal_plots.module_name = module_info.module_name
-        WHERE (module_info.module_name = {self.module_name}
-            OR module_info.proto_name = {self.proto_name}
-            OR module_info.sen_name = {self.sen_name}
-            OR module_info.bp_name = {self.bp_name}
-            OR module_info.hxb_name = {self.hxb_name})
-        ORDER BY module_pedestal_plots.module_name, module_pedestal_plots.mod_plottest_no DESC
-        """
-
         self.wirebond_info_sql = f"""
         WITH selected_front_wirebond AS (
             SELECT DISTINCT ON (module_name) *
@@ -701,6 +677,12 @@ class ComponentsLookUpFormBuilder:
             OR module_info.sen_name = {self.sen_name}
             OR module_info.bp_name = {self.bp_name}
             OR module_info.hxb_name = {self.hxb_name})
+        """
+
+        self.module_hex_name_sql = f"""
+        SELECT hxb_name
+        FROM module_info
+        WHERE module_info.module_name = {self.module_name}
         """
 
     def generate_dashboard_json(self):
@@ -1231,7 +1213,7 @@ class ComponentsLookUpFormBuilder:
             "links":[
                 {
                 "title": "All Hexmap Plots",
-                "url": f"{GF_URL}/d/hexmap-plots",
+                "url": f"{GF_URL}/d/hexmap-plots?var-module_name="+"${module_name}",
                 "targetBlank": True
                 }
             ]
@@ -1324,7 +1306,7 @@ class ComponentsLookUpFormBuilder:
             "links":[
                 {
                 "title": "All Hexmap Plots",
-                "url": f"{GF_URL}/d/hexmap-plots",
+                "url": f"{GF_URL}/d/hexmap-plots?var-module_name="+"${module_hex_name}",
                 "targetBlank": True
                 }
             ]
@@ -1748,8 +1730,8 @@ class ComponentsLookUpFormBuilder:
                 "type": "textbox"
             },
             {
-                "name": "mean_hex_map",
-                "label": "Mean Hex Map",
+                "name": "module_hex_name",
+                "label": "Related Hex Name",
                 "type": "query",
                 "hide": 2,
                 "refresh": 1,
@@ -1757,23 +1739,7 @@ class ComponentsLookUpFormBuilder:
                     "type": "postgres",
                     "uid": f"{self.datasource_uid}"
                 },
-                "query": self.mean_hexmap_sql,
-                "current": {
-                "text": "",
-                "value": ""
-                }
-            },
-            {
-                "name": "std_hex_map",
-                "label": "Std Hex Map",
-                "type": "query",
-                "hide": 2,
-                "refresh": 1,
-                "datasource": {
-                    "type": "postgres",
-                    "uid": f"{self.datasource_uid}"
-                },
-                "query": self.std_hexmap_sql,
+                "query": self.module_hex_name_sql,
                 "current": {
                 "text": "",
                 "value": ""
