@@ -417,8 +417,6 @@ class ComponentsLookUpFormBuilder:
         self.sen_name = "UPPER('${sen_name}')"
         self.proto_name = "UPPER('${proto_name}')"
         self.module_name = "UPPER('${module_name}')"
-        self.mean_hex_map_base64 = "${mean_hex_map}"
-        self.std_hex_map_base64 = "${std_hex_map}"
 
         self.module_info_sql = f"""
         WITH selected_module_inspect AS (
@@ -664,10 +662,6 @@ class ComponentsLookUpFormBuilder:
             OR module_info.hxb_name = {self.hxb_name})
         ORDER BY module_pedestal_plots.module_name, module_pedestal_plots.mod_plottest_no DESC
         """
-
-        self.mean_hexmap_md = f'<img src=\"data:image/png;base64,{self.mean_hex_map_base64}" style="width: auto; height: auto;"/>'
-        
-        self.std_hexmap_md = f'<img src=\"data:image/png;base64,{self.std_hex_map_base64}" style="width: auto; height: auto;"/>'
 
         self.wirebond_info_sql = f"""
         WITH selected_front_wirebond AS (
@@ -1465,56 +1459,6 @@ class ComponentsLookUpFormBuilder:
                 }
             }
             },
-            # {
-            # "fieldConfig": {
-            #     "defaults": {},
-            #     "overrides": []
-            # },
-            # "gridPos": {
-            #     "h": 18,
-            #     "w": 12,
-            #     "x": 0,
-            #     "y": 49
-            # },
-            # "id": 9,
-            # "options": {
-            #     "code": {
-            #     "language": "plaintext",
-            #     "showLineNumbers": False,
-            #     "showMiniMap": False
-            #     },
-            #     "content": self.mean_hexmap_md,
-            #     "mode": "markdown"
-            # },
-            # "pluginVersion": "12.0.0",
-            # "title": "Pedestal Hexmap",
-            # "type": "text"
-            # },
-            # {
-            # "fieldConfig": {
-            #     "defaults": {},
-            #     "overrides": []
-            # },
-            # "gridPos": {
-            #     "h": 18,
-            #     "w": 12,
-            #     "x": 12,
-            #     "y": 49
-            # },
-            # "id": 10,
-            # "options": {
-            #     "code": {
-            #     "language": "plaintext",
-            #     "showLineNumbers": False,
-            #     "showMiniMap": False
-            #     },
-            #     "content": self.std_hexmap_md,
-            #     "mode": "markdown"
-            # },
-            # "pluginVersion": "12.0.0",
-            # "title": "Noise Hexmap",
-            # "type": "text"
-            # },
             {
             "datasource": {
                 "type": "grafana-postgresql-datasource",
@@ -1743,6 +1687,13 @@ class HexmapPlotsBuilder:
     def __init__(self, datasource_uid):
         self.datasource_uid = datasource_uid
         self.dashboard_uid = create_uid("Hexmap Plots")
+
+        self.mean_hex_map_base64 = "${mean_hex_map}"
+        self.std_hex_map_base64 = "${std_hex_map}"
+
+        self.mean_hexmap_md = f'<img src=\"data:image/png;base64,{self.mean_hex_map_base64}" style="width: auto; height: auto;"/>'
+        self.std_hexmap_md = f'<img src=\"data:image/png;base64,{self.std_hex_map_base64}" style="width: auto; height: auto;"/>'
+
     
     def generate_dashboard_json(self):
         dashboard_json = {
@@ -1785,7 +1736,7 @@ class HexmapPlotsBuilder:
                     "showLineNumbers": False,
                     "showMiniMap": False
                     },
-                    "content": "<img src=\"data:image/png;base64,${mean_hex_map}\" style=\"width: auto; height: auto;\"/>",
+                    "content": self.mean_hexmap_md,
                     "mode": "markdown"
                 },
                 "pluginVersion": "12.0.0",
@@ -1812,7 +1763,7 @@ class HexmapPlotsBuilder:
                     "showLineNumbers": False,
                     "showMiniMap": False
                     },
-                    "content": "<img src=\"data:image/png;base64,${std_hex_map}\" style=\"width: auto; height: auto;\"/>",
+                    "content": self.std_hexmap_md,
                     "mode": "markdown"
                 },
                 "pluginVersion": "12.0.0",
