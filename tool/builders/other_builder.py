@@ -1302,7 +1302,14 @@ class ComponentsLookUpFormBuilder:
                 }
             ],
             "title": "Hexaboard Pedestal Test",
-            "type": "table"
+            "type": "table",
+            "links":[
+                {
+                "title": "All Hexmap Plots",
+                "url": f"{GF_URL}/d/hexmap-plots",
+                "targetBlank": True
+                }
+            ]
             },
             {
             "type": "xychart",
