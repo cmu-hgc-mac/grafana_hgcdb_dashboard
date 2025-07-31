@@ -410,14 +410,18 @@ class IVCurveBuilder:
 
 class ComponentsLookUpFormBuilder:
     def __init__(self, datasource_uid):
+        ## === UIDs ===
         self.datasource_uid = datasource_uid
         self.dashboard_uid = create_uid("Components Look-up Form")
-        self.hxb_name = "'${hxb_name}'"
-        self.bp_name = "'${bp_name}'"
-        self.sen_name = "'${sen_name}'"
-        self.proto_name = "'${proto_name}'"
-        self.module_name = "'${module_name}'"
 
+        ## == Arguments ==
+        self.hxb_name = "UPPER('${hxb_name}')"
+        self.bp_name = "UPPER('${bp_name}')"
+        self.sen_name = "UPPER('${sen_name}')"
+        self.proto_name = "UPPER('${proto_name}')"
+        self.module_name = "UPPER('${module_name}')"
+
+        ## === SQL ===
         self.module_info_sql = f"""
         WITH selected_module_inspect AS (
             SELECT DISTINCT ON (module_name) *
@@ -679,12 +683,27 @@ class ComponentsLookUpFormBuilder:
             OR module_info.hxb_name = {self.hxb_name})
         """
 
+        self.module_module_name_sql = f"""
+        SELECT module_name
+        FROM module_info
+        WHERE (module_info.module_name = {self.module_name}
+            OR module_info.proto_name = {self.proto_name}
+            OR module_info.sen_name = {self.sen_name}
+            OR module_info.bp_name = {self.bp_name}
+            OR module_info.hxb_name = {self.hxb_name})
+        """
+
         self.module_hex_name_sql = f"""
         SELECT hxb_name
         FROM module_info
-        WHERE module_info.module_name = {self.module_name}
+        WHERE (module_info.module_name = {self.module_name}
+            OR module_info.proto_name = {self.proto_name}
+            OR module_info.sen_name = {self.sen_name}
+            OR module_info.bp_name = {self.bp_name}
+            OR module_info.hxb_name = {self.hxb_name})
         """
 
+    ######################################
     def generate_dashboard_json(self):
         """Generate the dashboard JSON for the components look-up form.
         """
@@ -1213,7 +1232,7 @@ class ComponentsLookUpFormBuilder:
             "links":[
                 {
                 "title": "All Hexmap Plots",
-                "url": f"{GF_URL}/d/hexmap-plots?var-module_name="+"${module_name}",
+                "url": f"{GF_URL}/d/hexmap-plots?var-module_name="+"${module_module_name}",
                 "targetBlank": True
                 }
             ]
@@ -1744,7 +1763,23 @@ class ComponentsLookUpFormBuilder:
                 "text": "",
                 "value": ""
                 }
-            }    
+            },
+            {
+                "name": "module_module_name",
+                "label": "Related module Name",
+                "type": "query",
+                "hide": 2,
+                "refresh": 1,
+                "datasource": {
+                    "type": "postgres",
+                    "uid": f"{self.datasource_uid}"
+                },
+                "query": self.module_module_name_sql,
+                "current": {
+                "text": "",
+                "value": ""
+                }
+            }        
             ]
         },
         "time": {
@@ -1760,6 +1795,11 @@ class ComponentsLookUpFormBuilder:
 
         return dashboard_json
 
+
+# ============================================================
+# === Hexmap Plots Builder ===================================
+# ============================================================
+
 class HexmapPlotsBuilder:
     def __init__(self, datasource_uid):
         self.datasource_uid = datasource_uid
@@ -1771,7 +1811,27 @@ class HexmapPlotsBuilder:
         self.mean_hexmap_md = f'<img src=\"data:image/png;base64,{self.mean_hex_map_base64}" style="width: auto; height: auto;"/>'
         self.std_hexmap_md = f'<img src=\"data:image/png;base64,{self.std_hex_map_base64}" style="width: auto; height: auto;"/>'
 
-    
+        self.mean_hexmap_sql = """
+        SELECT encode(adc_mean_hexmap, 'base64') AS hex_img
+        FROM module_pedestal_plots
+        WHERE module_name = '${module_name}'
+            AND ('All' = ANY(ARRAY[${status_desc}]) OR 
+            (module_pedestal_plots.status_desc IS NULL AND 'NULL' = ANY(ARRAY[${status_desc}])) OR 
+            module_pedestal_plots.status_desc::text = ANY(ARRAY[${status_desc}]))
+        ORDER BY mod_plottest_no DESC;
+        """
+
+        self.std_hexmap_sql = """
+        SELECT encode(adc_std_hexmap, 'base64') AS hex_img
+        FROM module_pedestal_plots
+        WHERE module_name = '${module_name}'
+            AND ('All' = ANY(ARRAY[${status_desc}]) OR 
+            (module_pedestal_plots.status_desc IS NULL AND 'NULL' = ANY(ARRAY[${status_desc}])) OR 
+            module_pedestal_plots.status_desc::text = ANY(ARRAY[${status_desc}]))
+        ORDER BY mod_plottest_no DESC;
+        """
+
+    ######################################
     def generate_dashboard_json(self):
         dashboard_json = {
             "annotations": {
@@ -1884,7 +1944,6 @@ class HexmapPlotsBuilder:
                         "type": "postgres",
                         "uid": f"{self.datasource_uid}"
                     },
-                    "definition": "SELECT status_desc\nFROM module_pedestal_plots\nGROUP BY status_desc\nORDER BY COUNT(*) DESC;",
                     "description": "",
                     "includeAll": True,
                     "label": "Status",
@@ -1901,13 +1960,12 @@ class HexmapPlotsBuilder:
                     "text": "All",
                     "value": "$__all"
                     },
-                    "definition": "SELECT encode(adc_mean_hexmap, 'base64') AS hex_img\nFROM module_pedestal_plots\nWHERE module_name = '${module_name}'\nAND ('All' = ANY(ARRAY[${status_desc}]) OR \n                (module_pedestal_plots.status_desc IS NULL AND 'NULL' = ANY(ARRAY[${status_desc}])) OR \n                module_pedestal_plots.status_desc::text = ANY(ARRAY[${status_desc}]))\nORDER BY mod_plottest_no DESC;",
                     "hide": 2,
                     "includeAll": True,
                     "multi": True,
                     "name": "mean_hex_map",
                     "options": [],
-                    "query": "SELECT encode(adc_mean_hexmap, 'base64') AS hex_img\nFROM module_pedestal_plots\nWHERE module_name = '${module_name}'\nAND ('All' = ANY(ARRAY[${status_desc}]) OR \n                (module_pedestal_plots.status_desc IS NULL AND 'NULL' = ANY(ARRAY[${status_desc}])) OR \n                module_pedestal_plots.status_desc::text = ANY(ARRAY[${status_desc}]))\nORDER BY mod_plottest_no DESC;",
+                    "query": self.mean_hexmap_sql,
                     "refresh": 1,
                     "regex": "",
                     "type": "query"
@@ -1917,14 +1975,12 @@ class HexmapPlotsBuilder:
                     "text": "All",
                     "value": "$__all"
                     },
-                    "definition": "SELECT encode(adc_std_hexmap, 'base64') AS hex_img\nFROM module_pedestal_plots\nWHERE module_name = '${module_name}'\n             AND ('All' = ANY(ARRAY[${status_desc}]) OR \n                (module_pedestal_plots.status_desc IS NULL AND 'NULL' = ANY(ARRAY[${status_desc}])) OR \n                module_pedestal_plots.status_desc::text = ANY(ARRAY[${status_desc}]))\nORDER BY mod_plottest_no DESC;",
-                    "description": "",
                     "hide": 2,
                     "includeAll": True,
                     "multi": True,
                     "name": "std_hex_map",
                     "options": [],
-                    "query": "SELECT encode(adc_std_hexmap, 'base64') AS hex_img\nFROM module_pedestal_plots\nWHERE module_name = '${module_name}'\n             AND ('All' = ANY(ARRAY[${status_desc}]) OR \n                (module_pedestal_plots.status_desc IS NULL AND 'NULL' = ANY(ARRAY[${status_desc}])) OR \n                module_pedestal_plots.status_desc::text = ANY(ARRAY[${status_desc}]))\nORDER BY mod_plottest_no DESC;",
+                    "query": self.std_hexmap_sql,
                     "refresh": 1,
                     "regex": "",
                     "type": "query"
