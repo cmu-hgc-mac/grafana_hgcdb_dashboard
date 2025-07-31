@@ -13,9 +13,16 @@ class AlertBuilder:
         """Build all alerts based on the given alert_dict.
         """ 
         # generate alert json
-        alert_sql = self._generate_alertSQL(alert['parameter'], alert['table'])
-        alert_json = self.generate_alert_rule(alert_sql, alert, alert['dashboard'], folder_name)
+        if "sql" not in alert:
+            alert_sql = self._generate_alertSQL(alert['parameter'], alert['table'])
+            alert_json = self.generate_alert_rule(alert_sql, alert, alert['dashboard'], folder_name)
+        else:
+            alert_sql = alert["sql"]
+            # fetch the dashboard name of the data source
+            match = re.search(r'\bFROM\s+([a-zA-Z_][\w]*)', alert_sql, re.IGNORECASE)
+            alert_json = self.generate_alert_rule(alert_sql,alert, match.group(1),folder_name)
         
+
         return alert_json
 
     def generate_alert_rule(self, alertSQL: str, alertInfo: dict, dashboard_title: str, folder_name: str) -> dict:
@@ -51,9 +58,7 @@ class AlertBuilder:
             "noDataState": "NoData",
             "execErrState": "Error",
             "annotations": {
-                "__dashboardUid__": f"{dashboard_uid}",
-                "__panelId__": f"{alertInfo['panelID']}",
-                "summary": "Auto-imported from UI"
+                "summary": "Auto-imported from UI",
             },
             "labels":alertInfo["labels"],
             "data": [
@@ -131,6 +136,32 @@ class AlertBuilder:
         LIMIT 1;
         """
         return alertSQL
+    
+    def generate_missing_xml_sql(self, table_name: str, columns: list, parameter: str, condition:list, ignore: list = ["comment"]) -> str:
+        """Generate sql for XML generate alert
+            If other columns are not empty but xml_gen_datetime is Null, then fire
+        """
+        for item in ignore:
+            try:
+                columns.remove(item)
+            except:
+                print(f"There's no column named {item} in table", table_name)
+        
+        columns.remove(parameter)
+        all_conditions = [condition[0].replace("<column>",col) for col in columns]
+        combined_clause = " AND\n  ".join(all_conditions)
+        parameter_line = condition[1].replace("<parameter>",parameter)
+        
+        sql = f"""
+                SELECT now() AS time,
+                    COUNT(*) AS pending_missing_xml
+                FROM {table_name}
+                WHERE
+                {combined_clause} AND
+                {parameter_line};
+                """.strip()
+        
+        return sql
     
     def save_alerts_json(self, alert: dict, alert_json: dict, folder: str):
         """Save alerts JSON into Alerts/<alerts_title>.json

@@ -333,8 +333,8 @@ class AlertRuleValidator:
         valid_types = {
             "title": str,
             "table": str,
-            "panelID": str,
-            "parameter": str,
+            "panelID": (str, type(None)),
+            "parameter": (str, type(None)),
             "threshold": list,
             "logicType": str,
             "duration": str,
@@ -402,6 +402,9 @@ class AlertRuleValidator:
         alert_title = alert.get("title", "<Untitled>")
         dash_title = alert.get("dashboard", "<Untitled>")
         panelID_raw = alert.get("panelID")
+
+        if not panelID_raw:
+            return passed
 
         # Check if the panelID is an integer in str type
         try:
