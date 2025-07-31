@@ -70,7 +70,7 @@ dashboards:
         groupby: {"module_inspect": ["module_name", "grade"]}
         filters: {"module_info": ["bp_material", "resolution", "roc_version", "sen_thickness", "geometry", "assembled", "wirebond_status", "shipping_status"], "module_inspect": ["grade"]}
         distinct: ["module_inspect", "module_info"]
-      - title: "Flatness"
+      - title: "Flatness (mm)"
         table: "module_inspect"
         chart_type: "histogram"
         condition: "flatness IS NOT NULL"
@@ -136,7 +136,7 @@ dashboards:
         groupby: {"proto_inspect": ["proto_name", "grade"]}
         filters: {"baseplate": ["bp_material"], "sensor": ["thickness", "resolution", "geometry"], "proto_assembly": ["ass_run_date"], "proto_inspect": ["grade"], "module_info": ["shipping_status"]}
         distinct: ["proto_inspect", "baseplate", "sensor", "proto_assembly"]
-      - title: "Flatness"
+      - title: "Flatness (mm)"
         table: "proto_inspect"
         chart_type: "histogram"
         condition: "flatness IS NOT NULL"

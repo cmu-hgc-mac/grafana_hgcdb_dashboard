@@ -703,6 +703,8 @@ class ComponentsLookUpFormBuilder:
             OR module_info.hxb_name = {self.hxb_name})
         """
 
+        self.qc_data_list = self.generate_qc_data_list()
+
     ######################################
     def generate_dashboard_json(self):
         """Generate the dashboard JSON for the components look-up form.
@@ -817,6 +819,30 @@ class ComponentsLookUpFormBuilder:
             "type": "table"
             },
             {
+            "type": "text",
+            "title": "Module QC Summary",
+            "gridPos": {
+                "x": 0,
+                "y": 4,
+                "h": 22,
+                "w": 24
+            },
+            "fieldConfig": {
+                "defaults": {},
+                "overrides": []
+            },
+            "pluginVersion": "12.0.0",
+            "options": {
+                "mode": "markdown",
+                "code": {
+                "language": "plaintext",
+                "showLineNumbers": False,
+                "showMiniMap": False
+                },
+                "content": "## Basic Info\n\n- **module_name**: ${module_name}  \n- **final_grade**: ${final_grade}\n  - **iv_grade**: ${iv_grade}\n  - **readout_grade**: ${readout_grade}\n  - **module_grade**: ${module_grade}\n  - **proto_grade**: ${proto_grade}\n- **comments_all**:  \n  ${comments_all}\n\n---\n\n## Measurements\n\n|              | flatness (mm)        | ave_thickness (mm)     | max_thickness (mm)    | x_offset (μm)        | y_offset (μm)      | ang_offset  (deg)     |\n|--------------|------------------|----------------------|----------------------|------------------|------------------|---------------------|\n| **Prototype**| ${proto_flatness} | ${proto_ave_thickness} | ${proto_max_thickness} | ${proto_x_offset} | ${proto_y_offset} | ${proto_ang_offset} |\n| **Module**   | ${module_flatness} | ${module_ave_thickness} | ${module_max_thickness} | ${module_x_offset} | ${module_y_offset} | ${module_ang_offset} |\n\n---\n\n## Cell Info\n\n- **list_cells_unbonded**: ${list_cells_unbonded}  \n- **list_cells_grounded**: ${list_cells_grounded}  \n- **list_noisy_cells**: ${list_noisy_cells}  \n- **list_dead_cells**: ${list_dead_cells}  \n- **count_bad_cells**: ${count_bad_cells}  \n\n---\n\n## IV Info\n\n- **i_ratio_ref_b_over_a**: ${i_ratio_ref_b_over_a}\n- **ref_volt_a**: ${ref_volt_a}\n- **ref_volt_b**: ${ref_volt_b}\n- **i_at_ref_a**: ${i_at_ref_a}"
+            }
+            },
+            {
             "datasource": {
                 "type": "grafana-postgresql-datasource",
                 "uid": f"{self.datasource_uid}"
@@ -853,7 +879,7 @@ class ComponentsLookUpFormBuilder:
                 "h": 4,
                 "w": 24,
                 "x": 0,
-                "y": 4
+                "y": 26
             },
             "id": 3,
             "options": {
@@ -935,7 +961,7 @@ class ComponentsLookUpFormBuilder:
                 "h": 4,
                 "w": 24,
                 "x": 0,
-                "y": 8
+                "y": 30
             },
             "id": 4,
             "options": {
@@ -1017,7 +1043,7 @@ class ComponentsLookUpFormBuilder:
                 "h": 4,
                 "w": 24,
                 "x": 0,
-                "y": 12
+                "y": 34
             },
             "id": 5,
             "options": {
@@ -1099,7 +1125,7 @@ class ComponentsLookUpFormBuilder:
                 "h": 4,
                 "w": 24,
                 "x": 0,
-                "y": 16
+                "y": 38
             },
             "id": 2,
             "options": {
@@ -1181,7 +1207,7 @@ class ComponentsLookUpFormBuilder:
                 "h": 9,
                 "w": 24,
                 "x": 0,
-                "y": 20
+                "y": 42
             },
             "id": 6,
             "options": {
@@ -1274,7 +1300,7 @@ class ComponentsLookUpFormBuilder:
                 "h": 9,
                 "w": 24,
                 "x": 0,
-                "y": 29
+                "y": 51
             },
             "id": 7,
             "options": {
@@ -1335,7 +1361,7 @@ class ComponentsLookUpFormBuilder:
             "title": "All Module IV Curves [Log Scale]",
             "gridPos": {
                 "x": 0,
-                "y": 38,
+                "y": 60,
                 "h": 11,
                 "w": 24
             },
@@ -1522,7 +1548,7 @@ class ComponentsLookUpFormBuilder:
                 "h": 4,
                 "w": 24,
                 "x": 0,
-                "y": 49
+                "y": 71
             },
             "id": 11,
             "options": {
@@ -1608,7 +1634,7 @@ class ComponentsLookUpFormBuilder:
                 "h": 4,
                 "w": 24,
                 "x": 0,
-                "y": 53
+                "y": 75
             },
             "id": 12,
             "options": {
@@ -1780,7 +1806,7 @@ class ComponentsLookUpFormBuilder:
                 "value": ""
                 }
             }        
-            ]
+            ] + self.qc_data_list
         },
         "time": {
             "from": "now-6h",
@@ -1794,6 +1820,44 @@ class ComponentsLookUpFormBuilder:
         }
 
         return dashboard_json
+
+    def generate_qc_data_list(self):
+        qc_data_list = []
+
+        for qc_data in QC_COLUMNS:
+            raw_sql = f"""
+            SELECT {qc_data}
+            FROM module_qc_summary
+            JOIN module_info ON module_qc_summary.module_name = module_info.module_name
+            WHERE (module_info.module_name = {self.module_name}
+                OR module_info.proto_name = {self.proto_name}
+                OR module_info.sen_name = {self.sen_name}
+                OR module_info.bp_name = {self.bp_name}
+                OR module_info.hxb_name = {self.hxb_name})
+            ORDER BY mod_qc_no DESC
+            LIMIT 1;
+            """
+
+            arg = {
+                "name": f"{qc_data}",
+                "label": f"{qc_data}",
+                "type": "query",
+                "hide": 2,
+                "refresh": 1,
+                "datasource": {
+                    "type": "postgres",
+                    "uid": f"{self.datasource_uid}"
+                },
+                "query": raw_sql,
+                "current": {
+                "text": "",
+                "value": ""
+                }
+            }
+
+            qc_data_list.append(arg)
+
+        return qc_data_list
 
 
 # ============================================================
