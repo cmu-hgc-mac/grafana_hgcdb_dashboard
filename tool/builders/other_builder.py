@@ -409,6 +409,8 @@ class IVCurveBuilder:
 # ============================================================
 
 class ComponentsLookUpFormBuilder:
+    """I know it looks gross, can't help sorry."""
+
     def __init__(self, datasource_uid):
         ## === UIDs ===
         self.datasource_uid = datasource_uid
@@ -704,49 +706,6 @@ class ComponentsLookUpFormBuilder:
         """
 
         self.qc_data_list = self.generate_qc_data_list()
-
-        self.qc_summary_md = """
-        ## Basic Info
-
-        - **module_name**: ${module_name}  
-        - **final_grade**: ${final_grade}
-        - **iv_grade**: ${iv_grade}
-        - **readout_grade**: ${readout_grade}
-        - **module_grade**: ${module_grade}
-        - **proto_grade**: ${proto_grade}
-        - **comments_all**:
-        ```  
-        ${comments_all}
-        ```
-
-        ---
-
-        ## Measurements
-
-        |              | flatness (mm)        | ave_thickness (mm)     | max_thickness (mm)    | x_offset (μm)        | y_offset (μm)      | ang_offset  (deg)     |
-        |--------------|------------------|----------------------|----------------------|------------------|------------------|---------------------|
-        | **Prototype**| ${proto_flatness} | ${proto_ave_thickness} | ${proto_max_thickness} | ${proto_x_offset} | ${proto_y_offset} | ${proto_ang_offset} |
-        | **Module**   | ${module_flatness} | ${module_ave_thickness} | ${module_max_thickness} | ${module_x_offset} | ${module_y_offset} | ${module_ang_offset} |
-
-        ---
-
-        ## Cell Info
-
-        - **list_cells_unbonded**: ${list_cells_unbonded}  
-        - **list_cells_grounded**: ${list_cells_grounded}  
-        - **list_noisy_cells**: ${list_noisy_cells}  
-        - **list_dead_cells**: ${list_dead_cells}  
-        - **count_bad_cells**: ${count_bad_cells}  
-
-        ---
-
-        ## IV Info
-
-        - **i_ratio_ref_b_over_a**: ${i_ratio_ref_b_over_a}
-        - **ref_volt_a**: ${ref_volt_a}
-        - **ref_volt_b**: ${ref_volt_b}
-        - **i_at_ref_a**: ${i_at_ref_a}
-"""
 
     ######################################
     def generate_dashboard_json(self):
@@ -1869,7 +1828,11 @@ class ComponentsLookUpFormBuilder:
 
         for qc_data in QC_COLUMNS:
             raw_sql = f"""
-            SELECT {qc_data}
+            SELECT 
+                CASE 
+                    WHEN {qc_data}::text = '1e+10' THEN 'null'
+                    ELSE {qc_data}::text 
+                END AS {qc_data}
             FROM module_qc_summary
             JOIN module_info ON module_qc_summary.module_name = module_info.module_name
             WHERE (module_info.module_name = {self.module_name}
