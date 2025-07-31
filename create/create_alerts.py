@@ -78,14 +78,17 @@ for config in filelist:
         # Generate the alert json
         folder_name = config.split(".")[0].replace("_", " ")
         if folder_name == "All Table Alerts Config":
+            title = alert["title"]
             for table in tablelist:
+                alert["title"] = title
                 alert["table"] = table[:-4]
                 if alert["table"] == "module_info":
+                    # We don't want to generate/upload "module_info" table
                     continue
-                alert["title"] = "Checking XML Generate:" + alert["table"]
+                alert["title"] = alert["title"] + ":" + alert["table"]
                 columns = dashboardValidator.get_valid_columns(alert["table"])
-                if "xml_gen_datetime" in columns:
-                    alert["sql"] = alert_builder.generate_missing_xml_sql(alert["table"],columns)
+                if alert["parameter"] in columns:
+                    alert["sql"] = alert_builder.generate_missing_xml_sql(alert["table"],columns,alert["parameter"],alert["conditions"],alert["ignore_columns"])
                     alert_json = alert_builder.generate_alerts(alert, folder_name)
 
                     # Export the alert json to a file

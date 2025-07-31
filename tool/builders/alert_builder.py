@@ -137,26 +137,28 @@ class AlertBuilder:
         """
         return alertSQL
     
-    def generate_missing_xml_sql(self, table_name: str, columns: list, xml_field: str = "xml_gen_datetime") -> str:
+    def generate_missing_xml_sql(self, table_name: str, columns: list, parameter: str, condition:list, ignore: list = ["comment"]) -> str:
         """Generate sql for XML generate alert
             If other columns are not empty but xml_gen_datetime is Null, then fire
         """
-        try:
-            columns.remove("comment")
-        except:
-            print("There's no column named comment in table", table_name)
+        for item in ignore:
+            try:
+                columns.remove(item)
+            except:
+                print(f"There's no column named {item} in table", table_name)
         
-        columns.remove(xml_field)
-        not_null_conditions = [f"{col} IS NOT NULL" for col in columns]
-        not_null_clause = " AND\n  ".join(not_null_conditions)
+        columns.remove(parameter)
+        all_conditions = [condition[0].replace("<column>",col) for col in columns]
+        combined_clause = " AND\n  ".join(all_conditions)
+        parameter_line = condition[1].replace("<parameter>",parameter)
         
         sql = f"""
                 SELECT now() AS time,
                     COUNT(*) AS pending_missing_xml
                 FROM {table_name}
                 WHERE
-                {not_null_clause} AND
-                {xml_field} IS NULL;
+                {combined_clause} AND
+                {parameter_line};
                 """.strip()
         
         return sql
