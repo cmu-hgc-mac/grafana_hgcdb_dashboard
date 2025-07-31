@@ -705,6 +705,49 @@ class ComponentsLookUpFormBuilder:
 
         self.qc_data_list = self.generate_qc_data_list()
 
+        self.qc_summary_md = """
+        ## Basic Info
+
+        - **module_name**: ${module_name}  
+        - **final_grade**: ${final_grade}
+        - **iv_grade**: ${iv_grade}
+        - **readout_grade**: ${readout_grade}
+        - **module_grade**: ${module_grade}
+        - **proto_grade**: ${proto_grade}
+        - **comments_all**:
+        ```  
+        ${comments_all}
+        ```
+
+        ---
+
+        ## Measurements
+
+        |              | flatness (mm)        | ave_thickness (mm)     | max_thickness (mm)    | x_offset (μm)        | y_offset (μm)      | ang_offset  (deg)     |
+        |--------------|------------------|----------------------|----------------------|------------------|------------------|---------------------|
+        | **Prototype**| ${proto_flatness} | ${proto_ave_thickness} | ${proto_max_thickness} | ${proto_x_offset} | ${proto_y_offset} | ${proto_ang_offset} |
+        | **Module**   | ${module_flatness} | ${module_ave_thickness} | ${module_max_thickness} | ${module_x_offset} | ${module_y_offset} | ${module_ang_offset} |
+
+        ---
+
+        ## Cell Info
+
+        - **list_cells_unbonded**: ${list_cells_unbonded}  
+        - **list_cells_grounded**: ${list_cells_grounded}  
+        - **list_noisy_cells**: ${list_noisy_cells}  
+        - **list_dead_cells**: ${list_dead_cells}  
+        - **count_bad_cells**: ${count_bad_cells}  
+
+        ---
+
+        ## IV Info
+
+        - **i_ratio_ref_b_over_a**: ${i_ratio_ref_b_over_a}
+        - **ref_volt_a**: ${ref_volt_a}
+        - **ref_volt_b**: ${ref_volt_b}
+        - **i_at_ref_a**: ${i_at_ref_a}
+"""
+
     ######################################
     def generate_dashboard_json(self):
         """Generate the dashboard JSON for the components look-up form.
@@ -824,7 +867,7 @@ class ComponentsLookUpFormBuilder:
             "gridPos": {
                 "x": 0,
                 "y": 4,
-                "h": 22,
+                "h": 24,
                 "w": 24
             },
             "fieldConfig": {
@@ -839,7 +882,7 @@ class ComponentsLookUpFormBuilder:
                 "showLineNumbers": False,
                 "showMiniMap": False
                 },
-                "content": "## Basic Info\n\n- **module_name**: ${module_name}  \n- **final_grade**: ${final_grade}\n  - **iv_grade**: ${iv_grade}\n  - **readout_grade**: ${readout_grade}\n  - **module_grade**: ${module_grade}\n  - **proto_grade**: ${proto_grade}\n- **comments_all**:  \n  ${comments_all}\n\n---\n\n## Measurements\n\n|              | flatness (mm)        | ave_thickness (mm)     | max_thickness (mm)    | x_offset (μm)        | y_offset (μm)      | ang_offset  (deg)     |\n|--------------|------------------|----------------------|----------------------|------------------|------------------|---------------------|\n| **Prototype**| ${proto_flatness} | ${proto_ave_thickness} | ${proto_max_thickness} | ${proto_x_offset} | ${proto_y_offset} | ${proto_ang_offset} |\n| **Module**   | ${module_flatness} | ${module_ave_thickness} | ${module_max_thickness} | ${module_x_offset} | ${module_y_offset} | ${module_ang_offset} |\n\n---\n\n## Cell Info\n\n- **list_cells_unbonded**: ${list_cells_unbonded}  \n- **list_cells_grounded**: ${list_cells_grounded}  \n- **list_noisy_cells**: ${list_noisy_cells}  \n- **list_dead_cells**: ${list_dead_cells}  \n- **count_bad_cells**: ${count_bad_cells}  \n\n---\n\n## IV Info\n\n- **i_ratio_ref_b_over_a**: ${i_ratio_ref_b_over_a}\n- **ref_volt_a**: ${ref_volt_a}\n- **ref_volt_b**: ${ref_volt_b}\n- **i_at_ref_a**: ${i_at_ref_a}"
+                "content": "## Basic Info\n\n- **module_name**: ${module_name}  \n- **final_grade**: ${final_grade}\n  - **iv_grade**: ${iv_grade}\n  - **readout_grade**: ${readout_grade}\n  - **module_grade**: ${module_grade}\n  - **proto_grade**: ${proto_grade}\n- **comments_all**:\n  ```  \n  ${comments_all}\n  ```\n\n---\n\n## Measurements\n\n|              | flatness (mm)        | ave_thickness (mm)     | max_thickness (mm)    | x_offset (μm)        | y_offset (μm)      | ang_offset  (deg)     |\n|--------------|------------------|----------------------|----------------------|------------------|------------------|---------------------|\n| **Prototype**| ${proto_flatness} | ${proto_ave_thickness} | ${proto_max_thickness} | ${proto_x_offset} | ${proto_y_offset} | ${proto_ang_offset} |\n| **Module**   | ${module_flatness} | ${module_ave_thickness} | ${module_max_thickness} | ${module_x_offset} | ${module_y_offset} | ${module_ang_offset} |\n\n---\n\n## Cell Info\n\n- **list_cells_unbonded**: ${list_cells_unbonded}  \n- **list_cells_grounded**: ${list_cells_grounded}  \n- **list_noisy_cells**: ${list_noisy_cells}  \n- **list_dead_cells**: ${list_dead_cells}  \n- **count_bad_cells**: ${count_bad_cells}  \n\n---\n\n## IV Info\n\n- **i_ratio_ref_b_over_a**: ${i_ratio_ref_b_over_a}\n- **ref_volt_a**: ${ref_volt_a}\n- **ref_volt_b**: ${ref_volt_b}\n- **i_at_ref_a**: ${i_at_ref_a}"
             }
             },
             {
