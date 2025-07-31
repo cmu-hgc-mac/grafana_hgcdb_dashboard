@@ -1,4 +1,4 @@
-# Grafana_HGCDB_Dashboard
+# Grafana_HGCDB_Dashboard ε=ε=(<ゝω・)☆
 This is a dashboard provided by [Grafana](https://github.com/grafana/grafana?tab=readme-ov-file) to monitor the HGC Postgres database.  
 Chinese Version README: [读我.md](a_EverythingNeedToChange/读我.md)
 
