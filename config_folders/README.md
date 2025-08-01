@@ -93,10 +93,10 @@ To generate a new panel, please add the following template under the dashboard h
 
 - `title`: The title of the alert, normally would be a condensed summary of the situaion. Such as "High Temperature Alert".
 
-- `dashboard`: The dashboard that the alert is connected to. Leave it `""` if there is no linked dashboard.
-- `panelID`: The panel that the alert is connected to.  The panelID (n) will be the n-th panel under dashboard. 
-- `parameter`:The parameter you want to keep track of.
-- `threshold`: A specific value that tells the bourdary between normal and abnormal situation. Please make sure this is a list. If there is both an upper boundary and a lower boundary, please make sure it is in the form of [lower,upper]. **Note**: For all table alerts, please leave it `[0]`.
+- `dashboard`: The dashboard that the alert is connected to. Leave it `""` if there is no linked dashboard. If you have a linked panel, then you also have to have a linked dashboard.
+- `panelID`: The panel that the alert is connected to.  The panelID (n) will be the n-th panel under dashboard. Leave it `""` if there is no linked panel. If you have a linked dashboard, then you have to also have a linked panel.
+- `parameter`:The parameter name you want to keep track of.
+- `threshold`: A specific value that tells the bourdary between normal and abnormal situation. Please make sure this is a list. If there is both an upper boundary and a lower boundary, please make sure it is in the form of [lower,upper]. **Note**: For all-table-alerts and alerts with specific sql command, please leave it `[0]`.
 - `logicTypes`:
   1. "gt": greater than
    2. "lt": less than
@@ -104,11 +104,14 @@ To generate a new panel, please add the following template under the dashboard h
    4. "ne": not equal to
    5. "within_range": fire when data in the range
    6. "outside_range": fire when data out of range
-  **Note**: For all table alerts, please leave it `"gt"`
+  **Note**: For all-table-alerts and alerts with specific sql command, please leave it `"gt"`
 - `duration`: How long should the situation hold before sending an alert.
 - `interval`: The frequency for grafana to check the data.
 - `summary`: A more detailed message of the alert.
 - `labels`: Labels for the alert, such as the severity of the alert.
+- `sql`: an optional parameter to store the sql command that describes the abnormal situation. This is an alternative way of describing abnormal situations. If you do not want to use it, you can simply delete this parameter.
+- `conditions`: this parameter is only used for all-table-alerts. This parameter holds all the sql command that you want to use. Use `<column>` to indicate the sql command would apply to all the columns other than parameters. Use `<parameter>` to apply sql command to the parameter.
+- `ignore_columns`: to not apply `conditions` to these columns.
 
 
 
