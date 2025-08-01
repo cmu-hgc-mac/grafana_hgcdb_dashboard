@@ -89,6 +89,9 @@ sudo systemctl restart grafana-server
 python main.py
 ```
 
+## To add a new dashboard/alert rule
+- [Details here](config_folders/README.md)
+
 ## Files and Folders Inventory:
 - Files:
     - `main.py`: The main script to generate and upload the dashboards to Grafana.
