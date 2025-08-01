@@ -48,7 +48,7 @@ To generate a new panel, please add the following template under the dashboard h
 
 # How to add an alert rule 
   
-To generate a new alert, please go to the corresponding dashboard yaml file (in the folder config_folders) and scroll down to alerts part. Copy the following code after the existing alert rules and make modification:
+- To generate a new alert that link with a specific panel, please go to the corresponding dashboard yaml file (in the folder config_folders) and scroll down to alerts part. Copy the following code after the existing alert rules and make modifications:
 
 ``` yaml
 - title: ""
@@ -61,49 +61,54 @@ To generate a new alert, please go to the corresponding dashboard yaml file (in 
     interval: ""
     summary: ""
     labels: 
-        "severity": "critical"
-        "sensor": "humidity"
-        "location": "east"
+        "team": "inspectors"
+```
+
+- To generate an alert rule that applies to all the tables, please copy and paste the following code after the existing alert rules in config_folders/Other_Alerts_Config/All_Table_Alerts_Config.yaml and make modifications:
+```yaml
+- title: ""
+    table: ""
+    sql: ""
+    conditions: 
+      - ""
+      - ""
+    threshold: [0]
+    logicType: "gt"
+    duration: ""
+    interval: ""
+    summary: ""
+    labels: 
+        "team": "inspectors"
+    dashboard: None
+    panelID: None
+    parameter: ""
+    ignore_columns:
+      - "comment"
 ```
 
 
-## Explanations of each parameter
 
-### title
-The title of the alert, normally would be a condensed summary of the situaion. Such as "High Temperature Alert".
 
-### dashboard
-The dashboard that the alert is connected to.
+## parameters
 
-### panelID
-The panel that the alert is connected to.  
-The panelID (n) will be the n-th panel under dashboard. 
+- `title`: The title of the alert, normally would be a condensed summary of the situaion. Such as "High Temperature Alert".
 
-### parameter
-The parameter you want to keep track of.
-
-### threshold
-A specific value that tells the bourdary between normal and abnormal situation. Please make sure this is a list. If there is both an upper boundary and a lower boundary, please make sure it is in the form of [lower,upper].
-
-### logicTypes
-1. "gt": greater than
-2. "lt": less than
-3. "eq": equal to
-4. "ne": not equal to
-5. "within_range": fire when data in the range
-6. "outside_range": fire when data out of range
-
-### duration
-How long should the situation hold before sending an alert.
-
-### interval
-The frequency for grafana to check the data.
-
-### summary
-A more detailed message of the alert.
-
-### labels
-Labels for the alert, such as the severity of the alert.
+- `dashboard`: The dashboard that the alert is connected to. Leave it `""` if there is no linked dashboard.
+- `panelID`: The panel that the alert is connected to.  The panelID (n) will be the n-th panel under dashboard. 
+- `parameter`:The parameter you want to keep track of.
+- `threshold`: A specific value that tells the bourdary between normal and abnormal situation. Please make sure this is a list. If there is both an upper boundary and a lower boundary, please make sure it is in the form of [lower,upper]. **Note**: For all table alerts, please leave it `[0]`.
+- `logicTypes`:
+  1. "gt": greater than
+   2. "lt": less than
+   3. "eq": equal to
+   4. "ne": not equal to
+   5. "within_range": fire when data in the range
+   6. "outside_range": fire when data out of range
+  **Note**: For all table alerts, please leave it `"gt"`
+- `duration`: How long should the situation hold before sending an alert.
+- `interval`: The frequency for grafana to check the data.
+- `summary`: A more detailed message of the alert.
+- `labels`: Labels for the alert, such as the severity of the alert.
 
 
 
