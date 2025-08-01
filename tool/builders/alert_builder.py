@@ -138,19 +138,28 @@ class AlertBuilder:
         return alertSQL
     
     def generate_missing_xml_sql(self, table_name: str, columns: list, parameter: str, condition:list, ignore: list = ["comment"]) -> str:
-        """Generate sql for XML generate alert
-            If other columns are not empty but xml_gen_datetime is Null, then fire
+        """Generate sql for XML generate/upload alert
         """
+
+        # remove unwanted columns and the columns of the parameter
         for item in ignore:
             try:
                 columns.remove(item)
             except:
                 print(f"There's no column named {item} in table", table_name)
-        
         columns.remove(parameter)
-        all_conditions = [condition[0].replace("<column>",col) for col in columns]
+
+        all_conditions = []
+        for line in condition:
+            if "<column>" in line:
+                for col in columns:
+                    all_conditions.append(line.replace("<column>",col))
+            elif "<parameter>" in line:
+                parameter_line = line.replace("<parameter>",parameter)
+            else:
+                all_conditions.append(line)
         combined_clause = " AND\n  ".join(all_conditions)
-        parameter_line = condition[1].replace("<parameter>",parameter)
+        
         
         sql = f"""
                 SELECT now() AS time,
