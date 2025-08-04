@@ -591,36 +591,6 @@ class ComponentsLookUpFormBuilder:
         ORDER BY hxb_pedestal_test.hxb_pedtest_no DESC
         """
 
-        self.module_iv_curve_sql = rf"""
-        WITH filtered_iv AS (
-            SELECT DISTINCT ON (module_iv_test.status) module_iv_test.*,
-                meas_i[array_length(meas_i, 1)] AS i_last
-            FROM module_iv_test
-            JOIN module_info ON module_iv_test.module_name = module_info.module_name
-            WHERE (module_info.module_name = {self.module_name}
-                OR module_info.proto_name = {self.proto_name}
-                OR module_info.sen_name = {self.sen_name}
-                OR module_info.bp_name = {self.bp_name}
-                OR module_info.hxb_name = {self.hxb_name})
-                AND (meas_v IS NOT NULL AND meas_i IS NOT NULL)
-                AND temp_c ~ '^[-+]?[0-9]+(\.[0-9]+)?$'
-                AND rel_hum ~ '^[-+]?[0-9]+(\.[0-9]+)?$'
-                AND (temp_c::float >= 10 AND temp_c::float <= 30)
-                AND (rel_hum::float <= 12)
-            ORDER BY module_iv_test.status, i_last ASC
-        ),
-            unnested AS (
-                SELECT
-                    status_desc,
-                    v,
-                    i
-                FROM filtered_iv,
-                UNNEST(meas_v, meas_i) AS t(v, i)
-        )
-        SELECT *
-        FROM unnested;
-        """
-
         self.all_module_iv_curve_sql = rf"""
         WITH filtered_iv AS (
             SELECT module_iv_test.*
@@ -632,6 +602,7 @@ class ComponentsLookUpFormBuilder:
                 OR module_info.bp_name = {self.bp_name}
                 OR module_info.hxb_name = {self.hxb_name})
                 AND (meas_v IS NOT NULL AND meas_i IS NOT NULL)
+            ORDER BY mod_ivtest_no ASC
         ),
             unnested AS (
                 SELECT
@@ -641,6 +612,7 @@ class ComponentsLookUpFormBuilder:
                 FROM filtered_iv,
                 UNNEST(meas_v, meas_i) AS t(v, i)
         )
+
         SELECT *
         FROM unnested;
         """
