@@ -417,11 +417,11 @@ class ComponentsLookUpFormBuilder:
         self.dashboard_uid = create_uid("Components Look-up Form")
 
         ## == Arguments ==
-        self.hxb_name = "UPPER('${hxb_name}')"
+        self.hxb_name = "UPPER(REPLACE('${hxb_name}', '-', ''))"
         self.bp_name = "UPPER('${bp_name}')"
         self.sen_name = "UPPER('${sen_name}')"
         self.proto_name = "UPPER('${proto_name}')"
-        self.module_name = "UPPER('${module_name}')"
+        self.module_name = "UPPER(REPLACE('${module_name}', '-', ''))"
         self.mean_hex_map_base64 = "${mean_hex_map}"
         self.std_hex_map_base64 = "${std_hex_map}"
 
