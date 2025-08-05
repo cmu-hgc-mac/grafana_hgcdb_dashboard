@@ -422,6 +422,8 @@ class ComponentsLookUpFormBuilder:
         self.sen_name = "UPPER('${sen_name}')"
         self.proto_name = "UPPER('${proto_name}')"
         self.module_name = "UPPER('${module_name}')"
+        self.mean_hex_map_base64 = "${mean_hex_map}"
+        self.std_hex_map_base64 = "${std_hex_map}"
 
         ## === SQL ===
         self.module_info_sql = f"""
@@ -679,6 +681,35 @@ class ComponentsLookUpFormBuilder:
 
         self.qc_data_list = self.generate_qc_data_list()
 
+        self.mean_hexmap_md = f'<img src=\"data:image/png;base64,{self.mean_hex_map_base64}" style="width: auto; height: auto;"/>'
+        self.std_hexmap_md = f'<img src=\"data:image/png;base64,{self.std_hex_map_base64}" style="width: auto; height: auto;"/>'
+
+        self.mean_hexmap_sql = f"""
+        SELECT DISTINCT ON (module_pedestal_plots.module_name) encode(adc_mean_hexmap, 'base64') AS noise_channel_base64
+        FROM module_pedestal_plots
+        JOIN module_info ON module_pedestal_plots.module_name = module_info.module_name
+        WHERE (module_info.module_name = {self.module_name}
+            OR module_info.proto_name = {self.proto_name}
+            OR module_info.sen_name = {self.sen_name}
+            OR module_info.bp_name = {self.bp_name}
+            OR module_info.hxb_name = {self.hxb_name})
+        ORDER BY module_pedestal_plots.module_name, module_pedestal_plots.mod_plottest_no DESC
+        """
+
+        self.std_hexmap_sql = f"""
+        SELECT DISTINCT ON (module_pedestal_plots.module_name) encode(adc_std_hexmap, 'base64') AS noise_channel_base64
+        FROM module_pedestal_plots
+        JOIN module_info ON module_pedestal_plots.module_name = module_info.module_name
+        WHERE (module_info.module_name = {self.module_name}
+            OR module_info.proto_name = {self.proto_name}
+            OR module_info.sen_name = {self.sen_name}
+            OR module_info.bp_name = {self.bp_name}
+            OR module_info.hxb_name = {self.hxb_name})
+        ORDER BY module_pedestal_plots.module_name, module_pedestal_plots.mod_plottest_no DESC
+        """
+
+
+
     ######################################
     def generate_dashboard_json(self):
         """Generate the dashboard JSON for the components look-up form.
@@ -706,6 +737,7 @@ class ComponentsLookUpFormBuilder:
         "id": None,
         "links": [],
         "panels": [
+    # Panel: Module Info
             {
             "datasource": {
                 "type": "grafana-postgresql-datasource",
@@ -792,6 +824,7 @@ class ComponentsLookUpFormBuilder:
             "title": "Module Info",
             "type": "table"
             },
+    # Panel: Module QC Summary
             {
             "type": "text",
             "title": "Module QC Summary",
@@ -816,6 +849,7 @@ class ComponentsLookUpFormBuilder:
                 "content": "## Basic Info\n\n- **module_name**: ${module_name}  \n- **final_grade**: ${final_grade}\n  - **iv_grade**: ${iv_grade}\n  - **readout_grade**: ${readout_grade}\n  - **module_grade**: ${module_grade}\n  - **proto_grade**: ${proto_grade}\n- **comments_all**:\n  ```  \n  ${comments_all}\n  ```\n\n---\n\n## Measurements\n\n|              | flatness (mm)        | ave_thickness (mm)     | max_thickness (mm)    | x_offset (μm)        | y_offset (μm)      | ang_offset  (deg)     |\n|--------------|------------------|----------------------|----------------------|------------------|------------------|---------------------|\n| **Proto**| ${proto_flatness} | ${proto_ave_thickness} | ${proto_max_thickness} | ${proto_x_offset} | ${proto_y_offset} | ${proto_ang_offset} |\n| **Module**   | ${module_flatness} | ${module_ave_thickness} | ${module_max_thickness} | ${module_x_offset} | ${module_y_offset} | ${module_ang_offset} |\n\n---\n\n## Cell Info\n\n- **list_cells_unbonded**: ${list_cells_unbonded}  \n- **list_cells_grounded**: ${list_cells_grounded}  \n- **list_noisy_cells**: ${list_noisy_cells}  \n- **list_dead_cells**: ${list_dead_cells}  \n- **count_bad_cells**: ${count_bad_cells}  \n\n---\n\n## IV Info\n\n- **i_ratio_ref_b_over_a**: ${i_ratio_ref_b_over_a}\n- **ref_volt_a**: ${ref_volt_a} V\n- **ref_volt_b**: ${ref_volt_b} V\n- **i_at_ref_a**: ${i_at_ref_a} A"
             }
             },
+    # Panel: Proto Info
             {
             "datasource": {
                 "type": "grafana-postgresql-datasource",
@@ -853,7 +887,7 @@ class ComponentsLookUpFormBuilder:
                 "h": 4,
                 "w": 24,
                 "x": 0,
-                "y": 26
+                "y": 79
             },
             "id": 3,
             "options": {
@@ -898,6 +932,7 @@ class ComponentsLookUpFormBuilder:
             "title": "Proto Info",
             "type": "table"
             },
+    # Panel: Sensor Info
             {
             "datasource": {
                 "type": "grafana-postgresql-datasource",
@@ -935,7 +970,7 @@ class ComponentsLookUpFormBuilder:
                 "h": 4,
                 "w": 24,
                 "x": 0,
-                "y": 30
+                "y": 83
             },
             "id": 4,
             "options": {
@@ -980,6 +1015,7 @@ class ComponentsLookUpFormBuilder:
             "title": "Sensor Info",
             "type": "table"
             },
+    # Panel: Baseplate Info
             {
             "datasource": {
                 "type": "grafana-postgresql-datasource",
@@ -1017,7 +1053,7 @@ class ComponentsLookUpFormBuilder:
                 "h": 4,
                 "w": 24,
                 "x": 0,
-                "y": 34
+                "y": 87
             },
             "id": 5,
             "options": {
@@ -1062,6 +1098,7 @@ class ComponentsLookUpFormBuilder:
             "title": "Baseplate Info",
             "type": "table"
             },
+    # Panel: Hexaboard Info
             {
             "datasource": {
                 "type": "grafana-postgresql-datasource",
@@ -1099,7 +1136,7 @@ class ComponentsLookUpFormBuilder:
                 "h": 4,
                 "w": 24,
                 "x": 0,
-                "y": 38
+                "y": 91
             },
             "id": 2,
             "options": {
@@ -1144,6 +1181,7 @@ class ComponentsLookUpFormBuilder:
             "title": "Hexaboard Info",
             "type": "table"
             },
+    # Panel: Module Pedestal Test
             {
             "datasource": {
                 "type": "grafana-postgresql-datasource",
@@ -1181,7 +1219,7 @@ class ComponentsLookUpFormBuilder:
                 "h": 9,
                 "w": 24,
                 "x": 0,
-                "y": 42
+                "y": 28
             },
             "id": 6,
             "options": {
@@ -1237,6 +1275,7 @@ class ComponentsLookUpFormBuilder:
                 }
             ]
             },
+    # Panel: Hexaboard Pedestal Test
             {
             "datasource": {
                 "type": "grafana-postgresql-datasource",
@@ -1274,7 +1313,7 @@ class ComponentsLookUpFormBuilder:
                 "h": 9,
                 "w": 24,
                 "x": 0,
-                "y": 51
+                "y": 37
             },
             "id": 7,
             "options": {
@@ -1330,12 +1369,13 @@ class ComponentsLookUpFormBuilder:
                 }
             ]
             },
+    # Panel: All Module IV Curves [Log Scale]
             {
             "type": "xychart",
             "title": "All Module IV Curves [Log Scale]",
             "gridPos": {
                 "x": 0,
-                "y": 60,
+                "y": 46,
                 "h": 11,
                 "w": 24
             },
@@ -1485,6 +1525,59 @@ class ComponentsLookUpFormBuilder:
                 }
             }
             },
+    # Panel: Latest Mean Hexmap
+            {
+            "fieldConfig": {
+                "defaults": {},
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 18,
+                "w": 12,
+                "x": 0,
+                "y": 57
+            },
+            "id": 9,
+            "options": {
+                "code": {
+                "language": "plaintext",
+                "showLineNumbers": False,
+                "showMiniMap": False
+                },
+                "content": self.mean_hexmap_md,
+                "mode": "markdown"
+            },
+            "pluginVersion": "12.0.0",
+            "title": "Pedestal Hexmap",
+            "type": "text"
+            },
+    # Panel: Latest Noisy Hexmap
+            {
+            "fieldConfig": {
+                "defaults": {},
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 18,
+                "w": 12,
+                "x": 12,
+                "y": 57
+            },
+            "id": 10,
+            "options": {
+                "code": {
+                "language": "plaintext",
+                "showLineNumbers": False,
+                "showMiniMap": False
+                },
+                "content": self.std_hexmap_md,
+                "mode": "markdown"
+            },
+            "pluginVersion": "12.0.0",
+            "title": "Noise Hexmap",
+            "type": "text"
+            },
+    # Panel: Wirebond Info
             {
             "datasource": {
                 "type": "grafana-postgresql-datasource",
@@ -1522,7 +1615,7 @@ class ComponentsLookUpFormBuilder:
                 "h": 4,
                 "w": 24,
                 "x": 0,
-                "y": 71
+                "y": 75
             },
             "id": 11,
             "options": {
@@ -1571,6 +1664,7 @@ class ComponentsLookUpFormBuilder:
             "title": "Wirebond Info",
             "type": "table"
             },
+    # Panel: Bond Pull Info
             {
             "datasource": {
                 "type": "grafana-postgresql-datasource",
@@ -1608,7 +1702,7 @@ class ComponentsLookUpFormBuilder:
                 "h": 4,
                 "w": 24,
                 "x": 0,
-                "y": 75
+                "y": 95
             },
             "id": 12,
             "options": {
@@ -1779,7 +1873,39 @@ class ComponentsLookUpFormBuilder:
                 "text": "",
                 "value": ""
                 }
-            }        
+            },
+            {
+                "name": "mean_hex_map",
+                "label": "Mean Hex Map",
+                "type": "query",
+                "hide": 2,
+                "refresh": 1,
+                "datasource": {
+                    "type": "postgres",
+                    "uid": f"{self.datasource_uid}"
+                },
+                "query": self.mean_hexmap_sql,
+                "current": {
+                "text": "",
+                "value": ""
+                }
+            },
+            {
+                "name": "std_hex_map",
+                "label": "Std Hex Map",
+                "type": "query",
+                "hide": 2,
+                "refresh": 1,
+                "datasource": {
+                    "type": "postgres",
+                    "uid": f"{self.datasource_uid}"
+                },
+                "query": self.std_hexmap_sql,
+                "current": {
+                "text": "",
+                "value": ""
+                }
+            }
             ] + self.qc_data_list
         },
         "time": {
