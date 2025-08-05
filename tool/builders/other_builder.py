@@ -1549,7 +1549,14 @@ class ComponentsLookUpFormBuilder:
             },
             "pluginVersion": "12.0.0",
             "title": "Pedestal Hexmap",
-            "type": "text"
+            "type": "text",
+            "links":[
+                {
+                "title": "All Hexmap Plots",
+                "url": f"{GF_URL}/d/hexmap-plots?var-module_name="+"${module_module_name}",
+                "targetBlank": True
+                }
+            ]
             },
     # Panel: Latest Noisy Hexmap
             {
@@ -1575,7 +1582,14 @@ class ComponentsLookUpFormBuilder:
             },
             "pluginVersion": "12.0.0",
             "title": "Noise Hexmap",
-            "type": "text"
+            "type": "text",
+            "links":[
+                {
+                "title": "All Hexmap Plots",
+                "url": f"{GF_URL}/d/hexmap-plots?var-module_name="+"${module_module_name}",
+                "targetBlank": True
+                }
+            ]
             },
     # Panel: Wirebond Info
             {
