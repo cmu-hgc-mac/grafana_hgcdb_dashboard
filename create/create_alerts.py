@@ -18,7 +18,8 @@ Author: Xinyue (Joyce) Zhuang
 filelist = os.listdir(CONFIG_FOLDER_PATH)
 
 #Get the tablelist from the tool/postgres_table folder
-tablelist = os.listdir(DB_INFO_PATH)
+tablelist_raw = os.listdir(DB_INFO_PATH)
+tablelist = [s[:-4] for s in tablelist_raw]
 
 # Define the builder
 alert_builder = AlertBuilder(GF_DS_UID)
@@ -77,27 +78,26 @@ for config in filelist:
         
         # Generate the alert json
         folder_name = config.split(".")[0].replace("_", " ")
+
+        # all table alerts
         if folder_name == "All Table Alerts Config":
             title = alert["title"]
             if alert["table"] != None:
                 tablelist = alert["table"]
             for table in tablelist:
                 alert["title"] = title
-                alert["table"] = table[:-4]
-                if alert["table"] == "module_info":
-                    # We don't want to generate/upload "module_info" table
-                    continue
-                alert["title"] = alert["title"] + ":" + alert["table"]
-                columns = dashboardValidator.get_valid_columns(alert["table"])
+                alert["title"] = alert["title"] + ":" + table
+                columns = dashboardValidator.get_valid_columns(table)
                 if alert["parameter"] in columns:
-                    alert["sql"] = alert_builder.generate_missing_xml_sql(alert["table"],columns,alert["parameter"],alert["conditions"],alert["ignore_columns"])
+                    alert["sql"] = alert_builder.generate_missing_xml_sql(table,columns,alert["parameter"],alert["conditions"],alert["ignore_columns"])
                     alert_json = alert_builder.generate_alerts(alert, folder_name)
 
                     # Export the alert json to a file
                     file_name = config.split(".")[0]
                     alert_builder.save_alerts_json(alert, alert_json, file_name)
             continue
-
+        
+        # ordinary alerts
         alert_json = alert_builder.generate_alerts(alert, folder_name)
 
         # Export the alert json to a file
