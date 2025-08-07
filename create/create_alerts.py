@@ -79,6 +79,8 @@ for config in filelist:
         folder_name = config.split(".")[0].replace("_", " ")
         if folder_name == "All Table Alerts Config":
             title = alert["title"]
+            if alert["table"] != None:
+                tablelist = alert["table"]
             for table in tablelist:
                 alert["title"] = title
                 alert["table"] = table[:-4]
