@@ -484,25 +484,20 @@ class ComponentsLookUpFormBuilder:
         """
 
         self.bp_info_sql = f"""
-        WITH selected_bp AS (
+        WITH selected_bp_inspect AS (
             SELECT DISTINCT ON (bp_name) *
-            FROM baseplate
-            ORDER BY bp_name, bp_no DESC
-        ),
-            selected_bp_inspect AS (
-                SELECT DISTINCT ON (bp_name) *
-                FROM bp_inspect
-                ORDER BY bp_name, bp_row_no DESC
+            FROM bp_inspect
+            ORDER BY bp_name, bp_row_no DESC
         )
         SELECT
-            selected_bp.*,
+            baseplate.*,
             selected_bp_inspect.flatness,
             selected_bp_inspect.thickness
-        FROM selected_bp
-        LEFT JOIN module_info ON module_info.bp_name = selected_bp.bp_name
-        LEFT JOIN proto_assembly ON proto_assembly.bp_name = selected_bp.bp_name
-        LEFT JOIN selected_bp_inspect ON selected_bp_inspect.bp_name = selected_bp.bp_name
-        WHERE  (selected_bp.bp_name = {self.bp_name})
+        FROM baseplate
+        LEFT JOIN module_info ON module_info.bp_name = baseplate.bp_name
+        LEFT JOIN proto_assembly ON proto_assembly.bp_name = baseplate.bp_name
+        LEFT JOIN selected_bp_inspect ON selected_bp_inspect.bp_name = baseplate.bp_name
+        WHERE  (baseplate.bp_name = {self.bp_name})
             OR (proto_assembly.proto_name = {self.proto_name})
             OR (module_info.module_name = {self.module_name})
             OR (module_info.hxb_name = {self.hxb_name})
