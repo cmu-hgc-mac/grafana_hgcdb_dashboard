@@ -1,0 +1,53 @@
+tables_xml_upload: &tables_list
+  - "back_encap"
+  - "back_wirebond"
+  - "bond_pull_test"
+  - "bp_inspect"
+  - "front_encap"
+  - "front_wirebond"
+  - "hxb_inspect"
+  - "hxb_pedestal_test"
+  - "module_assembly"
+  - "module_inspect"
+  - "module_iv_test"
+  - "module_pedestal_test"
+  - "proto_assembly"
+  - "proto_inspect"
+  - "sensor"
+
+alert:
+  - title: "XML Generate"
+    table: *tables_list
+    conditions: 
+      - "<column> IS NOT NULL"
+      - "<parameter> IS NULL"
+    threshold: [0]
+    logicType: "gt"
+    duration: "3s"
+    interval: "60m"
+    summary: "All columns filled but XML not generate"
+    labels: 
+        "team": "inspectors"
+    dashboard: None
+    panelID: None
+    parameter: "xml_gen_datetime"
+    ignore_columns:
+      - "comment"
+      - "xml_upload_success"
+  - title: "XML Upload"
+    table: *tables_list
+    conditions: 
+      - "xml_gen_datetime IS NOT NULL"
+      - "<parameter> IS NULL"
+    threshold: [0]
+    logicType: "gt"
+    duration: "3s"
+    interval: "60m"
+    summary: "XML Generated but not uploaded"
+    labels: 
+        "team": "inspectors"
+    dashboard: None
+    panelID: None
+    parameter: "xml_upload_success"
+    ignore_columns:
+      - "comment"
