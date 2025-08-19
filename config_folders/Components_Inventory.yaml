@@ -10,8 +10,7 @@ dashboards:
         condition: "proto_no IS NULL AND bp_material IS NOT NULL AND resolution IS NOT NULL AND geometry IS NOT NULL"
         groupby: ["bp_material", "resolution", "geometry"]
         filters: {"baseplate": ["bp_material", "resolution", "geometry"], "bp_inspect": ["grade"]}
-        distinct: ["baseplate", "bp_inspect"]
-      
+        distinct: ["baseplate", "bp_inspect"]   
       - title: "Free Baseplates Info"
         table: "baseplate"
         chart_type: "table"
@@ -19,6 +18,20 @@ dashboards:
         groupby: {"baseplate": ["bp_name"], "bp_inspect": ["grade", "comment", "date_inspect", "flatness", "thickness"]}
         filters: {"baseplate": ["bp_material", "resolution", "geometry"], "bp_inspect": ["grade"]}
         distinct: ["baseplate", "bp_inspect"]
+      - title: "Assigned (but not recieved) Baseplates"
+        table: "baseplate"
+        chart_type: "table"
+        condition: "proto_no IS NULL AND date_verify_received IS NULL"
+        groupby: {"baseplate": ["row_count", "bp_name", "geometry", "resolution", "kind", "date_verify_received"]}
+        filters: {"baseplate": ["bp_material", "resolution", "geometry"], "bp_inspect": ["grade"]}
+        distinct: ["baseplate"]
+      - title: "Recieved (but not assigned) Baseplats"
+        table: "baseplate"
+        chart_type: "table"
+        condition: "proto_no IS NULL AND kind IS NULL"
+        groupby: {"baseplate": ["row_count", "bp_name", "geometry", "resolution", "kind", "date_verify_received"]}
+        filters: {"baseplate": ["bp_material", "resolution", "geometry"], "bp_inspect": ["grade"]}
+        distinct: ["baseplate"]
 
   - title: "Free Sensors"
     panels:
@@ -29,14 +42,14 @@ dashboards:
         groupby: ["thickness", "resolution", "geometry"]
         filters: {"sensor": ["thickness", "resolution", "geometry"]}
         distinct: ["sensor"]
-      - title: "Assigned (not recieved) Sensors"
+      - title: "Assigned (but not recieved) Sensors"
         table: "sensor"
         chart_type: "table"
         condition: "proto_no IS NULL AND date_verify_received IS NULL"
         groupby: {"sensor": ["row_count", "sen_name", "geometry", "resolution", "thickness", "kind", "date_verify_received"]}
         filters: {"sensor": ["thickness", "resolution", "geometry"]}
         distinct: ["sensor"]
-      - title: "Recieved (not assigned) Sensors"
+      - title: "Recieved (but not assigned) Sensors"
         table: "sensor"
         chart_type: "table"
         condition: "proto_no IS NULL AND kind IS NULL"
@@ -53,7 +66,6 @@ dashboards:
         groupby: ["roc_version", "resolution", "geometry"]
         filters: {"hexaboard": ["roc_version", "resolution", "geometry"], "hxb_pedestal_test": ["status_desc"]}
         distinct: ["hexaboard", "hxb_pedestal_test"]
-
       - title: "Free Hexaboards Info"
         table: "hexaboard"
         chart_type: "table"
@@ -61,3 +73,17 @@ dashboards:
         groupby: {"hexaboard": ["hxb_name"], "hxb_pedestal_test": ["count_bad_cells", "status_desc", "date_test", "comment"], "hxb_inspect": ["flatness", "thickness"]}
         filters: {"hexaboard": ["roc_version", "resolution", "geometry"], "hxb_pedestal_test": ["status_desc"], "hxb_inspect": []}
         distinct: ["hexaboard", "hxb_pedestal_test", "hxb_inspect"]
+      - title: "Assigned (but not recieved) Hexaboards"
+        table: "hexaboard"
+        chart_type: "table"
+        condition: "module_no IS NULL AND date_verify_received IS NULL"
+        groupby: {"hexaboard": ["row_count", "hxb_name", "geometry", "resolution", "kind", "date_verify_received"]}
+        filters: {"hexaboard": ["roc_version", "resolution", "geometry"], "hxb_pedestal_test": ["status_desc"], "hxb_inspect": []}
+        distinct: ["hexaboard"]
+      - title: "Recieved (but not assigned) Hexaboards"
+        table: "hexaboard"
+        chart_type: "table"
+        condition: "module_no IS NULL AND kind IS NULL"
+        groupby: {"hexaboard": ["row_count", "hxb_name", "geometry", "resolution", "kind", "date_verify_received"]}
+        filters: {"hexaboard": ["roc_version", "resolution", "geometry"], "hxb_pedestal_test": ["status_desc"], "hxb_inspect": []}
+        distinct: ["hexaboard"]
