@@ -60,12 +60,12 @@ class FilterBuilder:
             FROM {filters_table}
             ORDER BY wirebond_status
             """
-        elif "grade" in filter_name:
+        elif filter_name in QgiC_GRADE:
             filter_sql = f"""
-            SELECT DISTINCT iv_grade::text FROM module_qc_summary
+            SELECT DISTINCT {filter_name}::text FROM module_qc_summary
             UNION
             SELECT 'NULL'
-            ORDER BY iv_grade
+            ORDER BY {filter_name}
             """
         else:
             filter_sql = f"""

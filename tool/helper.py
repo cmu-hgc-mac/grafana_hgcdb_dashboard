@@ -515,5 +515,9 @@ QC_COLUMNS = [
     "i_ratio_ref_b_over_a", "ref_volt_a", "ref_volt_b", "i_at_ref_a", "iv_grade"
 ]
 
+QC_GRADE = [
+    "final_grade", "proto_grade", "module_grade", "iv_grade"
+]
+
 # -- Set GrafanaClient --
 client = GrafanaClient(GF_API_KEY, GF_URL)
