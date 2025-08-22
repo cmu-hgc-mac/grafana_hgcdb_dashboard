@@ -10,28 +10,28 @@ dashboards:
         condition: "bp_material IS NOT NULL AND resolution IS NOT NULL AND roc_version IS NOT NULL AND geometry IS NOT NULL"
         groupby: ["bp_material", "resolution", "roc_version", "geometry", "shipped_datetime"]
         filters: {"module_info": ["bp_material", "resolution", "roc_version", "sen_thickness", "geometry", "shipping_status", "assembled"], "module_qc_summary": ["final_grade"]}
-        distinct: ["module_qc_summary"]
+        distinct: ["module_info", "module_qc_summary"]
       - title: "Module Shipping Status"
         table: "module_info"
         chart_type: "piechart"
         condition: "bp_material IS NOT NULL AND resolution IS NOT NULL AND roc_version IS NOT NULL AND geometry IS NOT NULL"
         groupby: []
         filters: {"module_info": ["bp_material", "resolution", "roc_version", "sen_thickness", "geometry", "shipping_status", "assembled"], "module_qc_summary": ["final_grade"]}
-        distinct: ["module_qc_summary"]
+        distinct: ["module_info", "module_qc_summary"]
       - title: "Number of the Not-Shipped Modules"
         table: "module_info"
         chart_type: "stat"
         condition: "shipped_datetime IS NULL AND bp_material IS NOT NULL AND resolution IS NOT NULL AND roc_version IS NOT NULL AND geometry IS NOT NULL"
         groupby: ["shipping_status"]
         filters: {"module_info": ["bp_material", "resolution", "roc_version", "sen_thickness", "geometry", "shipping_status", "assembled"], "module_qc_summary": ["final_grade"]}
-        distinct: ["module_qc_summary"]
+        distinct: ["module_info", "module_qc_summary"]
       - title: "Number of the Shipped Modules"
         table: "module_info"
         chart_type: "stat"
         condition: "shipped_datetime IS NOT NULL AND bp_material IS NOT NULL AND resolution IS NOT NULL AND roc_version IS NOT NULL AND geometry IS NOT NULL"
         groupby: ["shipping_status"]
         filters: {"module_info": ["bp_material", "resolution", "roc_version", "sen_thickness", "geometry", "shipping_status", "assembled"], "module_qc_summary": ["final_grade"]}
-        distinct: ["module_qc_summary"]
+        distinct: ["module_info", "module_qc_summary"]
       - title: "Not-Shipped Modules Info"
         table: "module_info"
         chart_type: "table"
