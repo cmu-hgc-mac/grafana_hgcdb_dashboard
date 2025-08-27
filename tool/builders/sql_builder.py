@@ -151,7 +151,7 @@ class BaseSQLGenerator(ChartSQLGenerator):
                 for elem in inputs[inputs_table]:
                     arg = self._build_input_argument(elem, inputs_table)
                     where_clauses.append(arg)
-g
+                    
         return "\n          AND ".join(where_clauses), original_filters
 
     def _build_join_clause(self, table: str, filters: dict, distinct: list) -> str:
