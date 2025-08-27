@@ -14,14 +14,14 @@ class PanelBuilder:
         self.IVCurveBuilder = IVCurveBuilder(datasource_uid)
     
     # -- Regular Panels --
-    def generate_sql(self, chart_type: str, table: str, condition: str, groupby: list, filters: list, distinct: bool) -> str:
+    def generate_sql(self, chart_type: str, table: str, condition: str, groupby: list, filters: list, distinct: bool, inputs: list) -> str:
         """Generate the SQL command from ChartSQLFactory. -> sql_builder.py
         """
         # Get Generator
         generator = ChartSQLFactory.get_generator(chart_type)
 
         # Generate SQL command
-        panel_sql = generator.generate_sql(table, condition, groupby, filters, distinct)
+        panel_sql = generator.generate_sql(table, condition, groupby, filters, distinct, inputs)
 
         return panel_sql
 
@@ -192,8 +192,8 @@ class PanelBuilder:
 
                 else:
                     title, table, condition, groupby, filters, gridPos, distinct = self.get_info(panel, chart_type)
-
-                    raw_sql = self.generate_sql(chart_type, table, condition, groupby, filters, distinct)
+                    inputs = panel.get("inputs", None)
+                    raw_sql = self.generate_sql(chart_type, table, condition, groupby, filters, distinct, inputs)
                     panel_json = self.generate_general_panel(title, raw_sql, table, chart_type, gridPos)
 
                 panels.append(panel_json)

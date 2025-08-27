@@ -125,6 +125,59 @@ class FilterBuilder:
 
         return template_list
 
+
+# ============================================================
+# === Input Builder ==========================================
+# ============================================================
+
+class InputBuilder:
+    def __init__(self):
+        pass
+
+    def generate_input(self, input_name: str) -> dict:
+        """Generate a template json based on the given input_name.
+        """
+        input_json = {
+                "current": {
+                "text": "",
+                "value": ""
+                },
+                "label": input_name,
+                "name": input_name,
+                "options": [
+                {
+                    "selected": True,
+                    "text": "",
+                    "value": ""
+                }
+                ],
+                "query": "",
+                "type": "textbox"
+            }
+        
+        return input_json
+    
+    def build_template_list(self, inputs: dict, exist_filter: set) -> list:
+        """Build all filters based on the given filter_dict.
+        """
+        template_list = []
+
+        for table, elems in inputs.items():
+            for elem in elems:
+                if elem in exist_filter:
+                    continue    # filter exists
+                elif elem in TIME_COLUMNS:
+                    continue    # filter not used in dashboard
+            
+                exist_filter.add(elem)
+
+                # generate the filter's json
+                input_json = self.generate_input(elem)
+                template_list.append(input_json)
+        
+        return template_list
+
+
 # ============================================================
 # === IV Curve Builder =======================================
 # ============================================================

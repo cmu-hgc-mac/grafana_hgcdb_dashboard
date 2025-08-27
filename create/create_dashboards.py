@@ -6,7 +6,7 @@ import yaml
 
 from tool.helper import *
 from tool import DashboardValidator
-from tool import PanelBuilder, FilterBuilder, DashboardBuilder, ComponentsLookUpFormBuilder, HexmapPlotsBuilder
+from tool import PanelBuilder, FilterBuilder, InputBuilder, DashboardBuilder, ComponentsLookUpFormBuilder, HexmapPlotsBuilder
 
 """
 This script generates all the dashboards json_file, saves them to a folder under `grafana_hgcdb_dashboard`, and uploads them to grafana.
@@ -89,9 +89,15 @@ for config in filelist:
             # Generate the template json
             if chart_type not in special_chart_type:
                 filters = panel["filters"]
+                inputs = panel.get("inputs", None)
                 if filters:
                     filter_json = filter_builder.build_template_list(filters, exist_filter)
                     template_list.extend(filter_json)
+                if inputs:
+                    input_builder = InputBuilder()
+                    input_json = input_builder.build_template_list(inputs, exist_filter)
+                    template_list.extend(input_json)
+
             elif chart_type == "xychart":
                 filters = panel["filters"]
                 # special case for IV curve
