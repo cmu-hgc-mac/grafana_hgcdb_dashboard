@@ -509,8 +509,8 @@ TIME_ZONE = INSTITUTION_TIMEZONES[INSTITUTION]
 # -- Set QC Coulumns --
 QC_COLUMNS = [
     "final_grade", "comments_all",
-    "proto_flatness", "proto_ave_thickness", "proto_max_thickness", "proto_x_offset", "proto_y_offset", "proto_ang_offset", "proto_grade",
-    "module_flatness", "module_ave_thickness", "module_max_thickness", "module_x_offset", "module_y_offset", "module_ang_offset", "module_grade",
+    "proto_flatness", "proto_avg_thickness", "proto_max_thickness", "proto_x_offset", "proto_y_offset", "proto_ang_offset", "proto_grade",
+    "module_flatness", "module_avg_thickness", "module_max_thickness", "module_x_offset", "module_y_offset", "module_ang_offset", "module_grade",
     "list_cells_unbonded", "list_cells_grounded", "count_bad_cells", "list_noisy_cells", "list_dead_cells", "readout_grade",
     "i_ratio_ref_b_over_a", "ref_volt_a", "ref_volt_b", "i_at_ref_a", "iv_grade"
 ]
