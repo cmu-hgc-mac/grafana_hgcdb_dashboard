@@ -89,7 +89,7 @@ alert:
     logicType: "outside_range"
     duration: "3s"
     interval: "10m"
-    summary: "Temperature exceeds 25°C"
+    summary: "Temperature is out of the range of [18˚C, 30˚C]"
     labels: 
         "team": "inspectors"
         "severity": "critical"
@@ -105,7 +105,7 @@ alert:
     logicType: "lt"
     duration: "3s"
     interval: "10m"
-    summary: "Humidity abnormal"
+    summary: "Humidity is less than 30%"
     labels: 
         "team": "inspectors"
         "severity": "critical"
@@ -121,7 +121,7 @@ alert:
     logicType: "gt"
     duration: "3s"
     interval: "60m"
-    summary: "500nm Particle Count abnormal"
+    summary: "500nm Particle Count is larger than 352000"
     labels: 
         "team": "inspectors"
         "severity": "critical"
@@ -137,7 +137,7 @@ alert:
     logicType: "gt"
     duration: "3s"
     interval: "60m"
-    summary: "1um Particle Count abnormal"
+    summary: "1um Particle Count is larger than 83200"
     labels: 
         "team": "inspectors"
         "severity": "critical"
