@@ -144,5 +144,4 @@ except:
 
 # Remove dashboards json files
 remove_folder("Dashboards", DASHBOARDS_FOLDER_PATH)
-remove_folder("IV_curves_plot", IV_PLOTS_FOLDER_PATH)
 print("\n >>>> Dashboards json files removed!\n")
