@@ -756,6 +756,54 @@ class ComponentsLookUpFormBuilder:
         ORDER BY module_pedestal_plots.module_name, module_pedestal_plots.mod_plottest_no DESC
         """
 
+        self.encap_info_sql = f"""
+        WITH encap AS (
+            SELECT DISTINCT ON (front_encap.module_name)
+                'front_encap' AS source,
+                front_encap.module_name,
+                front_encap.cure_temp_c,
+                front_encap.epoxy_batch,
+                front_encap.temp_c,
+                front_encap.date_encap,
+                front_encap.time_encap AT TIME ZONE '{TIME_ZONE}' AS time_encap,
+                front_encap.technician,
+                front_encap.comment,
+                front_encap.cure_start,
+                front_encap.cure_end
+            FROM front_encap
+            JOIN module_info ON front_encap.module_name = module_info.module_name
+            WHERE (module_info.module_name = {self.module_name}
+                OR module_info.proto_name = {self.proto_name}
+                OR module_info.sen_name = {self.sen_name}
+                OR module_info.bp_name = {self.bp_name}
+                OR module_info.hxb_name = {self.hxb_name})
+        
+            UNION ALL
+
+            SELECT DISTINCT ON (back_encap.module_name)
+                'back_encap' AS source,
+                back_encap.module_name,
+                back_encap.cure_temp_c,
+                back_encap.epoxy_batch,
+                back_encap.temp_c,
+                back_encap.date_encap,
+                back_encap.time_encap AT TIME ZONE '{TIME_ZONE}' AS time_encap,
+                back_encap.technician,
+                back_encap.comment,
+                back_encap.cure_start,
+                back_encap.cure_end
+            FROM back_encap
+            JOIN module_info ON back_encap.module_name = module_info.module_name
+            WHERE (module_info.module_name = {self.module_name}
+                OR module_info.proto_name = {self.proto_name}
+                OR module_info.sen_name = {self.sen_name}
+                OR module_info.bp_name = {self.bp_name}
+                OR module_info.hxb_name = {self.hxb_name})
+            )
+
+        SELECT *
+        FROM encap
+        """
 
 
     ######################################
@@ -1811,6 +1859,93 @@ class ComponentsLookUpFormBuilder:
                 }
             ],
             "title": "Bond Pull Info",
+            "type": "table"
+            },
+    # Panel: Encap Info
+            {
+            "datasource": {
+                "type": "grafana-postgresql-datasource",
+                "uid": f"{self.datasource_uid}"
+            },
+            "fieldConfig": {
+                "defaults": {
+                "color": {
+                    "mode": "thresholds"
+                },
+                "custom": {
+                    "align": "auto",
+                    "cellOptions": {
+                    "type": "auto"
+                    },
+                    "inspect": False
+                },
+                "mappings": [],
+                "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                    {
+                        "color": "green"
+                    },
+                    {
+                        "color": "red",
+                        "value": 80
+                    }
+                    ]
+                }
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 5,
+                "w": 24,
+                "x": 0,
+                "y": 99
+            },
+            "id": 13,
+            "options": {
+                "cellHeight": "sm",
+                "footer": {
+                "countRows": False,
+                "fields": "",
+                "reducer": [
+                    "sum"
+                ],
+                "show": False
+                },
+                "showHeader": True
+            },
+            "pluginVersion": "12.0.1",
+            "targets": [
+                {
+                "datasource": {
+                    "type": "grafana-postgresql-datasource",
+                    "uid": f"{self.datasource_uid}"
+                },
+                "editorMode": "code",
+                "format": "table",
+                "rawQuery": True,
+                "rawSql": self.encap_info_sql,
+                "refId": "A",
+                "sql": {
+                    "columns": [
+                    {
+                        "parameters": [],
+                        "type": "function"
+                    }
+                    ],
+                    "groupBy": [
+                    {
+                        "property": {
+                        "type": "string"
+                        },
+                        "type": "groupBy"
+                    }
+                    ],
+                    "limit": 50
+                }
+                }
+            ],
+            "title": "Encap Info",
             "type": "table"
             }
         ],
