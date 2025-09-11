@@ -52,21 +52,21 @@ dashboards:
         condition: "wb_front IS NULL"
         groupby: {"module_info": ["module_name", "wb_front", "wb_back"]}
         filters: {"module_info": ["bp_material", "resolution", "roc_version", "sen_thickness", "geometry", "shipping_status", "assembled"], "module_qc_summary": ["final_grade"]}
-        distinct: ["module_info"]
+        distinct: ["module_info", "module_qc_summary"]
       - title: "Need Front Encapsulation"
         table: "module_info"
         chart_type: "table"
         condition: "encap_front IS NULL AND wb_front IS NOT NULL"
         groupby: {"module_info": ["module_name", "encap_front", "encap_back"]}
         filters: {"module_info": ["bp_material", "resolution", "roc_version", "sen_thickness", "geometry", "shipping_status", "assembled"], "module_qc_summary": ["final_grade"]}
-        distinct: ["module_info"]
+        distinct: ["module_info", "module_qc_summary"]
       - title: "Need Electrical Test"
         table: "module_info"
         chart_type: "table"
         condition: "test_iv IS NULL AND wb_front IS NOT NULL"
         groupby: {"module_info": [ "module_name", "test_iv", "test_ped"]}
         filters: {"module_info": ["bp_material", "resolution", "roc_version", "sen_thickness", "geometry", "shipping_status", "assembled"], "module_qc_summary": ["final_grade"]}
-        distinct: ["module_info"]
+        distinct: ["module_info", "module_qc_summary"]
 
   - title: "Module Inspect"
     panels:
