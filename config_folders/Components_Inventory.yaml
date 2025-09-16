@@ -82,11 +82,11 @@ dashboards:
         condition: "module_no IS NULL AND date_verify_received IS NULL"
         groupby: {"hexaboard": ["row_count", "hxb_name", "geometry", "resolution", "kind", "date_verify_received"]}
         filters: {"hexaboard": ["roc_version", "resolution", "geometry"], "hxb_pedestal_test": ["status_desc"], "hxb_inspect": []}
-        distinct: ["hexaboard"]
+        distinct: ["hexaboard", "hxb_pedestal_test"]
       - title: "Recieved (but not assigned) Hexaboards"
         table: "hexaboard"
         chart_type: "table"
         condition: "module_no IS NULL AND kind IS NULL"
         groupby: {"hexaboard": ["row_count", "hxb_name", "geometry", "resolution", "kind", "date_verify_received"]}
         filters: {"hexaboard": ["roc_version", "resolution", "geometry"], "hxb_pedestal_test": ["status_desc"], "hxb_inspect": []}
-        distinct: ["hexaboard"]
+        distinct: ["hexaboard", "hxb_pedestal_test"]
