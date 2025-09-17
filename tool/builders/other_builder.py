@@ -60,18 +60,18 @@ class FilterBuilder:
             FROM {filters_table}
             ORDER BY wirebond_status
             """
-        elif filter_name in QC_GRADE:
-            filter_sql = f"""
-            SELECT DISTINCT {filter_name}::text FROM module_qc_summary
-            UNION
-            SELECT 'NULL'
-            ORDER BY {filter_name}
-            """
+        # elif filter_name in QC_GRADE:
+        #     filter_sql = f"""
+        #     SELECT DISTINCT {filter_name}::text FROM module_qc_summary
+        #     UNION
+        #     SELECT 'NULL'
+        #     ORDER BY {filter_name}
+            # """
         else:
             filter_sql = f"""
-            SELECT DISTINCT 
-                COALESCE({filter_name}::text, 'NULL') AS {filter_name} 
-            FROM {filters_table} 
+            SELECT DISTINCT {filter_name}::text FROM {filters_table} 
+            UNION
+            SELECT 'NULL'
             ORDER BY {filter_name}
             """
 
