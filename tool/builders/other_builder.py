@@ -74,7 +74,7 @@ class FilterBuilder:
             FROM {filters_table} 
             ORDER BY {filter_name}
             """
-        print(filter_sql)
+gi
         return filter_sql
     
     def build_template_list(self, filters: dict, exist_filter: set) -> list:
