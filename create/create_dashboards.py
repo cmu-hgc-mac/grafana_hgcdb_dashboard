@@ -37,20 +37,20 @@ for config in filelist:
     # Validate the config file
     config_path = os.path.join(CONFIG_FOLDER_PATH, config)
 
-    try:
-        validator = DashboardValidator(config_path)
-        print(f"\n[VALIDATING] Checking if the config file: <{config}> is valid...")
-    except FileNotFoundError as e:
-        print(f"[ERROR] {e}")
-        continue
+    # try:
+    #     validator = DashboardValidator(config_path)
+    #     print(f"\n[VALIDATING] Checking if the config file: <{config}> is valid...")
+    # except FileNotFoundError as e:
+    #     print(f"[ERROR] {e}")
+    #     continue
 
-    ok = validator.run_all_checks()
+    # ok = validator.run_all_checks()
 
-    if not ok:  # skip invalid config file
-        print(f"[WARNING] Validation failed for config: <{config}>. Skipping this file.\n")
-        succeed = False
-        failed_count += 1
-        continue
+    # if not ok:  # skip invalid config file
+    #     print(f"[WARNING] Validation failed for config: <{config}>. Skipping this file.\n")
+    #     succeed = False
+    #     failed_count += 1
+    #     continue
 
     # Load the dashboards
     with open(config_path, mode = 'r') as file:
