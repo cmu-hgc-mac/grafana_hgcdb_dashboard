@@ -77,10 +77,10 @@ dashboards:
         groupby: ["grade"]
         filters: {"module_info": ["bp_material", "resolution", "roc_version", "sen_thickness", "geometry", "assembled", "wirebond_status", "shipping_status"], "module_inspect": ["grade"]}
         distinct: ["module_inspect", "module_info"]
-      - title: "counts of grade B and C"
+      - title: "counts of grade A"
         table: "module_inspect"
         chart_type: "stat"
-        condition: "(grade = 'C' OR grade = 'B')"
+        condition: "(grade = 'A')"
         groupby: []
         filters: {"module_info": ["bp_material", "resolution", "roc_version", "sen_thickness", "geometry", "assembled", "wirebond_status", "shipping_status"], "module_inspect": ["grade"]}
         distinct: ["module_inspect", "module_info"]
@@ -143,10 +143,10 @@ dashboards:
         groupby: ["grade"]
         filters: {"baseplate": ["bp_material"], "sensor": ["thickness", "resolution", "geometry"], "proto_assembly": ["ass_run_date"], "proto_inspect": ["grade"], "module_info": ["shipping_status"]}
         distinct: ["proto_inspect", "baseplate", "sensor", "proto_assembly"]
-      - title: "counts of grade B and C"
+      - title: "counts of grade A"
         table: "proto_inspect"
         chart_type: "stat"
-        condition: "(temp_table_0.grade = 'C' OR temp_table_0.grade = 'B')"
+        condition: "(temp_table_0.grade = 'A')"
         groupby: []
         filters: {"baseplate": ["bp_material"], "sensor": ["thickness", "resolution", "geometry"], "proto_assembly": ["ass_run_date"], "proto_inspect": ["grade"], "module_info": ["shipping_status"]}
         distinct: ["proto_inspect", "baseplate", "sensor", "proto_assembly"]
