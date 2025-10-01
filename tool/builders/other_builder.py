@@ -224,15 +224,21 @@ class IVCurveBuilder:
             ORDER BY module_name, mod_qc_no DESC
         ), 
 
+        latest_iv_test AS (
+            SELECT DISTINCT ON (module_name) *
+            FROM module_iv_test
+            WHERE $__timeFilter(module_iv_test.date_test)
+            ORDER BY module_name, date_test DESC
+        ),
+
         selected_modules AS (
         SELECT 
             module_info.module_name
         FROM module_info
+        JOIN latest_iv_test ON module_info.module_name = latest_iv_test.module_name
         LEFT JOIN latest_qc_summary ON module_info.module_name = latest_qc_summary.module_name
         WHERE {module_where_arg}
             AND {iv_where_arg}
-            AND $__timeFilter(test_iv) 
-            AND test_iv IS NOT NULL
         ORDER BY module_info.module_no DESC
         LIMIT {N_MODULE_SHOW}
         ),
