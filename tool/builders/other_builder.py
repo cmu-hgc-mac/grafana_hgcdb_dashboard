@@ -60,18 +60,18 @@ class FilterBuilder:
             FROM {filters_table}
             ORDER BY wirebond_status
             """
-        elif filter_name in QC_GRADE:
-            filter_sql = f"""
-            SELECT DISTINCT {filter_name}::text FROM module_qc_summary
-            UNION
-            SELECT 'NULL'
-            ORDER BY {filter_name}
-            """
+        # elif filter_name in QC_GRADE:
+        #     filter_sql = f"""
+        #     SELECT DISTINCT {filter_name}::text FROM module_qc_summary
+        #     UNION
+        #     SELECT 'NULL'
+        #     ORDER BY {filter_name}
+            # """
         else:
             filter_sql = f"""
-            SELECT DISTINCT 
-                COALESCE({filter_name}::text, 'NULL') AS {filter_name} 
-            FROM {filters_table} 
+            SELECT DISTINCT {filter_name}::text FROM {filters_table} 
+            UNION
+            SELECT 'NULL'
             ORDER BY {filter_name}
             """
 
@@ -224,15 +224,21 @@ class IVCurveBuilder:
             ORDER BY module_name, mod_qc_no DESC
         ), 
 
+        latest_iv_test AS (
+            SELECT DISTINCT ON (module_name) *
+            FROM module_iv_test
+            WHERE $__timeFilter(module_iv_test.date_test)
+            ORDER BY module_name, date_test DESC
+        ),
+
         selected_modules AS (
         SELECT 
             module_info.module_name
         FROM module_info
+        JOIN latest_iv_test ON module_info.module_name = latest_iv_test.module_name
         LEFT JOIN latest_qc_summary ON module_info.module_name = latest_qc_summary.module_name
         WHERE {module_where_arg}
             AND {iv_where_arg}
-            AND $__timeFilter(test_iv) 
-            AND test_iv IS NOT NULL
         ORDER BY module_info.module_no DESC
         LIMIT {N_MODULE_SHOW}
         ),
@@ -590,8 +596,8 @@ class ComponentsLookUpFormBuilder:
             module_pedestal_test.comment,
             module_pedestal_test.rel_hum,
             module_pedestal_test.temp_c,
-            module_pedestal_test.date_test,
-            module_pedestal_test.time_test AT TIME ZONE '{TIME_ZONE}' AS time_test,
+            module_pedestal_test.date_test::text,
+            module_pedestal_test.time_test::text,
             module_pedestal_test.inspector,
             module_pedestal_test.trim_bias_voltage,
             module_pedestal_test.status_desc,
@@ -622,8 +628,8 @@ class ComponentsLookUpFormBuilder:
             hxb_pedestal_test.comment,
             hxb_pedestal_test.rel_hum,
             hxb_pedestal_test.temp_c,
-            hxb_pedestal_test.date_test,
-            hxb_pedestal_test.time_test AT TIME ZONE '{TIME_ZONE}' AS time_test,
+            hxb_pedestal_test.date_test::text,
+            hxb_pedestal_test.time_test::text,
             hxb_pedestal_test.inspector,
             hxb_pedestal_test.trim_bias_voltage,
             hxb_pedestal_test.xml_gen_datetime,
@@ -756,6 +762,54 @@ class ComponentsLookUpFormBuilder:
         ORDER BY module_pedestal_plots.module_name, module_pedestal_plots.mod_plottest_no DESC
         """
 
+        self.encap_info_sql = f"""
+        WITH encap AS (
+            SELECT DISTINCT ON (front_encap.module_name)
+                'front_encap' AS source,
+                front_encap.module_name,
+                front_encap.cure_temp_c,
+                front_encap.epoxy_batch,
+                front_encap.temp_c,
+                front_encap.date_encap::text,
+                front_encap.time_encap::text,
+                front_encap.technician,
+                front_encap.comment,
+                front_encap.cure_start,
+                front_encap.cure_end
+            FROM front_encap
+            JOIN module_info ON front_encap.module_name = module_info.module_name
+            WHERE (module_info.module_name = {self.module_name}
+                OR module_info.proto_name = {self.proto_name}
+                OR module_info.sen_name = {self.sen_name}
+                OR module_info.bp_name = {self.bp_name}
+                OR module_info.hxb_name = {self.hxb_name})
+        
+            UNION ALL
+
+            SELECT DISTINCT ON (back_encap.module_name)
+                'back_encap' AS source,
+                back_encap.module_name,
+                back_encap.cure_temp_c,
+                back_encap.epoxy_batch,
+                back_encap.temp_c,
+                back_encap.date_encap::text,
+                back_encap.time_encap::text,
+                back_encap.technician,
+                back_encap.comment,
+                back_encap.cure_start,
+                back_encap.cure_end
+            FROM back_encap
+            JOIN module_info ON back_encap.module_name = module_info.module_name
+            WHERE (module_info.module_name = {self.module_name}
+                OR module_info.proto_name = {self.proto_name}
+                OR module_info.sen_name = {self.sen_name}
+                OR module_info.bp_name = {self.bp_name}
+                OR module_info.hxb_name = {self.hxb_name})
+            )
+
+        SELECT *
+        FROM encap
+        """
 
 
     ######################################
@@ -1811,6 +1865,93 @@ class ComponentsLookUpFormBuilder:
                 }
             ],
             "title": "Bond Pull Info",
+            "type": "table"
+            },
+    # Panel: Encap Info
+            {
+            "datasource": {
+                "type": "grafana-postgresql-datasource",
+                "uid": f"{self.datasource_uid}"
+            },
+            "fieldConfig": {
+                "defaults": {
+                "color": {
+                    "mode": "thresholds"
+                },
+                "custom": {
+                    "align": "auto",
+                    "cellOptions": {
+                    "type": "auto"
+                    },
+                    "inspect": False
+                },
+                "mappings": [],
+                "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                    {
+                        "color": "green"
+                    },
+                    {
+                        "color": "red",
+                        "value": 80
+                    }
+                    ]
+                }
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 5,
+                "w": 24,
+                "x": 0,
+                "y": 99
+            },
+            "id": 13,
+            "options": {
+                "cellHeight": "sm",
+                "footer": {
+                "countRows": False,
+                "fields": "",
+                "reducer": [
+                    "sum"
+                ],
+                "show": False
+                },
+                "showHeader": True
+            },
+            "pluginVersion": "12.0.1",
+            "targets": [
+                {
+                "datasource": {
+                    "type": "grafana-postgresql-datasource",
+                    "uid": f"{self.datasource_uid}"
+                },
+                "editorMode": "code",
+                "format": "table",
+                "rawQuery": True,
+                "rawSql": self.encap_info_sql,
+                "refId": "A",
+                "sql": {
+                    "columns": [
+                    {
+                        "parameters": [],
+                        "type": "function"
+                    }
+                    ],
+                    "groupBy": [
+                    {
+                        "property": {
+                        "type": "string"
+                        },
+                        "type": "groupBy"
+                    }
+                    ],
+                    "limit": 50
+                }
+                }
+            ],
+            "title": "Encap Info",
             "type": "table"
             }
         ],
