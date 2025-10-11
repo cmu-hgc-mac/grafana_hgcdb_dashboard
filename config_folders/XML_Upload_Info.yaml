@@ -1,0 +1,13 @@
+datasource_variable: DS_POSTGRES
+
+dashboards:
+
+  - title: "XML Upload Info"
+    panels:
+      - title: "XML Upload Status"
+        table: "back_encap"
+        chart_type: "piechart"
+        condition: "xml_gen_datetime IS NOT NULL"
+        groupby: ["xml_gen_datetime"]
+        filters: {"back_encap":"xml_upload_success"}
+        distinct: ["back_encap"]
