@@ -15,10 +15,13 @@ print(f" >> Existing alert rules uids: {result} \n")
 
 # Ask user to input the UID of the alert rule to be deleted
 while True:
-    target_alert_rule_uid = input(" >> Enter the UID of the alert rule to be deleted: ")
+    target_alert_rule_uid = input(" >> Enter the UID of the alert rule to be deleted or 'all' for deleting all alert rules: ")
 
     if target_alert_rule_uid in result:
         client.delete_alert_rule(target_alert_rule_uid)
+        break
+    elif target_alert_rule_uid.lower() == "all":
+        client.delete_all_alert_rules()
         break
     elif target_alert_rule_uid.lower() == "exit":
         print("   >> Exiting without deleting.")
