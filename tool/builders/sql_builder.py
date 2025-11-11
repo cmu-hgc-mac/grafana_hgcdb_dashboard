@@ -508,7 +508,7 @@ class PieChartGenerator(BaseSQLGenerator):
         """dispatch to specific pie chart SQL generator based on table name
         """
         dispatch_map = {
-            "bp_inspect": self._generate_sql_shipping
+            "module_info": self._generate_sql_shipping
         }
 
         # dispatch to the appropriate method
