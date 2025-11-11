@@ -505,57 +505,21 @@ class GaugeGenerator(BaseSQLGenerator):
 # -- Pie Chart --
 class PieChartGenerator(BaseSQLGenerator):
     def generate_sql(self, table: str, condition: str, groupby: list, filters: list, distinct: bool, inputs: list) -> str:
-        metrics = self._build_metric_clause(table, groupby, distinct)
-
         pre_clause, target_table = self._build_pre_clause(table, distinct)
         where_clause, original_filters = self._build_where_clause(filters, condition, table, distinct, inputs)
         join_clause = self._build_join_clause(table, original_filters, distinct)
-        metric_clauses = []
 
-        for m in metrics:
-            if "datetime" in m:
-                metric_clauses.append(f"COUNT(*) FILTER (WHERE {m} IS NULL) AS not_{m}")
-                metric_clauses.append(f"COUNT(*) FILTER (WHERE {m} IS NOT NULL) AS {m}")
-            elif "success" in m:
-                metric_clauses.append(f"COUNT(*) FILTER (WHERE {m} = TRUE) AS {m}_true")
-                metric_clauses.append(f"COUNT(*) FILTER (WHERE {m} = FALSE OR {m} IS NULL) AS {m}_false")
-            else:
-                metric_clauses.append(f"COUNT(*) FILTER (WHERE {m} IS NOT NULL) AS {m}_count")
-                
         sql = f"""
         {pre_clause}
         SELECT 
-            metric_clauses
+            COUNT(*) FILTER (WHERE shipped_datetime IS NULL) AS not_shipped,
+            COUNT(*) FILTER (WHERE shipped_datetime IS NOT NULL) AS shipped
         FROM {target_table}
         {join_clause}
         WHERE {where_clause}
         """
-
-        # sql = f"""
-        # {pre_clause}
-        # SELECT 
-        #     COUNT(*) FILTER (WHERE shipped_datetime IS NULL) AS not_shipped,
-        #     COUNT(*) FILTER (WHERE shipped_datetime IS NOT NULL) AS shipped
-        # FROM {target_table}
-        # {join_clause}
-        # WHERE {where_clause}
-        # """
+        
         return sql.strip()
-    
-    def _build_metric_clause(self, table: str, groupby: list, distinct: bool) -> str:
-        """Builds the metric clause by joining all groupby fields.
-        """
-        groupby_fields = []
-
-        if distinct:
-            table = "temp_table_0"
-        
-        for elem in groupby:
-            arg = self._build_select_argument(table, elem, TYPE="")
-            if arg:
-                groupby_fields.append(arg)
-        
-        return ",\n               ".join(groupby_fields)
 
 
 # ============================================================
