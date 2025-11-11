@@ -9,5 +9,5 @@ dashboards:
         chart_type: "piechart"
         condition: "xml_gen_datetime IS NOT NULL"
         groupby: []
-        filters: {"bp_inspect":["xml_upload_success"]}
+        filters: {}
         distinct: ["bp_inspect"]
