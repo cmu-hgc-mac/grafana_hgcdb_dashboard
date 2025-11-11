@@ -505,6 +505,21 @@ class GaugeGenerator(BaseSQLGenerator):
 # -- Pie Chart --
 class PieChartGenerator(BaseSQLGenerator):
     def generate_sql(self, table: str, condition: str, groupby: list, filters: list, distinct: bool, inputs: list) -> str:
+        """dispatch to specific pie chart SQL generator based on table name
+        """
+        dispatch_map = {
+            "bp_inspect": self._generate_sql_shipping
+        }
+
+        # dispatch to the appropriate method
+        if table in dispatch_map:
+            return dispatch_map[table](table,condition, groupby, filters, distinct, inputs)
+        else:
+            raise ValueError(f"Unsupported table type: {table}")
+    
+    def _generate_sql_shipping(self, table: str, condition: str, groupby: list, filters: list, distinct: bool, inputs: list) -> str:
+        """Generates SQL for Pie Chart showing shipping status.
+        """
         pre_clause, target_table = self._build_pre_clause(table, distinct)
         where_clause, original_filters = self._build_where_clause(filters, condition, table, distinct, inputs)
         join_clause = self._build_join_clause(table, original_filters, distinct)
@@ -518,10 +533,28 @@ class PieChartGenerator(BaseSQLGenerator):
         {join_clause}
         WHERE {where_clause}
         """
-        
+
         return sql.strip()
+    
+    def _generate_sql_XML_upload(self, table: str, condition: str, groupby: list, filters: list, distinct: bool, inputs: list) -> str:
+        """Generates SQL for Pie Chart showing XML upload status.
+        """
+        pre_clause, target_table = self._build_pre_clause(table, distinct)
+        where_clause, original_filters = self._build_where_clause(filters, condition, table, distinct, inputs)
+        join_clause = self._build_join_clause(table, original_filters, distinct)
 
+        sql = f"""
+        {pre_clause}
+        SELECT 
+            COUNT(*) FILTER (WHERE shipped_datetime IS NULL) AS not_shipped,
+            COUNT(*) FILTER (WHERE shipped_datetime IS NOT NULL) AS shipped
+        FROM {target_table}
+        {join_clause}
+        WHERE {where_clause}
+        """
 
+        return sql.strip()
+    
 # ============================================================
 # === SQL Generator Factory ==================================
 # ============================================================
