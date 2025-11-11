@@ -508,7 +508,8 @@ class PieChartGenerator(BaseSQLGenerator):
         """dispatch to specific pie chart SQL generator based on table name
         """
         dispatch_map = {
-            "module_info": self._generate_sql_shipping
+            "module_info": self._generate_sql_shipping,
+            "bp_inspect": self._generate_sql_XML_upload
         }
 
         # dispatch to the appropriate method
@@ -546,8 +547,8 @@ class PieChartGenerator(BaseSQLGenerator):
         sql = f"""
         {pre_clause}
         SELECT 
-            COUNT(*) FILTER (WHERE shipped_datetime IS NULL) AS not_shipped,
-            COUNT(*) FILTER (WHERE shipped_datetime IS NOT NULL) AS shipped
+            COUNT(*) FILTER (WHERE xml_gen_datetime IS NULL) AS not_uploaded,
+            COUNT(*) FILTER (WHERE xml_gen_datetime IS NOT NULL AND xml_upload_success IS TRUE) AS uploaded
         FROM {target_table}
         {join_clause}
         WHERE {where_clause}
