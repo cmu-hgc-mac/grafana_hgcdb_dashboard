@@ -1,13 +1,30 @@
 datasource_variable: DS_POSTGRES
 
+tables_xml_upload: &tables_list
+  - "back_encap"
+  - "back_wirebond"
+  - "bond_pull_test"
+  - "bp_inspect"
+  - "front_encap"
+  - "front_wirebond"
+  - "hxb_inspect"
+  - "hxb_pedestal_test"
+  - "module_assembly"
+  - "module_inspect"
+  - "module_iv_test"
+  - "module_pedestal_test"
+  - "proto_assembly"
+  - "proto_inspect"
+  - "sensor"
+
 dashboards:
 
   - title: "XML Upload Status"
     panels:
       - title: "XML Upload Status Counts"
-        table: "bp_inspect"
+        table: *tables_list
         chart_type: "piechart"
         condition: "xml_gen_datetime IS NOT NULL"
         groupby: []
         filters: {}
-        distinct: ["bp_inspect"]
+        distinct: []

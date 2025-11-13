@@ -504,17 +504,20 @@ class GaugeGenerator(BaseSQLGenerator):
 
 # -- Pie Chart --
 class PieChartGenerator(BaseSQLGenerator):
-    def generate_sql(self, table: str, condition: str, groupby: list, filters: list, distinct: bool, inputs: list) -> str:
-        """dispatch to specific pie chart SQL generator based on table name
+    def generate_sql(self, table, condition: str, groupby: list, filters: list, distinct: bool, inputs: list) -> str:
+        """dispatch to specific pie chart SQL generator based on type of `table`.
+        table: str for shipping status, list for XML upload status
         """
         dispatch_map = {
-            "module_info": self._generate_sql_shipping,
-            "bp_inspect": self._generate_sql_XML_upload
+            "string": self._generate_sql_shipping,
+            "list": self._generate_sql_XML_upload
         }
 
         # dispatch to the appropriate method
-        if table in dispatch_map:
-            return dispatch_map[table](table,condition, groupby, filters, distinct, inputs)
+        if isinstance(table, str):
+            return dispatch_map["string"](table,condition, groupby, filters, distinct, inputs)
+        elif isinstance(table, list):
+            return dispatch_map["list"](table,condition, groupby, filters, distinct, inputs)
         else:
             raise ValueError(f"Unsupported table type: {table}")
     
@@ -537,21 +540,23 @@ class PieChartGenerator(BaseSQLGenerator):
 
         return sql.strip()
     
-    def _generate_sql_XML_upload(self, table: str, condition: str, groupby: list, filters: list, distinct: bool, inputs: list) -> str:
+    def _generate_sql_XML_upload(self, table:list, condition: str, groupby: list, filters: list, distinct: bool, inputs: list) -> str:
         """Generates SQL for Pie Chart showing XML upload status.
         """
-        pre_clause, target_table = self._build_pre_clause(table, distinct)
-        where_clause, original_filters = self._build_where_clause(filters, condition, table, distinct, inputs)
-        join_clause = self._build_join_clause(table, original_filters, distinct)
 
+        union_query = " UNION ALL ".join([f"SELECT xml_gen_datetime, xml_upload_success FROM {t}" for t in table])
+        combined_table = f"({union_query}) AS combined"
+
+        pre_clause, _ = self._build_pre_clause(combined_table, distinct)
+        _, original_filters = self._build_where_clause(filters, condition, combined_table, distinct, inputs)
+        join_clause = self._build_join_clause(combined_table, original_filters, distinct)
         sql = f"""
         {pre_clause}
         SELECT 
             COUNT(*) FILTER (WHERE xml_gen_datetime IS NULL) AS not_uploaded,
             COUNT(*) FILTER (WHERE xml_gen_datetime IS NOT NULL AND xml_upload_success IS TRUE) AS uploaded
-        FROM {target_table}
+        FROM {combined_table}
         {join_clause}
-        WHERE {where_clause}
         """
 
         return sql.strip()
