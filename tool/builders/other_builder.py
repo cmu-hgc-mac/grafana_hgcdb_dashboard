@@ -228,6 +228,13 @@ class IVCurveBuilder:
             SELECT DISTINCT ON (module_name) *
             FROM module_iv_test
             WHERE $__timeFilter(module_iv_test.date_test)
+            AND meas_v IS NOT NULL AND meas_i IS NOT NULL
+            AND {temp_condition}
+            AND {rel_hum_condition}
+            AND temp_c ~ '^[-+]?[0-9]+(\.[0-9]+)?$'
+            AND rel_hum ~ '^[-+]?[0-9]+(\.[0-9]+)?$'
+            AND (status_desc = 'Completely Encapsulated' OR status_desc = 'Frontside Encapsulated')
+            AND array_length(meas_v, 1) = array_length(meas_i, 1)
             ORDER BY module_name, date_test DESC
         ),
 
@@ -249,13 +256,6 @@ class IVCurveBuilder:
         FROM module_iv_test
         WHERE
             module_name IN (SELECT module_name FROM selected_modules)
-            AND meas_v IS NOT NULL AND meas_i IS NOT NULL
-            AND {temp_condition}
-            AND {rel_hum_condition}
-            AND temp_c ~ '^[-+]?[0-9]+(\.[0-9]+)?$'
-            AND rel_hum ~ '^[-+]?[0-9]+(\.[0-9]+)?$'
-            AND (status_desc = 'Completely Encapsulated' OR status_desc = 'Frontside Encapsulated')
-            AND array_length(meas_v, 1) = array_length(meas_i, 1)
         ),
 
         best_per_module AS (
