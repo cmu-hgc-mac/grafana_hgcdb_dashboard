@@ -543,7 +543,6 @@ class PieChartGenerator(BaseSQLGenerator):
     def _generate_sql_XML_upload(self, table:list, condition: str, groupby: list, filters: list, distinct: bool, inputs: list) -> str:
         """Generates SQL for Pie Chart showing XML upload status.
         """
-
         union_query = " UNION ALL ".join([f"SELECT xml_gen_datetime, xml_upload_success FROM {t}" for t in table])
         combined_table = f"({union_query}) AS combined"
 
