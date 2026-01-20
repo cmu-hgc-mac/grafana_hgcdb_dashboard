@@ -133,6 +133,7 @@ class AlertBuilder:
             {parameter}
         FROM
             {source}
+        ORDER BY log_timestamp DESC
         LIMIT 1;
         """
         return alertSQL
