@@ -6,7 +6,7 @@ import yaml
 
 from tool.helper import *
 from tool import DashboardValidator
-from tool import PanelBuilder, FilterBuilder, InputBuilder, DashboardBuilder, ComponentsLookUpFormBuilder, HexmapPlotsBuilder
+from tool import PanelBuilder, FilterBuilder, InputBuilder, DashboardBuilder, ComponentsLookUpFormBuilder, HexmapPlotsBuilder, OffsetPlotsBuilder
 
 """
 This script generates all the dashboards json_file, saves them to a folder under `grafana_hgcdb_dashboard`, and uploads them to grafana.
@@ -22,6 +22,7 @@ filter_builder = FilterBuilder(GF_DS_UID)
 dashboard_builder = DashboardBuilder()
 components_form_builder = ComponentsLookUpFormBuilder(GF_DS_UID)
 hexmap_plots_builder = HexmapPlotsBuilder(GF_DS_UID)
+offset_plots_builder = OffsetPlotsBuilder(GF_DS_UID)
 
 # Check if succeed:
 succeed = True      # assert every file generated successfully
@@ -72,14 +73,21 @@ for config in filelist:
             # Export the dashboard json to a file
             file_name = config.split(".")[0]
             dashboard_builder.save_dashboard_json(dashboard, dashboard_json, file_name)
-            break
+            continue
         
         elif dashboard_title == "Hexmap Plots":
             dashboard_json = hexmap_plots_builder.generate_dashboard_json()
             # Export the dashboard json to a file
             file_name = config.split(".")[0]
             dashboard_builder.save_dashboard_json(dashboard, dashboard_json, file_name)
-            break
+            continue
+
+        elif dashboard_title == "Offset Plots":
+            dashboard_json = offset_plots_builder.generate_dashboard_json()
+            # Export the dashboard json to a file
+            file_name = config.split(".")[0]
+            dashboard_builder.save_dashboard_json(dashboard, dashboard_json, file_name)
+            continue
 
         # Loop for every panel in a dashboard
         for panel in config_panels:

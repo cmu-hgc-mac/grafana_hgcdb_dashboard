@@ -90,3 +90,13 @@ dashboards:
           groupby: []
           filters: {"module_info": []}
           distinct:
+  
+  - title: "Offset Plots"
+    panels:
+        - title: "Components Look-up Form"
+          table: "module_info"
+          chart_type: "table"
+          condition:
+          groupby: []
+          filters: {"module_info": []}
+          distinct:
