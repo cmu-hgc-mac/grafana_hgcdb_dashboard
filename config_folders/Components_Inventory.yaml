@@ -7,28 +7,28 @@ dashboards:
       - title: "Free Baseplates"
         table: "baseplate"
         chart_type: "barchart"
-        condition: "proto_no IS NULL AND bp_material IS NOT NULL AND resolution IS NOT NULL AND geometry IS NOT NULL AND date_verify_received IS NOT NULL AND date_shipped IS NULL"
+        condition: "proto_no IS NULL AND bp_material IS NOT NULL AND resolution IS NOT NULL AND geometry IS NOT NULL AND date_verify_received IS NOT NULL"
         groupby: ["bp_material", "resolution", "geometry"]
         filters: {"baseplate": ["bp_material", "resolution", "geometry"], "bp_inspect": ["grade"]}
         distinct: ["baseplate", "bp_inspect"]   
       - title: "Free Baseplates Info"
         table: "baseplate"
         chart_type: "table"
-        condition: "proto_no IS NULL AND bp_material IS NOT NULL AND resolution IS NOT NULL AND geometry IS NOT NULL AND date_verify_received IS NOT NULL AND date_shipped IS NULL"
+        condition: "proto_no IS NULL AND bp_material IS NOT NULL AND resolution IS NOT NULL AND geometry IS NOT NULL AND date_verify_received IS NOT NULL"
         groupby: {"baseplate": ["bp_name"], "bp_inspect": ["grade", "comment", "date_inspect", "flatness", "avg_thickness", "max_thickness"]}
         filters: {"baseplate": ["bp_material", "resolution", "geometry"], "bp_inspect": ["grade"]}
         distinct: ["baseplate", "bp_inspect"]
       - title: "Assigned (but not recieved) Baseplates"
         table: "baseplate"
         chart_type: "table"
-        condition: "proto_no IS NULL AND date_verify_received IS NULL AND date_shipped IS NULL"
+        condition: "proto_no IS NULL AND date_verify_received IS NULL"
         groupby: {"baseplate": ["row_count", "bp_name", "geometry", "resolution", "kind", "date_verify_received"]}
         filters: {"baseplate": ["bp_material", "resolution", "geometry"], "bp_inspect": ["grade"]}
         distinct: ["baseplate"]
       - title: "Recieved (but not assigned) Baseplats"
         table: "baseplate"
         chart_type: "table"
-        condition: "proto_no IS NULL AND kind IS NULL AND date_shipped IS NULL"
+        condition: "proto_no IS NULL AND kind IS NULL"
         groupby: {"baseplate": ["row_count", "bp_name", "geometry", "resolution", "kind", "date_verify_received"]}
         filters: {"baseplate": ["bp_material", "resolution", "geometry"], "bp_inspect": ["grade"]}
         distinct: ["baseplate"]
