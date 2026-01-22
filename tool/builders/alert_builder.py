@@ -139,7 +139,7 @@ class AlertBuilder:
         return alertSQL
     
     def generate_missing_xml_sql(self, table_name: str, columns: list, parameter: str, condition:list, ignore: list = ["comment"]) -> str:
-        """Generate sql for XML generate/upload alert
+        """Generate sql for  generate/upload alert
         """
 
         # remove unwanted columns and the columns of the parameter
