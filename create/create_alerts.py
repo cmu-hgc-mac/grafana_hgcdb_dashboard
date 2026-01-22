@@ -81,20 +81,20 @@ for config in filelist:
 
         # all table alerts
         if folder_name == "All Table Alerts Config":
-            title = alert["title"]
-            if alert["table"] != None:
-                tablelist = alert["table"]
-            for table in tablelist:
-                alert["title"] = title
-                alert["title"] = alert["title"] + ":" + table
-                columns = dashboardValidator.get_valid_columns(table)
-                if alert["parameter"] in columns:
-                    alert["sql"] = alert_builder.generate_missing_xml_sql(table,columns,alert["parameter"],alert["conditions"],alert["ignore_columns"])
-                    alert_json = alert_builder.generate_alerts(alert, folder_name)
+            # title = alert["title"]
+            # if alert["table"] != None:
+            #     tablelist = alert["table"]
+            # for table in tablelist:
+            #     alert["title"] = title
+            #     alert["title"] = alert["title"] + ":" + table
+            #     columns = dashboardValidator.get_valid_columns(table)
+            #     if alert["parameter"] in columns:
+            #         alert["sql"] = alert_builder.generate_missing_xml_sql(table,columns,alert["parameter"],alert["conditions"],alert["ignore_columns"])
+            #         alert_json = alert_builder.generate_alerts(alert, folder_name)
 
-                    # Export the alert json to a file
-                    file_name = config.split(".")[0]
-                    alert_builder.save_alerts_json(alert, alert_json, file_name)
+            #         # Export the alert json to a file
+            #         file_name = config.split(".")[0]
+            #         alert_builder.save_alerts_json(alert, alert_json, file_name)
             continue
         
         # ordinary alerts
