@@ -2495,7 +2495,9 @@ class OffsetPlotsBuilder:
                     },
                     "custom": {
                         "axisBorderShow": False,
-                        "axisCenteredZero": False,
+                        "axisCenteredZero": True,
+                        "axisSoftMin": -250,
+                        "axisSoftMax": 250,
                         "axisColorMode": "text",
                         "axisLabel": "",
                         "axisPlacement": "auto",
@@ -2609,7 +2611,9 @@ class OffsetPlotsBuilder:
                     },
                     "custom": {
                         "axisBorderShow": False,
-                        "axisCenteredZero": False,
+                        "axisCenteredZero": True,
+                        "axisSoftMin": -250,
+                        "axisSoftMax": 250,
                         "axisColorMode": "text",
                         "axisLabel": "",
                         "axisPlacement": "auto",
