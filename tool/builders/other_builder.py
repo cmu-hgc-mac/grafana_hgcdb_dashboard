@@ -2406,7 +2406,9 @@ class OffsetPlotsBuilder:
                 ('All' = ANY(ARRAY[${geometry}]) OR 
                 (module_info.geometry IS NULL AND 'NULL' = ANY(ARRAY[${geometry}])) OR 
                 module_info.geometry::text = ANY(ARRAY[${geometry}]))
-          AND $__timeFilter(module_inspect.date_inspect AT TIME ZONE 'America/New_York')
+          AND (module_inspect.date_inspect::timestamp + module_inspect.time_inspect::time)
+                BETWEEN ($__timeFrom() AT TIME ZONE 'America/New_York')
+                    AND ($__timeTo()   AT TIME ZONE 'America/New_York')
           AND 
                 ('All' = ANY(ARRAY[${grade}]) OR 
                 (module_inspect.grade IS NULL AND 'NULL' = ANY(ARRAY[${grade}])) OR 
@@ -2442,7 +2444,9 @@ class OffsetPlotsBuilder:
                 ('All' = ANY(ARRAY[${geometry}]) OR 
                 (module_info.geometry IS NULL AND 'NULL' = ANY(ARRAY[${geometry}])) OR 
                 module_info.geometry::text = ANY(ARRAY[${geometry}]))
-          AND $__timeFilter(proto_inspect.date_inspect AT TIME ZONE 'America/New_York')
+          AND (proto_inspect.date_inspect::timestamp + proto_inspect.time_inspect::time)
+                BETWEEN ($__timeFrom() AT TIME ZONE 'America/New_York')
+                    AND ($__timeTo()   AT TIME ZONE 'America/New_York')
           AND 
                 ('All' = ANY(ARRAY[${grade}]) OR 
                 (proto_inspect.grade IS NULL AND 'NULL' = ANY(ARRAY[${grade}])) OR 
