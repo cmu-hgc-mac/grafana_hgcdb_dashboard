@@ -2381,9 +2381,7 @@ class OffsetPlotsBuilder:
         self.datasource_uid = datasource_uid
         self.dashboard_uid = create_uid("Offset Plots")
 
-        self.module_offset_sql = """
-        SELECT x_offset_mu, y_offset_mu, module_inspect.module_name
-        FROM module_inspect 
+        self.module_filter_sql = """
         LEFT JOIN module_info ON module_inspect.module_name = module_info.module_name
         LEFT JOIN proto_assembly ON module_info.proto_name = proto_assembly.proto_name
         WHERE 
@@ -2419,9 +2417,7 @@ class OffsetPlotsBuilder:
                 proto_assembly.put_position::text = ANY(ARRAY[${put_position}]))
         """
 
-        self.proto_offset_sql = """
-        SELECT x_offset_mu, y_offset_mu, proto_inspect.proto_name
-        FROM proto_inspect
+        self.proto_filter_sql = """
         LEFT JOIN module_info ON proto_inspect.proto_name = module_info.proto_name
         LEFT JOIN proto_assembly ON module_info.proto_name = proto_assembly.proto_name
         WHERE 
@@ -2457,8 +2453,26 @@ class OffsetPlotsBuilder:
                 proto_assembly.put_position::text = ANY(ARRAY[${put_position}]))
         """
 
-        
-    
+        self.module_offset_sql = """
+        SELECT x_offset_mu, y_offset_mu, module_inspect.module_name
+        FROM module_inspect 
+        """ + self.module_filter_sql
+
+        self.proto_offset_sql = """
+        SELECT x_offset_mu, y_offset_mu, proto_inspect.proto_name
+        FROM proto_inspect
+        """ + self.proto_filter_sql
+
+        self.module_avg_thickness_sql = """
+        SELECT module_inspect.avg_thickness
+        FROM module_inspect
+        """ + self.module_filter_sql
+
+        self.proto_avg_thickness_sql = """
+        SELECT proto_inspect.avg_thickness
+        FROM proto_inspect
+        """ + self.proto_filter_sql
+
     ######################################
     def generate_dashboard_json(self):
         dashboard_json = {
@@ -2483,6 +2497,8 @@ class OffsetPlotsBuilder:
             "graphTooltip": 0,
             "links": [],
             "panels": [
+
+    ### Module XY Offset
                 {
                 "datasource": {
                     "type": "grafana-postgresql-datasource",
@@ -2598,7 +2614,7 @@ class OffsetPlotsBuilder:
                 "type": "xychart"
                 },
 
-
+    ### Proto XY Offset
                 {
                 "datasource": {
                     "type": "grafana-postgresql-datasource",
@@ -2712,7 +2728,190 @@ class OffsetPlotsBuilder:
                 ],
                 "title": "Proto-Module Offset",
                 "type": "xychart"
+                },
+
+    ### Module Average Thickness (mm)
+                {
+                "id": 3,
+                "type": "histogram",
+                "title": "Module Average Thickness (mm)",
+                "gridPos": {
+                    "x": 0,
+                    "y": 12,
+                    "h": 8,
+                    "w": 12
+                },
+                "fieldConfig": {
+                    "defaults": {
+                    "custom": {
+                        "stacking": {
+                        "mode": "none",
+                        "group": "A"
+                        },
+                        "lineWidth": 1,
+                        "fillOpacity": 80,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                        "tooltip": False,
+                        "viz": False,
+                        "legend": False
+                        }
+                    },
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "mappings": [],
+                    },
+                    "overrides": []
+                },
+                "transformations": [
+                    {
+                    "id": "filterFieldsByName",
+                    "options": {}
+                    },
+                    {
+                    "id": "partitionByValues",
+                    "options": {
+                        "fields": [
+                        "log_location"
+                        ],
+                        "keepFields": False
+                    }
+                    }
+                ],
+                "pluginVersion": "12.0.0",
+                "targets": [
+                    {
+                    "datasource": {
+                        "type": "grafana-postgresql-datasource",
+                        "uid": self.datasource_uid
+                    },
+                    "editorMode": "code",
+                    "format": "table",
+                    "rawQuery": True,
+                    "rawSql": self.module_avg_thickness_sql,
+                    "refId": "A",
+                    }
+                ],
+                "datasource": {
+                    "type": "grafana-postgresql-datasource",
+                    "uid": self.datasource_uid
+                },
+                "options": {
+                    "tooltip": {
+                    "mode": "single",
+                    "sort": "none",
+                    "hideZeros": False
+                    },
+                    "legend": {
+                    "showLegend": True,
+                    "displayMode": "list",
+                    "placement": "bottom",
+                    "calcs": []
+                    },
+                    "barRadius": 0,
+                    "barWidth": 0.97,
+                    "fullHighlight": False,
+                    "groupWidth": 0.7,
+                    "orientation": "horizontal",
+                    "showValue": "auto",
+                    "stacking": "normal",
+                    "xTickLabelRotation": 0,
+                    "xTickLabelSpacing": 0
                 }
+                },
+                
+    ### Proto Average Thickness (mm)
+                {
+                "id": 4,
+                "type": "histogram",
+                "title": "Proto Average Thickness (mm)",
+                "gridPos": {
+                    "x": 12,
+                    "y": 12,
+                    "h": 8,
+                    "w": 12
+                },
+                "fieldConfig": {
+                    "defaults": {
+                    "custom": {
+                        "stacking": {
+                        "mode": "none",
+                        "group": "A"
+                        },
+                        "lineWidth": 1,
+                        "fillOpacity": 80,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                        "tooltip": False,
+                        "viz": False,
+                        "legend": False
+                        }
+                    },
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "mappings": [],
+                    },
+                    "overrides": []
+                },
+                "transformations": [
+                    {
+                    "id": "filterFieldsByName",
+                    "options": {}
+                    },
+                    {
+                    "id": "partitionByValues",
+                    "options": {
+                        "fields": [
+                        "log_location"
+                        ],
+                        "keepFields": False
+                    }
+                    }
+                ],
+                "pluginVersion": "12.0.0",
+                "targets": [
+                    {
+                    "datasource": {
+                        "type": "grafana-postgresql-datasource",
+                        "uid": self.datasource_uid
+                    },
+                    "editorMode": "code",
+                    "format": "table",
+                    "rawQuery": True,
+                    "rawSql": self.proto_avg_thickness_sql,
+                    "refId": "A",
+                    }
+                ],
+                "datasource": {
+                    "type": "grafana-postgresql-datasource",
+                    "uid": self.datasource_uid
+                },
+                "options": {
+                    "tooltip": {
+                    "mode": "single",
+                    "sort": "none",
+                    "hideZeros": False
+                    },
+                    "legend": {
+                    "showLegend": True,
+                    "displayMode": "list",
+                    "placement": "bottom",
+                    "calcs": []
+                    },
+                    "barRadius": 0,
+                    "barWidth": 0.97,
+                    "fullHighlight": False,
+                    "groupWidth": 0.7,
+                    "orientation": "horizontal",
+                    "showValue": "auto",
+                    "stacking": "normal",
+                    "xTickLabelRotation": 0,
+                    "xTickLabelSpacing": 0
+                }
+                }
+
             ],
             "preload": False,
             "schemaVersion": 41,
