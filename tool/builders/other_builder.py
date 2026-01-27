@@ -2922,11 +2922,11 @@ class OffsetPlotsBuilder:
                 }
                 },
 
-    ### Module Angular Offset (mm)
+    ### Module Angular Offset
                 {
                 "id": 5,
                 "type": "histogram",
-                "title": "Module Angular Offset (mm)",
+                "title": "Module Angular Offset",
                 "gridPos": {
                     "x": 0,
                     "y": 20,
@@ -3013,11 +3013,11 @@ class OffsetPlotsBuilder:
                 }
                 }, 
     
-    ### Proto Angular Offset (mm)
+    ### Proto Angular Offset
                 {
                 "id": 6,
                 "type": "histogram",
-                "title": "Proto Angular Offset (mm)",
+                "title": "Proto Angular Offset",
                 "gridPos": {
                     "x": 12,
                     "y": 20,
