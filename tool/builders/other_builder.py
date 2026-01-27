@@ -2473,6 +2473,16 @@ class OffsetPlotsBuilder:
         FROM proto_inspect
         """ + self.proto_filter_sql
 
+        self.module_angular_offset_sql = """
+        SELECT module_inspect.ang_offset_deg
+        FROM module_inspect
+        """ + self.module_filter_sql
+
+        self.proto_angular_offset_sql = """
+        SELECT proto_inspect.ang_offset_deg
+        FROM proto_inspect
+        """ + self.proto_filter_sql
+
     ######################################
     def generate_dashboard_json(self):
         dashboard_json = {
@@ -2881,6 +2891,188 @@ class OffsetPlotsBuilder:
                     "format": "table",
                     "rawQuery": True,
                     "rawSql": self.proto_avg_thickness_sql,
+                    "refId": "A",
+                    }
+                ],
+                "datasource": {
+                    "type": "grafana-postgresql-datasource",
+                    "uid": self.datasource_uid
+                },
+                "options": {
+                    "tooltip": {
+                    "mode": "single",
+                    "sort": "none",
+                    "hideZeros": False
+                    },
+                    "legend": {
+                    "showLegend": True,
+                    "displayMode": "list",
+                    "placement": "bottom",
+                    "calcs": []
+                    },
+                    "barRadius": 0,
+                    "barWidth": 0.97,
+                    "fullHighlight": False,
+                    "groupWidth": 0.7,
+                    "orientation": "horizontal",
+                    "showValue": "auto",
+                    "stacking": "normal",
+                    "xTickLabelRotation": 0,
+                    "xTickLabelSpacing": 0
+                }
+                },
+
+    ### Module Angular Offset (mm)
+                {
+                "id": 5,
+                "type": "histogram",
+                "title": "Module Angular Offset (mm)",
+                "gridPos": {
+                    "x": 0,
+                    "y": 20,
+                    "h": 8,
+                    "w": 12
+                },
+                "fieldConfig": {
+                    "defaults": {
+                    "custom": {
+                        "stacking": {
+                        "mode": "none",
+                        "group": "A"
+                        },
+                        "lineWidth": 1,
+                        "fillOpacity": 80,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                        "tooltip": False,
+                        "viz": False,
+                        "legend": False
+                        }
+                    },
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "mappings": [],
+                    },
+                    "overrides": []
+                },
+                "transformations": [
+                    {
+                    "id": "filterFieldsByName",
+                    "options": {}
+                    },
+                    {
+                    "id": "partitionByValues",
+                    "options": {
+                        "fields": [
+                        "log_location"
+                        ],
+                        "keepFields": False
+                    }
+                    }
+                ],
+                "pluginVersion": "12.0.0",
+                "targets": [
+                    {
+                    "datasource": {
+                        "type": "grafana-postgresql-datasource",
+                        "uid": self.datasource_uid
+                    },
+                    "editorMode": "code",
+                    "format": "table",
+                    "rawQuery": True,
+                    "rawSql": self.module_angular_offset_sql,
+                    "refId": "A",
+                    }
+                ],
+                "datasource": {
+                    "type": "grafana-postgresql-datasource",
+                    "uid": self.datasource_uid
+                },
+                "options": {
+                    "tooltip": {
+                    "mode": "single",
+                    "sort": "none",
+                    "hideZeros": False
+                    },
+                    "legend": {
+                    "showLegend": True,
+                    "displayMode": "list",
+                    "placement": "bottom",
+                    "calcs": []
+                    },
+                    "barRadius": 0,
+                    "barWidth": 0.97,
+                    "fullHighlight": False,
+                    "groupWidth": 0.7,
+                    "orientation": "horizontal",
+                    "showValue": "auto",
+                    "stacking": "normal",
+                    "xTickLabelRotation": 0,
+                    "xTickLabelSpacing": 0
+                }
+                }, 
+    
+    ### Proto Angular Offset (mm)
+                {
+                "id": 6,
+                "type": "histogram",
+                "title": "Proto Angular Offset (mm)",
+                "gridPos": {
+                    "x": 12,
+                    "y": 20,
+                    "h": 8,
+                    "w": 12
+                },
+                "fieldConfig": {
+                    "defaults": {
+                    "custom": {
+                        "stacking": {
+                        "mode": "none",
+                        "group": "A"
+                        },
+                        "lineWidth": 1,
+                        "fillOpacity": 80,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                        "tooltip": False,
+                        "viz": False,
+                        "legend": False
+                        }
+                    },
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "mappings": [],
+                    },
+                    "overrides": []
+                },
+                "transformations": [
+                    {
+                    "id": "filterFieldsByName",
+                    "options": {}
+                    },
+                    {
+                    "id": "partitionByValues",
+                    "options": {
+                        "fields": [
+                        "log_location"
+                        ],
+                        "keepFields": False
+                    }
+                    }
+                ],
+                "pluginVersion": "12.0.0",
+                "targets": [
+                    {
+                    "datasource": {
+                        "type": "grafana-postgresql-datasource",
+                        "uid": self.datasource_uid
+                    },
+                    "editorMode": "code",
+                    "format": "table",
+                    "rawQuery": True,
+                    "rawSql": self.proto_angular_offset_sql,
                     "refId": "A",
                     }
                 ],
