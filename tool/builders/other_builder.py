@@ -2415,6 +2415,10 @@ class OffsetPlotsBuilder:
                 ('All' = ANY(ARRAY[${put_position}]) OR 
                 (proto_assembly.put_position IS NULL AND 'NULL' = ANY(ARRAY[${put_position}])) OR 
                 proto_assembly.put_position::text = ANY(ARRAY[${put_position}]))
+          AND
+                ('All' = ANY(ARRAY[${ass_tray_id}]) OR
+                (proto_assembly.ass_tray_id IS NULL AND 'NULL' = ANY(ARRAY[${ass_tray_id}])) OR
+                proto_assembly.ass_tray_id::text = ANY(ARRAY[${ass_tray_id}]))
         """
 
         self.proto_filter_sql = """
@@ -2451,6 +2455,10 @@ class OffsetPlotsBuilder:
                 ('All' = ANY(ARRAY[${put_position}]) OR 
                 (proto_assembly.put_position IS NULL AND 'NULL' = ANY(ARRAY[${put_position}])) OR 
                 proto_assembly.put_position::text = ANY(ARRAY[${put_position}]))
+          AND
+                ('All' = ANY(ARRAY[${ass_tray_id}]) OR
+                (proto_assembly.ass_tray_id IS NULL AND 'NULL' = ANY(ARRAY[${ass_tray_id}])) OR
+                proto_assembly.ass_tray_id::text = ANY(ARRAY[${ass_tray_id}]))
         """
 
         self.module_offset_sql = """
@@ -3240,6 +3248,25 @@ class OffsetPlotsBuilder:
                     "name": "put_position",
                     "options": [],
                     "query": "\n            SELECT DISTINCT put_position::text FROM proto_assembly \n            UNION\n            SELECT 'NULL'\n            ORDER BY put_position\n            ",
+                    "refresh": 1,
+                    "type": "query"
+                },
+                {
+                    "current": {
+                    "text": "All",
+                    "value": [
+                        "$__all"
+                    ]
+                    },
+                    "datasource": {
+                    "type": "postgres",
+                    "uid": self.datasource_uid
+                    },
+                    "includeAll": True,
+                    "multi": True,
+                    "name": "ass_tray_id",
+                    "options": [],
+                    "query": "\n            SELECT DISTINCT ass_tray_id::text FROM proto_assembly \n            UNION\n            SELECT 'NULL'\n            ORDER BY ass_tray_id\n            ",
                     "refresh": 1,
                     "type": "query"
                 }
