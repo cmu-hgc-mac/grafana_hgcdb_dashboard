@@ -22,7 +22,7 @@ filter_builder = FilterBuilder(GF_DS_UID)
 dashboard_builder = DashboardBuilder()
 components_form_builder = ComponentsLookUpFormBuilder(GF_DS_UID)
 hexmap_plots_builder = HexmapPlotsBuilder(GF_DS_UID)
-offset_plots_builder = OffsetPlotsBuilder(GF_DS_UID)
+offset_plots_builder = OffsetPlotsBuilder(GF_DS_UID, TIME_ZONE)
 
 # Check if succeed:
 succeed = True      # assert every file generated successfully

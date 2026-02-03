@@ -2377,88 +2377,97 @@ class HexmapPlotsBuilder:
 # ============================================================
 
 class OffsetPlotsBuilder:
-    def __init__(self, datasource_uid):
+    def __init__(self, datasource_uid, timezone = 'America/New_York'):
         self.datasource_uid = datasource_uid
         self.dashboard_uid = create_uid("Offset Plots")
+        self.timezone = f"{timezone}"
+        self.bp_material = "{bp_material}"
+        self.resolution = "{resolution}"
+        self.roc_version = "{roc_version}"
+        self.sen_thickness = "{sen_thickness}"
+        self.geometry = "{geometry}"
+        self.grade = "{grade}"
+        self.put_position = "{put_position}"
+        self.ass_tray_id = "{ass_tray_id}"
 
-        self.module_filter_sql = """
+        self.module_filter_sql = f"""
         LEFT JOIN module_info ON module_inspect.module_name = module_info.module_name
         LEFT JOIN proto_assembly ON module_info.proto_name = proto_assembly.proto_name
         WHERE 
-                ('All' = ANY(ARRAY[${bp_material}]) OR 
-                (module_info.bp_material IS NULL AND 'NULL' = ANY(ARRAY[${bp_material}])) OR 
-                module_info.bp_material::text = ANY(ARRAY[${bp_material}]))
+                ('All' = ANY(ARRAY[${self.bp_material}]) OR 
+                (module_info.bp_material IS NULL AND 'NULL' = ANY(ARRAY[${self.bp_material}])) OR 
+                module_info.bp_material::text = ANY(ARRAY[${self.bp_material}]))
           AND 
-                ('All' = ANY(ARRAY[${resolution}]) OR 
-                (module_info.resolution IS NULL AND 'NULL' = ANY(ARRAY[${resolution}])) OR 
-                module_info.resolution::text = ANY(ARRAY[${resolution}]))
+                ('All' = ANY(ARRAY[${self.resolution}]) OR 
+                (module_info.resolution IS NULL AND 'NULL' = ANY(ARRAY[${self.resolution}])) OR 
+                module_info.resolution::text = ANY(ARRAY[${self.resolution}]))
           AND 
-                ('All' = ANY(ARRAY[${roc_version}]) OR 
-                (module_info.roc_version IS NULL AND 'NULL' = ANY(ARRAY[${roc_version}])) OR 
-                module_info.roc_version::text = ANY(ARRAY[${roc_version}]))
+                ('All' = ANY(ARRAY[${self.roc_version}]) OR 
+                (module_info.roc_version IS NULL AND 'NULL' = ANY(ARRAY[${self.roc_version}])) OR 
+                module_info.roc_version::text = ANY(ARRAY[${self.roc_version}]))
           AND 
-                ('All' = ANY(ARRAY[${sen_thickness}]) OR 
-                (module_info.sen_thickness IS NULL AND 'NULL' = ANY(ARRAY[${sen_thickness}])) OR 
-                module_info.sen_thickness::text = ANY(ARRAY[${sen_thickness}]))
+                ('All' = ANY(ARRAY[${self.sen_thickness}]) OR 
+                (module_info.sen_thickness IS NULL AND 'NULL' = ANY(ARRAY[${self.sen_thickness}])) OR 
+                module_info.sen_thickness::text = ANY(ARRAY[${self.sen_thickness}]))
           AND 
-                ('All' = ANY(ARRAY[${geometry}]) OR 
-                (module_info.geometry IS NULL AND 'NULL' = ANY(ARRAY[${geometry}])) OR 
-                module_info.geometry::text = ANY(ARRAY[${geometry}]))
+                ('All' = ANY(ARRAY[${self.geometry}]) OR 
+                (module_info.geometry IS NULL AND 'NULL' = ANY(ARRAY[${self.geometry}])) OR 
+                module_info.geometry::text = ANY(ARRAY[${self.geometry}]))
           AND (module_inspect.date_inspect::timestamp + module_inspect.time_inspect::time)
-                BETWEEN ($__timeFrom() AT TIME ZONE 'America/New_York')
-                    AND ($__timeTo()   AT TIME ZONE 'America/New_York')
+                BETWEEN ($__timeFrom() AT TIME ZONE '{self.timezone}')
+                    AND ($__timeTo()   AT TIME ZONE '{self.timezone}')
           AND 
-                ('All' = ANY(ARRAY[${grade}]) OR 
-                (module_inspect.grade IS NULL AND 'NULL' = ANY(ARRAY[${grade}])) OR 
-                module_inspect.grade::text = ANY(ARRAY[${grade}]))
+                ('All' = ANY(ARRAY[${self.grade}]) OR 
+                (module_inspect.grade IS NULL AND 'NULL' = ANY(ARRAY[${self.grade}])) OR 
+                module_inspect.grade::text = ANY(ARRAY[${self.grade}]))
           AND 
-                ('All' = ANY(ARRAY[${put_position}]) OR 
-                (proto_assembly.put_position IS NULL AND 'NULL' = ANY(ARRAY[${put_position}])) OR 
-                proto_assembly.put_position::text = ANY(ARRAY[${put_position}]))
+                ('All' = ANY(ARRAY[${self.put_position}]) OR 
+                (proto_assembly.put_position IS NULL AND 'NULL' = ANY(ARRAY[${self.put_position}])) OR 
+                proto_assembly.put_position::text = ANY(ARRAY[${self.put_position}]))
           AND
-                ('All' = ANY(ARRAY[${ass_tray_id}]) OR
-                (proto_assembly.ass_tray_id IS NULL AND 'NULL' = ANY(ARRAY[${ass_tray_id}])) OR
-                proto_assembly.ass_tray_id::text = ANY(ARRAY[${ass_tray_id}]))
+                ('All' = ANY(ARRAY[${self.ass_tray_id}]) OR
+                (proto_assembly.ass_tray_id IS NULL AND 'NULL' = ANY(ARRAY[${self.ass_tray_id}])) OR
+                proto_assembly.ass_tray_id::text = ANY(ARRAY[${self.ass_tray_id}]))
         """
 
-        self.proto_filter_sql = """
+        self.proto_filter_sql = f"""
         LEFT JOIN module_info ON proto_inspect.proto_name = module_info.proto_name
         LEFT JOIN proto_assembly ON module_info.proto_name = proto_assembly.proto_name
         WHERE 
-                ('All' = ANY(ARRAY[${bp_material}]) OR 
-                (module_info.bp_material IS NULL AND 'NULL' = ANY(ARRAY[${bp_material}])) OR 
-                module_info.bp_material::text = ANY(ARRAY[${bp_material}]))
+                ('All' = ANY(ARRAY[${self.bp_material}]) OR 
+                (module_info.bp_material IS NULL AND 'NULL' = ANY(ARRAY[${self.bp_material}])) OR 
+                module_info.bp_material::text = ANY(ARRAY[${self.bp_material}]))
           AND 
-                ('All' = ANY(ARRAY[${resolution}]) OR 
-                (module_info.resolution IS NULL AND 'NULL' = ANY(ARRAY[${resolution}])) OR 
-                module_info.resolution::text = ANY(ARRAY[${resolution}]))
+                ('All' = ANY(ARRAY[${self.resolution}]) OR 
+                (module_info.resolution IS NULL AND 'NULL' = ANY(ARRAY[${self.resolution}])) OR 
+                module_info.resolution::text = ANY(ARRAY[${self.resolution}]))
           AND 
-                ('All' = ANY(ARRAY[${roc_version}]) OR 
-                (module_info.roc_version IS NULL AND 'NULL' = ANY(ARRAY[${roc_version}])) OR 
-                module_info.roc_version::text = ANY(ARRAY[${roc_version}]))
+                ('All' = ANY(ARRAY[${self.roc_version}]) OR 
+                (module_info.roc_version IS NULL AND 'NULL' = ANY(ARRAY[${self.roc_version}])) OR 
+                module_info.roc_version::text = ANY(ARRAY[${self.roc_version}]))
           AND 
-                ('All' = ANY(ARRAY[${sen_thickness}]) OR 
-                (module_info.sen_thickness IS NULL AND 'NULL' = ANY(ARRAY[${sen_thickness}])) OR 
-                module_info.sen_thickness::text = ANY(ARRAY[${sen_thickness}]))
+                ('All' = ANY(ARRAY[${self.sen_thickness}]) OR 
+                (module_info.sen_thickness IS NULL AND 'NULL' = ANY(ARRAY[${self.sen_thickness}])) OR 
+                module_info.sen_thickness::text = ANY(ARRAY[${self.sen_thickness}]))
           AND 
-                ('All' = ANY(ARRAY[${geometry}]) OR 
-                (module_info.geometry IS NULL AND 'NULL' = ANY(ARRAY[${geometry}])) OR 
-                module_info.geometry::text = ANY(ARRAY[${geometry}]))
+                ('All' = ANY(ARRAY[${self.geometry}]) OR 
+                (module_info.geometry IS NULL AND 'NULL' = ANY(ARRAY[${self.geometry}])) OR 
+                module_info.geometry::text = ANY(ARRAY[${self.geometry}]))
           AND (proto_inspect.date_inspect::timestamp + proto_inspect.time_inspect::time)
-                BETWEEN ($__timeFrom() AT TIME ZONE 'America/New_York')
-                    AND ($__timeTo()   AT TIME ZONE 'America/New_York')
+                BETWEEN ($__timeFrom() AT TIME ZONE '{self.timezone}')
+                    AND ($__timeTo()   AT TIME ZONE '{self.timezone}')
           AND 
-                ('All' = ANY(ARRAY[${grade}]) OR 
-                (proto_inspect.grade IS NULL AND 'NULL' = ANY(ARRAY[${grade}])) OR 
-                proto_inspect.grade::text = ANY(ARRAY[${grade}]))
+                ('All' = ANY(ARRAY[${self.grade}]) OR 
+                (proto_inspect.grade IS NULL AND 'NULL' = ANY(ARRAY[${self.grade}])) OR 
+                proto_inspect.grade::text = ANY(ARRAY[${self.grade}]))
           AND 
-                ('All' = ANY(ARRAY[${put_position}]) OR 
-                (proto_assembly.put_position IS NULL AND 'NULL' = ANY(ARRAY[${put_position}])) OR 
-                proto_assembly.put_position::text = ANY(ARRAY[${put_position}]))
+                ('All' = ANY(ARRAY[${self.put_position}]) OR 
+                (proto_assembly.put_position IS NULL AND 'NULL' = ANY(ARRAY[${self.put_position}])) OR 
+                proto_assembly.put_position::text = ANY(ARRAY[${self.put_position}]))
           AND
-                ('All' = ANY(ARRAY[${ass_tray_id}]) OR
-                (proto_assembly.ass_tray_id IS NULL AND 'NULL' = ANY(ARRAY[${ass_tray_id}])) OR
-                proto_assembly.ass_tray_id::text = ANY(ARRAY[${ass_tray_id}]))
+                ('All' = ANY(ARRAY[${self.ass_tray_id}]) OR
+                (proto_assembly.ass_tray_id IS NULL AND 'NULL' = ANY(ARRAY[${self.ass_tray_id}])) OR
+                proto_assembly.ass_tray_id::text = ANY(ARRAY[${self.ass_tray_id}]))
         """
 
         self.module_offset_sql = """
