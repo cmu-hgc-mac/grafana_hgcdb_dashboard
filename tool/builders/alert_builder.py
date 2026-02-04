@@ -37,9 +37,6 @@ class AlertBuilder:
         # get alert rule uid
         alert_uid = create_uid(f"ALERT {alertInfo['title']}")
 
-        # generate summary annotation
-        # summary = f"Normal range for {alertInfo['parameter']} is {self.logic_types[alertInfo['logicType']]} {alertInfo['threshold']}\n  Current value is {{{{ $values.B.value }}}}."
-
         # get folder uid
         if folderName == "General":  # invalid folder
             raise ValueError("[Error] Alert rule in invalid folder: General folder can not store alert rule.")
