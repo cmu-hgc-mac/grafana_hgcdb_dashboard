@@ -8,6 +8,7 @@ Author: Xinyue (Joyce) Zhuang
 class AlertBuilder:
     def __init__(self, datasource_uid: str):
         self.datasource_uid = datasource_uid
+        self.logic_types = {"gt": ">", "lt": "<", "gte": ">=", "lte": "<=", "outside_range": "outside_range", "within_range": "within_range"}
 
     def generate_alerts(self, alert: dict, folder_name: str):
         """Build all alerts based on the given alert_dict.
@@ -36,6 +37,9 @@ class AlertBuilder:
         # get alert rule uid
         alert_uid = create_uid(f"ALERT {alertInfo['title']}")
 
+        # generate summary annotation
+        # summary = f"Normal range for {alertInfo['parameter']} is {self.logic_types[alertInfo['logicType']]} {alertInfo['threshold']}\n  Current value is {{{{ $values.B.value }}}}."
+
         # get folder uid
         if folderName == "General":  # invalid folder
             raise ValueError("[Error] Alert rule in invalid folder: General folder can not store alert rule.")
@@ -58,7 +62,12 @@ class AlertBuilder:
             "noDataState": "NoData",
             "execErrState": "Error",
             "annotations": {
-                "summary": "Auto-imported from UI",
+                "summary": f"Normal range for {alertInfo['parameter']} is {self.logic_types[alertInfo['logicType']]} {alertInfo['threshold']}",
+                "description": (
+                    f"Normal range for {alertInfo['parameter']} is "
+                    f"{self.logic_types[alertInfo['logicType']]} {alertInfo['threshold']}\n"
+                    f"Current value is {{{{ printf \"%.1f\" $values.B.Value }}}}."
+                ),
             },
             "labels":alertInfo["labels"],
             "data": [
