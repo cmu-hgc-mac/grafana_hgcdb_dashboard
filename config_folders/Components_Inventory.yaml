@@ -43,6 +43,14 @@ dashboards:
         filters: {"sensor": ["thickness", "resolution", "geometry", "grade"]}
         inputs: {"sensor": ["sen_batch_id"]}
         distinct: ["sensor"]
+      - title: "Free Sensors Info"
+        table: "sensor"
+        chart_type: "table"
+        condition: "proto_no IS NULL AND thickness IS NOT NULL AND resolution IS NOT NULL AND geometry IS NOT NULL AND date_verify_received IS NOT NULL"
+        groupby: {"sensor": ["sen_name", "geometry", "resolution", "thickness", "grade", "sen_batch_id", "date_verify_received"]}
+        filters: {"sensor": ["thickness", "resolution", "geometry", "grade"]}
+        inputs: {"sensor": ["sen_batch_id"]}
+        distinct: ["sensor"]
       - title: "Assigned (but not recieved) Sensors"
         table: "sensor"
         chart_type: "table"
