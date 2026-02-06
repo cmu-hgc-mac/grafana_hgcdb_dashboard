@@ -50,7 +50,7 @@ def main():
     subprocess.run(["python", "create/create_folders.py"], check=True)
     sleep(0.5)    # wait for folders to be added
     subprocess.run(["python", "create/create_dashboards.py"], check=True)
-    subprocess.run(["python", "create/create_alerts.py"], check=True)
+    # subprocess.run(["python", "create/create_alerts.py"], check=True)
 
     # Add run times
     gf_conn.set('GF_RUN_TIMES', run_times + 1)
