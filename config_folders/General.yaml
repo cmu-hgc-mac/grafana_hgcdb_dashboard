@@ -11,6 +11,14 @@ dashboards:
         groupby: ["assembled", "count"]
         filters: {"module_info": ["bp_material", "resolution", "roc_version", "sen_thickness", "geometry", "shipping_status", "assembled"]}
         distinct: 
+      - title: "Proto-Module Assmebly"
+        table: "proto_assembly"
+        chart_type: "timeseries"
+        condition: "ass_run_date IS NOT NULL"
+        groupby: ["ass_run_date", "count"]
+        filters: {"module_info": ["bp_material", "resolution", "roc_version", "sen_thickness", "geometry", "shipping_status", "assembled"]}
+        distinct: 
+
   
   - title: "Components Look-up Form"
     panels:
