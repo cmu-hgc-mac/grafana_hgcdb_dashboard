@@ -228,6 +228,13 @@ class IVCurveBuilder:
             SELECT DISTINCT ON (module_name) *
             FROM module_iv_test
             WHERE $__timeFilter(module_iv_test.date_test)
+            AND meas_v IS NOT NULL AND meas_i IS NOT NULL
+            AND {temp_condition}
+            AND {rel_hum_condition}
+            AND temp_c ~ '^[-+]?[0-9]+(\.[0-9]+)?$'
+            AND rel_hum ~ '^[-+]?[0-9]+(\.[0-9]+)?$'
+            AND (status_desc = 'Completely Encapsulated' OR status_desc = 'Frontside Encapsulated')
+            AND array_length(meas_v, 1) = array_length(meas_i, 1)
             ORDER BY module_name, date_test DESC
         ),
 
@@ -249,13 +256,6 @@ class IVCurveBuilder:
         FROM module_iv_test
         WHERE
             module_name IN (SELECT module_name FROM selected_modules)
-            AND meas_v IS NOT NULL AND meas_i IS NOT NULL
-            AND {temp_condition}
-            AND {rel_hum_condition}
-            AND temp_c ~ '^[-+]?[0-9]+(\.[0-9]+)?$'
-            AND rel_hum ~ '^[-+]?[0-9]+(\.[0-9]+)?$'
-            AND (status_desc = 'Completely Encapsulated' OR status_desc = 'Frontside Encapsulated')
-            AND array_length(meas_v, 1) = array_length(meas_i, 1)
         ),
 
         best_per_module AS (
@@ -2365,6 +2365,929 @@ class HexmapPlotsBuilder:
             "timepicker": {},
             "timezone": "browser",
             "title": "Hexmap Plots",
+            "uid": f"{self.dashboard_uid}",
+            "version": 1
+        }
+
+        return dashboard_json
+
+
+# ============================================================
+# === Offset Plots Builder ===================================
+# ============================================================
+
+class OffsetPlotsBuilder:
+    def __init__(self, datasource_uid, timezone = 'America/New_York'):
+        self.datasource_uid = datasource_uid
+        self.dashboard_uid = create_uid("Offset Plots")
+        self.timezone = f"{timezone}"
+        self.bp_material = "{bp_material}"
+        self.resolution = "{resolution}"
+        self.roc_version = "{roc_version}"
+        self.sen_thickness = "{sen_thickness}"
+        self.geometry = "{geometry}"
+        self.grade = "{grade}"
+        self.put_position = "{put_position}"
+        self.ass_tray_id = "{ass_tray_id}"
+
+        self.module_filter_sql = f"""
+        LEFT JOIN module_info ON module_inspect.module_name = module_info.module_name
+        LEFT JOIN proto_assembly ON module_info.proto_name = proto_assembly.proto_name
+        WHERE 
+                ('All' = ANY(ARRAY[${self.bp_material}]) OR 
+                (module_info.bp_material IS NULL AND 'NULL' = ANY(ARRAY[${self.bp_material}])) OR 
+                module_info.bp_material::text = ANY(ARRAY[${self.bp_material}]))
+          AND 
+                ('All' = ANY(ARRAY[${self.resolution}]) OR 
+                (module_info.resolution IS NULL AND 'NULL' = ANY(ARRAY[${self.resolution}])) OR 
+                module_info.resolution::text = ANY(ARRAY[${self.resolution}]))
+          AND 
+                ('All' = ANY(ARRAY[${self.roc_version}]) OR 
+                (module_info.roc_version IS NULL AND 'NULL' = ANY(ARRAY[${self.roc_version}])) OR 
+                module_info.roc_version::text = ANY(ARRAY[${self.roc_version}]))
+          AND 
+                ('All' = ANY(ARRAY[${self.sen_thickness}]) OR 
+                (module_info.sen_thickness IS NULL AND 'NULL' = ANY(ARRAY[${self.sen_thickness}])) OR 
+                module_info.sen_thickness::text = ANY(ARRAY[${self.sen_thickness}]))
+          AND 
+                ('All' = ANY(ARRAY[${self.geometry}]) OR 
+                (module_info.geometry IS NULL AND 'NULL' = ANY(ARRAY[${self.geometry}])) OR 
+                module_info.geometry::text = ANY(ARRAY[${self.geometry}]))
+          AND (module_inspect.date_inspect::timestamp + module_inspect.time_inspect::time)
+                BETWEEN ($__timeFrom() AT TIME ZONE '{self.timezone}')
+                    AND ($__timeTo()   AT TIME ZONE '{self.timezone}')
+          AND 
+                ('All' = ANY(ARRAY[${self.grade}]) OR 
+                (module_inspect.grade IS NULL AND 'NULL' = ANY(ARRAY[${self.grade}])) OR 
+                module_inspect.grade::text = ANY(ARRAY[${self.grade}]))
+          AND 
+                ('All' = ANY(ARRAY[${self.put_position}]) OR 
+                (proto_assembly.put_position IS NULL AND 'NULL' = ANY(ARRAY[${self.put_position}])) OR 
+                proto_assembly.put_position::text = ANY(ARRAY[${self.put_position}]))
+          AND
+                ('All' = ANY(ARRAY[${self.ass_tray_id}]) OR
+                (proto_assembly.ass_tray_id IS NULL AND 'NULL' = ANY(ARRAY[${self.ass_tray_id}])) OR
+                proto_assembly.ass_tray_id::text = ANY(ARRAY[${self.ass_tray_id}]))
+        """
+
+        self.proto_filter_sql = f"""
+        LEFT JOIN module_info ON proto_inspect.proto_name = module_info.proto_name
+        LEFT JOIN proto_assembly ON module_info.proto_name = proto_assembly.proto_name
+        WHERE 
+                ('All' = ANY(ARRAY[${self.bp_material}]) OR 
+                (module_info.bp_material IS NULL AND 'NULL' = ANY(ARRAY[${self.bp_material}])) OR 
+                module_info.bp_material::text = ANY(ARRAY[${self.bp_material}]))
+          AND 
+                ('All' = ANY(ARRAY[${self.resolution}]) OR 
+                (module_info.resolution IS NULL AND 'NULL' = ANY(ARRAY[${self.resolution}])) OR 
+                module_info.resolution::text = ANY(ARRAY[${self.resolution}]))
+          AND 
+                ('All' = ANY(ARRAY[${self.roc_version}]) OR 
+                (module_info.roc_version IS NULL AND 'NULL' = ANY(ARRAY[${self.roc_version}])) OR 
+                module_info.roc_version::text = ANY(ARRAY[${self.roc_version}]))
+          AND 
+                ('All' = ANY(ARRAY[${self.sen_thickness}]) OR 
+                (module_info.sen_thickness IS NULL AND 'NULL' = ANY(ARRAY[${self.sen_thickness}])) OR 
+                module_info.sen_thickness::text = ANY(ARRAY[${self.sen_thickness}]))
+          AND 
+                ('All' = ANY(ARRAY[${self.geometry}]) OR 
+                (module_info.geometry IS NULL AND 'NULL' = ANY(ARRAY[${self.geometry}])) OR 
+                module_info.geometry::text = ANY(ARRAY[${self.geometry}]))
+          AND (proto_inspect.date_inspect::timestamp + proto_inspect.time_inspect::time)
+                BETWEEN ($__timeFrom() AT TIME ZONE '{self.timezone}')
+                    AND ($__timeTo()   AT TIME ZONE '{self.timezone}')
+          AND 
+                ('All' = ANY(ARRAY[${self.grade}]) OR 
+                (proto_inspect.grade IS NULL AND 'NULL' = ANY(ARRAY[${self.grade}])) OR 
+                proto_inspect.grade::text = ANY(ARRAY[${self.grade}]))
+          AND 
+                ('All' = ANY(ARRAY[${self.put_position}]) OR 
+                (proto_assembly.put_position IS NULL AND 'NULL' = ANY(ARRAY[${self.put_position}])) OR 
+                proto_assembly.put_position::text = ANY(ARRAY[${self.put_position}]))
+          AND
+                ('All' = ANY(ARRAY[${self.ass_tray_id}]) OR
+                (proto_assembly.ass_tray_id IS NULL AND 'NULL' = ANY(ARRAY[${self.ass_tray_id}])) OR
+                proto_assembly.ass_tray_id::text = ANY(ARRAY[${self.ass_tray_id}]))
+        """
+
+        self.module_offset_sql = """
+        SELECT x_offset_mu, y_offset_mu, module_inspect.module_name
+        FROM module_inspect 
+        """ + self.module_filter_sql
+
+        self.proto_offset_sql = """
+        SELECT x_offset_mu, y_offset_mu, proto_inspect.proto_name
+        FROM proto_inspect
+        """ + self.proto_filter_sql
+
+        self.module_avg_thickness_sql = """
+        SELECT module_inspect.avg_thickness
+        FROM module_inspect
+        """ + self.module_filter_sql
+
+        self.proto_avg_thickness_sql = """
+        SELECT proto_inspect.avg_thickness
+        FROM proto_inspect
+        """ + self.proto_filter_sql
+
+        self.module_angular_offset_sql = """
+        SELECT module_inspect.ang_offset_deg
+        FROM module_inspect
+        """ + self.module_filter_sql
+
+        self.proto_angular_offset_sql = """
+        SELECT proto_inspect.ang_offset_deg
+        FROM proto_inspect
+        """ + self.proto_filter_sql
+
+    ######################################
+    def generate_dashboard_json(self):
+        dashboard_json = {
+            "annotations": {
+                "list": [
+                {
+                    "builtIn": 1,
+                    "datasource": {
+                    "type": "grafana",
+                    "uid": "-- Grafana --"
+                    },
+                    "enable": True,
+                    "hide": True,
+                    "iconColor": "rgba(0, 211, 255, 1)",
+                    "name": "Annotations & Alerts",
+                    "type": "dashboard"
+                }
+                ]
+            },
+            "editable": True,
+            "fiscalYearStartMonth": 0,
+            "graphTooltip": 0,
+            "links": [],
+            "panels": [
+
+    ### Module XY Offset
+                {
+                "datasource": {
+                    "type": "grafana-postgresql-datasource",
+                    "uid": self.datasource_uid
+                },
+                "fieldConfig": {
+                    "defaults": {
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "custom": {
+                        "axisBorderShow": False,
+                        "axisCenteredZero": True,
+                        "axisSoftMin": -150,
+                        "axisSoftMax": 150,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "fillOpacity": 50,
+                        "hideFrom": {
+                        "legend": False,
+                        "tooltip": False,
+                        "viz": False
+                        },
+                        "pointShape": "circle",
+                        "pointSize": {
+                        "fixed": 5
+                        },
+                        "pointStrokeWidth": 1,
+                        "scaleDistribution": {
+                        "type": "linear"
+                        },
+                        "show": "points"
+                    },
+                    "mappings": [
+                        {
+                        "options": {
+                            "100": {
+                            "color": "dark-red",
+                            "index": 0
+                            }
+                        },
+                        "type": "value"
+                        }
+                    ],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                        {
+                            "color": "green"
+                        }
+                        ]
+                    }
+                    },
+                    "overrides": []
+                },
+                "gridPos": {
+                    "h": 12,
+                    "w": 12,
+                    "x": 0,
+                    "y": 0
+                },
+                "id": 1,
+                "options": {
+                    "legend": {
+                    "calcs": [],
+                    "displayMode": "list",
+                    "placement": "bottom",
+                    "showLegend": True
+                    },
+                    "mapping": "auto",
+                    "series": [
+                    {}
+                    ],
+                    "tooltip": {
+                    "hideZeros": False,
+                    "mode": "single",
+                    "sort": "none"
+                    }
+                },
+                "pluginVersion": "12.0.0",
+                "targets": [
+                    {
+                    "datasource": {
+                        "type": "grafana-postgresql-datasource",
+                        "uid": self.datasource_uid
+                    },
+                    "editorMode": "code",
+                    "format": "table",
+                    "rawQuery": True,
+                    "rawSql": self.module_offset_sql,
+                    "refId": "A",
+                    "sql": {
+                        "columns": [
+                        {
+                            "parameters": [],
+                            "type": "function"
+                        }
+                        ],
+                        "groupBy": [
+                        {
+                            "property": {
+                            "type": "string"
+                            },
+                            "type": "groupBy"
+                        }
+                        ],
+                        "limit": 50
+                    }
+                    }
+                ],
+                "title": "Module Offset",
+                "type": "xychart"
+                },
+
+    ### Proto XY Offset
+                {
+                "datasource": {
+                    "type": "grafana-postgresql-datasource",
+                    "uid": self.datasource_uid
+                },
+                "fieldConfig": {
+                    "defaults": {
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "custom": {
+                        "axisBorderShow": False,
+                        "axisCenteredZero": True,
+                        "axisSoftMin": -150,
+                        "axisSoftMax": 150,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "fillOpacity": 50,
+                        "hideFrom": {
+                        "legend": False,
+                        "tooltip": False,
+                        "viz": False
+                        },
+                        "pointShape": "circle",
+                        "pointSize": {
+                        "fixed": 5
+                        },
+                        "pointStrokeWidth": 1,
+                        "scaleDistribution": {
+                        "type": "linear"
+                        },
+                        "show": "points"
+                    },
+                    "mappings": [
+                        {
+                        "options": {
+                            "100": {
+                            "color": "dark-red",
+                            "index": 0
+                            }
+                        },
+                        "type": "value"
+                        }
+                    ],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                        {
+                            "color": "green"
+                        }
+                        ]
+                    }
+                    },
+                    "overrides": []
+                },
+                "gridPos": {
+                    "h": 12,
+                    "w": 12,
+                    "x": 12,
+                    "y": 0
+                },
+                "id": 2,
+                "options": {
+                    "legend": {
+                    "calcs": [],
+                    "displayMode": "list",
+                    "placement": "bottom",
+                    "showLegend": True
+                    },
+                    "mapping": "auto",
+                    "series": [
+                    {}
+                    ],
+                    "tooltip": {
+                    "hideZeros": False,
+                    "mode": "single",
+                    "sort": "none"
+                    }
+                },
+                "pluginVersion": "12.0.0",
+                "targets": [
+                    {
+                    "datasource": {
+                        "type": "grafana-postgresql-datasource",
+                        "uid": self.datasource_uid
+                    },
+                    "editorMode": "code",
+                    "format": "table",
+                    "rawQuery": True,
+                    "rawSql": self.proto_offset_sql,
+                    "refId": "A",
+                    "sql": {
+                        "columns": [
+                        {
+                            "parameters": [],
+                            "type": "function"
+                        }
+                        ],
+                        "groupBy": [
+                        {
+                            "property": {
+                            "type": "string"
+                            },
+                            "type": "groupBy"
+                        }
+                        ],
+                        "limit": 50
+                    }
+                    }
+                ],
+                "title": "Proto-Module Offset",
+                "type": "xychart"
+                },
+
+    ### Module Average Thickness (mm)
+                {
+                "id": 3,
+                "type": "histogram",
+                "title": "Module Average Thickness (mm)",
+                "gridPos": {
+                    "x": 0,
+                    "y": 12,
+                    "h": 8,
+                    "w": 12
+                },
+                "fieldConfig": {
+                    "defaults": {
+                    "custom": {
+                        "stacking": {
+                        "mode": "none",
+                        "group": "A"
+                        },
+                        "lineWidth": 1,
+                        "fillOpacity": 80,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                        "tooltip": False,
+                        "viz": False,
+                        "legend": False
+                        }
+                    },
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "mappings": [],
+                    },
+                    "overrides": []
+                },
+                "transformations": [
+                    {
+                    "id": "filterFieldsByName",
+                    "options": {}
+                    },
+                    {
+                    "id": "partitionByValues",
+                    "options": {
+                        "fields": [
+                        "log_location"
+                        ],
+                        "keepFields": False
+                    }
+                    }
+                ],
+                "pluginVersion": "12.0.0",
+                "targets": [
+                    {
+                    "datasource": {
+                        "type": "grafana-postgresql-datasource",
+                        "uid": self.datasource_uid
+                    },
+                    "editorMode": "code",
+                    "format": "table",
+                    "rawQuery": True,
+                    "rawSql": self.module_avg_thickness_sql,
+                    "refId": "A",
+                    }
+                ],
+                "datasource": {
+                    "type": "grafana-postgresql-datasource",
+                    "uid": self.datasource_uid
+                },
+                "options": {
+                    "tooltip": {
+                    "mode": "single",
+                    "sort": "none",
+                    "hideZeros": False
+                    },
+                    "legend": {
+                    "showLegend": True,
+                    "displayMode": "list",
+                    "placement": "bottom",
+                    "calcs": []
+                    },
+                    "barRadius": 0,
+                    "barWidth": 0.97,
+                    "fullHighlight": False,
+                    "groupWidth": 0.7,
+                    "orientation": "horizontal",
+                    "showValue": "auto",
+                    "stacking": "normal",
+                    "xTickLabelRotation": 0,
+                    "xTickLabelSpacing": 0
+                }
+                },
+                
+    ### Proto Average Thickness (mm)
+                {
+                "id": 4,
+                "type": "histogram",
+                "title": "Proto Average Thickness (mm)",
+                "gridPos": {
+                    "x": 12,
+                    "y": 12,
+                    "h": 8,
+                    "w": 12
+                },
+                "fieldConfig": {
+                    "defaults": {
+                    "custom": {
+                        "stacking": {
+                        "mode": "none",
+                        "group": "A"
+                        },
+                        "lineWidth": 1,
+                        "fillOpacity": 80,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                        "tooltip": False,
+                        "viz": False,
+                        "legend": False
+                        }
+                    },
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "mappings": [],
+                    },
+                    "overrides": []
+                },
+                "transformations": [
+                    {
+                    "id": "filterFieldsByName",
+                    "options": {}
+                    },
+                    {
+                    "id": "partitionByValues",
+                    "options": {
+                        "fields": [
+                        "log_location"
+                        ],
+                        "keepFields": False
+                    }
+                    }
+                ],
+                "pluginVersion": "12.0.0",
+                "targets": [
+                    {
+                    "datasource": {
+                        "type": "grafana-postgresql-datasource",
+                        "uid": self.datasource_uid
+                    },
+                    "editorMode": "code",
+                    "format": "table",
+                    "rawQuery": True,
+                    "rawSql": self.proto_avg_thickness_sql,
+                    "refId": "A",
+                    }
+                ],
+                "datasource": {
+                    "type": "grafana-postgresql-datasource",
+                    "uid": self.datasource_uid
+                },
+                "options": {
+                    "tooltip": {
+                    "mode": "single",
+                    "sort": "none",
+                    "hideZeros": False
+                    },
+                    "legend": {
+                    "showLegend": True,
+                    "displayMode": "list",
+                    "placement": "bottom",
+                    "calcs": []
+                    },
+                    "barRadius": 0,
+                    "barWidth": 0.97,
+                    "fullHighlight": False,
+                    "groupWidth": 0.7,
+                    "orientation": "horizontal",
+                    "showValue": "auto",
+                    "stacking": "normal",
+                    "xTickLabelRotation": 0,
+                    "xTickLabelSpacing": 0
+                }
+                },
+
+    ### Module Angular Offset
+                {
+                "id": 5,
+                "type": "histogram",
+                "title": "Module Angular Offset",
+                "gridPos": {
+                    "x": 0,
+                    "y": 20,
+                    "h": 8,
+                    "w": 12
+                },
+                "fieldConfig": {
+                    "defaults": {
+                    "custom": {
+                        "stacking": {
+                        "mode": "none",
+                        "group": "A"
+                        },
+                        "lineWidth": 1,
+                        "fillOpacity": 80,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                        "tooltip": False,
+                        "viz": False,
+                        "legend": False
+                        }
+                    },
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "mappings": [],
+                    },
+                    "overrides": []
+                },
+                "transformations": [
+                    {
+                    "id": "filterFieldsByName",
+                    "options": {}
+                    },
+                    {
+                    "id": "partitionByValues",
+                    "options": {
+                        "fields": [
+                        "log_location"
+                        ],
+                        "keepFields": False
+                    }
+                    }
+                ],
+                "pluginVersion": "12.0.0",
+                "targets": [
+                    {
+                    "datasource": {
+                        "type": "grafana-postgresql-datasource",
+                        "uid": self.datasource_uid
+                    },
+                    "editorMode": "code",
+                    "format": "table",
+                    "rawQuery": True,
+                    "rawSql": self.module_angular_offset_sql,
+                    "refId": "A",
+                    }
+                ],
+                "datasource": {
+                    "type": "grafana-postgresql-datasource",
+                    "uid": self.datasource_uid
+                },
+                "options": {
+                    "tooltip": {
+                    "mode": "single",
+                    "sort": "none",
+                    "hideZeros": False
+                    },
+                    "legend": {
+                    "showLegend": True,
+                    "displayMode": "list",
+                    "placement": "bottom",
+                    "calcs": []
+                    },
+                    "barRadius": 0,
+                    "barWidth": 0.97,
+                    "fullHighlight": False,
+                    "groupWidth": 0.7,
+                    "orientation": "horizontal",
+                    "showValue": "auto",
+                    "stacking": "normal",
+                    "xTickLabelRotation": 0,
+                    "xTickLabelSpacing": 0
+                }
+                }, 
+    
+    ### Proto Angular Offset
+                {
+                "id": 6,
+                "type": "histogram",
+                "title": "Proto Angular Offset",
+                "gridPos": {
+                    "x": 12,
+                    "y": 20,
+                    "h": 8,
+                    "w": 12
+                },
+                "fieldConfig": {
+                    "defaults": {
+                    "custom": {
+                        "stacking": {
+                        "mode": "none",
+                        "group": "A"
+                        },
+                        "lineWidth": 1,
+                        "fillOpacity": 80,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                        "tooltip": False,
+                        "viz": False,
+                        "legend": False
+                        }
+                    },
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "mappings": [],
+                    },
+                    "overrides": []
+                },
+                "transformations": [
+                    {
+                    "id": "filterFieldsByName",
+                    "options": {}
+                    },
+                    {
+                    "id": "partitionByValues",
+                    "options": {
+                        "fields": [
+                        "log_location"
+                        ],
+                        "keepFields": False
+                    }
+                    }
+                ],
+                "pluginVersion": "12.0.0",
+                "targets": [
+                    {
+                    "datasource": {
+                        "type": "grafana-postgresql-datasource",
+                        "uid": self.datasource_uid
+                    },
+                    "editorMode": "code",
+                    "format": "table",
+                    "rawQuery": True,
+                    "rawSql": self.proto_angular_offset_sql,
+                    "refId": "A",
+                    }
+                ],
+                "datasource": {
+                    "type": "grafana-postgresql-datasource",
+                    "uid": self.datasource_uid
+                },
+                "options": {
+                    "tooltip": {
+                    "mode": "single",
+                    "sort": "none",
+                    "hideZeros": False
+                    },
+                    "legend": {
+                    "showLegend": True,
+                    "displayMode": "list",
+                    "placement": "bottom",
+                    "calcs": []
+                    },
+                    "barRadius": 0,
+                    "barWidth": 0.97,
+                    "fullHighlight": False,
+                    "groupWidth": 0.7,
+                    "orientation": "horizontal",
+                    "showValue": "auto",
+                    "stacking": "normal",
+                    "xTickLabelRotation": 0,
+                    "xTickLabelSpacing": 0
+                }
+                }
+
+            ],
+            "preload": False,
+            "schemaVersion": 41,
+            "tags": [],
+            "templating": {
+                "list": [
+                {
+                    "current": {
+                    "text": "All",
+                    "value": [
+                        "$__all"
+                    ]
+                    },
+                    "datasource": {
+                    "type": "postgres",
+                    "uid": self.datasource_uid
+                    },
+                    "includeAll": True,
+                    "multi": True,
+                    "name": "bp_material",
+                    "options": [],
+                    "query": "\n            SELECT DISTINCT bp_material::text FROM module_info \n            UNION\n            SELECT 'NULL'\n            ORDER BY bp_material\n            ",
+                    "refresh": 1,
+                    "type": "query"
+                },
+                {
+                    "current": {
+                    "text": "All",
+                    "value": [
+                        "$__all"
+                    ]
+                    },
+                    "datasource": {
+                    "type": "postgres",
+                    "uid": self.datasource_uid
+                    },
+                    "includeAll": True,
+                    "multi": True,
+                    "name": "resolution",
+                    "options": [],
+                    "query": "\n            SELECT DISTINCT resolution::text FROM module_info \n            UNION\n            SELECT 'NULL'\n            ORDER BY resolution\n            ",
+                    "refresh": 1,
+                    "type": "query"
+                },
+                {
+                    "current": {
+                    "text": "All",
+                    "value": [
+                        "$__all"
+                    ]
+                    },
+                    "datasource": {
+                    "type": "postgres",
+                    "uid": self.datasource_uid
+                    },
+                    "includeAll": True,
+                    "multi": True,
+                    "name": "roc_version",
+                    "options": [],
+                    "query": "\n            SELECT DISTINCT roc_version::text FROM module_info \n            UNION\n            SELECT 'NULL'\n            ORDER BY roc_version\n            ",
+                    "refresh": 1,
+                    "type": "query"
+                },
+                {
+                    "current": {
+                    "text": "All",
+                    "value": [
+                        "$__all"
+                    ]
+                    },
+                    "datasource": {
+                    "type": "postgres",
+                    "uid": self.datasource_uid
+                    },
+                    "includeAll": True,
+                    "multi": True,
+                    "name": "sen_thickness",
+                    "options": [],
+                    "query": "\n            SELECT DISTINCT sen_thickness::text FROM module_info \n            UNION\n            SELECT 'NULL'\n            ORDER BY sen_thickness\n            ",
+                    "refresh": 1,
+                    "type": "query"
+                },
+                {
+                    "current": {
+                    "text": "All",
+                    "value": [
+                        "$__all"
+                    ]
+                    },
+                    "datasource": {
+                    "type": "postgres",
+                    "uid": self.datasource_uid
+                    },
+                    "includeAll": True,
+                    "multi": True,
+                    "name": "geometry",
+                    "options": [],
+                    "query": "\n            SELECT DISTINCT geometry::text FROM module_info \n            UNION\n            SELECT 'NULL'\n            ORDER BY geometry\n            ",
+                    "refresh": 1,
+                    "type": "query"
+                },
+                {
+                    "current": {
+                    "text": "All",
+                    "value": [
+                        "$__all"
+                    ]
+                    },
+                    "datasource": {
+                    "type": "postgres",
+                    "uid": self.datasource_uid
+                    },
+                    "includeAll": True,
+                    "multi": True,
+                    "name": "grade",
+                    "options": [],
+                    "query": "\n            SELECT DISTINCT grade::text FROM module_inspect \n            UNION\n            SELECT 'NULL'\n            ORDER BY grade\n            ",
+                    "refresh": 1,
+                    "type": "query"
+                },
+                {
+                    "current": {
+                    "text": "All",
+                    "value": [
+                        "$__all"
+                    ]
+                    },
+                    "datasource": {
+                    "type": "postgres",
+                    "uid": self.datasource_uid
+                    },
+                    "includeAll": True,
+                    "multi": True,
+                    "name": "put_position",
+                    "options": [],
+                    "query": "\n            SELECT DISTINCT put_position::text FROM proto_assembly \n            UNION\n            SELECT 'NULL'\n            ORDER BY put_position\n            ",
+                    "refresh": 1,
+                    "type": "query"
+                },
+                {
+                    "current": {
+                    "text": "All",
+                    "value": [
+                        "$__all"
+                    ]
+                    },
+                    "datasource": {
+                    "type": "postgres",
+                    "uid": self.datasource_uid
+                    },
+                    "includeAll": True,
+                    "multi": True,
+                    "name": "ass_tray_id",
+                    "options": [],
+                    "query": "\n            SELECT DISTINCT ass_tray_id::text FROM proto_assembly \n            UNION\n            SELECT 'NULL'\n            ORDER BY ass_tray_id\n            ",
+                    "refresh": 1,
+                    "type": "query"
+                }
+                ]
+            },
+            "time": {
+                "from": "now-1y",
+                "to": "now"
+            },
+            "timepicker": {},
+            "timezone": "browser",
+            "title": "Offset Plots",
             "uid": f"{self.dashboard_uid}",
             "version": 1
         }
