@@ -16,7 +16,7 @@ dashboards:
         chart_type: "timeseries"
         condition: "ass_run_date IS NOT NULL"
         groupby: ["ass_run_date", "count"]
-        filters: {"module_info": ["bp_material", "resolution", "roc_version", "sen_thickness", "geometry", "shipping_status", "assembled"]}
+        filters: {"module_info": ["bp_material", "resolution", "roc_version", "sen_thickness", "geometry", "shipping_status"], "proto_assembly": ["ass_run_date"]}
         distinct: 
 
   
