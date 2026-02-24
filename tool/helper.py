@@ -519,5 +519,63 @@ QC_GRADE = [
     "final_grade", "proto_grade", "module_grade", "iv_grade"
 ]
 
+# -- Set Derived Filter SQL for proto-module --
+DERIVED_FILTER_SQL = {
+    "resolution": """
+        CASE substring({t}.proto_name from POS_RES for 1)
+            WHEN 'L' THEN 'LD'
+            WHEN 'H' THEN 'HD'
+            WHEN '0' THEN ''
+            ELSE NULL
+        END
+    """,
+
+    "geometry": """
+        CASE substring({t}.proto_name from POS_GEO for 1)
+            WHEN 'F' THEN 'Full'
+            WHEN 'T' THEN 'Top'
+            WHEN 'B' THEN 'Bottom'
+            WHEN 'L' THEN 'Left'
+            WHEN 'R' THEN 'Right'
+            WHEN '5' THEN 'Five'
+            WHEN 'S' THEN 'Whole'
+            WHEN 'M' THEN 'Half-moons'
+            ELSE NULL
+        END
+    """,
+
+    "sen_thickness": """
+        CASE substring({t}.proto_name from POS_THK for 1)
+            WHEN '1' THEN '120'
+            WHEN '2' THEN '200'
+            WHEN '3' THEN '300'
+            ELSE NULL
+        END
+    """,
+
+    "bp_material": """
+        CASE substring({t}.proto_name from POS_MAT for 1)
+            WHEN 'W' THEN 'CuW'
+            WHEN 'T' THEN 'Titanium'
+            WHEN 'C' THEN 'Carbon Fiber'
+            WHEN 'P' THEN 'PCB'
+            WHEN 'X' THEN ''
+            ELSE NULL
+        END
+    """,
+
+    "roc_version": """
+        CASE substring({t}.proto_name from POS_ROC for 1)
+            WHEN 'X' THEN 'preseries'
+            WHEN '2' THEN 'HGCROCV3b-2'
+            WHEN '4' THEN 'HGCROCV3b-4'
+            WHEN 'B' THEN 'HGCROCV3b-3'
+            WHEN 'C' THEN 'HGCROCV3c'
+            WHEN 'D' THEN 'HGCROCV3d'
+            ELSE NULL
+        END
+    """
+}
+
 # -- Set GrafanaClient --
 client = GrafanaClient(GF_API_KEY, GF_URL)
