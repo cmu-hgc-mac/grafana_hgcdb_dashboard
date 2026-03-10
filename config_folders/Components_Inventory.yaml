@@ -15,7 +15,7 @@ dashboards:
         table: "baseplate"
         chart_type: "table"
         condition: "proto_no IS NULL AND bp_material IS NOT NULL AND resolution IS NOT NULL AND geometry IS NOT NULL AND date_verify_received IS NOT NULL"
-        groupby: {"baseplate": ["bp_name"], "bp_inspect": ["grade", "comment", "date_inspect", "flatness", "avg_thickness", "max_thickness"]}
+        groupby: {"baseplate": ["bp_name", "avg_thickness_init", "flatness_init"], "bp_inspect": ["grade", "comment", "date_inspect", "flatness", "avg_thickness", "max_thickness"]}
         filters: {"baseplate": ["bp_material", "resolution", "geometry", "obsolete"], "bp_inspect": ["grade"]}
         distinct: ["baseplate", "bp_inspect"]
       - title: "Assigned (but not recieved) Baseplates"
