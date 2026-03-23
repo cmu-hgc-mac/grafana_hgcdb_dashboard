@@ -4318,7 +4318,7 @@ class GeneralInfoBuilder:
                 },
                 "datasource": {
                 "type": "postgres",
-                "uid": "mac-postgres-db"
+                "uid": self.datasource_uid
                 },
                 "includeAll": True,
                 "multi": True,
@@ -4337,7 +4337,7 @@ class GeneralInfoBuilder:
                 },
                 "datasource": {
                 "type": "postgres",
-                "uid": "mac-postgres-db"
+                "uid": self.datasource_uid
                 },
                 "includeAll": True,
                 "multi": True,
@@ -4356,7 +4356,7 @@ class GeneralInfoBuilder:
                 },
                 "datasource": {
                 "type": "postgres",
-                "uid": "mac-postgres-db"
+                "uid": self.datasource_uid
                 },
                 "includeAll": True,
                 "multi": True,
@@ -4375,7 +4375,7 @@ class GeneralInfoBuilder:
                 },
                 "datasource": {
                 "type": "postgres",
-                "uid": "mac-postgres-db"
+                "uid": self.datasource_uid
                 },
                 "includeAll": True,
                 "multi": True,
@@ -4394,7 +4394,7 @@ class GeneralInfoBuilder:
                 },
                 "datasource": {
                 "type": "postgres",
-                "uid": "mac-postgres-db"
+                "uid": self.datasource_uid
                 },
                 "includeAll": True,
                 "multi": True,
@@ -4413,7 +4413,7 @@ class GeneralInfoBuilder:
                 },
                 "datasource": {
                 "type": "postgres",
-                "uid": "mac-postgres-db"
+                "uid": self.datasource_uid
                 },
                 "includeAll": True,
                 "multi": True,
@@ -4432,7 +4432,7 @@ class GeneralInfoBuilder:
                 },
                 "datasource": {
                 "type": "postgres",
-                "uid": "mac-postgres-db"
+                "uid": self.datasource_uid
                 },
                 "definition": "\n            SELECT DISTINCT final_grade::text FROM module_qc_summary \n            UNION\n            SELECT 'NULL'\n            ORDER BY final_grade\n            ",
                 "includeAll": True,
