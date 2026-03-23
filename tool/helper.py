@@ -179,14 +179,39 @@ class GrafanaClient:
             return response.json()['uid']
         else:
             raise Exception(f"Error checking folder: {response.status_code} - {response.text}")
+    
+    def dashboard_exists(self, uid: str) -> bool:
+        """Check if a dashboard with the given uid exists.
+        """
+        url = f"{self.base_url}/api/dashboards/uid/{uid}"
+        response = requests.get(url, headers=self.headers)
+
+        if response.status_code == 404:
+            return False
+
+        response.raise_for_status()
+
+        result = response.json()
+        dashboard = result.get("dashboard", {})
+
+        return dashboard.get("uid") == uid
 
     def upload_dashboard_json(self, dashboard_json: dict, folder_uid: str):
         """Upload a dashboard to a folder.
         """
+        uid = dashboard_json.get("uid")
+
+        if uid and self.dashboard_exists(uid):
+            # update
+            overwrite = True
+        else:
+            # create
+            overwrite = False
+
         payload = {
             "dashboard": dashboard_json,
             "folderUid": folder_uid,
-            "overwrite": True
+            "overwrite": overwrite
         }
 
         # Upload dashboard
