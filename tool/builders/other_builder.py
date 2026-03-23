@@ -4454,7 +4454,7 @@ class GeneralInfoBuilder:
         "timezone": "browser",
         "title": "General Info",
         "uid": f"{self.dashboard_uid}",
-        "version": 25
+        "version": 1
         }
 
         return dashboard_json
