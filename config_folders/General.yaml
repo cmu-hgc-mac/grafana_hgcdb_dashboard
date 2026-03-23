@@ -2,6 +2,16 @@ datasource_variable: DS_POSTGRES
 
 dashboards:
 
+  - title: "General Info"
+    panels:
+      - title: "General Info"
+        table: "module_info"
+        chart_type: "table"
+        condition:
+        groupby: []
+        filters: {"module_info": []}
+        distinct: 
+
   - title: "Module Assembly"
     panels:
       - title: "Module Assmebly"

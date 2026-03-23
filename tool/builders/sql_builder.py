@@ -219,9 +219,11 @@ class BaseSQLGenerator(ChartSQLGenerator):
         """
         # Single element
         if isinstance(elem, str):
-            if elem.endswith("time"):
+            if elem == "xml_gen_datetime":
+                arg = f"{table}.{elem}{TYPE}"
+            elif elem.endswith("time"):
                 return None
-            elif elem.startswith("list"):
+            if elem.startswith("list"):
                 arg = f"COALESCE(array_length({table}.{elem}::int[], 1), 0){TYPE}"
             else:
                 arg = f"{table}.{elem}{TYPE}"
