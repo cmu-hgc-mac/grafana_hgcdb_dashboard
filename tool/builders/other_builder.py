@@ -261,7 +261,7 @@ class IVCurveBuilder:
         best_per_module AS (
         SELECT DISTINCT ON (filtered_iv.module_name) *
         FROM filtered_iv
-        WHERE $__timeFilter(module_iv_test.date_test)
+        WHERE $__timeFilter(filtered_iv.date_test)
             AND meas_v IS NOT NULL AND meas_i IS NOT NULL
             AND {temp_condition}
             AND {rel_hum_condition}
