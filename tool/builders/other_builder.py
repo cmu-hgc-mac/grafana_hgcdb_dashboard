@@ -261,6 +261,14 @@ class IVCurveBuilder:
         best_per_module AS (
         SELECT DISTINCT ON (filtered_iv.module_name) *
         FROM filtered_iv
+        WHERE $__timeFilter(module_iv_test.date_test)
+            AND meas_v IS NOT NULL AND meas_i IS NOT NULL
+            AND {temp_condition}
+            AND {rel_hum_condition}
+            AND temp_c ~ '^[-+]?[0-9]+(\.[0-9]+)?$'
+            AND rel_hum ~ '^[-+]?[0-9]+(\.[0-9]+)?$'
+            AND (status_desc = 'Completely Encapsulated' OR status_desc = 'Frontside Encapsulated')
+            AND array_length(meas_v, 1) = array_length(meas_i, 1)
         ORDER BY filtered_iv.module_name, i_last ASC
         ),
 
