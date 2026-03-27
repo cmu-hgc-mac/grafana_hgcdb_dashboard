@@ -3340,7 +3340,6 @@ class GeneralInfoBuilder:
         "editable": True,
         "fiscalYearStartMonth": 0,
         "graphTooltip": 0,
-        "id": 248,
         "links": [],
         "panels": [
             {
