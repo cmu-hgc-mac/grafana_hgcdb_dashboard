@@ -4312,397 +4312,422 @@ class GeneralInfoBuilder:
             "type": "barchart"
             },
             {
-            "fieldConfig": {
-                "defaults": {},
-                "overrides": []
-            },
-            "gridPos": {
-                "h": 2,
-                "w": 24,
-                "x": 0,
-                "y": 38
-            },
-            "id": 13,
-            "options": {
-                "code": {
-                "language": "plaintext",
-                "showLineNumbers": False,
-                "showMiniMap": False
+                "id": 12,
+                "type": "table",
+                "title": "Module Info",
+                "gridPos": {
+                    "x": 0,
+                    "y": 40,
+                    "h": 13,
+                    "w": 24
                 },
-                "content": "",
-                "mode": "markdown"
-            },
-            "pluginVersion": "12.0.0",
-            "title": "",
-            "type": "text"
-            },
-            {
-            "datasource": {
-                "type": "grafana-postgresql-datasource",
-                "uid": self.datasource_uid
-            },
-            "fieldConfig": {
-                "defaults": {
-                "color": {
-                    "mode": "thresholds"
-                },
-                "custom": {
-                    "align": "auto",
-                    "cellOptions": {
-                    "type": "auto"
+                "fieldConfig": {
+                    "defaults": {
+                    "custom": {
+                        "align": "auto",
+                        "cellOptions": {
+                        "type": "auto"
+                        },
+                        "inspect": False
                     },
-                    "inspect": False
-                },
-                "decimals": 0,
-                "mappings": [],
-                "thresholds": {
-                    "mode": "absolute",
-                    "steps": [
-                    {
-                        "color": "green"
-                    }
-                    ]
-                }
-                },
-                "overrides": [
-                {
-                    "matcher": {
-                    "id": "byName",
-                    "options": "test_iv"
+                    "mappings": [],
+                    "color": {
+                        "mode": "thresholds"
                     },
-                    "properties": [
-                    {
-                        "id": "custom.cellOptions",
-                        "value": {
-                        "type": "color-background"
-                        }
+                    "decimals": 0
                     },
+                    "overrides": [
                     {
-                        "id": "mappings",
-                        "value": [
+                        "matcher": {
+                        "id": "byName",
+                        "options": "test_iv"
+                        },
+                        "properties": [
                         {
-                            "options": {
-                            "match": "null",
-                            "result": {
-                                "color": "red",
-                                "index": 0
+                            "id": "custom.cellOptions",
+                            "value": {
+                            "type": "color-background"
                             }
-                            },
-                            "type": "special"
                         },
                         {
-                            "options": {
-                            "match": "empty",
-                            "result": {
-                                "color": "red",
-                                "index": 1
-                            }
+                            "id": "mappings",
+                            "value": [
+                            {
+                                "options": {
+                                "match": "null",
+                                "result": {
+                                    "color": "red",
+                                    "index": 0
+                                }
+                                },
+                                "type": "special"
                             },
-                            "type": "special"
+                            {
+                                "options": {
+                                "match": "empty",
+                                "result": {
+                                    "color": "red",
+                                    "index": 1
+                                }
+                                },
+                                "type": "special"
+                            },
+                            {
+                                "options": {
+                                "pattern": ".+",
+                                "result": {
+                                    "color": "green",
+                                    "index": 2
+                                }
+                                },
+                                "type": "regex"
+                            }
+                            ]
+                        }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                        "id": "byName",
+                        "options": "test_ped"
+                        },
+                        "properties": [
+                        {
+                            "id": "custom.cellOptions",
+                            "value": {
+                            "type": "color-background"
+                            }
                         },
                         {
-                            "options": {
-                            "pattern": ".+",
-                            "result": {
-                                "color": "green",
-                                "index": 2
-                            }
+                            "id": "mappings",
+                            "value": [
+                            {
+                                "options": {
+                                "match": "null",
+                                "result": {
+                                    "color": "red",
+                                    "index": 0
+                                }
+                                },
+                                "type": "special"
                             },
-                            "type": "regex"
+                            {
+                                "options": {
+                                "match": "empty",
+                                "result": {
+                                    "color": "red",
+                                    "index": 1
+                                }
+                                },
+                                "type": "special"
+                            },
+                            {
+                                "options": {
+                                "pattern": ".+",
+                                "result": {
+                                    "color": "green",
+                                    "index": 2
+                                }
+                                },
+                                "type": "regex"
+                            }
+                            ]
                         }
                         ]
-                    }
-                    ]
-                },
-                {
-                    "matcher": {
-                    "id": "byName",
-                    "options": "test_ped"
-                    },
-                    "properties": [
-                    {
-                        "id": "custom.cellOptions",
-                        "value": {
-                        "type": "color-background"
-                        }
                     },
                     {
-                        "id": "mappings",
-                        "value": [
+                        "matcher": {
+                        "id": "byName",
+                        "options": "wb_back"
+                        },
+                        "properties": [
                         {
-                            "options": {
-                            "match": "null",
-                            "result": {
-                                "color": "red",
-                                "index": 0
+                            "id": "custom.cellOptions",
+                            "value": {
+                            "type": "color-background"
                             }
-                            },
-                            "type": "special"
                         },
                         {
-                            "options": {
-                            "match": "empty",
-                            "result": {
-                                "color": "red",
-                                "index": 1
+                            "id": "mappings",
+                            "value": [
+                            {
+                                "options": {
+                                "match": "null",
+                                "result": {
+                                    "color": "red",
+                                    "index": 0
+                                }
+                                },
+                                "type": "special"
                             }
-                            },
-                            "type": "special"
+                            ]
+                        }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                        "id": "byName",
+                        "options": "encap_back"
+                        },
+                        "properties": [
+                        {
+                            "id": "custom.cellOptions",
+                            "value": {
+                            "type": "color-background"
+                            }
                         },
                         {
-                            "options": {
-                            "pattern": ".+",
-                            "result": {
-                                "color": "green",
-                                "index": 2
+                            "id": "mappings",
+                            "value": [
+                            {
+                                "options": {
+                                "match": "null",
+                                "result": {
+                                    "color": "red",
+                                    "index": 0
+                                }
+                                },
+                                "type": "special"
                             }
-                            },
-                            "type": "regex"
+                            ]
                         }
                         ]
-                    }
-                    ]
-                },
-                {
-                    "matcher": {
-                    "id": "byName",
-                    "options": "wb_back"
-                    },
-                    "properties": [
-                    {
-                        "id": "custom.cellOptions",
-                        "value": {
-                        "type": "color-background"
-                        }
                     },
                     {
-                        "id": "mappings",
-                        "value": [
+                        "matcher": {
+                        "id": "byName",
+                        "options": "wb_front"
+                        },
+                        "properties": [
                         {
-                            "options": {
-                            "match": "null",
-                            "result": {
-                                "color": "red",
-                                "index": 0
+                            "id": "custom.cellOptions",
+                            "value": {
+                            "type": "color-background"
                             }
-                            },
-                            "type": "special"
-                        }
-                        ]
-                    }
-                    ]
-                },
-                {
-                    "matcher": {
-                    "id": "byName",
-                    "options": "encap_back"
-                    },
-                    "properties": [
-                    {
-                        "id": "custom.cellOptions",
-                        "value": {
-                        "type": "color-background"
-                        }
-                    },
-                    {
-                        "id": "mappings",
-                        "value": [
-                        {
-                            "options": {
-                            "match": "null",
-                            "result": {
-                                "color": "red",
-                                "index": 0
-                            }
-                            },
-                            "type": "special"
-                        }
-                        ]
-                    }
-                    ]
-                },
-                {
-                    "matcher": {
-                    "id": "byName",
-                    "options": "wb_front"
-                    },
-                    "properties": [
-                    {
-                        "id": "custom.cellOptions",
-                        "value": {
-                        "type": "color-background"
-                        }
-                    },
-                    {
-                        "id": "mappings",
-                        "value": [
-                        {
-                            "options": {
-                            "match": "null",
-                            "result": {
-                                "color": "red",
-                                "index": 0
-                            }
-                            },
-                            "type": "special"
-                        }
-                        ]
-                    }
-                    ]
-                },
-                {
-                    "matcher": {
-                    "id": "byName",
-                    "options": "encap_front"
-                    },
-                    "properties": [
-                    {
-                        "id": "custom.cellOptions",
-                        "value": {
-                        "type": "color-background"
-                        }
-                    },
-                    {
-                        "id": "mappings",
-                        "value": [
-                        {
-                            "options": {
-                            "match": "null",
-                            "result": {
-                                "color": "red",
-                                "index": 0
-                            }
-                            },
-                            "type": "special"
-                        }
-                        ]
-                    }
-                    ]
-                },
-                {
-                    "matcher": {
-                    "id": "byName",
-                    "options": "xml_upload_success"
-                    },
-                    "properties": [
-                    {
-                        "id": "custom.cellOptions",
-                        "value": {
-                        "type": "color-background"
-                        }
-                    },
-                    {
-                        "id": "mappings",
-                        "value": [
-                        {
-                            "options": {
-                            "match": "null",
-                            "result": {
-                                "color": "orange",
-                                "index": 0
-                            }
-                            },
-                            "type": "special"
                         },
                         {
-                            "options": {
-                            "match": "False",
-                            "result": {
-                                "color": "red",
-                                "index": 1
+                            "id": "mappings",
+                            "value": [
+                            {
+                                "options": {
+                                "match": "null",
+                                "result": {
+                                    "color": "red",
+                                    "index": 0
+                                }
+                                },
+                                "type": "special"
                             }
+                            ]
+                        }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                        "id": "byName",
+                        "options": "encap_front"
+                        },
+                        "properties": [
+                        {
+                            "id": "custom.cellOptions",
+                            "value": {
+                            "type": "color-background"
+                            }
+                        },
+                        {
+                            "id": "mappings",
+                            "value": [
+                            {
+                                "options": {
+                                "match": "null",
+                                "result": {
+                                    "color": "red",
+                                    "index": 0
+                                }
+                                },
+                                "type": "special"
+                            }
+                            ]
+                        }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                        "id": "byName",
+                        "options": "xml_upload_success"
+                        },
+                        "properties": [
+                        {
+                            "id": "custom.cellOptions",
+                            "value": {
+                            "type": "color-background"
+                            }
+                        },
+                        {
+                            "id": "mappings",
+                            "value": [
+                            {
+                                "options": {
+                                "match": "null",
+                                "result": {
+                                    "color": "orange",
+                                    "index": 0
+                                }
+                                },
+                                "type": "special"
                             },
-                            "type": "special"
+                            {
+                                "options": {
+                                "match": "False",
+                                "result": {
+                                    "color": "red",
+                                    "index": 1
+                                }
+                                },
+                                "type": "special"
+                            }
+                            ]
+                        }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                        "id": "byName",
+                        "options": "shipped_datetime"
+                        },
+                        "properties": [
+                        {
+                            "id": "custom.cellOptions",
+                            "value": {
+                            "type": "color-background"
+                            }
+                        },
+                        {
+                            "id": "mappings",
+                            "value": [
+                            {
+                                "options": {
+                                "match": "null",
+                                "result": {
+                                    "color": "red",
+                                    "index": 0
+                                }
+                                },
+                                "type": "special"
+                            }
+                            ]
+                        }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                        "id": "byName",
+                        "options": "assembled"
+                        },
+                        "properties": [
+                        {
+                            "id": "custom.cellOptions",
+                            "value": {
+                            "type": "color-background"
+                            }
+                        },
+                        {
+                            "id": "mappings",
+                            "value": [
+                            {
+                                "type": "special",
+                                "options": {
+                                "match": "null",
+                                "result": {
+                                    "color": "red",
+                                    "index": 0
+                                }
+                                }
+                            }
+                            ]
+                        }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                        "id": "byName",
+                        "options": "packed_datetime"
+                        },
+                        "properties": [
+                        {
+                            "id": "custom.cellOptions",
+                            "value": {
+                            "type": "color-background"
+                            }
+                        },
+                        {
+                            "id": "mappings",
+                            "value": [
+                            {
+                                "type": "special",
+                                "options": {
+                                "match": "null",
+                                "result": {
+                                    "color": "red",
+                                    "index": 0
+                                }
+                                }
+                            }
+                            ]
                         }
                         ]
                     }
                     ]
                 },
-                {
-                    "matcher": {
-                    "id": "byName",
-                    "options": "shipped_datetime"
-                    },
-                    "properties": [
+                "pluginVersion": "12.0.0",
+                "targets": [
                     {
-                        "id": "custom.cellOptions",
-                        "value": {
-                        "type": "color-background"
-                        }
+                    "datasource": {
+                        "type": "grafana-postgresql-datasource",
+                        "uid": "mac-postgres-db"
                     },
-                    {
-                        "id": "mappings",
-                        "value": [
+                    "editorMode": "code",
+                    "format": "table",
+                    "rawQuery": True,
+                    "rawSql": "WITH\n                temp_table_0 AS (\n                SELECT DISTINCT ON (module_name) *\n                FROM module_info\n                ORDER BY module_name, module_no DESC\n                ),\n\n                temp_table_1 AS (\n                SELECT DISTINCT ON (module_name) *\n                FROM module_qc_summary\n                ORDER BY module_name, mod_qc_no DESC\n                )\n        SELECT \n            temp_table_0.module_name::text,\n            temp_table_0.assembled::text,\n            temp_table_0.wb_back::text,\n            temp_table_0.encap_back::text,\n            temp_table_0.wb_front::text,\n            temp_table_0.encap_front::text,\n            temp_table_0.test_iv::text,\n            temp_table_0.test_ped::text,\n            temp_table_0.xml_upload_success::text,\n            temp_table_0.packed_datetime::text,\n            temp_table_0.shipped_datetime::text\n        FROM temp_table_0\n        LEFT JOIN temp_table_1 ON temp_table_0.module_name = temp_table_1.module_name\n        WHERE \n                ('All' = ANY(ARRAY[${bp_material}]) OR \n                (temp_table_0.bp_material IS NULL AND 'NULL' = ANY(ARRAY[${bp_material}])) OR \n                temp_table_0.bp_material::text = ANY(ARRAY[${bp_material}]))\n          AND \n                ('All' = ANY(ARRAY[${resolution}]) OR \n                (temp_table_0.resolution IS NULL AND 'NULL' = ANY(ARRAY[${resolution}])) OR \n                temp_table_0.resolution::text = ANY(ARRAY[${resolution}]))\n          AND \n                ('All' = ANY(ARRAY[${roc_version}]) OR \n                (temp_table_0.roc_version IS NULL AND 'NULL' = ANY(ARRAY[${roc_version}])) OR \n                temp_table_0.roc_version::text = ANY(ARRAY[${roc_version}]))\n          AND \n                ('All' = ANY(ARRAY[${sen_thickness}]) OR \n                (temp_table_0.sen_thickness IS NULL AND 'NULL' = ANY(ARRAY[${sen_thickness}])) OR \n                temp_table_0.sen_thickness::text = ANY(ARRAY[${sen_thickness}]))\n          AND \n                ('All' = ANY(ARRAY[${geometry}]) OR \n                (temp_table_0.geometry IS NULL AND 'NULL' = ANY(ARRAY[${geometry}])) OR \n                temp_table_0.geometry::text = ANY(ARRAY[${geometry}]))\n          AND $__timeFilter(temp_table_0.assembled AT TIME ZONE 'America/New_York')\n          AND \n                ('All' = ANY(ARRAY[${final_grade}]) OR \n                (temp_table_1.final_grade IS NULL AND 'NULL' = ANY(ARRAY[${final_grade}])) OR \n                temp_table_1.final_grade::text = ANY(ARRAY[${final_grade}]))\n          AND bp_material IS NOT NULL AND resolution IS NOT NULL AND roc_version IS NOT NULL AND geometry IS NOT NULL\nORDER BY temp_table_0.assembled DESC",
+                    "refId": "A",
+                    "sql": {
+                        "columns": [
                         {
-                            "options": {
-                            "match": "null",
-                            "result": {
-                                "color": "red",
-                                "index": 0
-                            }
-                            },
-                            "type": "special"
+                            "parameters": [],
+                            "type": "function"
                         }
-                        ]
+                        ],
+                        "groupBy": [
+                        {
+                            "property": {
+                            "type": "string"
+                            },
+                            "type": "groupBy"
+                        }
+                        ],
+                        "limit": 50
                     }
-                    ]
-                }
-                ]
-            },
-            "gridPos": {
-                "h": 13,
-                "w": 24,
-                "x": 0,
-                "y": 40
-            },
-            "id": 12,
-            "options": {
-                "cellHeight": "sm",
-                "footer": {
-                "countRows": False,
-                "fields": "",
-                "reducer": [
-                    "sum"
+                    }
                 ],
-                "show": False
-                },
-                "showHeader": True,
-                "sortBy": []
-            },
-            "pluginVersion": "12.0.0",
-            "targets": [
-                {
                 "datasource": {
                     "type": "grafana-postgresql-datasource",
-                    "uid": self.datasource_uid
+                    "uid": "mac-postgres-db"
                 },
-                "editorMode": "code",
-                "format": "table",
-                "rawQuery": True,
-                "rawSql": "WITH\n                temp_table_0 AS (\n                SELECT DISTINCT ON (module_name) *\n                FROM module_info\n                ORDER BY module_name, module_no DESC\n                ),\n\n                temp_table_1 AS (\n                SELECT DISTINCT ON (module_name) *\n                FROM module_qc_summary\n                ORDER BY module_name, mod_qc_no DESC\n                )\n        SELECT \n            temp_table_0.module_name::text,\n            temp_table_0.wb_back::text,\n            temp_table_0.encap_back::text,\n            temp_table_0.wb_front::text,\n            temp_table_0.encap_front::text,\n            temp_table_0.test_iv::text,\n            temp_table_0.test_ped::text,\n            temp_table_0.xml_upload_success::text,\n            temp_table_0.shipped_datetime::text\n        FROM temp_table_0\n        LEFT JOIN temp_table_1 ON temp_table_0.module_name = temp_table_1.module_name\n        WHERE \n                ('All' = ANY(ARRAY[${bp_material}]) OR \n                (temp_table_0.bp_material IS NULL AND 'NULL' = ANY(ARRAY[${bp_material}])) OR \n                temp_table_0.bp_material::text = ANY(ARRAY[${bp_material}]))\n          AND \n                ('All' = ANY(ARRAY[${resolution}]) OR \n                (temp_table_0.resolution IS NULL AND 'NULL' = ANY(ARRAY[${resolution}])) OR \n                temp_table_0.resolution::text = ANY(ARRAY[${resolution}]))\n          AND \n                ('All' = ANY(ARRAY[${roc_version}]) OR \n                (temp_table_0.roc_version IS NULL AND 'NULL' = ANY(ARRAY[${roc_version}])) OR \n                temp_table_0.roc_version::text = ANY(ARRAY[${roc_version}]))\n          AND \n                ('All' = ANY(ARRAY[${sen_thickness}]) OR \n                (temp_table_0.sen_thickness IS NULL AND 'NULL' = ANY(ARRAY[${sen_thickness}])) OR \n                temp_table_0.sen_thickness::text = ANY(ARRAY[${sen_thickness}]))\n          AND \n                ('All' = ANY(ARRAY[${geometry}]) OR \n                (temp_table_0.geometry IS NULL AND 'NULL' = ANY(ARRAY[${geometry}])) OR \n                temp_table_0.geometry::text = ANY(ARRAY[${geometry}]))\n          AND $__timeFilter(temp_table_0.assembled AT TIME ZONE 'America/New_York')\n          AND \n                ('All' = ANY(ARRAY[${final_grade}]) OR \n                (temp_table_1.final_grade IS NULL AND 'NULL' = ANY(ARRAY[${final_grade}])) OR \n                temp_table_1.final_grade::text = ANY(ARRAY[${final_grade}]))\n          AND bp_material IS NOT NULL AND resolution IS NOT NULL AND roc_version IS NOT NULL AND geometry IS NOT NULL\nORDER BY temp_table_0.module_name DESC",
-                "refId": "A",
-                "sql": {
-                    "columns": [
-                    {
-                        "parameters": [],
-                        "type": "function"
-                    }
+                "options": {
+                    "showHeader": True,
+                    "cellHeight": "sm",
+                    "footer": {
+                    "show": False,
+                    "reducer": [
+                        "sum"
                     ],
-                    "groupBy": [
-                    {
-                        "property": {
-                        "type": "string"
-                        },
-                        "type": "groupBy"
-                    }
-                    ],
-                    "limit": 50
+                    "countRows": False,
+                    "fields": ""
+                    },
+                    "sortBy": []
                 }
                 }
-            ],
-            "title": "Module Info",
-            "type": "table"
-            }
         ],
         "preload": False,
         "schemaVersion": 41,
