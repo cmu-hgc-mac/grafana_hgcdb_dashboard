@@ -4684,7 +4684,7 @@ class GeneralInfoBuilder:
                     {
                     "datasource": {
                         "type": "grafana-postgresql-datasource",
-                        "uid": "mac-postgres-db"
+                        "uid": self.datasource_uid
                     },
                     "editorMode": "code",
                     "format": "table",
@@ -4712,7 +4712,7 @@ class GeneralInfoBuilder:
                 ],
                 "datasource": {
                     "type": "grafana-postgresql-datasource",
-                    "uid": "mac-postgres-db"
+                    "uid": self.datasource_uid
                 },
                 "options": {
                     "showHeader": True,
