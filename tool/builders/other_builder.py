@@ -3340,6 +3340,7 @@ class GeneralInfoBuilder:
         "editable": True,
         "fiscalYearStartMonth": 0,
         "graphTooltip": 0,
+        "id": 248,
         "links": [],
         "panels": [
             {
@@ -3425,7 +3426,7 @@ class GeneralInfoBuilder:
                 "editorMode": "code",
                 "format": "table",
                 "rawQuery": True,
-                "rawSql": "WITH\n                temp_table_0 AS (\n                SELECT DISTINCT ON (module_name) *\n                FROM module_info\n                ORDER BY module_name, module_no DESC\n                ),\n\n                temp_table_1 AS (\n                SELECT DISTINCT ON (module_name) *\n                FROM module_qc_summary\n                ORDER BY module_name, mod_qc_no DESC\n                )\n        SELECT \n            temp_table_0.bp_material::text || '/' || temp_table_0.resolution::text || '/' || temp_table_0.roc_version::text || '/' || temp_table_0.sen_thickness::text || '/' || temp_table_0.geometry::text AS label,\n            COUNT(*) AS count\n        FROM temp_table_0\n        LEFT JOIN temp_table_1 ON temp_table_0.module_name = temp_table_1.module_name\n        WHERE \n                ('All' = ANY(ARRAY[${bp_material}]) OR \n                (temp_table_0.bp_material IS NULL AND 'NULL' = ANY(ARRAY[${bp_material}])) OR \n                temp_table_0.bp_material::text = ANY(ARRAY[${bp_material}]))\n          AND \n                ('All' = ANY(ARRAY[${resolution}]) OR \n                (temp_table_0.resolution IS NULL AND 'NULL' = ANY(ARRAY[${resolution}])) OR \n                temp_table_0.resolution::text = ANY(ARRAY[${resolution}]))\n          AND \n                ('All' = ANY(ARRAY[${roc_version}]) OR \n                (temp_table_0.roc_version IS NULL AND 'NULL' = ANY(ARRAY[${roc_version}])) OR \n                temp_table_0.roc_version::text = ANY(ARRAY[${roc_version}]))\n          AND \n                ('All' = ANY(ARRAY[${sen_thickness}]) OR \n                (temp_table_0.sen_thickness IS NULL AND 'NULL' = ANY(ARRAY[${sen_thickness}])) OR \n                temp_table_0.sen_thickness::text = ANY(ARRAY[${sen_thickness}]))\n          AND \n                ('All' = ANY(ARRAY[${geometry}]) OR \n                (temp_table_0.geometry IS NULL AND 'NULL' = ANY(ARRAY[${geometry}])) OR \n                temp_table_0.geometry::text = ANY(ARRAY[${geometry}]))\n          AND ('All' = ANY(ARRAY[${shipping_status}]) OR \n                    (shipped_datetime IS NULL AND 'not shipped' = ANY(ARRAY[${shipping_status}])) OR\n                    (shipped_datetime IS NOT NULL AND 'shipped' = ANY(ARRAY[${shipping_status}])))\n          AND $__timeFilter(temp_table_0.assembled AT TIME ZONE 'America/New_York')\n          AND \n                ('All' = ANY(ARRAY[${final_grade}]) OR \n                (temp_table_1.final_grade IS NULL AND 'NULL' = ANY(ARRAY[${final_grade}])) OR \n                temp_table_1.final_grade::text = ANY(ARRAY[${final_grade}]))\n          AND bp_material IS NOT NULL AND resolution IS NOT NULL AND roc_version IS NOT NULL AND geometry IS NOT NULL\n        GROUP BY label\n        ORDER BY label;",
+                "rawSql": "WITH\n                temp_table_0 AS (\n                SELECT DISTINCT ON (module_name) *\n                FROM module_info\n                ORDER BY module_name, module_no DESC\n                ),\n\n                temp_table_1 AS (\n                SELECT DISTINCT ON (module_name) *\n                FROM module_qc_summary\n                ORDER BY module_name, mod_qc_no DESC\n                )\n        SELECT \n            temp_table_0.bp_material::text || '/' || temp_table_0.resolution::text || '/' || temp_table_0.roc_version::text || '/' || temp_table_0.sen_thickness::text || '/' || temp_table_0.geometry::text AS label,\n            COUNT(*) AS count\n        FROM temp_table_0\n        LEFT JOIN temp_table_1 ON temp_table_0.module_name = temp_table_1.module_name\n        WHERE \n                ('All' = ANY(ARRAY[${bp_material}]) OR \n                (temp_table_0.bp_material IS NULL AND 'NULL' = ANY(ARRAY[${bp_material}])) OR \n                temp_table_0.bp_material::text = ANY(ARRAY[${bp_material}]))\n          AND \n                ('All' = ANY(ARRAY[${resolution}]) OR \n                (temp_table_0.resolution IS NULL AND 'NULL' = ANY(ARRAY[${resolution}])) OR \n                temp_table_0.resolution::text = ANY(ARRAY[${resolution}]))\n          AND \n                ('All' = ANY(ARRAY[${roc_version}]) OR \n                (temp_table_0.roc_version IS NULL AND 'NULL' = ANY(ARRAY[${roc_version}])) OR \n                temp_table_0.roc_version::text = ANY(ARRAY[${roc_version}]))\n          AND \n                ('All' = ANY(ARRAY[${sen_thickness}]) OR \n                (temp_table_0.sen_thickness IS NULL AND 'NULL' = ANY(ARRAY[${sen_thickness}])) OR \n                temp_table_0.sen_thickness::text = ANY(ARRAY[${sen_thickness}]))\n          AND \n                ('All' = ANY(ARRAY[${geometry}]) OR \n                (temp_table_0.geometry IS NULL AND 'NULL' = ANY(ARRAY[${geometry}])) OR \n                temp_table_0.geometry::text = ANY(ARRAY[${geometry}]))\n          AND $__timeFilter(temp_table_0.assembled AT TIME ZONE 'America/New_York')\n          AND \n                ('All' = ANY(ARRAY[${final_grade}]) OR \n                (temp_table_1.final_grade IS NULL AND 'NULL' = ANY(ARRAY[${final_grade}])) OR \n                temp_table_1.final_grade::text = ANY(ARRAY[${final_grade}]))\n          AND bp_material IS NOT NULL AND resolution IS NOT NULL AND roc_version IS NOT NULL AND geometry IS NOT NULL\n        GROUP BY label\n        ORDER BY label;",
                 "refId": "A",
                 "sql": {
                     "columns": [
@@ -3508,7 +3509,7 @@ class GeneralInfoBuilder:
                 "editorMode": "code",
                 "format": "table",
                 "rawQuery": True,
-                "rawSql": "WITH\n                temp_table_0 AS (\n                SELECT DISTINCT ON (module_name) *\n                FROM module_info\n                ORDER BY module_name, module_no DESC\n                ),\n\n                temp_table_1 AS (\n                SELECT DISTINCT ON (module_name) *\n                FROM module_qc_summary\n                ORDER BY module_name, mod_qc_no DESC\n                )\n        SELECT \n            COUNT(*) FILTER (WHERE final_grade = 'A') AS grade_a,\n            COUNT(*) FILTER (WHERE final_grade = 'B') AS grade_b,\n            COUNT(*) FILTER (WHERE final_grade = 'C') AS grade_c,\n            COUNT(*) FILTER (WHERE final_grade = 'F') AS grade_f\n        FROM temp_table_0\n        LEFT JOIN temp_table_1 ON temp_table_0.module_name = temp_table_1.module_name\n        WHERE \n                ('All' = ANY(ARRAY[${bp_material}]) OR \n                (temp_table_0.bp_material IS NULL AND 'NULL' = ANY(ARRAY[${bp_material}])) OR \n                temp_table_0.bp_material::text = ANY(ARRAY[${bp_material}]))\n          AND \n                ('All' = ANY(ARRAY[${resolution}]) OR \n                (temp_table_0.resolution IS NULL AND 'NULL' = ANY(ARRAY[${resolution}])) OR \n                temp_table_0.resolution::text = ANY(ARRAY[${resolution}]))\n          AND \n                ('All' = ANY(ARRAY[${roc_version}]) OR \n                (temp_table_0.roc_version IS NULL AND 'NULL' = ANY(ARRAY[${roc_version}])) OR \n                temp_table_0.roc_version::text = ANY(ARRAY[${roc_version}]))\n          AND \n                ('All' = ANY(ARRAY[${sen_thickness}]) OR \n                (temp_table_0.sen_thickness IS NULL AND 'NULL' = ANY(ARRAY[${sen_thickness}])) OR \n                temp_table_0.sen_thickness::text = ANY(ARRAY[${sen_thickness}]))\n          AND \n                ('All' = ANY(ARRAY[${geometry}]) OR \n                (temp_table_0.geometry IS NULL AND 'NULL' = ANY(ARRAY[${geometry}])) OR \n                temp_table_0.geometry::text = ANY(ARRAY[${geometry}]))\n          AND ('All' = ANY(ARRAY[${shipping_status}]) OR \n                    (shipped_datetime IS NULL AND 'not shipped' = ANY(ARRAY[${shipping_status}])) OR\n                    (shipped_datetime IS NOT NULL AND 'shipped' = ANY(ARRAY[${shipping_status}])))\n          AND $__timeFilter(temp_table_0.assembled AT TIME ZONE 'America/New_York')\n          AND \n                ('All' = ANY(ARRAY[${final_grade}]) OR \n                (temp_table_1.final_grade IS NULL AND 'NULL' = ANY(ARRAY[${final_grade}])) OR \n                temp_table_1.final_grade::text = ANY(ARRAY[${final_grade}]))\n          AND bp_material IS NOT NULL AND resolution IS NOT NULL AND roc_version IS NOT NULL AND geometry IS NOT NULL",
+                "rawSql": "WITH\n                temp_table_0 AS (\n                SELECT DISTINCT ON (module_name) *\n                FROM module_info\n                ORDER BY module_name, module_no DESC\n                ),\n\n                temp_table_1 AS (\n                SELECT DISTINCT ON (module_name) *\n                FROM module_qc_summary\n                ORDER BY module_name, mod_qc_no DESC\n                )\n        SELECT \n            COUNT(*) FILTER (WHERE final_grade = 'A') AS grade_a,\n            COUNT(*) FILTER (WHERE final_grade = 'B') AS grade_b,\n            COUNT(*) FILTER (WHERE final_grade = 'C') AS grade_c,\n            COUNT(*) FILTER (WHERE final_grade = 'F') AS grade_f\n        FROM temp_table_0\n        LEFT JOIN temp_table_1 ON temp_table_0.module_name = temp_table_1.module_name\n        WHERE \n                ('All' = ANY(ARRAY[${bp_material}]) OR \n                (temp_table_0.bp_material IS NULL AND 'NULL' = ANY(ARRAY[${bp_material}])) OR \n                temp_table_0.bp_material::text = ANY(ARRAY[${bp_material}]))\n          AND \n                ('All' = ANY(ARRAY[${resolution}]) OR \n                (temp_table_0.resolution IS NULL AND 'NULL' = ANY(ARRAY[${resolution}])) OR \n                temp_table_0.resolution::text = ANY(ARRAY[${resolution}]))\n          AND \n                ('All' = ANY(ARRAY[${roc_version}]) OR \n                (temp_table_0.roc_version IS NULL AND 'NULL' = ANY(ARRAY[${roc_version}])) OR \n                temp_table_0.roc_version::text = ANY(ARRAY[${roc_version}]))\n          AND \n                ('All' = ANY(ARRAY[${sen_thickness}]) OR \n                (temp_table_0.sen_thickness IS NULL AND 'NULL' = ANY(ARRAY[${sen_thickness}])) OR \n                temp_table_0.sen_thickness::text = ANY(ARRAY[${sen_thickness}]))\n          AND \n                ('All' = ANY(ARRAY[${geometry}]) OR \n                (temp_table_0.geometry IS NULL AND 'NULL' = ANY(ARRAY[${geometry}])) OR \n                temp_table_0.geometry::text = ANY(ARRAY[${geometry}]))\n          AND $__timeFilter(temp_table_0.assembled AT TIME ZONE 'America/New_York')\n          AND \n                ('All' = ANY(ARRAY[${final_grade}]) OR \n                (temp_table_1.final_grade IS NULL AND 'NULL' = ANY(ARRAY[${final_grade}])) OR \n                temp_table_1.final_grade::text = ANY(ARRAY[${final_grade}]))\n          AND bp_material IS NOT NULL AND resolution IS NOT NULL AND roc_version IS NOT NULL AND geometry IS NOT NULL",
                 "refId": "A",
                 "sql": {
                     "columns": [
@@ -3591,7 +3592,7 @@ class GeneralInfoBuilder:
                 "editorMode": "code",
                 "format": "table",
                 "rawQuery": True,
-                "rawSql": "WITH\n                temp_table_0 AS (\n                SELECT DISTINCT ON (module_name) *\n                FROM module_info\n                ORDER BY module_name, module_no DESC\n                ),\n\n                temp_table_1 AS (\n                SELECT DISTINCT ON (module_name) *\n                FROM module_qc_summary\n                ORDER BY module_name, mod_qc_no DESC\n                )\n        SELECT \n            COUNT(*) FILTER (WHERE shipped_datetime IS NULL) AS not_shipped,\n            COUNT(*) FILTER (WHERE shipped_datetime IS NOT NULL) AS shipped\n        FROM temp_table_0\n        LEFT JOIN temp_table_1 ON temp_table_0.module_name = temp_table_1.module_name\n        WHERE \n                ('All' = ANY(ARRAY[${bp_material}]) OR \n                (temp_table_0.bp_material IS NULL AND 'NULL' = ANY(ARRAY[${bp_material}])) OR \n                temp_table_0.bp_material::text = ANY(ARRAY[${bp_material}]))\n          AND \n                ('All' = ANY(ARRAY[${resolution}]) OR \n                (temp_table_0.resolution IS NULL AND 'NULL' = ANY(ARRAY[${resolution}])) OR \n                temp_table_0.resolution::text = ANY(ARRAY[${resolution}]))\n          AND \n                ('All' = ANY(ARRAY[${roc_version}]) OR \n                (temp_table_0.roc_version IS NULL AND 'NULL' = ANY(ARRAY[${roc_version}])) OR \n                temp_table_0.roc_version::text = ANY(ARRAY[${roc_version}]))\n          AND \n                ('All' = ANY(ARRAY[${sen_thickness}]) OR \n                (temp_table_0.sen_thickness IS NULL AND 'NULL' = ANY(ARRAY[${sen_thickness}])) OR \n                temp_table_0.sen_thickness::text = ANY(ARRAY[${sen_thickness}]))\n          AND \n                ('All' = ANY(ARRAY[${geometry}]) OR \n                (temp_table_0.geometry IS NULL AND 'NULL' = ANY(ARRAY[${geometry}])) OR \n                temp_table_0.geometry::text = ANY(ARRAY[${geometry}]))\n          AND ('All' = ANY(ARRAY[${shipping_status}]) OR \n                    (shipped_datetime IS NULL AND 'not shipped' = ANY(ARRAY[${shipping_status}])) OR\n                    (shipped_datetime IS NOT NULL AND 'shipped' = ANY(ARRAY[${shipping_status}])))\n          AND $__timeFilter(temp_table_0.assembled AT TIME ZONE 'America/New_York')\n          AND \n                ('All' = ANY(ARRAY[${final_grade}]) OR \n                (temp_table_1.final_grade IS NULL AND 'NULL' = ANY(ARRAY[${final_grade}])) OR \n                temp_table_1.final_grade::text = ANY(ARRAY[${final_grade}]))\n          AND bp_material IS NOT NULL AND resolution IS NOT NULL AND roc_version IS NOT NULL AND geometry IS NOT NULL",
+                "rawSql": "WITH\n                temp_table_0 AS (\n                SELECT DISTINCT ON (module_name) *\n                FROM module_info\n                ORDER BY module_name, module_no DESC\n                ),\n\n                temp_table_1 AS (\n                SELECT DISTINCT ON (module_name) *\n                FROM module_qc_summary\n                ORDER BY module_name, mod_qc_no DESC\n                )\n        SELECT \n            COUNT(*) FILTER (WHERE shipped_datetime IS NULL) AS not_shipped,\n            COUNT(*) FILTER (WHERE shipped_datetime IS NOT NULL) AS shipped\n        FROM temp_table_0\n        LEFT JOIN temp_table_1 ON temp_table_0.module_name = temp_table_1.module_name\n        WHERE \n                ('All' = ANY(ARRAY[${bp_material}]) OR \n                (temp_table_0.bp_material IS NULL AND 'NULL' = ANY(ARRAY[${bp_material}])) OR \n                temp_table_0.bp_material::text = ANY(ARRAY[${bp_material}]))\n          AND \n                ('All' = ANY(ARRAY[${resolution}]) OR \n                (temp_table_0.resolution IS NULL AND 'NULL' = ANY(ARRAY[${resolution}])) OR \n                temp_table_0.resolution::text = ANY(ARRAY[${resolution}]))\n          AND \n                ('All' = ANY(ARRAY[${roc_version}]) OR \n                (temp_table_0.roc_version IS NULL AND 'NULL' = ANY(ARRAY[${roc_version}])) OR \n                temp_table_0.roc_version::text = ANY(ARRAY[${roc_version}]))\n          AND \n                ('All' = ANY(ARRAY[${sen_thickness}]) OR \n                (temp_table_0.sen_thickness IS NULL AND 'NULL' = ANY(ARRAY[${sen_thickness}])) OR \n                temp_table_0.sen_thickness::text = ANY(ARRAY[${sen_thickness}]))\n          AND \n                ('All' = ANY(ARRAY[${geometry}]) OR \n                (temp_table_0.geometry IS NULL AND 'NULL' = ANY(ARRAY[${geometry}])) OR \n                temp_table_0.geometry::text = ANY(ARRAY[${geometry}]))\n          AND $__timeFilter(temp_table_0.assembled AT TIME ZONE 'America/New_York')\n          AND \n                ('All' = ANY(ARRAY[${final_grade}]) OR \n                (temp_table_1.final_grade IS NULL AND 'NULL' = ANY(ARRAY[${final_grade}])) OR \n                temp_table_1.final_grade::text = ANY(ARRAY[${final_grade}]))\n          AND bp_material IS NOT NULL AND resolution IS NOT NULL AND roc_version IS NOT NULL AND geometry IS NOT NULL",
                 "refId": "A",
                 "sql": {
                     "columns": [
@@ -3809,7 +3810,7 @@ class GeneralInfoBuilder:
                 "editorMode": "code",
                 "format": "table",
                 "rawQuery": True,
-                "rawSql": "WITH\ndaily_module AS (\n    SELECT\n        date_trunc('day', module_info.assembled AT TIME ZONE 'America/New_York') AS date,\n        COUNT(*)::bigint AS cnt\n    FROM module_info\n    WHERE\n        ('All' = ANY(ARRAY[${bp_material}]) OR\n         (module_info.bp_material IS NULL AND 'NULL' = ANY(ARRAY[${bp_material}])) OR\n         module_info.bp_material::text = ANY(ARRAY[${bp_material}]))\n\n      AND ('All' = ANY(ARRAY[${resolution}]) OR\n           (module_info.resolution IS NULL AND 'NULL' = ANY(ARRAY[${resolution}])) OR\n           module_info.resolution::text = ANY(ARRAY[${resolution}]))\n\n      AND ('All' = ANY(ARRAY[${roc_version}]) OR\n           (module_info.roc_version IS NULL AND 'NULL' = ANY(ARRAY[${roc_version}])) OR\n           module_info.roc_version::text = ANY(ARRAY[${roc_version}]))\n\n      AND ('All' = ANY(ARRAY[${sen_thickness}]) OR\n           (module_info.sen_thickness IS NULL AND 'NULL' = ANY(ARRAY[${sen_thickness}])) OR\n           module_info.sen_thickness::text = ANY(ARRAY[${sen_thickness}]))\n\n      AND ('All' = ANY(ARRAY[${geometry}]) OR\n           (module_info.geometry IS NULL AND 'NULL' = ANY(ARRAY[${geometry}])) OR\n           module_info.geometry::text = ANY(ARRAY[${geometry}]))\n        \n      AND ('All' = ANY(ARRAY[${shipping_status}]) OR \n           (shipped_datetime IS NULL AND 'not shipped' = ANY(ARRAY[${shipping_status}])) OR\n           (shipped_datetime IS NOT NULL AND 'shipped' = ANY(ARRAY[${shipping_status}])))\n\n      AND $__timeFilter(module_info.assembled AT TIME ZONE 'America/New_York')\n      AND module_info.assembled IS NOT NULL\n    GROUP BY 1\n),\n\ncum_module AS (\n    SELECT\n        date,\n        SUM(cnt) OVER (\n            ORDER BY date\n            ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW\n        ) AS module_total\n    FROM daily_module\n),\n\ndaily_proto AS (\n    SELECT\n        date_trunc('day', proto_assembly.ass_run_date AT TIME ZONE 'America/New_York') AS date,\n        COUNT(*)::bigint AS cnt\n    FROM proto_assembly\n    WHERE\n        ('All' = ANY(ARRAY[${bp_material}]) OR\n         (CASE substring(proto_assembly.proto_name from 8 for 1)\n              WHEN 'W' THEN 'CuW'\n              WHEN 'T' THEN 'Titanium'\n              WHEN 'C' THEN 'Carbon Fiber'\n              WHEN 'P' THEN 'PCB'\n              WHEN 'X' THEN ''\n              ELSE NULL\n          END IS NULL AND 'NULL' = ANY(ARRAY[${bp_material}])) OR\n         (CASE substring(proto_assembly.proto_name from 8 for 1)\n              WHEN 'W' THEN 'CuW'\n              WHEN 'T' THEN 'Titanium'\n              WHEN 'C' THEN 'Carbon Fiber'\n              WHEN 'P' THEN 'PCB'\n              WHEN 'X' THEN ''\n              ELSE NULL\n          END)::text = ANY(ARRAY[${bp_material}]))\n\n      AND ('All' = ANY(ARRAY[${resolution}]) OR\n           (CASE substring(proto_assembly.proto_name from 5 for 1)\n                WHEN 'L' THEN 'LD'\n                WHEN 'H' THEN 'HD'\n                WHEN '0' THEN ''\n                ELSE NULL\n            END IS NULL AND 'NULL' = ANY(ARRAY[${resolution}])) OR\n           (CASE substring(proto_assembly.proto_name from 5 for 1)\n                WHEN 'L' THEN 'LD'\n                WHEN 'H' THEN 'HD'\n                WHEN '0' THEN ''\n                ELSE NULL\n            END)::text = ANY(ARRAY[${resolution}]))\n\n      AND ('All' = ANY(ARRAY[${roc_version}]) OR\n           (CASE substring(proto_assembly.proto_name from 9 for 1)\n                WHEN 'X' THEN 'preseries'\n                WHEN '2' THEN 'HGCROCV3b-2'\n                WHEN '4' THEN 'HGCROCV3b-4'\n                WHEN 'B' THEN 'HGCROCV3b-3'\n                WHEN 'C' THEN 'HGCROCV3c'\n                WHEN 'D' THEN 'HGCROCV3d'\n                ELSE NULL\n            END IS NULL AND 'NULL' = ANY(ARRAY[${roc_version}])) OR\n           (CASE substring(proto_assembly.proto_name from 9 for 1)\n                WHEN 'X' THEN 'preseries'\n                WHEN '2' THEN 'HGCROCV3b-2'\n                WHEN '4' THEN 'HGCROCV3b-4'\n                WHEN 'B' THEN 'HGCROCV3b-3'\n                WHEN 'C' THEN 'HGCROCV3c'\n                WHEN 'D' THEN 'HGCROCV3d'\n                ELSE NULL\n            END)::text = ANY(ARRAY[${roc_version}]))\n\n      AND ('All' = ANY(ARRAY[${sen_thickness}]) OR\n           (CASE substring(proto_assembly.proto_name from 7 for 1)\n                WHEN '1' THEN '120'\n                WHEN '2' THEN '200'\n                WHEN '3' THEN '300'\n                ELSE NULL\n            END IS NULL AND 'NULL' = ANY(ARRAY[${sen_thickness}])) OR\n           (CASE substring(proto_assembly.proto_name from 7 for 1)\n                WHEN '1' THEN '120'\n                WHEN '2' THEN '200'\n                WHEN '3' THEN '300'\n                ELSE NULL\n            END)::text = ANY(ARRAY[${sen_thickness}]))\n\n      AND ('All' = ANY(ARRAY[${geometry}]) OR\n           (CASE substring(proto_assembly.proto_name from 6 for 1)\n                WHEN 'F' THEN 'Full'\n                WHEN 'T' THEN 'Top'\n                WHEN 'B' THEN 'Bottom'\n                WHEN 'L' THEN 'Left'\n                WHEN 'R' THEN 'Right'\n                WHEN '5' THEN 'Five'\n                WHEN 'S' THEN 'Whole'\n                WHEN 'M' THEN 'Half-moons'\n                ELSE NULL\n            END IS NULL AND 'NULL' = ANY(ARRAY[${geometry}])) OR\n           (CASE substring(proto_assembly.proto_name from 6 for 1)\n                WHEN 'F' THEN 'Full'\n                WHEN 'T' THEN 'Top'\n                WHEN 'B' THEN 'Bottom'\n                WHEN 'L' THEN 'Left'\n                WHEN 'R' THEN 'Right'\n                WHEN '5' THEN 'Five'\n                WHEN 'S' THEN 'Whole'\n                WHEN 'M' THEN 'Half-moons'\n                ELSE NULL\n            END)::text = ANY(ARRAY[${geometry}]))\n\n      AND $__timeFilter(proto_assembly.ass_run_date AT TIME ZONE 'America/New_York')\n      AND proto_assembly.ass_run_date IS NOT NULL\n    GROUP BY 1\n),\n\ncum_proto AS (\n    SELECT\n        date,\n        SUM(cnt) OVER (\n            ORDER BY date\n            ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW\n        ) AS proto_total\n    FROM daily_proto\n)\n\nSELECT\n    COALESCE(m.date, p.date) AS \"time\",\n    m.module_total as module_assembly,\n    p.proto_total as proto_assembly\nFROM cum_module m\nFULL OUTER JOIN cum_proto p\n    ON m.date = p.date\nORDER BY \"time\";",
+                "rawSql": "WITH\ndaily_module AS (\n    SELECT\n        date_trunc('day', module_info.assembled AT TIME ZONE 'America/New_York') AS date,\n        COUNT(*)::bigint AS cnt\n    FROM module_info\n    WHERE\n        ('All' = ANY(ARRAY[${bp_material}]) OR\n         (module_info.bp_material IS NULL AND 'NULL' = ANY(ARRAY[${bp_material}])) OR\n         module_info.bp_material::text = ANY(ARRAY[${bp_material}]))\n\n      AND ('All' = ANY(ARRAY[${resolution}]) OR\n           (module_info.resolution IS NULL AND 'NULL' = ANY(ARRAY[${resolution}])) OR\n           module_info.resolution::text = ANY(ARRAY[${resolution}]))\n\n      AND ('All' = ANY(ARRAY[${roc_version}]) OR\n           (module_info.roc_version IS NULL AND 'NULL' = ANY(ARRAY[${roc_version}])) OR\n           module_info.roc_version::text = ANY(ARRAY[${roc_version}]))\n\n      AND ('All' = ANY(ARRAY[${sen_thickness}]) OR\n           (module_info.sen_thickness IS NULL AND 'NULL' = ANY(ARRAY[${sen_thickness}])) OR\n           module_info.sen_thickness::text = ANY(ARRAY[${sen_thickness}]))\n\n      AND ('All' = ANY(ARRAY[${geometry}]) OR\n           (module_info.geometry IS NULL AND 'NULL' = ANY(ARRAY[${geometry}])) OR\n           module_info.geometry::text = ANY(ARRAY[${geometry}]))\n      AND $__timeFilter(module_info.assembled AT TIME ZONE 'America/New_York')\n      AND module_info.assembled IS NOT NULL\n    GROUP BY 1\n),\n\ncum_module AS (\n    SELECT\n        date,\n        SUM(cnt) OVER (\n            ORDER BY date\n            ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW\n        ) AS module_total\n    FROM daily_module\n),\n\ndaily_proto AS (\n    SELECT\n        date_trunc('day', proto_assembly.ass_run_date AT TIME ZONE 'America/New_York') AS date,\n        COUNT(*)::bigint AS cnt\n    FROM proto_assembly\n    WHERE\n        ('All' = ANY(ARRAY[${bp_material}]) OR\n         (CASE substring(proto_assembly.proto_name from 8 for 1)\n              WHEN 'W' THEN 'CuW'\n              WHEN 'T' THEN 'Titanium'\n              WHEN 'C' THEN 'Carbon Fiber'\n              WHEN 'P' THEN 'PCB'\n              WHEN 'X' THEN ''\n              ELSE NULL\n          END IS NULL AND 'NULL' = ANY(ARRAY[${bp_material}])) OR\n         (CASE substring(proto_assembly.proto_name from 8 for 1)\n              WHEN 'W' THEN 'CuW'\n              WHEN 'T' THEN 'Titanium'\n              WHEN 'C' THEN 'Carbon Fiber'\n              WHEN 'P' THEN 'PCB'\n              WHEN 'X' THEN ''\n              ELSE NULL\n          END)::text = ANY(ARRAY[${bp_material}]))\n\n      AND ('All' = ANY(ARRAY[${resolution}]) OR\n           (CASE substring(proto_assembly.proto_name from 5 for 1)\n                WHEN 'L' THEN 'LD'\n                WHEN 'H' THEN 'HD'\n                WHEN '0' THEN ''\n                ELSE NULL\n            END IS NULL AND 'NULL' = ANY(ARRAY[${resolution}])) OR\n           (CASE substring(proto_assembly.proto_name from 5 for 1)\n                WHEN 'L' THEN 'LD'\n                WHEN 'H' THEN 'HD'\n                WHEN '0' THEN ''\n                ELSE NULL\n            END)::text = ANY(ARRAY[${resolution}]))\n\n      AND ('All' = ANY(ARRAY[${roc_version}]) OR\n           (CASE substring(proto_assembly.proto_name from 9 for 1)\n                WHEN 'X' THEN 'preseries'\n                WHEN '2' THEN 'HGCROCV3b-2'\n                WHEN '4' THEN 'HGCROCV3b-4'\n                WHEN 'B' THEN 'HGCROCV3b-3'\n                WHEN 'C' THEN 'HGCROCV3c'\n                WHEN 'D' THEN 'HGCROCV3d'\n                ELSE NULL\n            END IS NULL AND 'NULL' = ANY(ARRAY[${roc_version}])) OR\n           (CASE substring(proto_assembly.proto_name from 9 for 1)\n                WHEN 'X' THEN 'preseries'\n                WHEN '2' THEN 'HGCROCV3b-2'\n                WHEN '4' THEN 'HGCROCV3b-4'\n                WHEN 'B' THEN 'HGCROCV3b-3'\n                WHEN 'C' THEN 'HGCROCV3c'\n                WHEN 'D' THEN 'HGCROCV3d'\n                ELSE NULL\n            END)::text = ANY(ARRAY[${roc_version}]))\n\n      AND ('All' = ANY(ARRAY[${sen_thickness}]) OR\n           (CASE substring(proto_assembly.proto_name from 7 for 1)\n                WHEN '1' THEN '120'\n                WHEN '2' THEN '200'\n                WHEN '3' THEN '300'\n                ELSE NULL\n            END IS NULL AND 'NULL' = ANY(ARRAY[${sen_thickness}])) OR\n           (CASE substring(proto_assembly.proto_name from 7 for 1)\n                WHEN '1' THEN '120'\n                WHEN '2' THEN '200'\n                WHEN '3' THEN '300'\n                ELSE NULL\n            END)::text = ANY(ARRAY[${sen_thickness}]))\n\n      AND ('All' = ANY(ARRAY[${geometry}]) OR\n           (CASE substring(proto_assembly.proto_name from 6 for 1)\n                WHEN 'F' THEN 'Full'\n                WHEN 'T' THEN 'Top'\n                WHEN 'B' THEN 'Bottom'\n                WHEN 'L' THEN 'Left'\n                WHEN 'R' THEN 'Right'\n                WHEN '5' THEN 'Five'\n                WHEN 'S' THEN 'Whole'\n                WHEN 'M' THEN 'Half-moons'\n                ELSE NULL\n            END IS NULL AND 'NULL' = ANY(ARRAY[${geometry}])) OR\n           (CASE substring(proto_assembly.proto_name from 6 for 1)\n                WHEN 'F' THEN 'Full'\n                WHEN 'T' THEN 'Top'\n                WHEN 'B' THEN 'Bottom'\n                WHEN 'L' THEN 'Left'\n                WHEN 'R' THEN 'Right'\n                WHEN '5' THEN 'Five'\n                WHEN 'S' THEN 'Whole'\n                WHEN 'M' THEN 'Half-moons'\n                ELSE NULL\n            END)::text = ANY(ARRAY[${geometry}]))\n\n      AND $__timeFilter(proto_assembly.ass_run_date AT TIME ZONE 'America/New_York')\n      AND proto_assembly.ass_run_date IS NOT NULL\n    GROUP BY 1\n),\n\ncum_proto AS (\n    SELECT\n        date,\n        SUM(cnt) OVER (\n            ORDER BY date\n            ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW\n        ) AS proto_total\n    FROM daily_proto\n)\n\nSELECT\n    COALESCE(m.date, p.date) AS \"time\",\n    m.module_total as module_assembly,\n    p.proto_total as proto_assembly\nFROM cum_module m\nFULL OUTER JOIN cum_proto p\n    ON m.date = p.date\nORDER BY \"time\";",
                 "refId": "A",
                 "sql": {
                     "columns": [
@@ -4310,6 +4311,398 @@ class GeneralInfoBuilder:
             ],
             "title": "Count for bad cells",
             "type": "barchart"
+            },
+            {
+            "fieldConfig": {
+                "defaults": {},
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 2,
+                "w": 24,
+                "x": 0,
+                "y": 38
+            },
+            "id": 13,
+            "options": {
+                "code": {
+                "language": "plaintext",
+                "showLineNumbers": False,
+                "showMiniMap": False
+                },
+                "content": "",
+                "mode": "markdown"
+            },
+            "pluginVersion": "12.0.0",
+            "title": "",
+            "type": "text"
+            },
+            {
+            "datasource": {
+                "type": "grafana-postgresql-datasource",
+                "uid": self.datasource_uid
+            },
+            "fieldConfig": {
+                "defaults": {
+                "color": {
+                    "mode": "thresholds"
+                },
+                "custom": {
+                    "align": "auto",
+                    "cellOptions": {
+                    "type": "auto"
+                    },
+                    "inspect": False
+                },
+                "decimals": 0,
+                "mappings": [],
+                "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                    {
+                        "color": "green"
+                    }
+                    ]
+                }
+                },
+                "overrides": [
+                {
+                    "matcher": {
+                    "id": "byName",
+                    "options": "test_iv"
+                    },
+                    "properties": [
+                    {
+                        "id": "custom.cellOptions",
+                        "value": {
+                        "type": "color-background"
+                        }
+                    },
+                    {
+                        "id": "mappings",
+                        "value": [
+                        {
+                            "options": {
+                            "match": "null",
+                            "result": {
+                                "color": "red",
+                                "index": 0
+                            }
+                            },
+                            "type": "special"
+                        },
+                        {
+                            "options": {
+                            "match": "empty",
+                            "result": {
+                                "color": "red",
+                                "index": 1
+                            }
+                            },
+                            "type": "special"
+                        },
+                        {
+                            "options": {
+                            "pattern": ".+",
+                            "result": {
+                                "color": "green",
+                                "index": 2
+                            }
+                            },
+                            "type": "regex"
+                        }
+                        ]
+                    }
+                    ]
+                },
+                {
+                    "matcher": {
+                    "id": "byName",
+                    "options": "test_ped"
+                    },
+                    "properties": [
+                    {
+                        "id": "custom.cellOptions",
+                        "value": {
+                        "type": "color-background"
+                        }
+                    },
+                    {
+                        "id": "mappings",
+                        "value": [
+                        {
+                            "options": {
+                            "match": "null",
+                            "result": {
+                                "color": "red",
+                                "index": 0
+                            }
+                            },
+                            "type": "special"
+                        },
+                        {
+                            "options": {
+                            "match": "empty",
+                            "result": {
+                                "color": "red",
+                                "index": 1
+                            }
+                            },
+                            "type": "special"
+                        },
+                        {
+                            "options": {
+                            "pattern": ".+",
+                            "result": {
+                                "color": "green",
+                                "index": 2
+                            }
+                            },
+                            "type": "regex"
+                        }
+                        ]
+                    }
+                    ]
+                },
+                {
+                    "matcher": {
+                    "id": "byName",
+                    "options": "wb_back"
+                    },
+                    "properties": [
+                    {
+                        "id": "custom.cellOptions",
+                        "value": {
+                        "type": "color-background"
+                        }
+                    },
+                    {
+                        "id": "mappings",
+                        "value": [
+                        {
+                            "options": {
+                            "match": "null",
+                            "result": {
+                                "color": "red",
+                                "index": 0
+                            }
+                            },
+                            "type": "special"
+                        }
+                        ]
+                    }
+                    ]
+                },
+                {
+                    "matcher": {
+                    "id": "byName",
+                    "options": "encap_back"
+                    },
+                    "properties": [
+                    {
+                        "id": "custom.cellOptions",
+                        "value": {
+                        "type": "color-background"
+                        }
+                    },
+                    {
+                        "id": "mappings",
+                        "value": [
+                        {
+                            "options": {
+                            "match": "null",
+                            "result": {
+                                "color": "red",
+                                "index": 0
+                            }
+                            },
+                            "type": "special"
+                        }
+                        ]
+                    }
+                    ]
+                },
+                {
+                    "matcher": {
+                    "id": "byName",
+                    "options": "wb_front"
+                    },
+                    "properties": [
+                    {
+                        "id": "custom.cellOptions",
+                        "value": {
+                        "type": "color-background"
+                        }
+                    },
+                    {
+                        "id": "mappings",
+                        "value": [
+                        {
+                            "options": {
+                            "match": "null",
+                            "result": {
+                                "color": "red",
+                                "index": 0
+                            }
+                            },
+                            "type": "special"
+                        }
+                        ]
+                    }
+                    ]
+                },
+                {
+                    "matcher": {
+                    "id": "byName",
+                    "options": "encap_front"
+                    },
+                    "properties": [
+                    {
+                        "id": "custom.cellOptions",
+                        "value": {
+                        "type": "color-background"
+                        }
+                    },
+                    {
+                        "id": "mappings",
+                        "value": [
+                        {
+                            "options": {
+                            "match": "null",
+                            "result": {
+                                "color": "red",
+                                "index": 0
+                            }
+                            },
+                            "type": "special"
+                        }
+                        ]
+                    }
+                    ]
+                },
+                {
+                    "matcher": {
+                    "id": "byName",
+                    "options": "xml_upload_success"
+                    },
+                    "properties": [
+                    {
+                        "id": "custom.cellOptions",
+                        "value": {
+                        "type": "color-background"
+                        }
+                    },
+                    {
+                        "id": "mappings",
+                        "value": [
+                        {
+                            "options": {
+                            "match": "null",
+                            "result": {
+                                "color": "orange",
+                                "index": 0
+                            }
+                            },
+                            "type": "special"
+                        },
+                        {
+                            "options": {
+                            "match": "False",
+                            "result": {
+                                "color": "red",
+                                "index": 1
+                            }
+                            },
+                            "type": "special"
+                        }
+                        ]
+                    }
+                    ]
+                },
+                {
+                    "matcher": {
+                    "id": "byName",
+                    "options": "shipped_datetime"
+                    },
+                    "properties": [
+                    {
+                        "id": "custom.cellOptions",
+                        "value": {
+                        "type": "color-background"
+                        }
+                    },
+                    {
+                        "id": "mappings",
+                        "value": [
+                        {
+                            "options": {
+                            "match": "null",
+                            "result": {
+                                "color": "red",
+                                "index": 0
+                            }
+                            },
+                            "type": "special"
+                        }
+                        ]
+                    }
+                    ]
+                }
+                ]
+            },
+            "gridPos": {
+                "h": 13,
+                "w": 24,
+                "x": 0,
+                "y": 40
+            },
+            "id": 12,
+            "options": {
+                "cellHeight": "sm",
+                "footer": {
+                "countRows": False,
+                "fields": "",
+                "reducer": [
+                    "sum"
+                ],
+                "show": False
+                },
+                "showHeader": True,
+                "sortBy": []
+            },
+            "pluginVersion": "12.0.0",
+            "targets": [
+                {
+                "datasource": {
+                    "type": "grafana-postgresql-datasource",
+                    "uid": self.datasource_uid
+                },
+                "editorMode": "code",
+                "format": "table",
+                "rawQuery": True,
+                "rawSql": "WITH\n                temp_table_0 AS (\n                SELECT DISTINCT ON (module_name) *\n                FROM module_info\n                ORDER BY module_name, module_no DESC\n                ),\n\n                temp_table_1 AS (\n                SELECT DISTINCT ON (module_name) *\n                FROM module_qc_summary\n                ORDER BY module_name, mod_qc_no DESC\n                )\n        SELECT \n            temp_table_0.module_name::text,\n            temp_table_0.wb_back::text,\n            temp_table_0.encap_back::text,\n            temp_table_0.wb_front::text,\n            temp_table_0.encap_front::text,\n            temp_table_0.test_iv::text,\n            temp_table_0.test_ped::text,\n            temp_table_0.xml_upload_success::text,\n            temp_table_0.shipped_datetime::text\n        FROM temp_table_0\n        LEFT JOIN temp_table_1 ON temp_table_0.module_name = temp_table_1.module_name\n        WHERE \n                ('All' = ANY(ARRAY[${bp_material}]) OR \n                (temp_table_0.bp_material IS NULL AND 'NULL' = ANY(ARRAY[${bp_material}])) OR \n                temp_table_0.bp_material::text = ANY(ARRAY[${bp_material}]))\n          AND \n                ('All' = ANY(ARRAY[${resolution}]) OR \n                (temp_table_0.resolution IS NULL AND 'NULL' = ANY(ARRAY[${resolution}])) OR \n                temp_table_0.resolution::text = ANY(ARRAY[${resolution}]))\n          AND \n                ('All' = ANY(ARRAY[${roc_version}]) OR \n                (temp_table_0.roc_version IS NULL AND 'NULL' = ANY(ARRAY[${roc_version}])) OR \n                temp_table_0.roc_version::text = ANY(ARRAY[${roc_version}]))\n          AND \n                ('All' = ANY(ARRAY[${sen_thickness}]) OR \n                (temp_table_0.sen_thickness IS NULL AND 'NULL' = ANY(ARRAY[${sen_thickness}])) OR \n                temp_table_0.sen_thickness::text = ANY(ARRAY[${sen_thickness}]))\n          AND \n                ('All' = ANY(ARRAY[${geometry}]) OR \n                (temp_table_0.geometry IS NULL AND 'NULL' = ANY(ARRAY[${geometry}])) OR \n                temp_table_0.geometry::text = ANY(ARRAY[${geometry}]))\n          AND $__timeFilter(temp_table_0.assembled AT TIME ZONE 'America/New_York')\n          AND \n                ('All' = ANY(ARRAY[${final_grade}]) OR \n                (temp_table_1.final_grade IS NULL AND 'NULL' = ANY(ARRAY[${final_grade}])) OR \n                temp_table_1.final_grade::text = ANY(ARRAY[${final_grade}]))\n          AND bp_material IS NOT NULL AND resolution IS NOT NULL AND roc_version IS NOT NULL AND geometry IS NOT NULL\nORDER BY temp_table_0.module_name DESC",
+                "refId": "A",
+                "sql": {
+                    "columns": [
+                    {
+                        "parameters": [],
+                        "type": "function"
+                    }
+                    ],
+                    "groupBy": [
+                    {
+                        "property": {
+                        "type": "string"
+                        },
+                        "type": "groupBy"
+                    }
+                    ],
+                    "limit": 50
+                }
+                }
+            ],
+            "title": "Module Info",
+            "type": "table"
             }
         ],
         "preload": False,
@@ -4423,25 +4816,6 @@ class GeneralInfoBuilder:
                 "type": "postgres",
                 "uid": self.datasource_uid
                 },
-                "includeAll": True,
-                "multi": True,
-                "name": "shipping_status",
-                "options": [],
-                "query": "\n            SELECT DISTINCT \n            CASE WHEN shipped_datetime IS NULL THEN 'not shipped' ELSE 'shipped' END AS shipping_status \n            FROM module_info\n            ORDER BY shipping_status\n            ",
-                "refresh": 1,
-                "type": "query"
-            },
-            {
-                "current": {
-                "text": "All",
-                "value": [
-                    "$__all"
-                ]
-                },
-                "datasource": {
-                "type": "postgres",
-                "uid": self.datasource_uid
-                },
                 "definition": "\n            SELECT DISTINCT final_grade::text FROM module_qc_summary \n            UNION\n            SELECT 'NULL'\n            ORDER BY final_grade\n            ",
                 "includeAll": True,
                 "multi": True,
@@ -4460,7 +4834,7 @@ class GeneralInfoBuilder:
         "timepicker": {},
         "timezone": "browser",
         "title": "General Info",
-        "uid": f"{self.dashboard_uid}",
+        "uid": "general-info",
         "version": 1
         }
 
