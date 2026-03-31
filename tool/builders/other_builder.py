@@ -4475,6 +4475,12 @@ class ModuleAssemblyBuilder:
                 SELECT DISTINCT ON (module_name) *
                 FROM module_qc_summary
                 ORDER BY module_name, mod_qc_no DESC
+                ),
+
+                temp_table_2 AS (
+                SELECT DISTINCT ON (module_name) *
+                FROM module_iv_test
+                ORDER BY module_name, temp_c DESC
                 )
         SELECT 
             temp_table_0.module_name::text,
@@ -4483,6 +4489,7 @@ class ModuleAssemblyBuilder:
             temp_table_0.encap_back::text,
             temp_table_0.wb_front::text,
             temp_table_0.encap_front::text,
+            temp_table_2.temp_c::text,
             temp_table_0.test_iv::text,
             temp_table_0.test_ped::text,
             temp_table_0.xml_upload_success::text,
@@ -4925,6 +4932,57 @@ class ModuleAssemblyBuilder:
                             "value": 161
                         }
                         ]
+                    },
+                    {
+                        "matcher": {
+                        "id": "byName",
+                        "options": "temp_c"
+                        },
+                        "properties": [
+                        {
+                            "id": "custom.cellOptions",
+                            "value": {
+                            "type": "color-background"
+                            }
+                        },
+                        {
+                            "id": "mappings",
+                            "value": [
+                            {
+                                "options": {
+                                "from": -50,
+                                "result": {
+                                    "color": "green",
+                                    "index": 0
+                                },
+                                "to": 0
+                                },
+                                "type": "range"
+                            },
+                            {
+                                "options": {
+                                "from": 10,
+                                "result": {
+                                    "color": "orange",
+                                    "index": 1
+                                },
+                                "to": 50
+                                },
+                                "type": "range"
+                            },
+                            {
+                                "options": {
+                                "match": "null",
+                                "result": {
+                                    "color": "red",
+                                    "index": 2
+                                }
+                                },
+                                "type": "special"
+                            }
+                            ]
+                        }
+                        ]
                     }
                     ]
                 },
@@ -4958,7 +5016,7 @@ class ModuleAssemblyBuilder:
                     "editorMode": "code",
                     "format": "table",
                     "rawQuery": True,
-                    "rawSql": self.table_sql,
+                    "rawSql": "WITH\n                temp_table_0 AS (\n                SELECT DISTINCT ON (module_name) *\n                FROM module_info\n                ORDER BY module_name, module_no DESC\n                ),\n\n                temp_table_1 AS (\n                SELECT DISTINCT ON (module_name) *\n                FROM module_qc_summary\n                ORDER BY module_name, mod_qc_no DESC\n                ),\n\n                temp_table_2 AS (\n                SELECT DISTINCT ON (module_name) *\n                FROM module_iv_test\n                ORDER BY module_name, temp_c DESC\n                )\n        SELECT \n            temp_table_0.module_name::text,\n            temp_table_0.assembled::text,\n            temp_table_0.wb_back::text,\n            temp_table_0.encap_back::text,\n            temp_table_0.wb_front::text,\n            temp_table_0.encap_front::text,\n            temp_table_2.temp_c::text,\n            temp_table_0.test_iv::text,\n            temp_table_0.test_ped::text,\n            temp_table_0.xml_upload_success::text,\n            temp_table_0.packed_datetime::text,\n            temp_table_0.shipped_datetime::text\n        FROM temp_table_0\n        LEFT JOIN temp_table_1 ON temp_table_0.module_name = temp_table_1.module_name\n        LEFT JOIN temp_table_2 ON temp_table_0.module_name = temp_table_2.module_name\n        WHERE \n                ('All' = ANY(ARRAY[${bp_material}]) OR \n                (temp_table_0.bp_material IS NULL AND 'NULL' = ANY(ARRAY[${bp_material}])) OR \n                temp_table_0.bp_material::text = ANY(ARRAY[${bp_material}]))\n          AND \n                ('All' = ANY(ARRAY[${resolution}]) OR \n                (temp_table_0.resolution IS NULL AND 'NULL' = ANY(ARRAY[${resolution}])) OR \n                temp_table_0.resolution::text = ANY(ARRAY[${resolution}]))\n          AND \n                ('All' = ANY(ARRAY[${roc_version}]) OR \n                (temp_table_0.roc_version IS NULL AND 'NULL' = ANY(ARRAY[${roc_version}])) OR \n                temp_table_0.roc_version::text = ANY(ARRAY[${roc_version}]))\n          AND \n                ('All' = ANY(ARRAY[${sen_thickness}]) OR \n                (temp_table_0.sen_thickness IS NULL AND 'NULL' = ANY(ARRAY[${sen_thickness}])) OR \n                temp_table_0.sen_thickness::text = ANY(ARRAY[${sen_thickness}]))\n          AND \n                ('All' = ANY(ARRAY[${geometry}]) OR \n                (temp_table_0.geometry IS NULL AND 'NULL' = ANY(ARRAY[${geometry}])) OR \n                temp_table_0.geometry::text = ANY(ARRAY[${geometry}]))\n          AND $__timeFilter(temp_table_0.assembled AT TIME ZONE 'America/New_York')\n          AND \n                ('All' = ANY(ARRAY[${final_grade}]) OR \n                (temp_table_1.final_grade IS NULL AND 'NULL' = ANY(ARRAY[${final_grade}])) OR \n                temp_table_1.final_grade::text = ANY(ARRAY[${final_grade}]))\n          AND bp_material IS NOT NULL AND resolution IS NOT NULL AND roc_version IS NOT NULL AND geometry IS NOT NULL\n        ORDER BY temp_table_0.assembled DESC",
                     "refId": "A",
                     "sql": {
                         "columns": [
@@ -5114,7 +5172,7 @@ class ModuleAssemblyBuilder:
             "timezone": "browser",
             "title": "Module Assembly",
             "uid": "module-assembly",
-            "version": 2
+            "version": 14
             }
 
         return dashboard_json
