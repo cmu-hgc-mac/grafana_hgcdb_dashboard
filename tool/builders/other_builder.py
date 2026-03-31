@@ -5107,7 +5107,7 @@ class ModuleAssemblyBuilder:
                 ]
             },
             "time": {
-                "from": "now-1y",
+                "from": "now-30d",
                 "to": "now"
             },
             "timepicker": {},
