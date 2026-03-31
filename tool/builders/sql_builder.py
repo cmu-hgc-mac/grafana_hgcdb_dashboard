@@ -534,7 +534,8 @@ class PieChartGenerator(BaseSQLGenerator):
         {pre_clause}
         SELECT 
             COUNT(*) FILTER (WHERE shipped_datetime IS NULL) AS not_shipped,
-            COUNT(*) FILTER (WHERE shipped_datetime IS NOT NULL) AS shipped
+            COUNT(*) FILTER (WHERE shipped_datetime IS NOT NULL) AS shipped,
+            COUNT(*) FILTER (WHERE temp_table_1.final_grade = 'F') AS grade_f
         FROM {target_table}
         {join_clause}
         WHERE {where_clause}
