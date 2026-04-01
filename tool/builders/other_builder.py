@@ -4517,7 +4517,7 @@ class ModuleAssemblyBuilder:
                 ('All' = ANY(ARRAY[${self.geometry}]) OR 
                 (temp_table_0.geometry IS NULL AND 'NULL' = ANY(ARRAY[${self.geometry}])) OR 
                 temp_table_0.geometry::text = ANY(ARRAY[${self.geometry}]))
-          AND $__timeFilter(temp_table_0.assembled AT TIME ZONE 'America/New_York')
+          AND $__timeFilter(temp_table_0.assembled AT TIME ZONE {self.timezone})
           AND 
                 ('All' = ANY(ARRAY[${self.final_grade}]) OR 
                 (temp_table_1.final_grade IS NULL AND 'NULL' = ANY(ARRAY[${self.final_grade}])) OR 
@@ -4955,13 +4955,13 @@ class ModuleAssemblyBuilder:
                                     "color": "green",
                                     "index": 0
                                 },
-                                "to": 0
+                                "to": -30
                                 },
                                 "type": "range"
                             },
                             {
                                 "options": {
-                                "from": 10,
+                                "from": 20,
                                 "result": {
                                     "color": "orange",
                                     "index": 1

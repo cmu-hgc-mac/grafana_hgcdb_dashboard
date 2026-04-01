@@ -22,7 +22,7 @@ class DashboardBuilder:
         if "Environment Monitoring" in dashboard_title:
             time_range = "now-24h"
         else:
-            time_range = "now-1y"
+            time_range = "now-30d"
         
         # generate the dashboard json
         dashboard = {
