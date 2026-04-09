@@ -32,3 +32,13 @@ dashboards:
         groupby: []
         filters: {"module_info": []}
         distinct:
+  
+  - title: "XML Upload Status"
+    panels:
+      - title: "XML Upload Status"
+        table: "xml_upload_status"
+        chart_type: "table"
+        condition:
+        groupby: []
+        filters: {"xml_upload_status": []}
+        distinct:

@@ -4449,7 +4449,7 @@ class GeneralInfoBuilder:
 
 
 # ============================================================
-# === Module Assembly Builder ===================================
+# === Module Assembly Builder ================================
 # ============================================================
 
 class ModuleAssemblyBuilder:
@@ -5174,5 +5174,638 @@ class ModuleAssemblyBuilder:
             "uid": "module-assembly",
             "version": 14
             }
+
+        return dashboard_json
+
+
+# ============================================================
+# === XML Success Builder ====================================
+# ============================================================
+
+class XMLSuccessBuilder:
+    def __init__(self, datasource_uid, timezone = 'America/New_York'):
+        self.datasource_uid = datasource_uid
+        self.dashboard_uid = create_uid("XML Upload Status")
+        self.timezone = f"{timezone}"
+
+        self.table_sql = f"""
+        WITH module_info_failed AS (
+            SELECT DISTINCT ON (module_name) module_no, module_name, xml_upload_success
+            FROM module_info
+            WHERE $__timeFilter(module_info.assembled) 
+            ORDER BY module_name, xml_upload_success, module_no DESC
+        ),
+        proto_assembly_failed AS (
+            SELECT DISTINCT ON (proto_assembly.proto_name) module_info.module_name, proto_assembly.xml_upload_success
+            FROM proto_assembly
+            JOIN module_info ON proto_assembly.proto_name = module_info.proto_name
+            ORDER BY proto_assembly.proto_name, proto_assembly.xml_upload_success, proto_assembly.proto_no DESC
+        ),
+        proto_inspect_failed AS (
+            SELECT DISTINCT ON (proto_inspect.proto_name) module_info.module_name, proto_inspect.xml_upload_success
+            FROM proto_inspect
+            JOIN module_info ON proto_inspect.proto_name = module_info.proto_name
+            ORDER BY proto_inspect.proto_name, proto_inspect.xml_upload_success, proto_inspect.proto_no DESC
+        ),
+        module_assembly_failed AS (
+            SELECT DISTINCT ON (module_assembly.module_name) module_assembly.module_name, module_assembly.xml_upload_success
+            FROM module_assembly
+            ORDER BY module_assembly.module_name, module_assembly.xml_upload_success, module_assembly.module_no DESC
+        ),
+        module_inspect_failed AS (
+            SELECT DISTINCT ON (module_inspect.module_name) module_inspect.module_name, module_inspect.xml_upload_success
+            FROM module_inspect
+            ORDER BY module_inspect.module_name, module_inspect.xml_upload_success, module_inspect.module_no DESC
+        ),
+        module_iv_failed AS (
+            SELECT DISTINCT ON (module_iv_test.module_name) module_iv_test.module_name, module_iv_test.xml_upload_success
+            FROM module_iv_test
+            WHERE status = 7 OR status = 8
+            ORDER BY module_iv_test.module_name, module_iv_test.xml_upload_success, module_iv_test.module_no DESC
+        ),
+        module_pedestal_failed AS (
+            SELECT DISTINCT ON (module_pedestal_test.module_name) module_pedestal_test.module_name, module_pedestal_test.xml_upload_success
+            FROM module_pedestal_test
+            WHERE status = 7 OR status = 8
+            ORDER BY module_pedestal_test.module_name, module_pedestal_test.xml_upload_success, module_pedestal_test.module_no DESC
+        ),
+        module_grade_failed AS (
+            SELECT DISTINCT ON (module_qc_summary.module_name) module_qc_summary.module_name, module_qc_summary.xml_upload_success
+            FROM module_qc_summary
+            ORDER BY module_qc_summary.module_name, module_qc_summary.xml_upload_success, module_qc_summary.mod_qc_no DESC
+        )
+        SELECT
+            module_info_failed.module_no,
+            module_info_failed.module_name,
+            module_info_failed.xml_upload_success AS module_info,
+            proto_assembly_failed.xml_upload_success AS proto_assembly,
+            proto_inspect_failed.xml_upload_success AS proto_inspect,
+            module_assembly_failed.xml_upload_success AS module_assembly,
+            module_inspect_failed.xml_upload_success AS module_inspect,
+            module_iv_failed.xml_upload_success AS module_iv,
+            module_pedestal_failed.xml_upload_success AS module_pedestal,
+            module_grade_failed.xml_upload_success AS module_grade
+        FROM module_info_failed
+        LEFT JOIN proto_assembly_failed
+            ON module_info_failed.module_name = proto_assembly_failed.module_name
+        LEFT JOIN proto_inspect_failed
+            ON module_info_failed.module_name = proto_inspect_failed.module_name
+        LEFT JOIN module_assembly_failed
+            ON module_info_failed.module_name = module_assembly_failed.module_name
+        LEFT JOIN module_inspect_failed
+            ON module_info_failed.module_name = module_inspect_failed.module_name
+        LEFT JOIN module_iv_failed
+            ON module_info_failed.module_name = module_iv_failed.module_name
+        LEFT JOIN module_pedestal_failed
+            ON module_info_failed.module_name = module_pedestal_failed.module_name
+        LEFT JOIN module_grade_failed
+            ON module_info_failed.module_name = module_grade_failed.module_name
+        ORDER BY module_info_failed.module_no DESC;
+        """
+
+    def generate_dashboard_json(self):
+        dashboard_json = {
+        "annotations": {
+            "list": [
+            {
+                "builtIn": 1,
+                "datasource": {
+                "type": "grafana",
+                "uid": "-- Grafana --"
+                },
+                "enable": True,
+                "hide": True,
+                "iconColor": "rgba(0, 211, 255, 1)",
+                "name": "Annotations & Alerts",
+                "type": "dashboard"
+            }
+            ]
+        },
+        "editable": True,
+        "fiscalYearStartMonth": 0,
+        "graphTooltip": 0,
+        "links": [],
+        "panels": [
+            {
+            "datasource": {
+                "type": "grafana-postgresql-datasource",
+                "uid": self.datasource_uid
+            },
+            "fieldConfig": {
+                "defaults": {
+                "color": {
+                    "mode": "thresholds"
+                },
+                "custom": {
+                    "align": "auto",
+                    "cellOptions": {
+                    "type": "auto"
+                    },
+                    "inspect": False
+                },
+                "mappings": [],
+                "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                    {
+                        "color": "green"
+                    }
+                    ]
+                }
+                },
+                "overrides": [
+                {
+                    "matcher": {
+                    "id": "byName",
+                    "options": "module_info"
+                    },
+                    "properties": [
+                    {
+                        "id": "custom.cellOptions",
+                        "value": {
+                        "type": "color-background"
+                        }
+                    },
+                    {
+                        "id": "mappings",
+                        "value": [
+                        {
+                            "options": {
+                            "match": "True",
+                            "result": {
+                                "color": "green",
+                                "index": 0
+                            }
+                            },
+                            "type": "special"
+                        },
+                        {
+                            "options": {
+                            "match": "False",
+                            "result": {
+                                "color": "orange",
+                                "index": 1
+                            }
+                            },
+                            "type": "special"
+                        },
+                        {
+                            "options": {
+                            "match": "null",
+                            "result": {
+                                "color": "red",
+                                "index": 2
+                            }
+                            },
+                            "type": "special"
+                        }
+                        ]
+                    }
+                    ]
+                },
+                {
+                    "matcher": {
+                    "id": "byName",
+                    "options": "module_no"
+                    },
+                    "properties": [
+                    {
+                        "id": "custom.width",
+                        "value": 42
+                    }
+                    ]
+                },
+                {
+                    "matcher": {
+                    "id": "byName",
+                    "options": "module_name"
+                    },
+                    "properties": [
+                    {
+                        "id": "custom.width",
+                        "value": 165
+                    }
+                    ]
+                },
+                {
+                    "matcher": {
+                    "id": "byName",
+                    "options": "proto_assembly"
+                    },
+                    "properties": [
+                    {
+                        "id": "custom.cellOptions",
+                        "value": {
+                        "type": "color-background"
+                        }
+                    },
+                    {
+                        "id": "mappings",
+                        "value": [
+                        {
+                            "options": {
+                            "match": "True",
+                            "result": {
+                                "color": "green",
+                                "index": 0
+                            }
+                            },
+                            "type": "special"
+                        },
+                        {
+                            "options": {
+                            "match": "False",
+                            "result": {
+                                "color": "orange",
+                                "index": 1
+                            }
+                            },
+                            "type": "special"
+                        },
+                        {
+                            "options": {
+                            "match": "null",
+                            "result": {
+                                "color": "red",
+                                "index": 2
+                            }
+                            },
+                            "type": "special"
+                        }
+                        ]
+                    }
+                    ]
+                },
+                {
+                    "matcher": {
+                    "id": "byName",
+                    "options": "proto_inspect"
+                    },
+                    "properties": [
+                    {
+                        "id": "custom.cellOptions",
+                        "value": {
+                        "type": "color-background"
+                        }
+                    },
+                    {
+                        "id": "mappings",
+                        "value": [
+                        {
+                            "options": {
+                            "match": "True",
+                            "result": {
+                                "color": "green",
+                                "index": 0
+                            }
+                            },
+                            "type": "special"
+                        },
+                        {
+                            "options": {
+                            "match": "False",
+                            "result": {
+                                "color": "orange",
+                                "index": 1
+                            }
+                            },
+                            "type": "special"
+                        },
+                        {
+                            "options": {
+                            "match": "null",
+                            "result": {
+                                "color": "red",
+                                "index": 2
+                            }
+                            },
+                            "type": "special"
+                        }
+                        ]
+                    }
+                    ]
+                },
+                {
+                    "matcher": {
+                    "id": "byName",
+                    "options": "module_assembly"
+                    },
+                    "properties": [
+                    {
+                        "id": "custom.cellOptions",
+                        "value": {
+                        "type": "color-background"
+                        }
+                    },
+                    {
+                        "id": "mappings",
+                        "value": [
+                        {
+                            "options": {
+                            "match": "True",
+                            "result": {
+                                "color": "green",
+                                "index": 0
+                            }
+                            },
+                            "type": "special"
+                        },
+                        {
+                            "options": {
+                            "match": "False",
+                            "result": {
+                                "color": "orange",
+                                "index": 1
+                            }
+                            },
+                            "type": "special"
+                        },
+                        {
+                            "options": {
+                            "match": "null",
+                            "result": {
+                                "color": "red",
+                                "index": 2
+                            }
+                            },
+                            "type": "special"
+                        }
+                        ]
+                    }
+                    ]
+                },
+                {
+                    "matcher": {
+                    "id": "byName",
+                    "options": "module_inspect"
+                    },
+                    "properties": [
+                    {
+                        "id": "custom.cellOptions",
+                        "value": {
+                        "type": "color-background"
+                        }
+                    },
+                    {
+                        "id": "mappings",
+                        "value": [
+                        {
+                            "options": {
+                            "match": "True",
+                            "result": {
+                                "color": "green",
+                                "index": 0
+                            }
+                            },
+                            "type": "special"
+                        },
+                        {
+                            "options": {
+                            "match": "False",
+                            "result": {
+                                "color": "orange",
+                                "index": 1
+                            }
+                            },
+                            "type": "special"
+                        },
+                        {
+                            "options": {
+                            "match": "null",
+                            "result": {
+                                "color": "red",
+                                "index": 2
+                            }
+                            },
+                            "type": "special"
+                        }
+                        ]
+                    }
+                    ]
+                },
+                {
+                    "matcher": {
+                    "id": "byName",
+                    "options": "module_iv"
+                    },
+                    "properties": [
+                    {
+                        "id": "custom.cellOptions",
+                        "value": {
+                        "type": "color-background"
+                        }
+                    },
+                    {
+                        "id": "mappings",
+                        "value": [
+                        {
+                            "options": {
+                            "match": "True",
+                            "result": {
+                                "color": "green",
+                                "index": 0
+                            }
+                            },
+                            "type": "special"
+                        },
+                        {
+                            "options": {
+                            "match": "False",
+                            "result": {
+                                "color": "orange",
+                                "index": 1
+                            }
+                            },
+                            "type": "special"
+                        },
+                        {
+                            "options": {
+                            "match": "null",
+                            "result": {
+                                "color": "red",
+                                "index": 2
+                            }
+                            },
+                            "type": "special"
+                        }
+                        ]
+                    }
+                    ]
+                },
+                {
+                    "matcher": {
+                    "id": "byName",
+                    "options": "module_pedestal"
+                    },
+                    "properties": [
+                    {
+                        "id": "custom.cellOptions",
+                        "value": {
+                        "type": "color-background"
+                        }
+                    },
+                    {
+                        "id": "mappings",
+                        "value": [
+                        {
+                            "options": {
+                            "match": "True",
+                            "result": {
+                                "color": "green",
+                                "index": 0
+                            }
+                            },
+                            "type": "special"
+                        },
+                        {
+                            "options": {
+                            "match": "False",
+                            "result": {
+                                "color": "orange",
+                                "index": 1
+                            }
+                            },
+                            "type": "special"
+                        },
+                        {
+                            "options": {
+                            "match": "null",
+                            "result": {
+                                "color": "red",
+                                "index": 2
+                            }
+                            },
+                            "type": "special"
+                        }
+                        ]
+                    }
+                    ]
+                },
+                {
+                    "matcher": {
+                    "id": "byName",
+                    "options": "module_grade"
+                    },
+                    "properties": [
+                    {
+                        "id": "custom.cellOptions",
+                        "value": {
+                        "type": "color-background"
+                        }
+                    },
+                    {
+                        "id": "mappings",
+                        "value": [
+                        {
+                            "options": {
+                            "match": "True",
+                            "result": {
+                                "color": "green",
+                                "index": 0
+                            }
+                            },
+                            "type": "special"
+                        },
+                        {
+                            "options": {
+                            "match": "False",
+                            "result": {
+                                "color": "orange",
+                                "index": 1
+                            }
+                            },
+                            "type": "special"
+                        },
+                        {
+                            "options": {
+                            "match": "null",
+                            "result": {
+                                "color": "red",
+                                "index": 2
+                            }
+                            },
+                            "type": "special"
+                        }
+                        ]
+                    }
+                    ]
+                }
+                ]
+            },
+            "gridPos": {
+                "h": 16,
+                "w": 24,
+                "x": 0,
+                "y": 0
+            },
+            "id": 1,
+            "options": {
+                "cellHeight": "sm",
+                "footer": {
+                "countRows": False,
+                "fields": "",
+                "reducer": [
+                    "sum"
+                ],
+                "show": False
+                },
+                "showHeader": True,
+                "sortBy": [
+                {
+                    "desc": True,
+                    "displayName": "module_no"
+                }
+                ]
+            },
+            "pluginVersion": "12.0.0",
+            "targets": [
+                {
+                "datasource": {
+                    "type": "grafana-postgresql-datasource",
+                    "uid": self.datasource_uid
+                },
+                "editorMode": "code",
+                "format": "table",
+                "rawQuery": True,
+                "rawSql": self.table_sql,
+                "refId": "A",
+                "sql": {
+                    "columns": [
+                    {
+                        "parameters": [],
+                        "type": "function"
+                    }
+                    ],
+                    "groupBy": [
+                    {
+                        "property": {
+                        "type": "string"
+                        },
+                        "type": "groupBy"
+                    }
+                    ],
+                    "limit": 50
+                }
+                }
+            ],
+            "title": "XML ",
+            "type": "table"
+            }
+        ],
+        "preload": False,
+        "schemaVersion": 41,
+        "tags": [],
+        "templating": {
+            "list": []
+        },
+        "time": {
+            "from": "now-30d",
+            "to": "now"
+        },
+        "timepicker": {},
+        "timezone": "browser",
+        "title": "XML Upload Status",
+        "uid": self.dashboard_uid
+        }
 
         return dashboard_json
