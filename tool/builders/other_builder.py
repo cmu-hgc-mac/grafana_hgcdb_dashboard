@@ -4533,7 +4533,7 @@ class ModuleAssemblyBuilder:
                 (temp_table_1.final_grade IS NULL AND 'NULL' = ANY(ARRAY[${self.final_grade}])) OR 
                 temp_table_1.final_grade::text = ANY(ARRAY[${self.final_grade}]))
           AND bp_material IS NOT NULL AND resolution IS NOT NULL AND roc_version IS NOT NULL AND geometry IS NOT NULL
-        ORDER BY temp_table_0.assembled DESC"""
+        ORDER BY temp_table_0.module_no DESC"""
     
     def generate_dashboard_json(self):
         dashboard_json = {
