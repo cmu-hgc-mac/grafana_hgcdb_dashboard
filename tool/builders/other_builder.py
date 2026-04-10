@@ -4480,6 +4480,14 @@ class ModuleAssemblyBuilder:
                 temp_table_2 AS (
                 SELECT DISTINCT ON (module_name) *
                 FROM module_iv_test
+                WHERE status = 7 OR status = 8
+                ORDER BY module_name, temp_c DESC
+                ),
+
+                temp_table_3 AS (
+                SELECT DISTINCT ON (module_name) *
+                FROM module_pedestal_test
+                WHERE status = 7 OR status = 8
                 ORDER BY module_name, temp_c DESC
                 )
         SELECT 
@@ -4490,13 +4498,15 @@ class ModuleAssemblyBuilder:
             temp_table_0.wb_front::text,
             temp_table_0.encap_front::text,
             temp_table_2.temp_c::text,
-            temp_table_0.test_iv::text,
-            temp_table_0.test_ped::text,
+            temp_table_2.date_test::text AS test_iv,
+            temp_table_3.date_test::text AS test_ped,
             temp_table_0.xml_upload_success::text,
             temp_table_0.packed_datetime::text,
             temp_table_0.shipped_datetime::text
         FROM temp_table_0
         LEFT JOIN temp_table_1 ON temp_table_0.module_name = temp_table_1.module_name
+        LEFT JOIN temp_table_2 ON temp_table_0.module_name = temp_table_2.module_name
+        LEFT JOIN temp_table_3 ON temp_table_0.module_name = temp_table_3.module_name
         WHERE 
                 ('All' = ANY(ARRAY[${self.bp_material}]) OR 
                 (temp_table_0.bp_material IS NULL AND 'NULL' = ANY(ARRAY[${self.bp_material}])) OR 
@@ -4517,7 +4527,7 @@ class ModuleAssemblyBuilder:
                 ('All' = ANY(ARRAY[${self.geometry}]) OR 
                 (temp_table_0.geometry IS NULL AND 'NULL' = ANY(ARRAY[${self.geometry}])) OR 
                 temp_table_0.geometry::text = ANY(ARRAY[${self.geometry}]))
-          AND $__timeFilter(temp_table_0.assembled AT TIME ZONE {self.timezone})
+          AND $__timeFilter(temp_table_0.assembled AT TIME ZONE '{self.timezone}')
           AND 
                 ('All' = ANY(ARRAY[${self.final_grade}]) OR 
                 (temp_table_1.final_grade IS NULL AND 'NULL' = ANY(ARRAY[${self.final_grade}])) OR 
@@ -5016,7 +5026,7 @@ class ModuleAssemblyBuilder:
                     "editorMode": "code",
                     "format": "table",
                     "rawQuery": True,
-                    "rawSql": "WITH\n                temp_table_0 AS (\n                SELECT DISTINCT ON (module_name) *\n                FROM module_info\n                ORDER BY module_name, module_no DESC\n                ),\n\n                temp_table_1 AS (\n                SELECT DISTINCT ON (module_name) *\n                FROM module_qc_summary\n                ORDER BY module_name, mod_qc_no DESC\n                ),\n\n                temp_table_2 AS (\n                SELECT DISTINCT ON (module_name) *\n                FROM module_iv_test\n                ORDER BY module_name, temp_c DESC\n                )\n        SELECT \n            temp_table_0.module_name::text,\n            temp_table_0.assembled::text,\n            temp_table_0.wb_back::text,\n            temp_table_0.encap_back::text,\n            temp_table_0.wb_front::text,\n            temp_table_0.encap_front::text,\n            temp_table_2.temp_c::text,\n            temp_table_0.test_iv::text,\n            temp_table_0.test_ped::text,\n            temp_table_0.xml_upload_success::text,\n            temp_table_0.packed_datetime::text,\n            temp_table_0.shipped_datetime::text\n        FROM temp_table_0\n        LEFT JOIN temp_table_1 ON temp_table_0.module_name = temp_table_1.module_name\n        LEFT JOIN temp_table_2 ON temp_table_0.module_name = temp_table_2.module_name\n        WHERE \n                ('All' = ANY(ARRAY[${bp_material}]) OR \n                (temp_table_0.bp_material IS NULL AND 'NULL' = ANY(ARRAY[${bp_material}])) OR \n                temp_table_0.bp_material::text = ANY(ARRAY[${bp_material}]))\n          AND \n                ('All' = ANY(ARRAY[${resolution}]) OR \n                (temp_table_0.resolution IS NULL AND 'NULL' = ANY(ARRAY[${resolution}])) OR \n                temp_table_0.resolution::text = ANY(ARRAY[${resolution}]))\n          AND \n                ('All' = ANY(ARRAY[${roc_version}]) OR \n                (temp_table_0.roc_version IS NULL AND 'NULL' = ANY(ARRAY[${roc_version}])) OR \n                temp_table_0.roc_version::text = ANY(ARRAY[${roc_version}]))\n          AND \n                ('All' = ANY(ARRAY[${sen_thickness}]) OR \n                (temp_table_0.sen_thickness IS NULL AND 'NULL' = ANY(ARRAY[${sen_thickness}])) OR \n                temp_table_0.sen_thickness::text = ANY(ARRAY[${sen_thickness}]))\n          AND \n                ('All' = ANY(ARRAY[${geometry}]) OR \n                (temp_table_0.geometry IS NULL AND 'NULL' = ANY(ARRAY[${geometry}])) OR \n                temp_table_0.geometry::text = ANY(ARRAY[${geometry}]))\n          AND $__timeFilter(temp_table_0.assembled AT TIME ZONE 'America/New_York')\n          AND \n                ('All' = ANY(ARRAY[${final_grade}]) OR \n                (temp_table_1.final_grade IS NULL AND 'NULL' = ANY(ARRAY[${final_grade}])) OR \n                temp_table_1.final_grade::text = ANY(ARRAY[${final_grade}]))\n          AND bp_material IS NOT NULL AND resolution IS NOT NULL AND roc_version IS NOT NULL AND geometry IS NOT NULL\n        ORDER BY temp_table_0.assembled DESC",
+                    "rawSql":  self.table_sql,
                     "refId": "A",
                     "sql": {
                         "columns": [
@@ -5237,7 +5247,7 @@ class XMLSuccessBuilder:
         SELECT
             module_info_failed.module_no,
             module_info_failed.module_name,
-            module_info_failed.xml_upload_success AS module_info,
+            module_info_failed.xml_upload_success AS module_build,
             proto_assembly_failed.xml_upload_success AS proto_assembly,
             proto_inspect_failed.xml_upload_success AS proto_inspect,
             module_assembly_failed.xml_upload_success AS module_assembly,
@@ -5317,7 +5327,7 @@ class XMLSuccessBuilder:
                 {
                     "matcher": {
                     "id": "byName",
-                    "options": "module_info"
+                    "options": "module_build"
                     },
                     "properties": [
                     {
