@@ -275,7 +275,7 @@ class IVCurveBuilder:
         unnested AS (
         SELECT 
             module_name,
-            v,
+            ABS(v) as v,
             i
         FROM best_per_module,
         UNNEST(meas_v, meas_i) AS t(v, i)
@@ -671,7 +671,7 @@ class ComponentsLookUpFormBuilder:
             unnested AS (
                 SELECT
                     mod_ivtest_no || ' / ' || status_desc || ' / ' || temp_c || '˚C / ' || rel_hum || '%RH' AS status_desc,
-                    v,
+                    ABS(v) as v,
                     i
                 FROM filtered_iv,
                 UNNEST(meas_v, meas_i) AS t(v, i)
