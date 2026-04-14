@@ -4463,17 +4463,20 @@ class ModuleAssemblyBuilder:
         self.sen_thickness = "{sen_thickness}"
         self.geometry = "{geometry}"
         self.final_grade = "{final_grade}"
+        self.module_name = "{module_name}"
 
         self.table_sql = f"""WITH
                 temp_table_0 AS (
                 SELECT DISTINCT ON (module_name) *
                 FROM module_info
+                WHERE ('$module_name' = '' OR module_name = '${self.module_name}')
                 ORDER BY module_name, module_no DESC
                 ),
 
                 temp_table_1 AS (
                 SELECT DISTINCT ON (module_name) *
                 FROM module_qc_summary
+                WHERE ('$module_name' = '' OR module_name = '${self.module_name}')
                 ORDER BY module_name, mod_qc_no DESC
                 ),
 
@@ -4481,6 +4484,7 @@ class ModuleAssemblyBuilder:
                 SELECT DISTINCT ON (module_name) *
                 FROM module_iv_test
                 WHERE status = 7 OR status = 8
+                AND ('$module_name' = '' OR module_name = '${self.module_name}')
                 ORDER BY module_name, temp_c DESC
                 ),
 
@@ -4488,6 +4492,7 @@ class ModuleAssemblyBuilder:
                 SELECT DISTINCT ON (module_name) *
                 FROM module_pedestal_test
                 WHERE status = 7 OR status = 8
+                AND ('$module_name' = '' OR module_name = '${self.module_name}')
                 ORDER BY module_name, temp_c DESC
                 )
         SELECT 
@@ -5057,6 +5062,23 @@ class ModuleAssemblyBuilder:
             "tags": [],
             "templating": {
                 "list": [
+                {
+                    "current": {
+                    "text": "",
+                    "value": ""
+                    },
+                    "label": "module_name",
+                    "name": "module_name",
+                    "options": [
+                    {
+                        "selected": True,
+                        "text": "",
+                        "value": ""
+                    }
+                    ],
+                    "query": "",
+                    "type": "textbox"
+                },
                 {
                     "current": {
                     "text": "All",
