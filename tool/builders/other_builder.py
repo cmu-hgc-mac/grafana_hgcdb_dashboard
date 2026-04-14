@@ -120,7 +120,7 @@ class FilterBuilder:
                 "refresh": 0
                 }
             ]
-            template_list.extend(temp_arg)
+            # template_list.extend(temp_arg)
             exist_filter.add("N_MODULE_SHOW")
 
         return template_list
@@ -214,7 +214,8 @@ class IVCurveBuilder:
            Core filtering logic: Andrew C. Roberts
         """
         # build the WHERE clause
-        module_where_arg, iv_where_arg = self.IV_curve_panel_filter(filters)
+        module_where_arg, iv_where_arg = "", ""
+        # self.IV_curve_panel_filter(filters)
 
         # generate the SQL command
         raw_sql = rf"""
@@ -233,7 +234,7 @@ class IVCurveBuilder:
             AND {rel_hum_condition}
             AND temp_c ~ '^[-+]?[0-9]+(\.[0-9]+)?$'
             AND rel_hum ~ '^[-+]?[0-9]+(\.[0-9]+)?$'
-            AND (status_desc = 'Completely Encapsulated' OR status_desc = 'Frontside Encapsulated')
+            AND (status_desc = 'Completely Encapsulated' OR status_desc = 'Frontside Encapsulated' OR status_desc = 'Bolted')
             AND array_length(meas_v, 1) = array_length(meas_i, 1)
             ORDER BY module_name, date_test DESC
         ),
@@ -244,10 +245,10 @@ class IVCurveBuilder:
         FROM module_info
         JOIN latest_iv_test ON module_info.module_name = latest_iv_test.module_name
         LEFT JOIN latest_qc_summary ON module_info.module_name = latest_qc_summary.module_name
-        WHERE {module_where_arg}
-            AND {iv_where_arg}
+        -- WHERE {module_where_arg}
+        --    AND {iv_where_arg}
         ORDER BY module_info.module_no DESC
-        LIMIT {N_MODULE_SHOW}
+        -- LIMIT {N_MODULE_SHOW}
         ),
 
         filtered_iv AS (
@@ -267,7 +268,7 @@ class IVCurveBuilder:
             AND {rel_hum_condition}
             AND temp_c ~ '^[-+]?[0-9]+(\.[0-9]+)?$'
             AND rel_hum ~ '^[-+]?[0-9]+(\.[0-9]+)?$'
-            AND (status_desc = 'Completely Encapsulated' OR status_desc = 'Frontside Encapsulated')
+            AND (status_desc = 'Completely Encapsulated' OR status_desc = 'Frontside Encapsulated' OR status_desc = 'Bolted')
             AND array_length(meas_v, 1) = array_length(meas_i, 1)
         ORDER BY filtered_iv.module_name, i_last ASC
         ),

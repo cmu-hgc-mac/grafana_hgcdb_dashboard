@@ -72,14 +72,22 @@ dashboards:
     panels:
         - title: "Dry-Roomtemp (0-12% RH, 10-30°C) Module IV Curves [Log Scale]"
           chart_type: "xychart"
-          filters: {"module_info": ["bp_material", "resolution", "roc_version", "geometry", "sen_thickness"], "module_qc_summary": ["iv_grade"]}
+          filters: {"module_info" : [], "module_qc_summary": []}
+          # filters: {"module_info": ["bp_material", "resolution", "roc_version", "geometry", "sen_thickness"], "module_qc_summary": ["iv_grade"]}
           temp_condition: "(temp_c::float >= 10 AND temp_c::float <= 30)"
           rel_hum_condition: "(rel_hum::float <= 12)"
         - title: "Ambient-Roomtemp (>20% RH, 10-30°C) Module IV Curves [Log Scale]"
           chart_type: "xychart"
-          filters: {"module_info": ["bp_material", "resolution", "roc_version", "geometry", "sen_thickness"], "module_qc_summary": ["iv_grade"]}
+          filters: {"module_info" : [], "module_qc_summary": []}
+          # filters: {"module_info": ["bp_material", "resolution", "roc_version", "geometry", "sen_thickness"], "module_qc_summary": ["iv_grade"]}
           temp_condition: "(temp_c::float >= 10 AND temp_c::float <= 30)"
           rel_hum_condition: "(rel_hum::float >= 20)"
+        - title: "Dry-Cold (<12% RH, <10°C) Module IV Curves [Log Scale]"
+          chart_type: "xychart"
+          filters: {"module_info" : [], "module_qc_summary": []}
+          # filters: {"module_info": ["bp_material", "resolution", "roc_version", "geometry", "sen_thickness"], "module_qc_summary": ["iv_grade"]}
+          temp_condition: "(temp_c::float < 10)"
+          rel_hum_condition: temp_c ~ '^[-+]?[0-9]+(\.[0-9]+)?$'
   
   - title: "Hexmap Plots"
     panels:
