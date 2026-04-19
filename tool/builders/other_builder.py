@@ -5320,14 +5320,46 @@ class XMLSuccessBuilder:
         SELECT
             module_info_failed.module_no,
             module_info_failed.module_name,
-            module_info_failed.xml_upload_success AS module_build,
-            proto_assembly_failed.xml_upload_success AS proto_assembly,
-            proto_inspect_failed.xml_upload_success AS proto_inspect,
-            module_assembly_failed.xml_upload_success AS module_assembly,
-            module_inspect_failed.xml_upload_success AS module_inspect,
-            module_iv_failed.xml_upload_success AS module_iv,
-            module_pedestal_failed.xml_upload_success AS module_pedestal,
-            module_grade_failed.xml_upload_success AS module_grade
+            CASE
+                WHEN module_info_failed.module_name IS NULL THEN 'N/A'
+                WHEN module_info_failed.xml_upload_success IS NULL THEN 'NULL'
+                ELSE module_info_failed.xml_upload_success::text
+            END AS module_build,
+            CASE
+                WHEN proto_assembly_failed.module_name IS NULL THEN 'N/A'
+                WHEN proto_assembly_failed.xml_upload_success IS NULL THEN 'NULL'
+                ELSE proto_assembly_failed.xml_upload_success::text
+            END AS proto_assembly,
+            CASE
+                WHEN proto_inspect_failed.module_name IS NULL THEN 'N/A'
+                WHEN proto_inspect_failed.xml_upload_success IS NULL THEN 'NULL'
+                ELSE proto_inspect_failed.xml_upload_success::text
+            END AS proto_inspect,
+            CASE
+                WHEN module_assembly_failed.module_name IS NULL THEN 'N/A'
+                WHEN module_assembly_failed.xml_upload_success IS NULL THEN 'NULL'
+                ELSE module_assembly_failed.xml_upload_success::text
+            END AS module_assembly,
+            CASE
+                WHEN module_inspect_failed.module_name IS NULL THEN 'N/A'
+                WHEN module_inspect_failed.xml_upload_success IS NULL THEN 'NULL'
+                ELSE module_inspect_failed.xml_upload_success::text
+            END AS module_inspect,
+            CASE
+                WHEN module_iv_failed.module_name IS NULL THEN 'N/A'
+                WHEN module_iv_failed.xml_upload_success IS NULL THEN 'NULL'
+                ELSE module_iv_failed.xml_upload_success::text
+            END AS module_iv,
+            CASE
+                WHEN module_pedestal_failed.module_name IS NULL THEN 'N/A'
+                WHEN module_pedestal_failed.xml_upload_success IS NULL THEN 'NULL'
+                ELSE module_pedestal_failed.xml_upload_success::text
+            END AS module_pedestal,
+            CASE
+                WHEN module_grade_failed.module_name IS NULL THEN 'N/A'
+                WHEN module_grade_failed.xml_upload_success IS NULL THEN 'NULL'
+                ELSE module_grade_failed.xml_upload_success::text
+            END AS module_grade
         FROM module_info_failed
         LEFT JOIN proto_assembly_failed
             ON module_info_failed.module_name = proto_assembly_failed.module_name
@@ -5414,33 +5446,24 @@ class XMLSuccessBuilder:
                         "value": [
                         {
                             "options": {
-                            "match": "True",
-                            "result": {
-                                "color": "green",
+                            "N/A": {
+                                "color": "transparent",
                                 "index": 0
-                            }
                             },
-                            "type": "special"
-                        },
-                        {
-                            "options": {
-                            "match": "False",
-                            "result": {
+                            "NULL": {
                                 "color": "orange",
                                 "index": 1
-                            }
                             },
-                            "type": "special"
-                        },
-                        {
-                            "options": {
-                            "match": "null",
-                            "result": {
+                            "false": {
                                 "color": "red",
+                                "index": 3
+                            },
+                            "true": {
+                                "color": "green",
                                 "index": 2
                             }
                             },
-                            "type": "special"
+                            "type": "value"
                         }
                         ]
                     }
@@ -5487,33 +5510,24 @@ class XMLSuccessBuilder:
                         "value": [
                         {
                             "options": {
-                            "match": "True",
-                            "result": {
-                                "color": "green",
+                            "N/A": {
+                                "color": "transparent",
                                 "index": 0
-                            }
                             },
-                            "type": "special"
-                        },
-                        {
-                            "options": {
-                            "match": "False",
-                            "result": {
+                            "NULL": {
                                 "color": "orange",
                                 "index": 1
-                            }
                             },
-                            "type": "special"
-                        },
-                        {
-                            "options": {
-                            "match": "null",
-                            "result": {
+                            "false": {
                                 "color": "red",
+                                "index": 3
+                            },
+                            "true": {
+                                "color": "green",
                                 "index": 2
                             }
                             },
-                            "type": "special"
+                            "type": "value"
                         }
                         ]
                     }
@@ -5536,33 +5550,24 @@ class XMLSuccessBuilder:
                         "value": [
                         {
                             "options": {
-                            "match": "True",
-                            "result": {
-                                "color": "green",
+                            "N/A": {
+                                "color": "transparent",
                                 "index": 0
-                            }
                             },
-                            "type": "special"
-                        },
-                        {
-                            "options": {
-                            "match": "False",
-                            "result": {
+                            "NULL": {
                                 "color": "orange",
                                 "index": 1
-                            }
                             },
-                            "type": "special"
-                        },
-                        {
-                            "options": {
-                            "match": "null",
-                            "result": {
+                            "false": {
                                 "color": "red",
+                                "index": 3
+                            },
+                            "true": {
+                                "color": "green",
                                 "index": 2
                             }
                             },
-                            "type": "special"
+                            "type": "value"
                         }
                         ]
                     }
@@ -5585,33 +5590,24 @@ class XMLSuccessBuilder:
                         "value": [
                         {
                             "options": {
-                            "match": "True",
-                            "result": {
-                                "color": "green",
+                            "N/A": {
+                                "color": "transparent",
                                 "index": 0
-                            }
                             },
-                            "type": "special"
-                        },
-                        {
-                            "options": {
-                            "match": "False",
-                            "result": {
+                            "NULL": {
                                 "color": "orange",
                                 "index": 1
-                            }
                             },
-                            "type": "special"
-                        },
-                        {
-                            "options": {
-                            "match": "null",
-                            "result": {
+                            "false": {
                                 "color": "red",
+                                "index": 3
+                            },
+                            "true": {
+                                "color": "green",
                                 "index": 2
                             }
                             },
-                            "type": "special"
+                            "type": "value"
                         }
                         ]
                     }
@@ -5634,33 +5630,24 @@ class XMLSuccessBuilder:
                         "value": [
                         {
                             "options": {
-                            "match": "True",
-                            "result": {
-                                "color": "green",
+                            "N/A": {
+                                "color": "transparent",
                                 "index": 0
-                            }
                             },
-                            "type": "special"
-                        },
-                        {
-                            "options": {
-                            "match": "False",
-                            "result": {
+                            "NULL": {
                                 "color": "orange",
                                 "index": 1
-                            }
                             },
-                            "type": "special"
-                        },
-                        {
-                            "options": {
-                            "match": "null",
-                            "result": {
+                            "false": {
                                 "color": "red",
+                                "index": 3
+                            },
+                            "true": {
+                                "color": "green",
                                 "index": 2
                             }
                             },
-                            "type": "special"
+                            "type": "value"
                         }
                         ]
                     }
@@ -5683,33 +5670,24 @@ class XMLSuccessBuilder:
                         "value": [
                         {
                             "options": {
-                            "match": "True",
-                            "result": {
-                                "color": "green",
+                            "N/A": {
+                                "color": "transparent",
                                 "index": 0
-                            }
                             },
-                            "type": "special"
-                        },
-                        {
-                            "options": {
-                            "match": "False",
-                            "result": {
+                            "NULL": {
                                 "color": "orange",
                                 "index": 1
-                            }
                             },
-                            "type": "special"
-                        },
-                        {
-                            "options": {
-                            "match": "null",
-                            "result": {
+                            "false": {
                                 "color": "red",
+                                "index": 3
+                            },
+                            "true": {
+                                "color": "green",
                                 "index": 2
                             }
                             },
-                            "type": "special"
+                            "type": "value"
                         }
                         ]
                     }
@@ -5732,33 +5710,24 @@ class XMLSuccessBuilder:
                         "value": [
                         {
                             "options": {
-                            "match": "True",
-                            "result": {
-                                "color": "green",
+                            "N/A": {
+                                "color": "transparent",
                                 "index": 0
-                            }
                             },
-                            "type": "special"
-                        },
-                        {
-                            "options": {
-                            "match": "False",
-                            "result": {
+                            "NULL": {
                                 "color": "orange",
                                 "index": 1
-                            }
                             },
-                            "type": "special"
-                        },
-                        {
-                            "options": {
-                            "match": "null",
-                            "result": {
+                            "false": {
                                 "color": "red",
+                                "index": 3
+                            },
+                            "true": {
+                                "color": "green",
                                 "index": 2
                             }
                             },
-                            "type": "special"
+                            "type": "value"
                         }
                         ]
                     }
@@ -5781,33 +5750,24 @@ class XMLSuccessBuilder:
                         "value": [
                         {
                             "options": {
-                            "match": "True",
-                            "result": {
-                                "color": "green",
+                            "N/A": {
+                                "color": "transparent",
                                 "index": 0
-                            }
                             },
-                            "type": "special"
-                        },
-                        {
-                            "options": {
-                            "match": "False",
-                            "result": {
+                            "NULL": {
                                 "color": "orange",
                                 "index": 1
-                            }
                             },
-                            "type": "special"
-                        },
-                        {
-                            "options": {
-                            "match": "null",
-                            "result": {
+                            "false": {
                                 "color": "red",
+                                "index": 3
+                            },
+                            "true": {
+                                "color": "green",
                                 "index": 2
                             }
                             },
-                            "type": "special"
+                            "type": "value"
                         }
                         ]
                     }
