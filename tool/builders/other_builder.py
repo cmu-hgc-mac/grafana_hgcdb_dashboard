@@ -5316,6 +5316,30 @@ class XMLSuccessBuilder:
             SELECT DISTINCT ON (module_qc_summary.module_name) module_qc_summary.module_name, module_qc_summary.xml_upload_success
             FROM module_qc_summary
             ORDER BY module_qc_summary.module_name, module_qc_summary.xml_upload_success, module_qc_summary.mod_qc_no DESC
+        ),
+        hxb_inspect_failed AS (
+            SELECT DISTINCT ON (hxb_inspect.hxb_name) module_info.module_name, hxb_inspect.xml_upload_success
+            FROM hxb_inspect
+            JOIN module_info ON hxb_inspect.hxb_name = module_info.hxb_name
+            ORDER BY hxb_inspect.hxb_name, hxb_inspect.xml_upload_success, hxb_inspect.hxb_no DESC
+        ),
+        bp_inspect_failed AS (
+            SELECT DISTINCT ON (bp_inspect.bp_name) module_info.module_name, bp_inspect.xml_upload_success
+            FROM bp_inspect
+            JOIN module_info ON bp_inspect.bp_name = module_info.bp_name
+            ORDER BY bp_inspect.bp_name, bp_inspect.xml_upload_success, bp_inspect.bp_no DESC
+        ),
+        hxb_pedestal_failed AS (
+            SELECT DISTINCT ON (hxb_pedestal_test.hxb_name) module_info.module_name, hxb_pedestal_test.xml_upload_success
+            FROM hxb_pedestal_test
+            JOIN module_info ON hxb_pedestal_test.hxb_name = module_info.hxb_name
+            ORDER BY hxb_pedestal_test.hxb_name, hxb_pedestal_test.xml_upload_success, hxb_pedestal_test.hxb_no DESC
+        ),
+        sen_inspect_failed AS (
+            SELECT DISTINCT ON (sensor.sen_name) module_info.module_name, sensor.xml_upload_success
+            FROM sensor
+            JOIN module_info ON sensor.sen_name = module_info.sen_name
+            ORDER BY sensor.sen_name, sensor.xml_upload_success, sensor.sen_no DESC
         )
         SELECT
             module_info_failed.module_no,
@@ -5359,7 +5383,27 @@ class XMLSuccessBuilder:
                 WHEN module_grade_failed.module_name IS NULL THEN 'N/A'
                 WHEN module_grade_failed.xml_upload_success IS NULL THEN 'NULL'
                 ELSE module_grade_failed.xml_upload_success::text
-            END AS module_grade
+            END AS module_grade,
+            CASE
+                WHEN hxb_inspect_failed.module_name IS NULL THEN 'N/A'
+                WHEN hxb_inspect_failed.xml_upload_success IS NULL THEN 'NULL'
+                ELSE hxb_inspect_failed.xml_upload_success::text
+            END AS hxb_inspect,
+            CASE
+                WHEN bp_inspect_failed.module_name IS NULL THEN 'N/A'
+                WHEN bp_inspect_failed.xml_upload_success IS NULL THEN 'NULL'
+                ELSE bp_inspect_failed.xml_upload_success::text
+            END AS bp_inspect,
+            CASE
+                WHEN hxb_pedestal_failed.module_name IS NULL THEN 'N/A'
+                WHEN hxb_pedestal_failed.xml_upload_success IS NULL THEN 'NULL'
+                ELSE hxb_pedestal_failed.xml_upload_success::text
+            END AS hxb_pedestal,
+            CASE
+                WHEN sen_inspect_failed.module_name IS NULL THEN 'N/A'
+                WHEN sen_inspect_failed.xml_upload_success IS NULL THEN 'NULL'
+                ELSE sen_inspect_failed.xml_upload_success::text
+            END AS sen_inspect
         FROM module_info_failed
         LEFT JOIN proto_assembly_failed
             ON module_info_failed.module_name = proto_assembly_failed.module_name
@@ -5375,6 +5419,14 @@ class XMLSuccessBuilder:
             ON module_info_failed.module_name = module_pedestal_failed.module_name
         LEFT JOIN module_grade_failed
             ON module_info_failed.module_name = module_grade_failed.module_name
+        LEFT JOIN hxb_inspect_failed
+            ON module_info_failed.module_name = hxb_inspect_failed.module_name
+        LEFT JOIN bp_inspect_failed
+            ON module_info_failed.module_name = bp_inspect_failed.module_name
+        LEFT JOIN hxb_pedestal_failed
+            ON module_info_failed.module_name = hxb_pedestal_failed.module_name
+        LEFT JOIN sen_inspect_failed
+            ON module_info_failed.module_name = sen_inspect_failed.module_name
         ORDER BY module_info_failed.module_no DESC;
         """
 
@@ -5737,6 +5789,166 @@ class XMLSuccessBuilder:
                     "matcher": {
                     "id": "byName",
                     "options": "module_grade"
+                    },
+                    "properties": [
+                    {
+                        "id": "custom.cellOptions",
+                        "value": {
+                        "type": "color-background"
+                        }
+                    },
+                    {
+                        "id": "mappings",
+                        "value": [
+                        {
+                            "options": {
+                            "N/A": {
+                                "color": "transparent",
+                                "index": 0
+                            },
+                            "NULL": {
+                                "color": "orange",
+                                "index": 1
+                            },
+                            "false": {
+                                "color": "red",
+                                "index": 3
+                            },
+                            "true": {
+                                "color": "green",
+                                "index": 2
+                            }
+                            },
+                            "type": "value"
+                        }
+                        ]
+                    }
+                    ]
+                },
+                {
+                    "matcher": {
+                    "id": "byName",
+                    "options": "hxb_inspect"
+                    },
+                    "properties": [
+                    {
+                        "id": "custom.cellOptions",
+                        "value": {
+                        "type": "color-background"
+                        }
+                    },
+                    {
+                        "id": "mappings",
+                        "value": [
+                        {
+                            "options": {
+                            "N/A": {
+                                "color": "transparent",
+                                "index": 0
+                            },
+                            "NULL": {
+                                "color": "orange",
+                                "index": 1
+                            },
+                            "false": {
+                                "color": "red",
+                                "index": 3
+                            },
+                            "true": {
+                                "color": "green",
+                                "index": 2
+                            }
+                            },
+                            "type": "value"
+                        }
+                        ]
+                    }
+                    ]
+                },
+                {
+                    "matcher": {
+                    "id": "byName",
+                    "options": "bp_inspect"
+                    },
+                    "properties": [
+                    {
+                        "id": "custom.cellOptions",
+                        "value": {
+                        "type": "color-background"
+                        }
+                    },
+                    {
+                        "id": "mappings",
+                        "value": [
+                        {
+                            "options": {
+                            "N/A": {
+                                "color": "transparent",
+                                "index": 0
+                            },
+                            "NULL": {
+                                "color": "orange",
+                                "index": 1
+                            },
+                            "false": {
+                                "color": "red",
+                                "index": 3
+                            },
+                            "true": {
+                                "color": "green",
+                                "index": 2
+                            }
+                            },
+                            "type": "value"
+                        }
+                        ]
+                    }
+                    ]
+                },
+                {
+                    "matcher": {
+                    "id": "byName",
+                    "options": "hxb_pedestal"
+                    },
+                    "properties": [
+                    {
+                        "id": "custom.cellOptions",
+                        "value": {
+                        "type": "color-background"
+                        }
+                    },
+                    {
+                        "id": "mappings",
+                        "value": [
+                        {
+                            "options": {
+                            "N/A": {
+                                "color": "transparent",
+                                "index": 0
+                            },
+                            "NULL": {
+                                "color": "orange",
+                                "index": 1
+                            },
+                            "false": {
+                                "color": "red",
+                                "index": 3
+                            },
+                            "true": {
+                                "color": "green",
+                                "index": 2
+                            }
+                            },
+                            "type": "value"
+                        }
+                        ]
+                    }
+                    ]
+                },
+                {
+                    "matcher": {
+                    "id": "byName",
+                    "options": "sen_inspect"
                     },
                     "properties": [
                     {
