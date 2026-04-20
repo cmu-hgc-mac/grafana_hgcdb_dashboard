@@ -5340,6 +5340,31 @@ class XMLSuccessBuilder:
             FROM sensor
             JOIN module_info ON sensor.sen_name = module_info.sen_name
             ORDER BY sensor.sen_name, sensor.xml_upload_success, sensor.sen_no DESC
+        ),
+        back_wirebond_failed AS (
+            SELECT DISTINCT ON (back_wirebond.module_name) back_wirebond.module_name, back_wirebond.xml_upload_success
+            FROM back_wirebond
+            ORDER BY back_wirebond.module_name, back_wirebond.xml_upload_success, back_wirebond.module_no DESC
+        ),
+        back_encap_failed AS (
+            SELECT DISTINCT ON (back_encap.module_name) back_encap.module_name, back_encap.xml_upload_success
+            FROM back_encap
+            ORDER BY back_encap.module_name, back_encap.xml_upload_success, back_encap.module_no DESC
+        ),
+        front_wirebond_failed AS (
+            SELECT DISTINCT ON (front_wirebond.module_name) front_wirebond.module_name, front_wirebond.xml_upload_success
+            FROM front_wirebond
+            ORDER BY front_wirebond.module_name, front_wirebond.xml_upload_success, front_wirebond.module_no DESC
+        ),
+        front_encap_failed AS (
+            SELECT DISTINCT ON (front_encap.module_name) front_encap.module_name, front_encap.xml_upload_success
+            FROM front_encap
+            ORDER BY front_encap.module_name, front_encap.xml_upload_success, front_encap.module_no DESC
+        ),
+        bond_pull_failed AS (
+            SELECT DISTINCT ON (bond_pull_test.module_name) bond_pull_test.module_name, bond_pull_test.xml_upload_success
+            FROM bond_pull_test
+            ORDER BY bond_pull_test.module_name, bond_pull_test.xml_upload_success, bond_pull_test.module_no DESC
         )
         SELECT
             module_info_failed.module_no,
@@ -5403,7 +5428,13 @@ class XMLSuccessBuilder:
                 WHEN sen_inspect_failed.module_name IS NULL THEN 'N/A'
                 WHEN sen_inspect_failed.xml_upload_success IS NULL THEN 'NULL'
                 ELSE sen_inspect_failed.xml_upload_success::text
-            END AS sen_inspect
+            END AS sen_inspect,
+            CASE
+                WHEN (back_wirebond_failed.module_name IS NULL OR back_encap_failed.module_name IS NULL OR front_wirebond_failed.module_name IS NULL OR front_encap_failed.module_name IS NULL) THEN 'N/A'
+                WHEN (back_wirebond_failed.xml_upload_success IS NULL OR back_encap_failed.xml_upload_success IS NULL OR front_wirebond_failed.xml_upload_success IS NULL OR front_encap_failed.xml_upload_success IS NULL) THEN 'NULL'
+                WHEN (back_wirebond_failed.xml_upload_success = 'true' AND back_encap_failed.xml_upload_success = 'true' AND front_wirebond_failed.xml_upload_success = 'true' AND front_encap_failed.xml_upload_success = 'true') THEN 'true'
+                WHEN (back_wirebond_failed.xml_upload_success = 'false' OR back_encap_failed.xml_upload_success = 'false' OR front_wirebond_failed.xml_upload_success = 'false' OR front_encap_failed.xml_upload_success = 'false' OR bond_pull_failed.xml_upload_success = 'false') THEN 'false'
+            END AS module_wirebond
         FROM module_info_failed
         LEFT JOIN proto_assembly_failed
             ON module_info_failed.module_name = proto_assembly_failed.module_name
@@ -5427,6 +5458,16 @@ class XMLSuccessBuilder:
             ON module_info_failed.module_name = hxb_pedestal_failed.module_name
         LEFT JOIN sen_inspect_failed
             ON module_info_failed.module_name = sen_inspect_failed.module_name
+        LEFT JOIN back_wirebond_failed
+            ON module_info_failed.module_name = back_wirebond_failed.module_name
+        LEFT JOIN back_encap_failed
+            ON module_info_failed.module_name = back_encap_failed.module_name
+        LEFT JOIN front_wirebond_failed
+            ON module_info_failed.module_name = front_wirebond_failed.module_name
+        LEFT JOIN front_encap_failed
+            ON module_info_failed.module_name = front_encap_failed.module_name
+        LEFT JOIN bond_pull_failed
+            ON module_info_failed.module_name = bond_pull_failed.module_name
         ORDER BY module_info_failed.module_no DESC;
         """
 
@@ -5949,6 +5990,46 @@ class XMLSuccessBuilder:
                     "matcher": {
                     "id": "byName",
                     "options": "sen_inspect"
+                    },
+                    "properties": [
+                    {
+                        "id": "custom.cellOptions",
+                        "value": {
+                        "type": "color-background"
+                        }
+                    },
+                    {
+                        "id": "mappings",
+                        "value": [
+                        {
+                            "options": {
+                            "N/A": {
+                                "color": "transparent",
+                                "index": 0
+                            },
+                            "NULL": {
+                                "color": "orange",
+                                "index": 1
+                            },
+                            "false": {
+                                "color": "red",
+                                "index": 3
+                            },
+                            "true": {
+                                "color": "green",
+                                "index": 2
+                            }
+                            },
+                            "type": "value"
+                        }
+                        ]
+                    }
+                    ]
+                },
+                {
+                    "matcher": {
+                    "id": "byName",
+                    "options": "module_wirebond"
                     },
                     "properties": [
                     {
