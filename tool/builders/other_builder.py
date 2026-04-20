@@ -5395,6 +5395,12 @@ class XMLSuccessBuilder:
                 ELSE module_inspect_failed.xml_upload_success::text
             END AS module_inspect,
             CASE
+                WHEN (back_wirebond_failed.module_name IS NULL OR back_encap_failed.module_name IS NULL OR front_wirebond_failed.module_name IS NULL OR front_encap_failed.module_name IS NULL) THEN 'N/A'
+                WHEN (back_wirebond_failed.xml_upload_success IS NULL OR back_encap_failed.xml_upload_success IS NULL OR front_wirebond_failed.xml_upload_success IS NULL OR front_encap_failed.xml_upload_success IS NULL) THEN 'NULL'
+                WHEN (back_wirebond_failed.xml_upload_success = 'true' AND back_encap_failed.xml_upload_success = 'true' AND front_wirebond_failed.xml_upload_success = 'true' AND front_encap_failed.xml_upload_success = 'true') THEN 'true'
+                WHEN (back_wirebond_failed.xml_upload_success = 'false' OR back_encap_failed.xml_upload_success = 'false' OR front_wirebond_failed.xml_upload_success = 'false' OR front_encap_failed.xml_upload_success = 'false' OR bond_pull_failed.xml_upload_success = 'false') THEN 'false'
+            END AS module_wirebond,
+            CASE
                 WHEN module_iv_failed.module_name IS NULL THEN 'N/A'
                 WHEN module_iv_failed.xml_upload_success IS NULL THEN 'NULL'
                 ELSE module_iv_failed.xml_upload_success::text
@@ -5408,33 +5414,27 @@ class XMLSuccessBuilder:
                 WHEN module_grade_failed.module_name IS NULL THEN 'N/A'
                 WHEN module_grade_failed.xml_upload_success IS NULL THEN 'NULL'
                 ELSE module_grade_failed.xml_upload_success::text
-            END AS module_grade,
-            CASE
-                WHEN hxb_inspect_failed.module_name IS NULL THEN 'N/A'
-                WHEN hxb_inspect_failed.xml_upload_success IS NULL THEN 'NULL'
-                ELSE hxb_inspect_failed.xml_upload_success::text
-            END AS hxb_inspect,
+            END AS module_grade,       
             CASE
                 WHEN bp_inspect_failed.module_name IS NULL THEN 'N/A'
                 WHEN bp_inspect_failed.xml_upload_success IS NULL THEN 'NULL'
                 ELSE bp_inspect_failed.xml_upload_success::text
             END AS bp_inspect,
             CASE
-                WHEN hxb_pedestal_failed.module_name IS NULL THEN 'N/A'
-                WHEN hxb_pedestal_failed.xml_upload_success IS NULL THEN 'NULL'
-                ELSE hxb_pedestal_failed.xml_upload_success::text
-            END AS hxb_pedestal,
-            CASE
                 WHEN sen_inspect_failed.module_name IS NULL THEN 'N/A'
                 WHEN sen_inspect_failed.xml_upload_success IS NULL THEN 'NULL'
                 ELSE sen_inspect_failed.xml_upload_success::text
             END AS sen_inspect,
             CASE
-                WHEN (back_wirebond_failed.module_name IS NULL OR back_encap_failed.module_name IS NULL OR front_wirebond_failed.module_name IS NULL OR front_encap_failed.module_name IS NULL) THEN 'N/A'
-                WHEN (back_wirebond_failed.xml_upload_success IS NULL OR back_encap_failed.xml_upload_success IS NULL OR front_wirebond_failed.xml_upload_success IS NULL OR front_encap_failed.xml_upload_success IS NULL) THEN 'NULL'
-                WHEN (back_wirebond_failed.xml_upload_success = 'true' AND back_encap_failed.xml_upload_success = 'true' AND front_wirebond_failed.xml_upload_success = 'true' AND front_encap_failed.xml_upload_success = 'true') THEN 'true'
-                WHEN (back_wirebond_failed.xml_upload_success = 'false' OR back_encap_failed.xml_upload_success = 'false' OR front_wirebond_failed.xml_upload_success = 'false' OR front_encap_failed.xml_upload_success = 'false' OR bond_pull_failed.xml_upload_success = 'false') THEN 'false'
-            END AS module_wirebond
+                WHEN hxb_inspect_failed.module_name IS NULL THEN 'N/A'
+                WHEN hxb_inspect_failed.xml_upload_success IS NULL THEN 'NULL'
+                ELSE hxb_inspect_failed.xml_upload_success::text
+            END AS hxb_inspect,
+            CASE
+                WHEN hxb_pedestal_failed.module_name IS NULL THEN 'N/A'
+                WHEN hxb_pedestal_failed.xml_upload_success IS NULL THEN 'NULL'
+                ELSE hxb_pedestal_failed.xml_upload_success::text
+            END AS hxb_pedestal
         FROM module_info_failed
         LEFT JOIN proto_assembly_failed
             ON module_info_failed.module_name = proto_assembly_failed.module_name
