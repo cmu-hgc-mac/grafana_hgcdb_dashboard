@@ -4499,6 +4499,7 @@ class ModuleAssemblyBuilder:
             temp_table_0.module_name::text,
             temp_table_0.assembled::text,
             temp_table_1.final_grade::text,
+            temp_table_0.inspected::text,
             temp_table_0.wb_back::text,
             temp_table_0.encap_back::text,
             temp_table_0.wb_front::text,
@@ -5004,6 +5005,56 @@ class ModuleAssemblyBuilder:
             "matcher": {
               "id": "byName",
               "options": "final_grade"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "A": {
+                        "color": "green",
+                        "index": 0
+                      },
+                      "B": {
+                        "color": "green",
+                        "index": 1
+                      },
+                      "C": {
+                        "color": "orange",
+                        "index": 2
+                      },
+                      "F": {
+                        "color": "red",
+                        "index": 3
+                      }
+                    },
+                    "type": "value"
+                  },
+                  {
+                    "options": {
+                      "match": "null",
+                      "result": {
+                        "color": "transparent",
+                        "index": 4
+                      }
+                    },
+                    "type": "special"
+                  }
+                ]
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-background"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "inspected"
             },
             "properties": [
               {
