@@ -3,7 +3,15 @@ from tool.builders.sql_builder import BaseSQLGenerator
 
 """
 This file defines classes for building additional Grafana features, including:
-    - Filters: With support from Wen Li.
+    - Filters
+    - Inputs
+    - IV Curves
+    - Components Look-up Form
+    - Hexmap Plots
+    - Offset Plots
+    - General Info
+    - Module Assembly
+Each class contains methods to generate the necessary JSON templates and SQL commands for its respective feature.
 """
 
 # ============================================================
