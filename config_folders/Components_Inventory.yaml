@@ -10,7 +10,7 @@ dashboards:
         condition: "proto_no IS NULL AND bp_material IS NOT NULL AND resolution IS NOT NULL AND geometry IS NOT NULL"
         groupby: ["bp_material", "resolution", "geometry"]
         filters: {"baseplate": ["bp_material", "resolution", "geometry", "obsolete"], "bp_inspect": ["grade"]}
-        contains_inputs: {"baseplate": ["comment"]}
+        contains_inputs: {"baseplate": ["comment", "bp_name"]}
         distinct: ["baseplate", "bp_inspect"]
       - title: "Free Baseplates Info"
         table: "baseplate"
@@ -18,7 +18,7 @@ dashboards:
         condition: "proto_no IS NULL AND bp_material IS NOT NULL AND resolution IS NOT NULL AND geometry IS NOT NULL AND date_verify_received IS NOT NULL"
         groupby: {"baseplate": ["bp_name", "avg_thickness_init", "flatness_init", "comment"], "bp_inspect": ["grade", {"comment": "comment_inspect"}, "date_inspect", "flatness", "avg_thickness", "max_thickness"]}
         filters: {"baseplate": ["bp_material", "resolution", "geometry", "obsolete"], "bp_inspect": ["grade"]}
-        contains_inputs: {"baseplate": ["comment"]}
+        contains_inputs: {"baseplate": ["comment", "bp_name"]}
         distinct: ["baseplate", "bp_inspect"]
       - title: "Assigned (but not received) Baseplates"
         table: "baseplate"
@@ -26,7 +26,7 @@ dashboards:
         condition: "proto_no IS NULL AND date_verify_received IS NULL"
         groupby: {"baseplate": ["row_count", "bp_name", "geometry", "resolution", "kind", "date_verify_received", "comment"]}
         filters: {"baseplate": ["bp_material", "resolution", "geometry", "obsolete"], "bp_inspect": ["grade"]}
-        contains_inputs: {"baseplate": ["comment"]}
+        contains_inputs: {"baseplate": ["comment", "bp_name"]}
         distinct: ["baseplate"]
       - title: "Received (but not assigned) Baseplates"
         table: "baseplate"
@@ -34,7 +34,7 @@ dashboards:
         condition: "proto_no IS NULL AND kind IS NULL"
         groupby: {"baseplate": ["row_count", "bp_name", "geometry", "resolution", "kind", "date_verify_received", "comment"]}
         filters: {"baseplate": ["bp_material", "resolution", "geometry", "obsolete"], "bp_inspect": ["grade"]}
-        contains_inputs: {"baseplate": ["comment"]}
+        contains_inputs: {"baseplate": ["comment", "bp_name"]}
         distinct: ["baseplate"]
       - title: "Used Baseplates"
         table: "baseplate"
@@ -42,7 +42,7 @@ dashboards:
         condition: "temp_table_0.proto_no IS NOT NULL"
         groupby: {"baseplate": ["bp_name", "geometry", "resolution", "kind", "comment"], "bp_inspect": [], "proto_assembly": ["proto_name", "ass_run_date"]}
         filters: {"baseplate": ["bp_material", "resolution", "geometry", "obsolete"], "bp_inspect": ["grade"], "proto_assembly": []}
-        contains_inputs: {"baseplate": ["comment"]}
+        contains_inputs: {"baseplate": ["comment", "bp_name"]}
         distinct: ["baseplate", "bp_inspect", "proto_assembly"]
 
   - title: "Free Sensors"
