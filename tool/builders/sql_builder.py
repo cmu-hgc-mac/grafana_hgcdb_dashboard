@@ -228,6 +228,11 @@ class BaseSQLGenerator(ChartSQLGenerator):
             else:
                 arg = f"{table}.{elem}{TYPE}"
 
+        # Alias case: {"col": "alias"}
+        elif isinstance(elem, dict):
+            col, alias = next(iter(elem.items()))
+            arg = f"{table}.{col}{TYPE} AS {alias}"
+
         # COALESCE Case: join multiple columns into 1 column
         elif isinstance(elem, list):
             select_clause = []
