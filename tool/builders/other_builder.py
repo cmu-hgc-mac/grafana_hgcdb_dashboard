@@ -4477,30 +4477,30 @@ class ModuleAssemblyBuilder:
                 temp_table_0 AS (
                 SELECT DISTINCT ON (module_name) *
                 FROM module_info
-                WHERE ('$module_name' = '' OR module_name = '${self.module_name}')
+                WHERE ('${self.module_name}' = '' OR module_name ILIKE '%' || '${self.module_name}' || '%')
                 ORDER BY module_name, module_no DESC
                 ),
 
                 temp_table_1 AS (
                 SELECT DISTINCT ON (module_name) *
                 FROM module_qc_summary
-                WHERE ('$module_name' = '' OR module_name = '${self.module_name}')
+                WHERE ('${self.module_name}' = '' OR module_name ILIKE '%' || '${self.module_name}' || '%')
                 ORDER BY module_name, mod_qc_no DESC
                 ),
 
                 temp_table_2 AS (
                 SELECT DISTINCT ON (module_name) *
                 FROM module_iv_test
-                WHERE status = 7 OR status = 8
-                AND ('$module_name' = '' OR module_name = '${self.module_name}')
+                WHERE (status = 7 OR status = 8)
+                AND ('${self.module_name}' = '' OR module_name ILIKE '%' || '${self.module_name}' || '%')
                 ORDER BY module_name, temp_c DESC
                 ),
 
                 temp_table_3 AS (
                 SELECT DISTINCT ON (module_name) *
                 FROM module_pedestal_test
-                WHERE status = 7 OR status = 8
-                AND ('$module_name' = '' OR module_name = '${self.module_name}')
+                WHERE (status = 7 OR status = 8)
+                AND ('${self.module_name}' = '' OR module_name ILIKE '%' || '${self.module_name}' || '%')
                 ORDER BY module_name, temp_c DESC
                 )
         SELECT 
@@ -5527,6 +5527,7 @@ class XMLSuccessBuilder:
             ON module_info_failed.module_name = front_encap_failed.module_name
         LEFT JOIN bond_pull_failed
             ON module_info_failed.module_name = bond_pull_failed.module_name
+        WHERE ('${module_name}' = '' OR module_info_failed.module_name ILIKE '%' || '${module_name}' || '%')
         ORDER BY module_info_failed.module_no DESC;
         """
 
@@ -6191,7 +6192,25 @@ class XMLSuccessBuilder:
         "schemaVersion": 41,
         "tags": [],
         "templating": {
-            "list": []
+            "list": [
+                {
+                    "current": {
+                        "text": "",
+                        "value": ""
+                    },
+                    "label": "module_name",
+                    "name": "module_name",
+                    "options": [
+                        {
+                            "selected": True,
+                            "text": "",
+                            "value": ""
+                        }
+                    ],
+                    "query": "",
+                    "type": "textbox"
+                }
+            ]
         },
         "time": {
             "from": "now-30d",
