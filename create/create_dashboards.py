@@ -122,12 +122,17 @@ for config in filelist:
             if chart_type not in special_chart_type:
                 filters = panel["filters"]
                 inputs = panel.get("inputs", None)
+                contains_inputs = panel.get("contains_inputs", None)
                 if filters:
                     filter_json = filter_builder.build_template_list(filters, exist_filter)
                     template_list.extend(filter_json)
                 if inputs:
                     input_builder = InputBuilder()
                     input_json = input_builder.build_template_list(inputs, exist_filter)
+                    template_list.extend(input_json)
+                if contains_inputs:
+                    input_builder = InputBuilder()
+                    input_json = input_builder.build_template_list(contains_inputs, exist_filter)
                     template_list.extend(input_json)
 
             elif chart_type == "xychart":
