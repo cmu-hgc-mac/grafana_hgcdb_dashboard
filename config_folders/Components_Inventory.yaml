@@ -54,6 +54,7 @@ dashboards:
         groupby: ["thickness", "resolution", "geometry"]
         filters: {"sensor": ["thickness", "resolution", "geometry", "grade"]}
         inputs: {"sensor": ["sen_batch_id"]}
+        contains_inputs: {"sensor": ["sen_name"]}
         distinct: ["sensor"]
       - title: "Free Sensors Info"
         table: "sensor"
@@ -62,6 +63,7 @@ dashboards:
         groupby: {"sensor": ["sen_name", "geometry", "resolution", "thickness", "grade", "sen_batch_id", "date_verify_received"]}
         filters: {"sensor": ["thickness", "resolution", "geometry", "grade"]}
         inputs: {"sensor": ["sen_batch_id"]}
+        contains_inputs: {"sensor": ["sen_name"]}
         distinct: ["sensor"]
       - title: "Assigned (but not recieved) Sensors"
         table: "sensor"
@@ -70,6 +72,7 @@ dashboards:
         groupby: {"sensor": ["row_count", "sen_name", "geometry", "resolution", "thickness", "kind", "sen_batch_id", "date_verify_received"]}
         filters: {"sensor": ["thickness", "resolution", "geometry", "grade"]}
         inputs: {"sensor": ["sen_batch_id"]}
+        contains_inputs: {"sensor": ["sen_name"]}
         distinct: ["sensor"]
       - title: "Recieved (but not assigned) Sensors"
         table: "sensor"
@@ -78,6 +81,7 @@ dashboards:
         groupby: {"sensor": ["row_count", "sen_name", "geometry", "resolution", "thickness", "kind", "sen_batch_id", "date_verify_received"]}
         filters: {"sensor": ["thickness", "resolution", "geometry", "grade"]}
         inputs: {"sensor": ["sen_batch_id"]}
+        contains_inputs: {"sensor": ["sen_name"]}
         distinct: ["sensor"]
 
   - title: "Free Hexaboards"
@@ -88,6 +92,7 @@ dashboards:
         condition: "module_no is NULL AND roc_version IS NOT NULL AND resolution IS NOT NULL AND geometry IS NOT NULL"
         groupby: ["roc_version", "resolution", "geometry"]
         filters: {"hexaboard": ["roc_version", "resolution", "geometry", "obsolete"], "hxb_pedestal_test": ["status_desc"]}
+        contains_inputs: {"hexaboard": ["hxb_name"]}
         distinct: ["hexaboard", "hxb_pedestal_test"]
       - title: "Free Hexaboards Info"
         table: "hexaboard"
@@ -95,6 +100,7 @@ dashboards:
         condition: "module_no is NULL AND roc_version IS NOT NULL AND resolution IS NOT NULL AND geometry IS NOT NULL AND date_verify_received IS NOT NULL"
         groupby: {"hexaboard": ["hxb_name"], "hxb_pedestal_test": ["count_bad_cells", "status_desc", "date_test", "comment"], "hxb_inspect": ["flatness", "avg_thickness", "max_thickness"]}
         filters: {"hexaboard": ["roc_version", "resolution", "geometry", "obsolete"], "hxb_pedestal_test": ["status_desc"], "hxb_inspect": []}
+        contains_inputs: {"hexaboard": ["hxb_name"]}
         distinct: ["hexaboard", "hxb_pedestal_test", "hxb_inspect"]
       - title: "Assigned (but not recieved) Hexaboards"
         table: "hexaboard"
@@ -102,6 +108,7 @@ dashboards:
         condition: "module_no IS NULL AND date_verify_received IS NULL"
         groupby: {"hexaboard": ["row_count", "hxb_name", "geometry", "resolution", "kind", "date_verify_received"]}
         filters: {"hexaboard": ["roc_version", "resolution", "geometry", "obsolete"], "hxb_pedestal_test": ["status_desc"], "hxb_inspect": []}
+        contains_inputs: {"hexaboard": ["hxb_name"]}
         distinct: ["hexaboard", "hxb_pedestal_test"]
       - title: "Recieved (but not assigned) Hexaboards"
         table: "hexaboard"
@@ -109,4 +116,5 @@ dashboards:
         condition: "module_no IS NULL AND kind IS NULL"
         groupby: {"hexaboard": ["row_count", "hxb_name", "geometry", "resolution", "kind", "date_verify_received"]}
         filters: {"hexaboard": ["roc_version", "resolution", "geometry", "obsolete"], "hxb_pedestal_test": ["status_desc"], "hxb_inspect": []}
+        contains_inputs: {"hexaboard": ["hxb_name"]}
         distinct: ["hexaboard", "hxb_pedestal_test"]
