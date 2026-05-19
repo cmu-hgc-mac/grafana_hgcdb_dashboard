@@ -5527,7 +5527,7 @@ class XMLSuccessBuilder:
             ON module_info_failed.module_name = front_encap_failed.module_name
         LEFT JOIN bond_pull_failed
             ON module_info_failed.module_name = bond_pull_failed.module_name
-        WHERE ('${module_name}' = '' OR module_info_failed.module_name ILIKE '%' || '${module_name}' || '%')
+        WHERE ('${{module_name}}' = '' OR module_info_failed.module_name ILIKE '%' || '${{module_name}}' || '%')
         ORDER BY module_info_failed.module_no DESC;
         """
 
