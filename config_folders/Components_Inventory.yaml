@@ -36,6 +36,14 @@ dashboards:
         filters: {"baseplate": ["bp_material", "resolution", "geometry", "obsolete"], "bp_inspect": ["grade"]}
         contains_inputs: {"baseplate": ["comment"]}
         distinct: ["baseplate"]
+      - title: "Used Baseplates"
+        table: "baseplate"
+        chart_type: "table"
+        condition: "proto_no IS NOT NULL"
+        groupby: {"baseplate": ["bp_name", "geometry", "resolution", "kind", "comment"], "proto_assembly": ["proto_name", "ass_run_date"]}
+        filters: {"baseplate": ["bp_material", "resolution", "geometry", "obsolete"], "bp_inspect": ["grade"], "proto_assembly": []}
+        contains_inputs: {"baseplate": ["comment"]}
+        distinct: ["baseplate", "bp_inspect"]
 
   - title: "Free Sensors"
     panels:
