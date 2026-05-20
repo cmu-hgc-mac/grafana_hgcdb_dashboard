@@ -5532,7 +5532,7 @@ class XMLSuccessBuilder:
         ORDER BY module_info_failed.module_no DESC
         )
         SELECT * FROM result
-        WHERE '${{show_failed_uploads}}' != 'Yes' OR (
+        WHERE ('${{show_failed_uploads}}' != 'Yes' OR (
             module_build = 'false'
             OR proto_assembly = 'false'
             OR proto_inspect = 'false'
@@ -5546,7 +5546,22 @@ class XMLSuccessBuilder:
             OR sen_inspect = 'false'
             OR hxb_inspect = 'false'
             OR hxb_pedestal = 'false'
-        )
+        ))
+        AND ('${{show_unattempted_uploads}}' != 'Yes' OR (
+            module_build = 'NULL'
+            OR proto_assembly = 'NULL'
+            OR proto_inspect = 'NULL'
+            OR module_assembly = 'NULL'
+            OR module_inspect = 'NULL'
+            OR module_wirebond = 'NULL'
+            OR module_iv = 'NULL'
+            OR module_pedestal = 'NULL'
+            OR module_grade = 'NULL'
+            OR bp_inspect = 'NULL'
+            OR sen_inspect = 'NULL'
+            OR hxb_inspect = 'NULL'
+            OR hxb_pedestal = 'NULL'
+        ))
         ORDER BY module_no DESC;
         """
 
@@ -6234,8 +6249,30 @@ class XMLSuccessBuilder:
                         "text": "No",
                         "value": "No"
                     },
-                    "label": "Show Failed Uploads",
+                    "label": "Show Failed Uploads Only",
                     "name": "show_failed_uploads",
+                    "options": [
+                        {
+                            "selected": True,
+                            "text": "No",
+                            "value": "No"
+                        },
+                        {
+                            "selected": False,
+                            "text": "Yes",
+                            "value": "Yes"
+                        }
+                    ],
+                    "query": "No,Yes",
+                    "type": "custom"
+                },
+                {
+                    "current": {
+                        "text": "No",
+                        "value": "No"
+                    },
+                    "label": "Show Unattempted Uploads Only",
+                    "name": "show_unattempted_uploads",
                     "options": [
                         {
                             "selected": True,
