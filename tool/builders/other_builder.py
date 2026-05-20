@@ -4473,6 +4473,9 @@ class ModuleAssemblyBuilder:
         self.final_grade = "{final_grade}"
         self.module_name = "{module_name}"
         self.untested_only = "{untested_only}"
+        self.incomplete_assembly_only = "{incomplete_assembly_only}"
+        self.unshipped_only = "{unshipped_only}"
+        self.unpacked_only = "{unpacked_only}"
 
         self.table_sql = f"""WITH
                 temp_table_0 AS (
@@ -4553,6 +4556,16 @@ class ModuleAssemblyBuilder:
             temp_table_2.module_name IS NULL
             OR temp_table_3.module_name IS NULL
           ))
+          AND ('${self.incomplete_assembly_only}' != 'Yes' OR (
+            temp_table_0.assembled IS NULL
+            OR temp_table_0.inspected IS NULL
+            OR temp_table_0.wb_back IS NULL
+            OR temp_table_0.encap_back IS NULL
+            OR temp_table_0.wb_front IS NULL
+            OR temp_table_0.encap_front IS NULL
+          ))
+          AND ('${self.unshipped_only}' != 'Yes' OR temp_table_0.shipped_datetime IS NULL)
+          AND ('${self.unpacked_only}' != 'Yes' OR temp_table_0.packed_datetime IS NULL)
         ORDER BY temp_table_0.module_no DESC"""
     
     def generate_dashboard_json(self):
@@ -5308,6 +5321,72 @@ class ModuleAssemblyBuilder:
                     "query": "\n            SELECT DISTINCT final_grade::text FROM module_qc_summary \n            UNION\n            SELECT 'NULL'\n            ORDER BY final_grade\n            ",
                     "refresh": 1,
                     "type": "query"
+                },
+                {
+                    "current": {
+                        "text": "No",
+                        "value": "No"
+                    },
+                    "label": "Unshipped Only",
+                    "name": "unshipped_only",
+                    "options": [
+                        {
+                            "selected": True,
+                            "text": "No",
+                            "value": "No"
+                        },
+                        {
+                            "selected": False,
+                            "text": "Yes",
+                            "value": "Yes"
+                        }
+                    ],
+                    "query": "No,Yes",
+                    "type": "custom"
+                },
+                {
+                    "current": {
+                        "text": "No",
+                        "value": "No"
+                    },
+                    "label": "Unpacked Only",
+                    "name": "unpacked_only",
+                    "options": [
+                        {
+                            "selected": True,
+                            "text": "No",
+                            "value": "No"
+                        },
+                        {
+                            "selected": False,
+                            "text": "Yes",
+                            "value": "Yes"
+                        }
+                    ],
+                    "query": "No,Yes",
+                    "type": "custom"
+                },
+                {
+                    "current": {
+                        "text": "No",
+                        "value": "No"
+                    },
+                    "label": "Incomplete Assembly Only",
+                    "name": "incomplete_assembly_only",
+                    "options": [
+                        {
+                            "selected": True,
+                            "text": "No",
+                            "value": "No"
+                        },
+                        {
+                            "selected": False,
+                            "text": "Yes",
+                            "value": "Yes"
+                        }
+                    ],
+                    "query": "No,Yes",
+                    "type": "custom"
                 },
                 {
                     "current": {
