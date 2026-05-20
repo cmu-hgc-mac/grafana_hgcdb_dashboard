@@ -4507,7 +4507,8 @@ class ModuleAssemblyBuilder:
                 AND ('${self.module_name}' = '' OR module_name ILIKE '%' || '${self.module_name}' || '%')
                 ORDER BY module_name, temp_c DESC
                 )
-        SELECT 
+        SELECT
+            ROW_NUMBER() OVER (ORDER BY temp_table_0.module_no DESC) AS no,
             temp_table_0.module_name::text,
             temp_table_0.assembled::text,
             temp_table_1.final_grade::text,
