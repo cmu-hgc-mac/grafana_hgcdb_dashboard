@@ -4472,6 +4472,7 @@ class ModuleAssemblyBuilder:
         self.geometry = "{geometry}"
         self.final_grade = "{final_grade}"
         self.module_name = "{module_name}"
+        self.untested_only = "{untested_only}"
 
         self.table_sql = f"""WITH
                 temp_table_0 AS (
@@ -4548,6 +4549,10 @@ class ModuleAssemblyBuilder:
                 (temp_table_1.final_grade IS NULL AND 'NULL' = ANY(ARRAY[${self.final_grade}])) OR 
                 temp_table_1.final_grade::text = ANY(ARRAY[${self.final_grade}]))
           AND bp_material IS NOT NULL AND resolution IS NOT NULL AND roc_version IS NOT NULL AND geometry IS NOT NULL
+          AND ('${self.untested_only}' != 'Yes' OR (
+            temp_table_2.module_name IS NULL
+            OR temp_table_3.module_name IS NULL
+          ))
         ORDER BY temp_table_0.module_no DESC"""
     
     def generate_dashboard_json(self):
@@ -5303,6 +5308,28 @@ class ModuleAssemblyBuilder:
                     "query": "\n            SELECT DISTINCT final_grade::text FROM module_qc_summary \n            UNION\n            SELECT 'NULL'\n            ORDER BY final_grade\n            ",
                     "refresh": 1,
                     "type": "query"
+                },
+                {
+                    "current": {
+                        "text": "No",
+                        "value": "No"
+                    },
+                    "label": "Untested Modules Only",
+                    "name": "untested_only",
+                    "options": [
+                        {
+                            "selected": True,
+                            "text": "No",
+                            "value": "No"
+                        },
+                        {
+                            "selected": False,
+                            "text": "Yes",
+                            "value": "Yes"
+                        }
+                    ],
+                    "query": "No,Yes",
+                    "type": "custom"
                 }
                 ]
             },
@@ -6249,7 +6276,7 @@ class XMLSuccessBuilder:
                         "text": "No",
                         "value": "No"
                     },
-                    "label": "Show Failed Uploads Only",
+                    "label": "Failed Uploads Only",
                     "name": "show_failed_uploads",
                     "options": [
                         {
@@ -6271,7 +6298,7 @@ class XMLSuccessBuilder:
                         "text": "No",
                         "value": "No"
                     },
-                    "label": "Show Unattempted Uploads Only",
+                    "label": "Unattempted Uploads Only",
                     "name": "show_unattempted_uploads",
                     "options": [
                         {
