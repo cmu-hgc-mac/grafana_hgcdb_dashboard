@@ -4554,14 +4554,14 @@ class ModuleAssemblyBuilder:
                 temp_table_1.final_grade::text = ANY(ARRAY[${self.final_grade}]))
           AND bp_material IS NOT NULL AND resolution IS NOT NULL AND roc_version IS NOT NULL AND geometry IS NOT NULL
           AND (
-            ('${self.test_status}' = 'No' AND '${self.assembly_status}' = 'No' AND '${self.ship_status}' = 'No' AND '${self.pack_status}' = 'No')
-            OR ('${self.test_status}' = 'Yes' AND (temp_table_2.module_name IS NULL OR temp_table_3.module_name IS NULL))
+            ('${self.test_status}' = 'All' AND '${self.assembly_status}' = 'All' AND '${self.ship_status}' = 'All' AND '${self.pack_status}' = 'All')
+            OR ('${self.test_status}' = 'Untested' AND (temp_table_2.module_name IS NULL OR temp_table_3.module_name IS NULL))
             OR ('${self.test_status}' = 'Tested' AND (temp_table_2.module_name IS NOT NULL AND temp_table_3.module_name IS NOT NULL))
-            OR ('${self.assembly_status}' = 'Yes' AND (temp_table_0.assembled IS NULL OR temp_table_0.inspected IS NULL OR temp_table_0.wb_back IS NULL OR temp_table_0.encap_back IS NULL OR temp_table_0.wb_front IS NULL OR temp_table_0.encap_front IS NULL))
+            OR ('${self.assembly_status}' = 'Incomplete' AND (temp_table_0.assembled IS NULL OR temp_table_0.inspected IS NULL OR temp_table_0.wb_back IS NULL OR temp_table_0.encap_back IS NULL OR temp_table_0.wb_front IS NULL OR temp_table_0.encap_front IS NULL))
             OR ('${self.assembly_status}' = 'Complete' AND (temp_table_0.assembled IS NOT NULL AND temp_table_0.inspected IS NOT NULL AND temp_table_0.wb_back IS NOT NULL AND temp_table_0.encap_back IS NOT NULL AND temp_table_0.wb_front IS NOT NULL AND temp_table_0.encap_front IS NOT NULL))
-            OR ('${self.ship_status}' = 'Yes' AND temp_table_0.shipped_datetime IS NULL)
+            OR ('${self.ship_status}' = 'Unshipped' AND temp_table_0.shipped_datetime IS NULL)
             OR ('${self.ship_status}' = 'Shipped' AND temp_table_0.shipped_datetime IS NOT NULL)
-            OR ('${self.pack_status}' = 'Yes' AND temp_table_0.packed_datetime IS NULL)
+            OR ('${self.pack_status}' = 'Unpacked' AND temp_table_0.packed_datetime IS NULL)
             OR ('${self.pack_status}' = 'Packed' AND temp_table_0.packed_datetime IS NOT NULL)
           )
         ORDER BY temp_table_0.module_no DESC"""
@@ -5323,7 +5323,7 @@ class ModuleAssemblyBuilder:
                 {
                     "current": {
                         "text": "All",
-                        "value": "No"
+                        "value": "All"
                     },
                     "label": "Ship status",
                     "name": "ship_status",
@@ -5331,7 +5331,7 @@ class ModuleAssemblyBuilder:
                         {
                             "selected": True,
                             "text": "All",
-                            "value": "No"
+                            "value": "All"
                         },
                         {
                             "selected": False,
@@ -5341,16 +5341,16 @@ class ModuleAssemblyBuilder:
                         {
                             "selected": False,
                             "text": "Unshipped",
-                            "value": "Yes"
+                            "value": "Unshipped"
                         }
                     ],
-                    "query": "No,Shipped,Yes",
+                    "query": "All,Shipped,Unshipped",
                     "type": "custom"
                 },
                 {
                     "current": {
                         "text": "All",
-                        "value": "No"
+                        "value": "All"
                     },
                     "label": "Pack status",
                     "name": "pack_status",
@@ -5358,7 +5358,7 @@ class ModuleAssemblyBuilder:
                         {
                             "selected": True,
                             "text": "All",
-                            "value": "No"
+                            "value": "All"
                         },
                         {
                             "selected": False,
@@ -5368,16 +5368,16 @@ class ModuleAssemblyBuilder:
                         {
                             "selected": False,
                             "text": "Unpacked",
-                            "value": "Yes"
+                            "value": "Unpacked"
                         }
                     ],
-                    "query": "No,Packed,Yes",
+                    "query": "All,Packed,Unpacked",
                     "type": "custom"
                 },
                 {
                     "current": {
                         "text": "All",
-                        "value": "No"
+                        "value": "All"
                     },
                     "label": "Assembly status",
                     "name": "assembly_status",
@@ -5385,7 +5385,7 @@ class ModuleAssemblyBuilder:
                         {
                             "selected": True,
                             "text": "All",
-                            "value": "No"
+                            "value": "All"
                         },
                         {
                             "selected": False,
@@ -5395,16 +5395,16 @@ class ModuleAssemblyBuilder:
                         {
                             "selected": False,
                             "text": "Incomplete",
-                            "value": "Yes"
+                            "value": "Incomplete"
                         }
                     ],
-                    "query": "No,Complete,Yes",
+                    "query": "All,Complete,Incomplete",
                     "type": "custom"
                 },
                 {
                     "current": {
                         "text": "All",
-                        "value": "No"
+                        "value": "All"
                     },
                     "label": "Test status",
                     "name": "test_status",
@@ -5412,7 +5412,7 @@ class ModuleAssemblyBuilder:
                         {
                             "selected": True,
                             "text": "All",
-                            "value": "No"
+                            "value": "All"
                         },
                         {
                             "selected": False,
@@ -5422,10 +5422,10 @@ class ModuleAssemblyBuilder:
                         {
                             "selected": False,
                             "text": "Untested",
-                            "value": "Yes"
+                            "value": "Untested"
                         }
                     ],
-                    "query": "No,Tested,Yes",
+                    "query": "All,Tested,Untested",
                     "type": "custom"
                 }
                 ]
