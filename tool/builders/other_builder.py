@@ -5424,7 +5424,8 @@ class XMLSuccessBuilder:
             SELECT DISTINCT ON (bond_pull_test.module_name) bond_pull_test.module_name, bond_pull_test.xml_upload_success
             FROM bond_pull_test
             ORDER BY bond_pull_test.module_name, bond_pull_test.xml_upload_success, bond_pull_test.module_no DESC
-        )
+        ),
+        result AS (
         SELECT
             module_info_failed.module_no,
             module_info_failed.module_name,
@@ -5528,7 +5529,25 @@ class XMLSuccessBuilder:
         LEFT JOIN bond_pull_failed
             ON module_info_failed.module_name = bond_pull_failed.module_name
         WHERE ('${{module_name}}' = '' OR module_info_failed.module_name ILIKE '%' || '${{module_name}}' || '%')
-        ORDER BY module_info_failed.module_no DESC;
+        ORDER BY module_info_failed.module_no DESC
+        )
+        SELECT * FROM result
+        WHERE '${{show_failed_uploads}}' != 'Yes' OR (
+            module_build = 'false'
+            OR proto_assembly = 'false'
+            OR proto_inspect = 'false'
+            OR module_assembly = 'false'
+            OR module_inspect = 'false'
+            OR module_wirebond = 'false'
+            OR module_iv = 'false'
+            OR module_pedestal = 'false'
+            OR module_grade = 'false'
+            OR bp_inspect = 'false'
+            OR sen_inspect = 'false'
+            OR hxb_inspect = 'false'
+            OR hxb_pedestal = 'false'
+        )
+        ORDER BY module_no DESC;
         """
 
     def generate_dashboard_json(self):
@@ -6209,6 +6228,28 @@ class XMLSuccessBuilder:
                     ],
                     "query": "",
                     "type": "textbox"
+                },
+                {
+                    "current": {
+                        "text": "No",
+                        "value": "No"
+                    },
+                    "label": "Show Failed Uploads",
+                    "name": "show_failed_uploads",
+                    "options": [
+                        {
+                            "selected": True,
+                            "text": "No",
+                            "value": "No"
+                        },
+                        {
+                            "selected": False,
+                            "text": "Yes",
+                            "value": "Yes"
+                        }
+                    ],
+                    "query": "No,Yes",
+                    "type": "custom"
                 }
             ]
         },
