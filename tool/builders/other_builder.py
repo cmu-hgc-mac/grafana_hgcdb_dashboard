@@ -5318,16 +5318,16 @@ class ModuleAssemblyBuilder:
                 },
                 {
                     "current": {
-                        "text": "",
-                        "value": ""
+                        "text": "No",
+                        "value": "No"
                     },
                     "label": "get Unshipped",
                     "name": "unshipped_only",
                     "options": [
                         {
                             "selected": True,
-                            "text": "",
-                            "value": ""
+                            "text": "No",
+                            "value": "No"
                         },
                         {
                             "selected": False,
@@ -5335,21 +5335,21 @@ class ModuleAssemblyBuilder:
                             "value": "Yes"
                         }
                     ],
-                    "query": ",Yes",
+                    "query": "No,Yes",
                     "type": "custom"
                 },
                 {
                     "current": {
-                        "text": "",
-                        "value": ""
+                        "text": "No",
+                        "value": "No"
                     },
                     "label": "get Unpacked",
                     "name": "unpacked_only",
                     "options": [
                         {
                             "selected": True,
-                            "text": "",
-                            "value": ""
+                            "text": "No",
+                            "value": "No"
                         },
                         {
                             "selected": False,
@@ -5357,21 +5357,21 @@ class ModuleAssemblyBuilder:
                             "value": "Yes"
                         }
                     ],
-                    "query": ",Yes",
+                    "query": "No,Yes",
                     "type": "custom"
                 },
                 {
                     "current": {
-                        "text": "",
-                        "value": ""
+                        "text": "No",
+                        "value": "No"
                     },
                     "label": "Assembly Incomplete",
                     "name": "incomplete_assembly_only",
                     "options": [
                         {
                             "selected": True,
-                            "text": "",
-                            "value": ""
+                            "text": "No",
+                            "value": "No"
                         },
                         {
                             "selected": False,
@@ -5379,21 +5379,21 @@ class ModuleAssemblyBuilder:
                             "value": "Yes"
                         }
                     ],
-                    "query": ",Yes",
+                    "query": "No,Yes",
                     "type": "custom"
                 },
                 {
                     "current": {
-                        "text": "",
-                        "value": ""
+                        "text": "No",
+                        "value": "No"
                     },
                     "label": "get Untested Modules",
                     "name": "untested_only",
                     "options": [
                         {
                             "selected": True,
-                            "text": "",
-                            "value": ""
+                            "text": "No",
+                            "value": "No"
                         },
                         {
                             "selected": False,
@@ -5401,7 +5401,7 @@ class ModuleAssemblyBuilder:
                             "value": "Yes"
                         }
                     ],
-                    "query": ",Yes",
+                    "query": "No,Yes",
                     "type": "custom"
                 }
                 ]
@@ -6346,16 +6346,16 @@ class XMLSuccessBuilder:
                 },
                 {
                     "current": {
-                        "text": "",
-                        "value": ""
+                        "text": "No",
+                        "value": "No"
                     },
                     "label": "Failed Uploads Only",
                     "name": "show_failed_uploads",
                     "options": [
                         {
                             "selected": True,
-                            "text": "",
-                            "value": ""
+                            "text": "No",
+                            "value": "No"
                         },
                         {
                             "selected": False,
@@ -6363,21 +6363,21 @@ class XMLSuccessBuilder:
                             "value": "Yes"
                         }
                     ],
-                    "query": ",Yes",
+                    "query": "No,Yes",
                     "type": "custom"
                 },
                 {
                     "current": {
-                        "text": "",
-                        "value": ""
+                        "text": "No",
+                        "value": "No"
                     },
                     "label": "Unattempted Uploads Only",
                     "name": "show_unattempted_uploads",
                     "options": [
                         {
                             "selected": True,
-                            "text": "",
-                            "value": ""
+                            "text": "No",
+                            "value": "No"
                         },
                         {
                             "selected": False,
@@ -6385,7 +6385,7 @@ class XMLSuccessBuilder:
                             "value": "Yes"
                         }
                     ],
-                    "query": ",Yes",
+                    "query": "No,Yes",
                     "type": "custom"
                 }
             ]
