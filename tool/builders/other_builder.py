@@ -4472,10 +4472,10 @@ class ModuleAssemblyBuilder:
         self.geometry = "{geometry}"
         self.final_grade = "{final_grade}"
         self.module_name = "{module_name}"
-        self.untested_only = "{untested_only}"
-        self.incomplete_assembly_only = "{incomplete_assembly_only}"
-        self.unshipped_only = "{unshipped_only}"
-        self.unpacked_only = "{unpacked_only}"
+        self.test_status = "{test_status}"
+        self.assembly_status = "{assembly_status}"
+        self.ship_status = "{ship_status}"
+        self.pack_status = "{pack_status}"
 
         self.table_sql = f"""WITH
                 temp_table_0 AS (
@@ -4554,11 +4554,15 @@ class ModuleAssemblyBuilder:
                 temp_table_1.final_grade::text = ANY(ARRAY[${self.final_grade}]))
           AND bp_material IS NOT NULL AND resolution IS NOT NULL AND roc_version IS NOT NULL AND geometry IS NOT NULL
           AND (
-            ('${self.untested_only}' != 'Yes' AND '${self.incomplete_assembly_only}' != 'Yes' AND '${self.unshipped_only}' != 'Yes' AND '${self.unpacked_only}' != 'Yes')
-            OR ('${self.untested_only}' = 'Yes' AND (temp_table_2.module_name IS NULL OR temp_table_3.module_name IS NULL))
-            OR ('${self.incomplete_assembly_only}' = 'Yes' AND (temp_table_0.assembled IS NULL OR temp_table_0.inspected IS NULL OR temp_table_0.wb_back IS NULL OR temp_table_0.encap_back IS NULL OR temp_table_0.wb_front IS NULL OR temp_table_0.encap_front IS NULL))
-            OR ('${self.unshipped_only}' = 'Yes' AND temp_table_0.shipped_datetime IS NULL)
-            OR ('${self.unpacked_only}' = 'Yes' AND temp_table_0.packed_datetime IS NULL)
+            ('${self.test_status}' = 'No' AND '${self.assembly_status}' = 'No' AND '${self.ship_status}' = 'No' AND '${self.pack_status}' = 'No')
+            OR ('${self.test_status}' = 'Yes' AND (temp_table_2.module_name IS NULL OR temp_table_3.module_name IS NULL))
+            OR ('${self.test_status}' = 'Tested' AND (temp_table_2.module_name IS NOT NULL AND temp_table_3.module_name IS NOT NULL))
+            OR ('${self.assembly_status}' = 'Yes' AND (temp_table_0.assembled IS NULL OR temp_table_0.inspected IS NULL OR temp_table_0.wb_back IS NULL OR temp_table_0.encap_back IS NULL OR temp_table_0.wb_front IS NULL OR temp_table_0.encap_front IS NULL))
+            OR ('${self.assembly_status}' = 'Complete' AND (temp_table_0.assembled IS NOT NULL AND temp_table_0.inspected IS NOT NULL AND temp_table_0.wb_back IS NOT NULL AND temp_table_0.encap_back IS NOT NULL AND temp_table_0.wb_front IS NOT NULL AND temp_table_0.encap_front IS NOT NULL))
+            OR ('${self.ship_status}' = 'Yes' AND temp_table_0.shipped_datetime IS NULL)
+            OR ('${self.ship_status}' = 'Shipped' AND temp_table_0.shipped_datetime IS NOT NULL)
+            OR ('${self.pack_status}' = 'Yes' AND temp_table_0.packed_datetime IS NULL)
+            OR ('${self.pack_status}' = 'Packed' AND temp_table_0.packed_datetime IS NOT NULL)
           )
         ORDER BY temp_table_0.module_no DESC"""
     
@@ -5318,90 +5322,110 @@ class ModuleAssemblyBuilder:
                 },
                 {
                     "current": {
-                        "text": "No",
+                        "text": "All",
                         "value": "No"
                     },
-                    "label": "get Unshipped",
-                    "name": "unshipped_only",
+                    "label": "Ship status",
+                    "name": "ship_status",
                     "options": [
                         {
                             "selected": True,
-                            "text": "No",
+                            "text": "All",
                             "value": "No"
                         },
                         {
                             "selected": False,
-                            "text": "Yes",
+                            "text": "Shipped",
+                            "value": "Shipped"
+                        },
+                        {
+                            "selected": False,
+                            "text": "Unshipped",
                             "value": "Yes"
                         }
                     ],
-                    "query": "No,Yes",
+                    "query": "No,Shipped,Yes",
                     "type": "custom"
                 },
                 {
                     "current": {
-                        "text": "No",
+                        "text": "All",
                         "value": "No"
                     },
-                    "label": "get Unpacked",
-                    "name": "unpacked_only",
+                    "label": "Pack status",
+                    "name": "pack_status",
                     "options": [
                         {
                             "selected": True,
-                            "text": "No",
+                            "text": "All",
                             "value": "No"
                         },
                         {
                             "selected": False,
-                            "text": "Yes",
+                            "text": "Packed",
+                            "value": "Packed"
+                        },
+                        {
+                            "selected": False,
+                            "text": "Unpacked",
                             "value": "Yes"
                         }
                     ],
-                    "query": "No,Yes",
+                    "query": "No,Packed,Yes",
                     "type": "custom"
                 },
                 {
                     "current": {
-                        "text": "No",
+                        "text": "All",
                         "value": "No"
                     },
-                    "label": "Assembly Incomplete",
-                    "name": "incomplete_assembly_only",
+                    "label": "Assembly status",
+                    "name": "assembly_status",
                     "options": [
                         {
                             "selected": True,
-                            "text": "No",
+                            "text": "All",
                             "value": "No"
                         },
                         {
                             "selected": False,
-                            "text": "Yes",
+                            "text": "Complete",
+                            "value": "Complete"
+                        },
+                        {
+                            "selected": False,
+                            "text": "Incomplete",
                             "value": "Yes"
                         }
                     ],
-                    "query": "No,Yes",
+                    "query": "No,Complete,Yes",
                     "type": "custom"
                 },
                 {
                     "current": {
-                        "text": "No",
+                        "text": "All",
                         "value": "No"
                     },
-                    "label": "get Untested Modules",
-                    "name": "untested_only",
+                    "label": "Test status",
+                    "name": "test_status",
                     "options": [
                         {
                             "selected": True,
-                            "text": "No",
+                            "text": "All",
                             "value": "No"
                         },
                         {
                             "selected": False,
-                            "text": "Yes",
+                            "text": "Tested",
+                            "value": "Tested"
+                        },
+                        {
+                            "selected": False,
+                            "text": "Untested",
                             "value": "Yes"
                         }
                     ],
-                    "query": "No,Yes",
+                    "query": "No,Tested,Yes",
                     "type": "custom"
                 }
                 ]
