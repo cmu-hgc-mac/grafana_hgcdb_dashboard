@@ -4553,20 +4553,13 @@ class ModuleAssemblyBuilder:
                 (temp_table_1.final_grade IS NULL AND 'NULL' = ANY(ARRAY[${self.final_grade}])) OR 
                 temp_table_1.final_grade::text = ANY(ARRAY[${self.final_grade}]))
           AND bp_material IS NOT NULL AND resolution IS NOT NULL AND roc_version IS NOT NULL AND geometry IS NOT NULL
-          AND ('${self.untested_only}' != 'Yes' OR (
-            temp_table_2.module_name IS NULL
-            OR temp_table_3.module_name IS NULL
-          ))
-          AND ('${self.incomplete_assembly_only}' != 'Yes' OR (
-            temp_table_0.assembled IS NULL
-            OR temp_table_0.inspected IS NULL
-            OR temp_table_0.wb_back IS NULL
-            OR temp_table_0.encap_back IS NULL
-            OR temp_table_0.wb_front IS NULL
-            OR temp_table_0.encap_front IS NULL
-          ))
-          AND ('${self.unshipped_only}' != 'Yes' OR temp_table_0.shipped_datetime IS NULL)
-          AND ('${self.unpacked_only}' != 'Yes' OR temp_table_0.packed_datetime IS NULL)
+          AND (
+            ('${self.untested_only}' != 'Yes' AND '${self.incomplete_assembly_only}' != 'Yes' AND '${self.unshipped_only}' != 'Yes' AND '${self.unpacked_only}' != 'Yes')
+            OR ('${self.untested_only}' = 'Yes' AND (temp_table_2.module_name IS NULL OR temp_table_3.module_name IS NULL))
+            OR ('${self.incomplete_assembly_only}' = 'Yes' AND (temp_table_0.assembled IS NULL OR temp_table_0.inspected IS NULL OR temp_table_0.wb_back IS NULL OR temp_table_0.encap_back IS NULL OR temp_table_0.wb_front IS NULL OR temp_table_0.encap_front IS NULL))
+            OR ('${self.unshipped_only}' = 'Yes' AND temp_table_0.shipped_datetime IS NULL)
+            OR ('${self.unpacked_only}' = 'Yes' AND temp_table_0.packed_datetime IS NULL)
+          )
         ORDER BY temp_table_0.module_no DESC"""
     
     def generate_dashboard_json(self):
@@ -5328,7 +5321,7 @@ class ModuleAssemblyBuilder:
                         "text": "No",
                         "value": "No"
                     },
-                    "label": "Unshipped Only",
+                    "label": "get Unshipped",
                     "name": "unshipped_only",
                     "options": [
                         {
@@ -5350,7 +5343,7 @@ class ModuleAssemblyBuilder:
                         "text": "No",
                         "value": "No"
                     },
-                    "label": "Unpacked Only",
+                    "label": "get Unpacked",
                     "name": "unpacked_only",
                     "options": [
                         {
@@ -5372,7 +5365,7 @@ class ModuleAssemblyBuilder:
                         "text": "No",
                         "value": "No"
                     },
-                    "label": "Incomplete Assembly Only",
+                    "label": "Assembly Incomplete",
                     "name": "incomplete_assembly_only",
                     "options": [
                         {
@@ -5394,7 +5387,7 @@ class ModuleAssemblyBuilder:
                         "text": "No",
                         "value": "No"
                     },
-                    "label": "Untested Modules Only",
+                    "label": "get Untested Modules",
                     "name": "untested_only",
                     "options": [
                         {
