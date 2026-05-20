@@ -5632,36 +5632,23 @@ class XMLSuccessBuilder:
         ORDER BY module_info_failed.module_no DESC
         )
         SELECT * FROM result
-        WHERE ('${{show_failed_uploads}}' != 'Yes' OR (
-            module_build = 'false'
-            OR proto_assembly = 'false'
-            OR proto_inspect = 'false'
-            OR module_assembly = 'false'
-            OR module_inspect = 'false'
-            OR module_wirebond = 'false'
-            OR module_iv = 'false'
-            OR module_pedestal = 'false'
-            OR module_grade = 'false'
-            OR bp_inspect = 'false'
-            OR sen_inspect = 'false'
-            OR hxb_inspect = 'false'
-            OR hxb_pedestal = 'false'
-        ))
-        AND ('${{show_unattempted_uploads}}' != 'Yes' OR (
-            module_build = 'NULL'
-            OR proto_assembly = 'NULL'
-            OR proto_inspect = 'NULL'
-            OR module_assembly = 'NULL'
-            OR module_inspect = 'NULL'
-            OR module_wirebond = 'NULL'
-            OR module_iv = 'NULL'
-            OR module_pedestal = 'NULL'
-            OR module_grade = 'NULL'
-            OR bp_inspect = 'NULL'
-            OR sen_inspect = 'NULL'
-            OR hxb_inspect = 'NULL'
-            OR hxb_pedestal = 'NULL'
-        ))
+        WHERE (
+            ('${{show_failed_uploads}}' != 'Yes' AND '${{show_unattempted_uploads}}' != 'Yes')
+            OR ('${{show_failed_uploads}}' = 'Yes' AND (
+                module_build = 'false' OR proto_assembly = 'false' OR proto_inspect = 'false'
+                OR module_assembly = 'false' OR module_inspect = 'false' OR module_wirebond = 'false'
+                OR module_iv = 'false' OR module_pedestal = 'false' OR module_grade = 'false'
+                OR bp_inspect = 'false' OR sen_inspect = 'false' OR hxb_inspect = 'false'
+                OR hxb_pedestal = 'false'
+            ))
+            OR ('${{show_unattempted_uploads}}' = 'Yes' AND (
+                module_build = 'NULL' OR proto_assembly = 'NULL' OR proto_inspect = 'NULL'
+                OR module_assembly = 'NULL' OR module_inspect = 'NULL' OR module_wirebond = 'NULL'
+                OR module_iv = 'NULL' OR module_pedestal = 'NULL' OR module_grade = 'NULL'
+                OR bp_inspect = 'NULL' OR sen_inspect = 'NULL' OR hxb_inspect = 'NULL'
+                OR hxb_pedestal = 'NULL'
+            ))
+        )
         ORDER BY module_no DESC;
         """
 
