@@ -3167,6 +3167,389 @@ class OffsetPlotsBuilder:
                 "type": "xychart"
                 },
 
+    ### Combined Proto + Module Offset
+                {
+                "datasource": {
+                    "type": "grafana-postgresql-datasource",
+                    "uid": self.datasource_uid
+                },
+                "fieldConfig": {
+                    "defaults": {
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "custom": {
+                        "axisBorderShow": False,
+                        "axisCenteredZero": True,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "fillOpacity": 50,
+                        "hideFrom": {
+                        "legend": False,
+                        "tooltip": False,
+                        "viz": False
+                        },
+                        "pointShape": "circle",
+                        "pointSize": {
+                        "fixed": 5
+                        },
+                        "pointStrokeWidth": 1,
+                        "scaleDistribution": {
+                        "type": "linear"
+                        },
+                        "show": "points"
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                        {
+                            "color": "green"
+                        }
+                        ]
+                    }
+                    },
+                    "overrides": [
+                    {
+                        "matcher": {
+                        "id": "byFrameRefID",
+                        "options": "A"
+                        },
+                        "properties": [
+                        {
+                            "id": "displayName",
+                            "value": "proto-module"
+                        },
+                        {
+                            "id": "color",
+                            "value": {
+                            "fixedColor": "yellow",
+                            "mode": "fixed"
+                            }
+                        }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                        "id": "byFrameRefID",
+                        "options": "B"
+                        },
+                        "properties": [
+                        {
+                            "id": "displayName",
+                            "value": "module"
+                        },
+                        {
+                            "id": "color",
+                            "value": {
+                            "fixedColor": "green",
+                            "mode": "fixed"
+                            }
+                        }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                        "id": "byName",
+                        "options": "x_offset_mu"
+                        },
+                        "properties": [
+                        {
+                            "id": "custom.axisLabel",
+                            "value": "x_offset_mu"
+                        }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                        "id": "byName",
+                        "options": "y_offset_mu"
+                        },
+                        "properties": [
+                        {
+                            "id": "custom.axisLabel",
+                            "value": "y_offset_mu"
+                        }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                        "id": "byFrameRefID",
+                        "options": "C"
+                        },
+                        "properties": [
+                        {
+                            "id": "color",
+                            "value": {
+                            "fixedColor": "blue",
+                            "mode": "fixed"
+                            }
+                        },
+                        {
+                            "id": "displayName",
+                            "value": "75 μm"
+                        },
+                        {
+                            "id": "custom.show",
+                            "value": "lines"
+                        },
+                        {
+                            "id": "custom.fillOpacity",
+                            "value": 0
+                        },
+                        {
+                            "id": "custom.lineWidth",
+                            "value": 2
+                        },
+                        {
+                            "id": "custom.pointSize",
+                            "value": {"fixed": 0}
+                        }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                        "id": "byFrameRefID",
+                        "options": "D"
+                        },
+                        "properties": [
+                        {
+                            "id": "color",
+                            "value": {
+                            "fixedColor": "red",
+                            "mode": "fixed"
+                            }
+                        },
+                        {
+                            "id": "displayName",
+                            "value": "110 μm"
+                        },
+                        {
+                            "id": "custom.show",
+                            "value": "lines"
+                        },
+                        {
+                            "id": "custom.fillOpacity",
+                            "value": 0
+                        },
+                        {
+                            "id": "custom.lineWidth",
+                            "value": 2
+                        },
+                        {
+                            "id": "custom.pointSize",
+                            "value": {"fixed": 0}
+                        }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                        "id": "byFrameRefID",
+                        "options": "E"
+                        },
+                        "properties": [
+                        {
+                            "id": "color",
+                            "value": {
+                            "fixedColor": "white",
+                            "mode": "fixed"
+                            }
+                        },
+                        {
+                            "id": "displayName",
+                            "value": "Tray"
+                        },
+                        {
+                            "id": "custom.show",
+                            "value": "points"
+                        },
+                        {
+                            "id": "custom.pointSize",
+                            "value": {"fixed": 10}
+                        },
+                        {
+                            "id": "custom.pointShape",
+                            "value": "circle"
+                        }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                        "id": "byFrameRefID",
+                        "options": "F"
+                        },
+                        "properties": [
+                        {
+                            "id": "custom.hideFrom",
+                            "value": {
+                            "legend": True,
+                            "tooltip": True,
+                            "viz": True
+                            }
+                        }
+                        ]
+                    }
+                    ]
+                },
+                "gridPos": {
+                    "h": 14,
+                    "w": 12,
+                    "x": 0,
+                    "y": 28
+                },
+                "id": 100,
+                "options": {
+                    "legend": {
+                    "calcs": [],
+                    "displayMode": "list",
+                    "placement": "bottom",
+                    "showLegend": True
+                    },
+                    "mapping": "auto",
+                    "series": [
+                    {}
+                    ],
+                    "tooltip": {
+                    "hideZeros": False,
+                    "mode": "single",
+                    "sort": "none"
+                    }
+                },
+                "pluginVersion": "12.0.0",
+                "targets": [
+                    {
+                    "datasource": {
+                        "type": "grafana-postgresql-datasource",
+                        "uid": self.datasource_uid
+                    },
+                    "editorMode": "code",
+                    "format": "table",
+                    "rawQuery": True,
+                    "rawSql": self.proto_offset_sql,
+                    "refId": "A",
+                    "sql": {
+                        "columns": [
+                        {
+                            "parameters": [],
+                            "type": "function"
+                        }
+                        ],
+                        "groupBy": [
+                        {
+                            "property": {
+                            "type": "string"
+                            },
+                            "type": "groupBy"
+                        }
+                        ],
+                        "limit": 50
+                    }
+                    },
+                    {
+                    "datasource": {
+                        "type": "grafana-postgresql-datasource",
+                        "uid": self.datasource_uid
+                    },
+                    "editorMode": "code",
+                    "format": "table",
+                    "rawQuery": True,
+                    "rawSql": self.module_offset_sql,
+                    "refId": "B",
+                    "sql": {
+                        "columns": [
+                        {
+                            "parameters": [],
+                            "type": "function"
+                        }
+                        ],
+                        "groupBy": [
+                        {
+                            "property": {
+                            "type": "string"
+                            },
+                            "type": "groupBy"
+                        }
+                        ],
+                        "limit": 50
+                    }
+                    },
+                    {
+                    "datasource": {
+                        "type": "grafana-postgresql-datasource",
+                        "uid": self.datasource_uid
+                    },
+                    "editorMode": "code",
+                    "format": "table",
+                    "rawQuery": True,
+                    "rawSql": "SELECT * FROM (VALUES (-75,-75),(-75,75),(75,75),(75,-75),(-75,-75)) AS t(x_offset_mu, y_offset_mu)",
+                    "refId": "C"
+                    },
+                    {
+                    "datasource": {
+                        "type": "grafana-postgresql-datasource",
+                        "uid": self.datasource_uid
+                    },
+                    "editorMode": "code",
+                    "format": "table",
+                    "rawQuery": True,
+                    "rawSql": "SELECT * FROM (VALUES (-110,-110),(-110,110),(110,110),(110,-110),(-110,-110)) AS t(x_offset_mu, y_offset_mu)",
+                    "refId": "D"
+                    },
+                    {
+                    "datasource": {
+                        "type": "grafana-postgresql-datasource",
+                        "uid": self.datasource_uid
+                    },
+                    "editorMode": "code",
+                    "format": "table",
+                    "rawQuery": True,
+                    "rawSql": "SELECT * FROM (VALUES (0,0)) AS t(x_offset_mu, y_offset_mu)",
+                    "refId": "E"
+                    },
+                    {
+                    "datasource": {
+                        "type": "grafana-postgresql-datasource",
+                        "uid": self.datasource_uid
+                    },
+                    "editorMode": "code",
+                    "format": "table",
+                    "rawQuery": True,
+                    "rawSql": self.proto_offset_range_sql,
+                    "refId": "F"
+                    }
+                ],
+                "title": "Proto-Module + Module Offset",
+                "type": "xychart"
+                },
+
+    ### Blank panel (right)
+                {
+                "datasource": {
+                    "type": "grafana-postgresql-datasource",
+                    "uid": self.datasource_uid
+                },
+                "fieldConfig": {
+                    "defaults": {},
+                    "overrides": []
+                },
+                "gridPos": {
+                    "h": 14,
+                    "w": 12,
+                    "x": 12,
+                    "y": 28
+                },
+                "id": 101,
+                "options": {
+                    "content": "",
+                    "mode": "markdown"
+                },
+                "pluginVersion": "12.0.0",
+                "targets": [],
+                "title": "",
+                "type": "text"
+                },
+
     ### Module Average Thickness (mm)
                 {
                 "id": 3,
