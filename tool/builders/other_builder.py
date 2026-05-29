@@ -3680,7 +3680,7 @@ class OffsetPlotsBuilder:
                         },
                         {
                             "id": "displayName",
-                            "value": "+0.04°"
+                            "value": "±0.04°"
                         },
                         {
                             "id": "custom.show",
@@ -3709,13 +3709,13 @@ class OffsetPlotsBuilder:
                         {
                             "id": "color",
                             "value": {
-                            "fixedColor": "blue",
+                            "fixedColor": "red",
                             "mode": "fixed"
                             }
                         },
                         {
                             "id": "displayName",
-                            "value": "-0.04°"
+                            "value": "±0.1°"
                         },
                         {
                             "id": "custom.show",
@@ -3739,76 +3739,6 @@ class OffsetPlotsBuilder:
                         "matcher": {
                         "id": "byFrameRefID",
                         "options": "E"
-                        },
-                        "properties": [
-                        {
-                            "id": "color",
-                            "value": {
-                            "fixedColor": "red",
-                            "mode": "fixed"
-                            }
-                        },
-                        {
-                            "id": "displayName",
-                            "value": "+0.1°"
-                        },
-                        {
-                            "id": "custom.show",
-                            "value": "lines"
-                        },
-                        {
-                            "id": "custom.fillOpacity",
-                            "value": 0
-                        },
-                        {
-                            "id": "custom.lineWidth",
-                            "value": 2
-                        },
-                        {
-                            "id": "custom.pointSize",
-                            "value": {"fixed": 0}
-                        }
-                        ]
-                    },
-                    {
-                        "matcher": {
-                        "id": "byFrameRefID",
-                        "options": "F"
-                        },
-                        "properties": [
-                        {
-                            "id": "color",
-                            "value": {
-                            "fixedColor": "red",
-                            "mode": "fixed"
-                            }
-                        },
-                        {
-                            "id": "displayName",
-                            "value": "-0.1°"
-                        },
-                        {
-                            "id": "custom.show",
-                            "value": "lines"
-                        },
-                        {
-                            "id": "custom.fillOpacity",
-                            "value": 0
-                        },
-                        {
-                            "id": "custom.lineWidth",
-                            "value": 2
-                        },
-                        {
-                            "id": "custom.pointSize",
-                            "value": {"fixed": 0}
-                        }
-                        ]
-                    },
-                    {
-                        "matcher": {
-                        "id": "byFrameRefID",
-                        "options": "H"
                         },
                         "properties": [
                         {
@@ -3839,7 +3769,7 @@ class OffsetPlotsBuilder:
                     {
                         "matcher": {
                         "id": "byFrameRefID",
-                        "options": "G"
+                        "options": "F"
                         },
                         "properties": [
                         {
@@ -3944,7 +3874,7 @@ class OffsetPlotsBuilder:
                     "editorMode": "code",
                     "format": "table",
                     "rawQuery": True,
-                    "rawSql": "SELECT * FROM (VALUES (0.04, 1), (0.04, -1)) AS t(ang_offset_deg, y_zero)",
+                    "rawSql": "SELECT * FROM (VALUES (0.04, 1), (0.04, -1), (NULL, NULL), (-0.04, 1), (-0.04, -1)) AS t(ang_offset_deg, y_zero)",
                     "refId": "C"
                     },
                     {
@@ -3955,7 +3885,7 @@ class OffsetPlotsBuilder:
                     "editorMode": "code",
                     "format": "table",
                     "rawQuery": True,
-                    "rawSql": "SELECT * FROM (VALUES (-0.04, 1), (-0.04, -1)) AS t(ang_offset_deg, y_zero)",
+                    "rawSql": "SELECT * FROM (VALUES (0.1, 1), (0.1, -1), (NULL, NULL), (-0.1, 1), (-0.1, -1)) AS t(ang_offset_deg, y_zero)",
                     "refId": "D"
                     },
                     {
@@ -3966,7 +3896,7 @@ class OffsetPlotsBuilder:
                     "editorMode": "code",
                     "format": "table",
                     "rawQuery": True,
-                    "rawSql": "SELECT * FROM (VALUES (0.1, 1), (0.1, -1)) AS t(ang_offset_deg, y_zero)",
+                    "rawSql": "SELECT * FROM (VALUES (0, 0)) AS t(ang_offset_deg, y_zero)",
                     "refId": "E"
                     },
                     {
@@ -3977,30 +3907,8 @@ class OffsetPlotsBuilder:
                     "editorMode": "code",
                     "format": "table",
                     "rawQuery": True,
-                    "rawSql": "SELECT * FROM (VALUES (-0.1, 1), (-0.1, -1)) AS t(ang_offset_deg, y_zero)",
-                    "refId": "F"
-                    },
-                    {
-                    "datasource": {
-                        "type": "grafana-postgresql-datasource",
-                        "uid": self.datasource_uid
-                    },
-                    "editorMode": "code",
-                    "format": "table",
-                    "rawQuery": True,
-                    "rawSql": "SELECT * FROM (VALUES (0, 0)) AS t(ang_offset_deg, y_zero)",
-                    "refId": "H"
-                    },
-                    {
-                    "datasource": {
-                        "type": "grafana-postgresql-datasource",
-                        "uid": self.datasource_uid
-                    },
-                    "editorMode": "code",
-                    "format": "table",
-                    "rawQuery": True,
                     "rawSql": self.proto_ang_range_sql,
-                    "refId": "G"
+                    "refId": "F"
                     }
                 ],
                 "title": "Angular (deg) offsets for modules and protomodules",
