@@ -2548,7 +2548,7 @@ class OffsetPlotsBuilder:
                     "uid": self.datasource_uid
                 },
                 "gridPos": {
-                    "h": 12,
+                    "h": 14,
                     "w": 12,
                     "x": 0,
                     "y": 0
@@ -3004,7 +3004,7 @@ class OffsetPlotsBuilder:
                     ]
                 },
                 "gridPos": {
-                    "h": 12,
+                    "h": 14,
                     "w": 12,
                     "x": 12,
                     "y": 0
