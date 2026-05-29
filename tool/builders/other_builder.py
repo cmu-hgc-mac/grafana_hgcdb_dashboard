@@ -2622,6 +2622,17 @@ class OffsetPlotsBuilder:
                     "rawQuery": True,
                     "rawSql": "SELECT * FROM (VALUES (-110,-110),(-110,110),(110,110),(110,-110),(-110,-110)) AS t(x_offset_mu, y_offset_mu)",
                     "refId": "C"
+                    },
+                    {
+                    "datasource": {
+                        "type": "grafana-postgresql-datasource",
+                        "uid": self.datasource_uid
+                    },
+                    "editorMode": "code",
+                    "format": "table",
+                    "rawQuery": True,
+                    "rawSql": "SELECT * FROM (VALUES (0,0)) AS t(x_offset_mu, y_offset_mu)",
+                    "refId": "D"
                     }
                 ],
                 "fieldConfig": {
@@ -2664,6 +2675,42 @@ class OffsetPlotsBuilder:
                     }
                     },
                     "overrides": [
+                    {
+                        "matcher": {
+                        "id": "byFrameRefID",
+                        "options": "A"
+                        },
+                        "properties": [
+                        {
+                            "id": "displayName",
+                            "value": "module"
+                        }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                        "id": "byName",
+                        "options": "x_offset_mu"
+                        },
+                        "properties": [
+                        {
+                            "id": "custom.axisLabel",
+                            "value": "x_offset_mu"
+                        }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                        "id": "byName",
+                        "options": "y_offset_mu"
+                        },
+                        "properties": [
+                        {
+                            "id": "custom.axisLabel",
+                            "value": "y_offset_mu"
+                        }
+                        ]
+                    },
                     {
                         "matcher": {
                         "id": "byFrameRefID",
@@ -2731,6 +2778,37 @@ class OffsetPlotsBuilder:
                         {
                             "id": "custom.pointSize",
                             "value": {"fixed": 0}
+                        }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                        "id": "byFrameRefID",
+                        "options": "D"
+                        },
+                        "properties": [
+                        {
+                            "id": "color",
+                            "value": {
+                            "fixedColor": "white",
+                            "mode": "fixed"
+                            }
+                        },
+                        {
+                            "id": "displayName",
+                            "value": "Tray"
+                        },
+                        {
+                            "id": "custom.show",
+                            "value": "points"
+                        },
+                        {
+                            "id": "custom.pointSize",
+                            "value": {"fixed": 10}
+                        },
+                        {
+                            "id": "custom.pointShape",
+                            "value": "circle"
                         }
                         ]
                     }
@@ -2789,6 +2867,42 @@ class OffsetPlotsBuilder:
                     {
                         "matcher": {
                         "id": "byFrameRefID",
+                        "options": "A"
+                        },
+                        "properties": [
+                        {
+                            "id": "displayName",
+                            "value": "proto-module"
+                        }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                        "id": "byName",
+                        "options": "x_offset_mu"
+                        },
+                        "properties": [
+                        {
+                            "id": "custom.axisLabel",
+                            "value": "x_offset_mu"
+                        }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                        "id": "byName",
+                        "options": "y_offset_mu"
+                        },
+                        "properties": [
+                        {
+                            "id": "custom.axisLabel",
+                            "value": "y_offset_mu"
+                        }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                        "id": "byFrameRefID",
                         "options": "B"
                         },
                         "properties": [
@@ -2853,6 +2967,37 @@ class OffsetPlotsBuilder:
                         {
                             "id": "custom.pointSize",
                             "value": {"fixed": 0}
+                        }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                        "id": "byFrameRefID",
+                        "options": "D"
+                        },
+                        "properties": [
+                        {
+                            "id": "color",
+                            "value": {
+                            "fixedColor": "white",
+                            "mode": "fixed"
+                            }
+                        },
+                        {
+                            "id": "displayName",
+                            "value": "Tray"
+                        },
+                        {
+                            "id": "custom.show",
+                            "value": "points"
+                        },
+                        {
+                            "id": "custom.pointSize",
+                            "value": {"fixed": 10}
+                        },
+                        {
+                            "id": "custom.pointShape",
+                            "value": "circle"
                         }
                         ]
                     }
@@ -2933,6 +3078,17 @@ class OffsetPlotsBuilder:
                     "rawQuery": True,
                     "rawSql": "SELECT * FROM (VALUES (-110,-110),(-110,110),(110,110),(110,-110),(-110,-110)) AS t(x_offset_mu, y_offset_mu)",
                     "refId": "C"
+                    },
+                    {
+                    "datasource": {
+                        "type": "grafana-postgresql-datasource",
+                        "uid": self.datasource_uid
+                    },
+                    "editorMode": "code",
+                    "format": "table",
+                    "rawQuery": True,
+                    "rawSql": "SELECT * FROM (VALUES (0,0)) AS t(x_offset_mu, y_offset_mu)",
+                    "refId": "D"
                     }
                 ],
                 "title": "Proto-Module Offset",
