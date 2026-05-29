@@ -2539,7 +2539,7 @@ class OffsetPlotsBuilder:
         """ + self.proto_filter_sql
 
         self.module_ang_vs_zero_sql = """
-        SELECT module_inspect.ang_offset_deg, 0 AS y_zero, module_inspect.module_name
+        SELECT module_inspect.ang_offset_deg, 0.05 AS y_zero, module_inspect.module_name
         FROM module_inspect
         """ + self.module_filter_sql
 
