@@ -3251,7 +3251,7 @@ class OffsetPlotsBuilder:
                         "properties": [
                         {
                             "id": "displayName",
-                            "value": "proto-module"
+                            "value": "Sensor w.r.t Tray"
                         },
                         {
                             "id": "color",
@@ -3270,7 +3270,7 @@ class OffsetPlotsBuilder:
                         "properties": [
                         {
                             "id": "displayName",
-                            "value": "module"
+                            "value": "Hxb w.r.t Tray"
                         },
                         {
                             "id": "color",
@@ -3551,7 +3551,7 @@ class OffsetPlotsBuilder:
                     "refId": "F"
                     }
                 ],
-                "title": "Proto-Module + Module Offset",
+                "title": "X-Y offsets for modules and protomodules",
                 "type": "xychart"
                 },
 
@@ -3607,7 +3607,7 @@ class OffsetPlotsBuilder:
                         "properties": [
                         {
                             "id": "displayName",
-                            "value": "proto-module"
+                            "value": "Sensor w.r.t Tray"
                         },
                         {
                             "id": "color",
@@ -3626,7 +3626,7 @@ class OffsetPlotsBuilder:
                         "properties": [
                         {
                             "id": "displayName",
-                            "value": "module"
+                            "value": "Hxb w.r.t Tray"
                         },
                         {
                             "id": "color",
@@ -3656,8 +3656,12 @@ class OffsetPlotsBuilder:
                         },
                         "properties": [
                         {
-                            "id": "custom.axisLabel",
-                            "value": "y_zero"
+                            "id": "custom.axisPlacement",
+                            "value": "hidden"
+                        },
+                        {
+                            "id": "custom.axisGridShow",
+                            "value": False
                         }
                         ]
                     },
@@ -3746,7 +3750,7 @@ class OffsetPlotsBuilder:
                         },
                         {
                             "id": "displayName",
-                            "value": "+1.00°"
+                            "value": "+0.1°"
                         },
                         {
                             "id": "custom.show",
@@ -3781,7 +3785,7 @@ class OffsetPlotsBuilder:
                         },
                         {
                             "id": "displayName",
-                            "value": "-1.00°"
+                            "value": "-0.1°"
                         },
                         {
                             "id": "custom.show",
@@ -3798,6 +3802,37 @@ class OffsetPlotsBuilder:
                         {
                             "id": "custom.pointSize",
                             "value": {"fixed": 0}
+                        }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                        "id": "byFrameRefID",
+                        "options": "H"
+                        },
+                        "properties": [
+                        {
+                            "id": "color",
+                            "value": {
+                            "fixedColor": "white",
+                            "mode": "fixed"
+                            }
+                        },
+                        {
+                            "id": "displayName",
+                            "value": "Tray"
+                        },
+                        {
+                            "id": "custom.show",
+                            "value": "points"
+                        },
+                        {
+                            "id": "custom.pointSize",
+                            "value": {"fixed": 10}
+                        },
+                        {
+                            "id": "custom.pointShape",
+                            "value": "circle"
                         }
                         ]
                     },
@@ -3931,7 +3966,7 @@ class OffsetPlotsBuilder:
                     "editorMode": "code",
                     "format": "table",
                     "rawQuery": True,
-                    "rawSql": "SELECT * FROM (VALUES (1.00, 1), (1.00, -1)) AS t(ang_offset_deg, y_zero)",
+                    "rawSql": "SELECT * FROM (VALUES (0.1, 1), (0.1, -1)) AS t(ang_offset_deg, y_zero)",
                     "refId": "E"
                     },
                     {
@@ -3942,8 +3977,19 @@ class OffsetPlotsBuilder:
                     "editorMode": "code",
                     "format": "table",
                     "rawQuery": True,
-                    "rawSql": "SELECT * FROM (VALUES (-1.00, 1), (-1.00, -1)) AS t(ang_offset_deg, y_zero)",
+                    "rawSql": "SELECT * FROM (VALUES (-0.1, 1), (-0.1, -1)) AS t(ang_offset_deg, y_zero)",
                     "refId": "F"
+                    },
+                    {
+                    "datasource": {
+                        "type": "grafana-postgresql-datasource",
+                        "uid": self.datasource_uid
+                    },
+                    "editorMode": "code",
+                    "format": "table",
+                    "rawQuery": True,
+                    "rawSql": "SELECT * FROM (VALUES (0, 0)) AS t(ang_offset_deg, y_zero)",
+                    "refId": "H"
                     },
                     {
                     "datasource": {
@@ -3957,7 +4003,7 @@ class OffsetPlotsBuilder:
                     "refId": "G"
                     }
                 ],
-                "title": "Angular Offset",
+                "title": "Angular (deg) offsets for modules and protomodules",
                 "type": "xychart"
                 },
 
