@@ -2573,7 +2573,7 @@ class OffsetPlotsBuilder:
                     "h": 14,
                     "w": 12,
                     "x": 0,
-                    "y": 0
+                    "y": 28
                 },
                 "id": 1,
                 "options": {
@@ -3068,7 +3068,7 @@ class OffsetPlotsBuilder:
                     "h": 14,
                     "w": 12,
                     "x": 12,
-                    "y": 0
+                    "y": 28
                 },
                 "id": 2,
                 "options": {
@@ -3396,7 +3396,7 @@ class OffsetPlotsBuilder:
                     "h": 14,
                     "w": 12,
                     "x": 0,
-                    "y": 28
+                    "y": 0
                 },
                 "id": 100,
                 "options": {
@@ -3537,7 +3537,7 @@ class OffsetPlotsBuilder:
                     "h": 14,
                     "w": 12,
                     "x": 12,
-                    "y": 28
+                    "y": 0
                 },
                 "id": 101,
                 "options": {
