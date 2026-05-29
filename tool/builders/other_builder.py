@@ -2538,6 +2538,38 @@ class OffsetPlotsBuilder:
         FROM proto_inspect
         """ + self.proto_filter_sql
 
+        self.module_ang_vs_zero_sql = """
+        SELECT module_inspect.ang_offset_deg, 0 AS y_zero, module_inspect.module_name
+        FROM module_inspect
+        """ + self.module_filter_sql
+
+        self.proto_ang_vs_zero_sql = """
+        SELECT proto_inspect.ang_offset_deg, 0 AS y_zero, proto_inspect.proto_name
+        FROM proto_inspect
+        """ + self.proto_filter_sql
+
+        self.module_ang_range_sql = """
+        WITH range AS (
+            SELECT MAX(ABS(ang_offset_deg)) AS r
+            FROM module_inspect
+            """ + self.module_filter_sql + """
+        )
+        SELECT r AS ang_offset_deg, 0 AS y_zero FROM range
+        UNION ALL
+        SELECT -r AS ang_offset_deg, 0 AS y_zero FROM range
+        """
+
+        self.proto_ang_range_sql = """
+        WITH range AS (
+            SELECT MAX(ABS(ang_offset_deg)) AS r
+            FROM proto_inspect
+            """ + self.proto_filter_sql + """
+        )
+        SELECT r AS ang_offset_deg, 0 AS y_zero FROM range
+        UNION ALL
+        SELECT -r AS ang_offset_deg, 0 AS y_zero FROM range
+        """
+
     ######################################
     def generate_dashboard_json(self):
         dashboard_json = {
@@ -3523,15 +3555,269 @@ class OffsetPlotsBuilder:
                 "type": "xychart"
                 },
 
-    ### Blank panel (right)
+    ### Combined Proto + Module Offset (copy)
                 {
                 "datasource": {
                     "type": "grafana-postgresql-datasource",
                     "uid": self.datasource_uid
                 },
                 "fieldConfig": {
-                    "defaults": {},
-                    "overrides": []
+                    "defaults": {
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "custom": {
+                        "axisBorderShow": False,
+                        "axisCenteredZero": True,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "fillOpacity": 50,
+                        "hideFrom": {
+                        "legend": False,
+                        "tooltip": False,
+                        "viz": False
+                        },
+                        "pointShape": "circle",
+                        "pointSize": {
+                        "fixed": 5
+                        },
+                        "pointStrokeWidth": 1,
+                        "scaleDistribution": {
+                        "type": "linear"
+                        },
+                        "show": "points"
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                        {
+                            "color": "green"
+                        }
+                        ]
+                    }
+                    },
+                    "overrides": [
+                    {
+                        "matcher": {
+                        "id": "byFrameRefID",
+                        "options": "A"
+                        },
+                        "properties": [
+                        {
+                            "id": "displayName",
+                            "value": "proto-module"
+                        },
+                        {
+                            "id": "color",
+                            "value": {
+                            "fixedColor": "yellow",
+                            "mode": "fixed"
+                            }
+                        }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                        "id": "byFrameRefID",
+                        "options": "B"
+                        },
+                        "properties": [
+                        {
+                            "id": "displayName",
+                            "value": "module"
+                        },
+                        {
+                            "id": "color",
+                            "value": {
+                            "fixedColor": "green",
+                            "mode": "fixed"
+                            }
+                        }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                        "id": "byName",
+                        "options": "ang_offset_deg"
+                        },
+                        "properties": [
+                        {
+                            "id": "custom.axisLabel",
+                            "value": "ang_offset_deg"
+                        }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                        "id": "byName",
+                        "options": "y_zero"
+                        },
+                        "properties": [
+                        {
+                            "id": "custom.axisLabel",
+                            "value": "y_zero"
+                        }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                        "id": "byFrameRefID",
+                        "options": "C"
+                        },
+                        "properties": [
+                        {
+                            "id": "color",
+                            "value": {
+                            "fixedColor": "blue",
+                            "mode": "fixed"
+                            }
+                        },
+                        {
+                            "id": "displayName",
+                            "value": "+0.04°"
+                        },
+                        {
+                            "id": "custom.show",
+                            "value": "lines"
+                        },
+                        {
+                            "id": "custom.fillOpacity",
+                            "value": 0
+                        },
+                        {
+                            "id": "custom.lineWidth",
+                            "value": 2
+                        },
+                        {
+                            "id": "custom.pointSize",
+                            "value": {"fixed": 0}
+                        }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                        "id": "byFrameRefID",
+                        "options": "D"
+                        },
+                        "properties": [
+                        {
+                            "id": "color",
+                            "value": {
+                            "fixedColor": "blue",
+                            "mode": "fixed"
+                            }
+                        },
+                        {
+                            "id": "displayName",
+                            "value": "-0.04°"
+                        },
+                        {
+                            "id": "custom.show",
+                            "value": "lines"
+                        },
+                        {
+                            "id": "custom.fillOpacity",
+                            "value": 0
+                        },
+                        {
+                            "id": "custom.lineWidth",
+                            "value": 2
+                        },
+                        {
+                            "id": "custom.pointSize",
+                            "value": {"fixed": 0}
+                        }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                        "id": "byFrameRefID",
+                        "options": "E"
+                        },
+                        "properties": [
+                        {
+                            "id": "color",
+                            "value": {
+                            "fixedColor": "red",
+                            "mode": "fixed"
+                            }
+                        },
+                        {
+                            "id": "displayName",
+                            "value": "+1.00°"
+                        },
+                        {
+                            "id": "custom.show",
+                            "value": "lines"
+                        },
+                        {
+                            "id": "custom.fillOpacity",
+                            "value": 0
+                        },
+                        {
+                            "id": "custom.lineWidth",
+                            "value": 2
+                        },
+                        {
+                            "id": "custom.pointSize",
+                            "value": {"fixed": 0}
+                        }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                        "id": "byFrameRefID",
+                        "options": "F"
+                        },
+                        "properties": [
+                        {
+                            "id": "color",
+                            "value": {
+                            "fixedColor": "red",
+                            "mode": "fixed"
+                            }
+                        },
+                        {
+                            "id": "displayName",
+                            "value": "-1.00°"
+                        },
+                        {
+                            "id": "custom.show",
+                            "value": "lines"
+                        },
+                        {
+                            "id": "custom.fillOpacity",
+                            "value": 0
+                        },
+                        {
+                            "id": "custom.lineWidth",
+                            "value": 2
+                        },
+                        {
+                            "id": "custom.pointSize",
+                            "value": {"fixed": 0}
+                        }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                        "id": "byFrameRefID",
+                        "options": "G"
+                        },
+                        "properties": [
+                        {
+                            "id": "custom.hideFrom",
+                            "value": {
+                            "legend": True,
+                            "tooltip": True,
+                            "viz": True
+                            }
+                        }
+                        ]
+                    }
+                    ]
                 },
                 "gridPos": {
                     "h": 14,
@@ -3541,13 +3827,138 @@ class OffsetPlotsBuilder:
                 },
                 "id": 101,
                 "options": {
-                    "content": "",
-                    "mode": "markdown"
+                    "legend": {
+                    "calcs": [],
+                    "displayMode": "list",
+                    "placement": "bottom",
+                    "showLegend": True
+                    },
+                    "mapping": "auto",
+                    "series": [
+                    {}
+                    ],
+                    "tooltip": {
+                    "hideZeros": False,
+                    "mode": "single",
+                    "sort": "none"
+                    }
                 },
                 "pluginVersion": "12.0.0",
-                "targets": [],
-                "title": "",
-                "type": "text"
+                "targets": [
+                    {
+                    "datasource": {
+                        "type": "grafana-postgresql-datasource",
+                        "uid": self.datasource_uid
+                    },
+                    "editorMode": "code",
+                    "format": "table",
+                    "rawQuery": True,
+                    "rawSql": self.proto_ang_vs_zero_sql,
+                    "refId": "A",
+                    "sql": {
+                        "columns": [
+                        {
+                            "parameters": [],
+                            "type": "function"
+                        }
+                        ],
+                        "groupBy": [
+                        {
+                            "property": {
+                            "type": "string"
+                            },
+                            "type": "groupBy"
+                        }
+                        ],
+                        "limit": 50
+                    }
+                    },
+                    {
+                    "datasource": {
+                        "type": "grafana-postgresql-datasource",
+                        "uid": self.datasource_uid
+                    },
+                    "editorMode": "code",
+                    "format": "table",
+                    "rawQuery": True,
+                    "rawSql": self.module_ang_vs_zero_sql,
+                    "refId": "B",
+                    "sql": {
+                        "columns": [
+                        {
+                            "parameters": [],
+                            "type": "function"
+                        }
+                        ],
+                        "groupBy": [
+                        {
+                            "property": {
+                            "type": "string"
+                            },
+                            "type": "groupBy"
+                        }
+                        ],
+                        "limit": 50
+                    }
+                    },
+                    {
+                    "datasource": {
+                        "type": "grafana-postgresql-datasource",
+                        "uid": self.datasource_uid
+                    },
+                    "editorMode": "code",
+                    "format": "table",
+                    "rawQuery": True,
+                    "rawSql": "SELECT * FROM (VALUES (0.04, 1), (0.04, -1)) AS t(ang_offset_deg, y_zero)",
+                    "refId": "C"
+                    },
+                    {
+                    "datasource": {
+                        "type": "grafana-postgresql-datasource",
+                        "uid": self.datasource_uid
+                    },
+                    "editorMode": "code",
+                    "format": "table",
+                    "rawQuery": True,
+                    "rawSql": "SELECT * FROM (VALUES (-0.04, 1), (-0.04, -1)) AS t(ang_offset_deg, y_zero)",
+                    "refId": "D"
+                    },
+                    {
+                    "datasource": {
+                        "type": "grafana-postgresql-datasource",
+                        "uid": self.datasource_uid
+                    },
+                    "editorMode": "code",
+                    "format": "table",
+                    "rawQuery": True,
+                    "rawSql": "SELECT * FROM (VALUES (1.00, 1), (1.00, -1)) AS t(ang_offset_deg, y_zero)",
+                    "refId": "E"
+                    },
+                    {
+                    "datasource": {
+                        "type": "grafana-postgresql-datasource",
+                        "uid": self.datasource_uid
+                    },
+                    "editorMode": "code",
+                    "format": "table",
+                    "rawQuery": True,
+                    "rawSql": "SELECT * FROM (VALUES (-1.00, 1), (-1.00, -1)) AS t(ang_offset_deg, y_zero)",
+                    "refId": "F"
+                    },
+                    {
+                    "datasource": {
+                        "type": "grafana-postgresql-datasource",
+                        "uid": self.datasource_uid
+                    },
+                    "editorMode": "code",
+                    "format": "table",
+                    "rawQuery": True,
+                    "rawSql": self.proto_ang_range_sql,
+                    "refId": "G"
+                    }
+                ],
+                "title": "Angular Offset",
+                "type": "xychart"
                 },
 
     ### Module Average Thickness (mm)
