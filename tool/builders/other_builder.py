@@ -2854,20 +2854,8 @@ class OffsetPlotsBuilder:
                             "value": {
                             "legend": True,
                             "tooltip": True,
-                            "viz": False
+                            "viz": True
                             }
-                        },
-                        {
-                            "id": "custom.show",
-                            "value": "points"
-                        },
-                        {
-                            "id": "custom.pointSize",
-                            "value": {"fixed": 0}
-                        },
-                        {
-                            "id": "custom.fillOpacity",
-                            "value": 0
                         }
                         ]
                     }
@@ -3069,20 +3057,8 @@ class OffsetPlotsBuilder:
                             "value": {
                             "legend": True,
                             "tooltip": True,
-                            "viz": False
+                            "viz": True
                             }
-                        },
-                        {
-                            "id": "custom.show",
-                            "value": "points"
-                        },
-                        {
-                            "id": "custom.pointSize",
-                            "value": {"fixed": 0}
-                        },
-                        {
-                            "id": "custom.fillOpacity",
-                            "value": 0
                         }
                         ]
                     }
