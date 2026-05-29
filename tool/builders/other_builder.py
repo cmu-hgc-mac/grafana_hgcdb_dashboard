@@ -2547,57 +2547,6 @@ class OffsetPlotsBuilder:
                     "type": "grafana-postgresql-datasource",
                     "uid": self.datasource_uid
                 },
-                "fieldConfig": {
-                    "defaults": {
-                    "color": {
-                        "mode": "palette-classic"
-                    },
-                    "custom": {
-                        "axisBorderShow": False,
-                        "axisCenteredZero": True,
-                        "axisSoftMin": -150,
-                        "axisSoftMax": 150,
-                        "axisColorMode": "text",
-                        "axisLabel": "",
-                        "axisPlacement": "auto",
-                        "fillOpacity": 50,
-                        "hideFrom": {
-                        "legend": False,
-                        "tooltip": False,
-                        "viz": False
-                        },
-                        "pointShape": "circle",
-                        "pointSize": {
-                        "fixed": 5
-                        },
-                        "pointStrokeWidth": 1,
-                        "scaleDistribution": {
-                        "type": "linear"
-                        },
-                        "show": "points"
-                    },
-                    "mappings": [
-                        {
-                        "options": {
-                            "100": {
-                            "color": "dark-red",
-                            "index": 0
-                            }
-                        },
-                        "type": "value"
-                        }
-                    ],
-                    "thresholds": {
-                        "mode": "absolute",
-                        "steps": [
-                        {
-                            "color": "green"
-                        }
-                        ]
-                    }
-                    },
-                    "overrides": []
-                },
                 "gridPos": {
                     "h": 12,
                     "w": 12,
@@ -2651,8 +2600,142 @@ class OffsetPlotsBuilder:
                         ],
                         "limit": 50
                     }
+                    },
+                    {
+                    "datasource": {
+                        "type": "grafana-postgresql-datasource",
+                        "uid": self.datasource_uid
+                    },
+                    "editorMode": "code",
+                    "format": "table",
+                    "rawQuery": True,
+                    "rawSql": "SELECT * FROM (VALUES (-75,-75),(-75,75),(75,75),(75,-75),(-75,-75)) AS t(x_offset_mu, y_offset_mu)",
+                    "refId": "B"
+                    },
+                    {
+                    "datasource": {
+                        "type": "grafana-postgresql-datasource",
+                        "uid": self.datasource_uid
+                    },
+                    "editorMode": "code",
+                    "format": "table",
+                    "rawQuery": True,
+                    "rawSql": "SELECT * FROM (VALUES (-110,-110),(-110,110),(110,110),(110,-110),(-110,-110)) AS t(x_offset_mu, y_offset_mu)",
+                    "refId": "C"
                     }
                 ],
+                "fieldConfig": {
+                    "defaults": {
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "custom": {
+                        "axisBorderShow": False,
+                        "axisCenteredZero": True,
+                        "axisSoftMin": -150,
+                        "axisSoftMax": 150,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "fillOpacity": 50,
+                        "hideFrom": {
+                        "legend": False,
+                        "tooltip": False,
+                        "viz": False
+                        },
+                        "pointShape": "circle",
+                        "pointSize": {
+                        "fixed": 5
+                        },
+                        "pointStrokeWidth": 1,
+                        "scaleDistribution": {
+                        "type": "linear"
+                        },
+                        "show": "points"
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                        {
+                            "color": "green"
+                        }
+                        ]
+                    }
+                    },
+                    "overrides": [
+                    {
+                        "matcher": {
+                        "id": "byFrameRefID",
+                        "options": "B"
+                        },
+                        "properties": [
+                        {
+                            "id": "color",
+                            "value": {
+                            "fixedColor": "blue",
+                            "mode": "fixed"
+                            }
+                        },
+                        {
+                            "id": "displayName",
+                            "value": "75 μm"
+                        },
+                        {
+                            "id": "custom.show",
+                            "value": "lines"
+                        },
+                        {
+                            "id": "custom.fillOpacity",
+                            "value": 0
+                        },
+                        {
+                            "id": "custom.lineWidth",
+                            "value": 2
+                        },
+                        {
+                            "id": "custom.pointSize",
+                            "value": {"fixed": 0}
+                        }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                        "id": "byFrameRefID",
+                        "options": "C"
+                        },
+                        "properties": [
+                        {
+                            "id": "color",
+                            "value": {
+                            "fixedColor": "red",
+                            "mode": "fixed"
+                            }
+                        },
+                        {
+                            "id": "displayName",
+                            "value": "110 μm"
+                        },
+                        {
+                            "id": "custom.show",
+                            "value": "lines"
+                        },
+                        {
+                            "id": "custom.fillOpacity",
+                            "value": 0
+                        },
+                        {
+                            "id": "custom.lineWidth",
+                            "value": 2
+                        },
+                        {
+                            "id": "custom.pointSize",
+                            "value": {"fixed": 0}
+                        }
+                        ]
+                    }
+                    ]
+                },
                 "title": "Module Offset",
                 "type": "xychart"
                 },
@@ -2692,17 +2775,7 @@ class OffsetPlotsBuilder:
                         },
                         "show": "points"
                     },
-                    "mappings": [
-                        {
-                        "options": {
-                            "100": {
-                            "color": "dark-red",
-                            "index": 0
-                            }
-                        },
-                        "type": "value"
-                        }
-                    ],
+                    "mappings": [],
                     "thresholds": {
                         "mode": "absolute",
                         "steps": [
@@ -2712,7 +2785,78 @@ class OffsetPlotsBuilder:
                         ]
                     }
                     },
-                    "overrides": []
+                    "overrides": [
+                    {
+                        "matcher": {
+                        "id": "byFrameRefID",
+                        "options": "B"
+                        },
+                        "properties": [
+                        {
+                            "id": "color",
+                            "value": {
+                            "fixedColor": "blue",
+                            "mode": "fixed"
+                            }
+                        },
+                        {
+                            "id": "displayName",
+                            "value": "75 μm"
+                        },
+                        {
+                            "id": "custom.show",
+                            "value": "lines"
+                        },
+                        {
+                            "id": "custom.fillOpacity",
+                            "value": 0
+                        },
+                        {
+                            "id": "custom.lineWidth",
+                            "value": 2
+                        },
+                        {
+                            "id": "custom.pointSize",
+                            "value": {"fixed": 0}
+                        }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                        "id": "byFrameRefID",
+                        "options": "C"
+                        },
+                        "properties": [
+                        {
+                            "id": "color",
+                            "value": {
+                            "fixedColor": "red",
+                            "mode": "fixed"
+                            }
+                        },
+                        {
+                            "id": "displayName",
+                            "value": "110 μm"
+                        },
+                        {
+                            "id": "custom.show",
+                            "value": "lines"
+                        },
+                        {
+                            "id": "custom.fillOpacity",
+                            "value": 0
+                        },
+                        {
+                            "id": "custom.lineWidth",
+                            "value": 2
+                        },
+                        {
+                            "id": "custom.pointSize",
+                            "value": {"fixed": 0}
+                        }
+                        ]
+                    }
+                    ]
                 },
                 "gridPos": {
                     "h": 12,
@@ -2767,6 +2911,28 @@ class OffsetPlotsBuilder:
                         ],
                         "limit": 50
                     }
+                    },
+                    {
+                    "datasource": {
+                        "type": "grafana-postgresql-datasource",
+                        "uid": self.datasource_uid
+                    },
+                    "editorMode": "code",
+                    "format": "table",
+                    "rawQuery": True,
+                    "rawSql": "SELECT * FROM (VALUES (-75,-75),(-75,75),(75,75),(75,-75),(-75,-75)) AS t(x_offset_mu, y_offset_mu)",
+                    "refId": "B"
+                    },
+                    {
+                    "datasource": {
+                        "type": "grafana-postgresql-datasource",
+                        "uid": self.datasource_uid
+                    },
+                    "editorMode": "code",
+                    "format": "table",
+                    "rawQuery": True,
+                    "rawSql": "SELECT * FROM (VALUES (-110,-110),(-110,110),(110,110),(110,-110),(-110,-110)) AS t(x_offset_mu, y_offset_mu)",
+                    "refId": "C"
                     }
                 ],
                 "title": "Proto-Module Offset",
