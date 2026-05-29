@@ -3709,6 +3709,45 @@ class OffsetPlotsBuilder:
                         {
                             "id": "color",
                             "value": {
+                            "fixedColor": "blue",
+                            "mode": "fixed"
+                            }
+                        },
+                        {
+                            "id": "custom.show",
+                            "value": "lines"
+                        },
+                        {
+                            "id": "custom.fillOpacity",
+                            "value": 0
+                        },
+                        {
+                            "id": "custom.lineWidth",
+                            "value": 2
+                        },
+                        {
+                            "id": "custom.pointSize",
+                            "value": {"fixed": 0}
+                        },
+                        {
+                            "id": "custom.hideFrom",
+                            "value": {
+                            "legend": True,
+                            "tooltip": False,
+                            "viz": False
+                            }
+                        }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                        "id": "byFrameRefID",
+                        "options": "E2"
+                        },
+                        "properties": [
+                        {
+                            "id": "color",
+                            "value": {
                             "fixedColor": "red",
                             "mode": "fixed"
                             }
@@ -3732,6 +3771,45 @@ class OffsetPlotsBuilder:
                         {
                             "id": "custom.pointSize",
                             "value": {"fixed": 0}
+                        }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                        "id": "byFrameRefID",
+                        "options": "F2"
+                        },
+                        "properties": [
+                        {
+                            "id": "color",
+                            "value": {
+                            "fixedColor": "red",
+                            "mode": "fixed"
+                            }
+                        },
+                        {
+                            "id": "custom.show",
+                            "value": "lines"
+                        },
+                        {
+                            "id": "custom.fillOpacity",
+                            "value": 0
+                        },
+                        {
+                            "id": "custom.lineWidth",
+                            "value": 2
+                        },
+                        {
+                            "id": "custom.pointSize",
+                            "value": {"fixed": 0}
+                        },
+                        {
+                            "id": "custom.hideFrom",
+                            "value": {
+                            "legend": True,
+                            "tooltip": False,
+                            "viz": False
+                            }
                         }
                         ]
                     },
@@ -3874,7 +3952,7 @@ class OffsetPlotsBuilder:
                     "editorMode": "code",
                     "format": "table",
                     "rawQuery": True,
-                    "rawSql": "SELECT * FROM (VALUES (0.04, 1), (0.04, -1), (NULL, NULL), (-0.04, 1), (-0.04, -1)) AS t(ang_offset_deg, y_zero)",
+                    "rawSql": "SELECT * FROM (VALUES (0.04, 1), (0.04, -1)) AS t(ang_offset_deg, y_zero)",
                     "refId": "C"
                     },
                     {
@@ -3885,8 +3963,30 @@ class OffsetPlotsBuilder:
                     "editorMode": "code",
                     "format": "table",
                     "rawQuery": True,
-                    "rawSql": "SELECT * FROM (VALUES (0.1, 1), (0.1, -1), (NULL, NULL), (-0.1, 1), (-0.1, -1)) AS t(ang_offset_deg, y_zero)",
+                    "rawSql": "SELECT * FROM (VALUES (-0.04, 1), (-0.04, -1)) AS t(ang_offset_deg, y_zero)",
                     "refId": "D"
+                    },
+                    {
+                    "datasource": {
+                        "type": "grafana-postgresql-datasource",
+                        "uid": self.datasource_uid
+                    },
+                    "editorMode": "code",
+                    "format": "table",
+                    "rawQuery": True,
+                    "rawSql": "SELECT * FROM (VALUES (0.1, 1), (0.1, -1)) AS t(ang_offset_deg, y_zero)",
+                    "refId": "E2"
+                    },
+                    {
+                    "datasource": {
+                        "type": "grafana-postgresql-datasource",
+                        "uid": self.datasource_uid
+                    },
+                    "editorMode": "code",
+                    "format": "table",
+                    "rawQuery": True,
+                    "rawSql": "SELECT * FROM (VALUES (-0.1, 1), (-0.1, -1)) AS t(ang_offset_deg, y_zero)",
+                    "refId": "F2"
                     },
                     {
                     "datasource": {
