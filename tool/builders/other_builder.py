@@ -2496,6 +2496,28 @@ class OffsetPlotsBuilder:
         FROM proto_inspect
         """ + self.proto_filter_sql
 
+        self.module_offset_range_sql = """
+        WITH range AS (
+            SELECT GREATEST(MAX(ABS(x_offset_mu)), MAX(ABS(y_offset_mu))) AS r
+            FROM module_inspect
+            """ + self.module_filter_sql + """
+        )
+        SELECT r AS x_offset_mu, r AS y_offset_mu FROM range
+        UNION ALL
+        SELECT -r AS x_offset_mu, -r AS y_offset_mu FROM range
+        """
+
+        self.proto_offset_range_sql = """
+        WITH range AS (
+            SELECT GREATEST(MAX(ABS(x_offset_mu)), MAX(ABS(y_offset_mu))) AS r
+            FROM proto_inspect
+            """ + self.proto_filter_sql + """
+        )
+        SELECT r AS x_offset_mu, r AS y_offset_mu FROM range
+        UNION ALL
+        SELECT -r AS x_offset_mu, -r AS y_offset_mu FROM range
+        """
+
         self.module_avg_thickness_sql = """
         SELECT module_inspect.avg_thickness
         FROM module_inspect
@@ -2633,6 +2655,17 @@ class OffsetPlotsBuilder:
                     "rawQuery": True,
                     "rawSql": "SELECT * FROM (VALUES (0,0)) AS t(x_offset_mu, y_offset_mu)",
                     "refId": "D"
+                    },
+                    {
+                    "datasource": {
+                        "type": "grafana-postgresql-datasource",
+                        "uid": self.datasource_uid
+                    },
+                    "editorMode": "code",
+                    "format": "table",
+                    "rawQuery": True,
+                    "rawSql": self.module_offset_range_sql,
+                    "refId": "E"
                     }
                 ],
                 "fieldConfig": {
@@ -2643,8 +2676,6 @@ class OffsetPlotsBuilder:
                     "custom": {
                         "axisBorderShow": False,
                         "axisCenteredZero": True,
-                        "axisSoftMin": -150,
-                        "axisSoftMax": 150,
                         "axisColorMode": "text",
                         "axisLabel": "",
                         "axisPlacement": "auto",
@@ -2811,6 +2842,34 @@ class OffsetPlotsBuilder:
                             "value": "circle"
                         }
                         ]
+                    },
+                    {
+                        "matcher": {
+                        "id": "byFrameRefID",
+                        "options": "E"
+                        },
+                        "properties": [
+                        {
+                            "id": "custom.hideFrom",
+                            "value": {
+                            "legend": True,
+                            "tooltip": True,
+                            "viz": False
+                            }
+                        },
+                        {
+                            "id": "custom.show",
+                            "value": "points"
+                        },
+                        {
+                            "id": "custom.pointSize",
+                            "value": {"fixed": 0}
+                        },
+                        {
+                            "id": "custom.fillOpacity",
+                            "value": 0
+                        }
+                        ]
                     }
                     ]
                 },
@@ -2832,8 +2891,6 @@ class OffsetPlotsBuilder:
                     "custom": {
                         "axisBorderShow": False,
                         "axisCenteredZero": True,
-                        "axisSoftMin": -150,
-                        "axisSoftMax": 150,
                         "axisColorMode": "text",
                         "axisLabel": "",
                         "axisPlacement": "auto",
@@ -3000,6 +3057,34 @@ class OffsetPlotsBuilder:
                             "value": "circle"
                         }
                         ]
+                    },
+                    {
+                        "matcher": {
+                        "id": "byFrameRefID",
+                        "options": "E"
+                        },
+                        "properties": [
+                        {
+                            "id": "custom.hideFrom",
+                            "value": {
+                            "legend": True,
+                            "tooltip": True,
+                            "viz": False
+                            }
+                        },
+                        {
+                            "id": "custom.show",
+                            "value": "points"
+                        },
+                        {
+                            "id": "custom.pointSize",
+                            "value": {"fixed": 0}
+                        },
+                        {
+                            "id": "custom.fillOpacity",
+                            "value": 0
+                        }
+                        ]
                     }
                     ]
                 },
@@ -3089,6 +3174,17 @@ class OffsetPlotsBuilder:
                     "rawQuery": True,
                     "rawSql": "SELECT * FROM (VALUES (0,0)) AS t(x_offset_mu, y_offset_mu)",
                     "refId": "D"
+                    },
+                    {
+                    "datasource": {
+                        "type": "grafana-postgresql-datasource",
+                        "uid": self.datasource_uid
+                    },
+                    "editorMode": "code",
+                    "format": "table",
+                    "rawQuery": True,
+                    "rawSql": self.proto_offset_range_sql,
+                    "refId": "E"
                     }
                 ],
                 "title": "Proto-Module Offset",
