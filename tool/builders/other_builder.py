@@ -5795,15 +5795,21 @@ class ModuleAssemblyBuilder:
                 temp_table_1.final_grade::text = ANY(ARRAY[${self.final_grade}]))
           AND bp_material IS NOT NULL AND resolution IS NOT NULL AND roc_version IS NOT NULL AND geometry IS NOT NULL
           AND (
-            ('${self.test_status}' = 'All' AND '${self.assembly_status}' = 'All' AND '${self.pack_ship_status}' = 'All')
+            '${self.test_status}' = 'All'
             OR ('${self.test_status}' = 'Untested' AND (temp_table_2.module_name IS NULL OR temp_table_3.module_name IS NULL))
             OR ('${self.test_status}' = 'Tested' AND (temp_table_2.module_name IS NOT NULL AND temp_table_3.module_name IS NOT NULL))
             OR ('${self.test_status}' = 'Tested at < 0' AND (temp_table_2.module_name IS NOT NULL AND temp_table_3.module_name IS NOT NULL) AND temp_table_2.temp_c::numeric < 0)
             OR ('${self.test_status}' = 'Tested at > 0' AND (temp_table_2.module_name IS NOT NULL AND temp_table_3.module_name IS NOT NULL) AND temp_table_2.temp_c::numeric > 0)
             OR ('${self.test_status}' = 'Untested at < 0' AND (temp_table_2.module_name IS NULL OR temp_table_3.module_name IS NULL) AND temp_table_2.temp_c::numeric < 0)
             OR ('${self.test_status}' = 'Untested at > 0' AND (temp_table_2.module_name IS NULL OR temp_table_3.module_name IS NULL) AND temp_table_2.temp_c::numeric > 0)
+          )
+          AND (
+            '${self.assembly_status}' = 'All'
             OR ('${self.assembly_status}' = 'Incomplete' AND (temp_table_0.assembled IS NULL OR temp_table_0.inspected IS NULL OR temp_table_0.wb_back IS NULL OR temp_table_0.encap_back IS NULL OR temp_table_0.wb_front IS NULL OR temp_table_0.encap_front IS NULL))
             OR ('${self.assembly_status}' = 'Complete' AND (temp_table_0.assembled IS NOT NULL AND temp_table_0.inspected IS NOT NULL AND temp_table_0.wb_back IS NOT NULL AND temp_table_0.encap_back IS NOT NULL AND temp_table_0.wb_front IS NOT NULL AND temp_table_0.encap_front IS NOT NULL))
+          )
+          AND (
+            '${self.pack_ship_status}' = 'All'
             OR ('${self.pack_ship_status}' = 'Not packed (unshipped)' AND temp_table_0.packed_datetime IS NULL AND temp_table_0.shipped_datetime IS NULL)
             OR ('${self.pack_ship_status}' = 'Packed (unshipped)' AND temp_table_0.packed_datetime IS NOT NULL AND temp_table_0.shipped_datetime IS NULL)
             OR ('${self.pack_ship_status}' = 'Packed & Shipped' AND temp_table_0.packed_datetime IS NOT NULL AND temp_table_0.shipped_datetime IS NOT NULL)
