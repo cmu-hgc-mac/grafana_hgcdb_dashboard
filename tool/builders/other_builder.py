@@ -5800,8 +5800,8 @@ class ModuleAssemblyBuilder:
             OR ('${self.test_status}' = 'Tested' AND (temp_table_2.module_name IS NOT NULL AND temp_table_3.module_name IS NOT NULL))
             OR ('${self.test_status}' = 'Tested at < 0' AND (temp_table_2.module_name IS NOT NULL AND temp_table_3.module_name IS NOT NULL) AND temp_table_2.temp_c::numeric < 0)
             OR ('${self.test_status}' = 'Tested at > 0' AND (temp_table_2.module_name IS NOT NULL AND temp_table_3.module_name IS NOT NULL) AND temp_table_2.temp_c::numeric > 0)
-            OR ('${self.test_status}' = 'Untested at < 0' AND (temp_table_2.module_name IS NULL OR temp_table_3.module_name IS NULL) AND temp_table_2.temp_c::numeric < 0)
-            OR ('${self.test_status}' = 'Untested at > 0' AND (temp_table_2.module_name IS NULL OR temp_table_3.module_name IS NULL) AND temp_table_2.temp_c::numeric > 0)
+            OR ('${self.test_status}' = 'Untested at < 0' AND (temp_table_2.module_name IS NOT NULL OR temp_table_3.module_name IS NOT NULL) AND NOT EXISTS (SELECT 1 FROM module_iv_test WHERE module_iv_test.module_name = temp_table_0.module_name AND (module_iv_test.status = 7 OR module_iv_test.status = 8) AND module_iv_test.temp_c::numeric < 0))
+            OR ('${self.test_status}' = 'Untested at > 0' AND (temp_table_2.module_name IS NOT NULL OR temp_table_3.module_name IS NOT NULL) AND NOT EXISTS (SELECT 1 FROM module_iv_test WHERE module_iv_test.module_name = temp_table_0.module_name AND (module_iv_test.status = 7 OR module_iv_test.status = 8) AND module_iv_test.temp_c::numeric > 0))
           )
           AND (
             '${self.assembly_status}' = 'All'
