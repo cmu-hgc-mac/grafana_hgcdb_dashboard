@@ -5798,10 +5798,6 @@ class ModuleAssemblyBuilder:
             ('${self.test_status}' = 'All' AND '${self.assembly_status}' = 'All' AND '${self.pack_ship_status}' = 'All')
             OR ('${self.test_status}' = 'Untested' AND (temp_table_2.module_name IS NULL OR temp_table_3.module_name IS NULL))
             OR ('${self.test_status}' = 'Tested' AND (temp_table_2.module_name IS NOT NULL AND temp_table_3.module_name IS NOT NULL))
-            OR ('${self.test_status}' = 'Tested at < 0' AND (temp_table_2.module_name IS NOT NULL AND temp_table_3.module_name IS NOT NULL) AND temp_table_2.temp_c::numeric < 0)
-            OR ('${self.test_status}' = 'Tested at > 0' AND (temp_table_2.module_name IS NOT NULL AND temp_table_3.module_name IS NOT NULL) AND temp_table_2.temp_c::numeric > 0)
-            OR ('${self.test_status}' = 'Untested at < 0' AND (temp_table_2.module_name IS NULL OR temp_table_3.module_name IS NULL) AND temp_table_2.temp_c::numeric < 0)
-            OR ('${self.test_status}' = 'Untested at > 0' AND (temp_table_2.module_name IS NULL OR temp_table_3.module_name IS NULL) AND temp_table_2.temp_c::numeric > 0)
             OR ('${self.assembly_status}' = 'Incomplete' AND (temp_table_0.assembled IS NULL OR temp_table_0.inspected IS NULL OR temp_table_0.wb_back IS NULL OR temp_table_0.encap_back IS NULL OR temp_table_0.wb_front IS NULL OR temp_table_0.encap_front IS NULL))
             OR ('${self.assembly_status}' = 'Complete' AND (temp_table_0.assembled IS NOT NULL AND temp_table_0.inspected IS NOT NULL AND temp_table_0.wb_back IS NOT NULL AND temp_table_0.encap_back IS NOT NULL AND temp_table_0.wb_front IS NOT NULL AND temp_table_0.encap_front IS NOT NULL))
             OR ('${self.pack_ship_status}' = 'Not packed (unshipped)' AND temp_table_0.packed_datetime IS NULL AND temp_table_0.shipped_datetime IS NULL)
@@ -6651,29 +6647,9 @@ class ModuleAssemblyBuilder:
                             "selected": False,
                             "text": "Untested",
                             "value": "Untested"
-                        },
-                        {
-                            "selected": False,
-                            "text": "Tested at < 0",
-                            "value": "Tested at < 0"
-                        },
-                        {
-                            "selected": False,
-                            "text": "Tested at > 0",
-                            "value": "Tested at > 0"
-                        },
-                        {
-                            "selected": False,
-                            "text": "Untested at < 0",
-                            "value": "Untested at < 0"
-                        },
-                        {
-                            "selected": False,
-                            "text": "Untested at > 0",
-                            "value": "Untested at > 0"
                         }
                     ],
-                    "query": "All,Tested,Untested,Tested at < 0,Tested at > 0,Untested at < 0,Untested at > 0",
+                    "query": "All,Tested,Untested",
                     "type": "custom"
                 }
                 ]
