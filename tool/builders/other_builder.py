@@ -5876,6 +5876,18 @@ class ModuleAssemblyBuilder:
                     {
                         "matcher": {
                         "id": "byName",
+                        "options": "no"
+                        },
+                        "properties": [
+                        {
+                            "id": "custom.width",
+                            "value": 50
+                        }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                        "id": "byName",
                         "options": "test_iv"
                         },
                         "properties": [
