@@ -5716,8 +5716,7 @@ class ModuleAssemblyBuilder:
         self.module_name = "{module_name}"
         self.test_status = "{test_status}"
         self.assembly_status = "{assembly_status}"
-        self.ship_status = "{ship_status}"
-        self.pack_status = "{pack_status}"
+        self.pack_ship_status = "{pack_ship_status}"
 
         self.table_sql = f"""WITH
                 temp_table_0 AS (
@@ -5796,15 +5795,15 @@ class ModuleAssemblyBuilder:
                 temp_table_1.final_grade::text = ANY(ARRAY[${self.final_grade}]))
           AND bp_material IS NOT NULL AND resolution IS NOT NULL AND roc_version IS NOT NULL AND geometry IS NOT NULL
           AND (
-            ('${self.test_status}' = 'All' AND '${self.assembly_status}' = 'All' AND '${self.ship_status}' = 'All' AND '${self.pack_status}' = 'All')
+            ('${self.test_status}' = 'All' AND '${self.assembly_status}' = 'All' AND '${self.pack_ship_status}' = 'All')
             OR ('${self.test_status}' = 'Untested' AND (temp_table_2.module_name IS NULL OR temp_table_3.module_name IS NULL))
             OR ('${self.test_status}' = 'Tested' AND (temp_table_2.module_name IS NOT NULL AND temp_table_3.module_name IS NOT NULL))
             OR ('${self.assembly_status}' = 'Incomplete' AND (temp_table_0.assembled IS NULL OR temp_table_0.inspected IS NULL OR temp_table_0.wb_back IS NULL OR temp_table_0.encap_back IS NULL OR temp_table_0.wb_front IS NULL OR temp_table_0.encap_front IS NULL))
             OR ('${self.assembly_status}' = 'Complete' AND (temp_table_0.assembled IS NOT NULL AND temp_table_0.inspected IS NOT NULL AND temp_table_0.wb_back IS NOT NULL AND temp_table_0.encap_back IS NOT NULL AND temp_table_0.wb_front IS NOT NULL AND temp_table_0.encap_front IS NOT NULL))
-            OR ('${self.ship_status}' = 'Unshipped' AND temp_table_0.shipped_datetime IS NULL)
-            OR ('${self.ship_status}' = 'Shipped' AND temp_table_0.shipped_datetime IS NOT NULL)
-            OR ('${self.pack_status}' = 'Unpacked' AND temp_table_0.packed_datetime IS NULL)
-            OR ('${self.pack_status}' = 'Packed' AND temp_table_0.packed_datetime IS NOT NULL)
+            OR ('${self.pack_ship_status}' = 'Not packed (unshipped)' AND temp_table_0.packed_datetime IS NULL AND temp_table_0.shipped_datetime IS NULL)
+            OR ('${self.pack_ship_status}' = 'Packed (unshipped)' AND temp_table_0.packed_datetime IS NOT NULL AND temp_table_0.shipped_datetime IS NULL)
+            OR ('${self.pack_ship_status}' = 'Packed & Shipped' AND temp_table_0.packed_datetime IS NOT NULL AND temp_table_0.shipped_datetime IS NOT NULL)
+            OR ('${self.pack_ship_status}' = 'Shipped; Not packed' AND temp_table_0.shipped_datetime IS NOT NULL AND temp_table_0.packed_datetime IS NULL)
           )
         ORDER BY temp_table_0.module_no DESC"""
     
@@ -6567,8 +6566,8 @@ class ModuleAssemblyBuilder:
                         "text": "All",
                         "value": "All"
                     },
-                    "label": "Ship status",
-                    "name": "ship_status",
+                    "label": "Pack & Ship status",
+                    "name": "pack_ship_status",
                     "options": [
                         {
                             "selected": True,
@@ -6577,43 +6576,26 @@ class ModuleAssemblyBuilder:
                         },
                         {
                             "selected": False,
-                            "text": "Shipped",
-                            "value": "Shipped"
+                            "text": "Not packed (unshipped)",
+                            "value": "Not packed (unshipped)"
                         },
                         {
                             "selected": False,
-                            "text": "Unshipped",
-                            "value": "Unshipped"
+                            "text": "Packed (unshipped)",
+                            "value": "Packed (unshipped)"
+                        },
+                        {
+                            "selected": False,
+                            "text": "Packed & Shipped",
+                            "value": "Packed & Shipped"
+                        },
+                        {
+                            "selected": False,
+                            "text": "Shipped; Not packed",
+                            "value": "Shipped; Not packed"
                         }
                     ],
-                    "query": "All,Shipped,Unshipped",
-                    "type": "custom"
-                },
-                {
-                    "current": {
-                        "text": "All",
-                        "value": "All"
-                    },
-                    "label": "Pack status",
-                    "name": "pack_status",
-                    "options": [
-                        {
-                            "selected": True,
-                            "text": "All",
-                            "value": "All"
-                        },
-                        {
-                            "selected": False,
-                            "text": "Packed",
-                            "value": "Packed"
-                        },
-                        {
-                            "selected": False,
-                            "text": "Unpacked",
-                            "value": "Unpacked"
-                        }
-                    ],
-                    "query": "All,Packed,Unpacked",
+                    "query": "All,Not packed (unshipped),Packed (unshipped),Packed & Shipped,Shipped; Not packed",
                     "type": "custom"
                 },
                 {
