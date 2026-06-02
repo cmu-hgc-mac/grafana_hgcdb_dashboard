@@ -5761,7 +5761,7 @@ class ModuleAssemblyBuilder:
             temp_table_2.temp_c::text,
             temp_table_2.date_test::text AS test_iv,
             temp_table_3.date_test::text AS test_ped,
-            temp_table_0.xml_upload_success::text,
+            temp_table_0.xml_upload_success::text AS xml_build_upload_success,
             temp_table_0.packed_datetime::text,
             temp_table_0.shipped_datetime::text
         FROM temp_table_0
