@@ -5798,10 +5798,10 @@ class ModuleAssemblyBuilder:
             '${self.test_status}' = 'All'
             OR ('${self.test_status}' = 'Untested' AND (temp_table_2.module_name IS NULL OR temp_table_3.module_name IS NULL))
             OR ('${self.test_status}' = 'Tested' AND (temp_table_2.module_name IS NOT NULL AND temp_table_3.module_name IS NOT NULL))
-            OR ('${self.test_status}' = 'Tested at < 0' AND (temp_table_2.module_name IS NOT NULL OR temp_table_3.module_name IS NOT NULL) AND EXISTS (SELECT 1 FROM module_iv_test WHERE module_iv_test.module_name = temp_table_0.module_name AND (module_iv_test.status = 7 OR module_iv_test.status = 8) AND module_iv_test.temp_c::numeric < 0))
-            OR ('${self.test_status}' = 'Tested at > 0' AND (temp_table_2.module_name IS NOT NULL OR temp_table_3.module_name IS NOT NULL) AND EXISTS (SELECT 1 FROM module_iv_test WHERE module_iv_test.module_name = temp_table_0.module_name AND (module_iv_test.status = 7 OR module_iv_test.status = 8) AND module_iv_test.temp_c::numeric > 0))
-            OR ('${self.test_status}' = 'Untested at < 0' AND (temp_table_2.module_name IS NOT NULL OR temp_table_3.module_name IS NOT NULL) AND NOT EXISTS (SELECT 1 FROM module_iv_test WHERE module_iv_test.module_name = temp_table_0.module_name AND (module_iv_test.status = 7 OR module_iv_test.status = 8) AND module_iv_test.temp_c::numeric < 0))
-            OR ('${self.test_status}' = 'Untested at > 0' AND (temp_table_2.module_name IS NOT NULL OR temp_table_3.module_name IS NOT NULL) AND NOT EXISTS (SELECT 1 FROM module_iv_test WHERE module_iv_test.module_name = temp_table_0.module_name AND (module_iv_test.status = 7 OR module_iv_test.status = 8) AND module_iv_test.temp_c::numeric > 0))
+            OR ('${self.test_status}' = 'Tested at < 0 degC' AND (temp_table_2.module_name IS NOT NULL OR temp_table_3.module_name IS NOT NULL) AND EXISTS (SELECT 1 FROM module_iv_test WHERE module_iv_test.module_name = temp_table_0.module_name AND (module_iv_test.status = 7 OR module_iv_test.status = 8) AND module_iv_test.temp_c::numeric < 0 degC))
+            OR ('${self.test_status}' = 'Tested at > 0 degC' AND (temp_table_2.module_name IS NOT NULL OR temp_table_3.module_name IS NOT NULL) AND EXISTS (SELECT 1 FROM module_iv_test WHERE module_iv_test.module_name = temp_table_0.module_name AND (module_iv_test.status = 7 OR module_iv_test.status = 8) AND module_iv_test.temp_c::numeric > 0 degC))
+            OR ('${self.test_status}' = 'Untested at < 0 degC' AND (temp_table_2.module_name IS NOT NULL OR temp_table_3.module_name IS NOT NULL) AND NOT EXISTS (SELECT 1 FROM module_iv_test WHERE module_iv_test.module_name = temp_table_0.module_name AND (module_iv_test.status = 7 OR module_iv_test.status = 8) AND module_iv_test.temp_c::numeric < 0 degC))
+            OR ('${self.test_status}' = 'Untested at > 0 degC' AND (temp_table_2.module_name IS NOT NULL OR temp_table_3.module_name IS NOT NULL) AND NOT EXISTS (SELECT 1 FROM module_iv_test WHERE module_iv_test.module_name = temp_table_0.module_name AND (module_iv_test.status = 7 OR module_iv_test.status = 8) AND module_iv_test.temp_c::numeric > 0 degC))
           )
           AND (
             '${self.assembly_status}' = 'All'
@@ -6672,26 +6672,26 @@ class ModuleAssemblyBuilder:
                         },
                         {
                             "selected": False,
-                            "text": "Tested at < 0",
-                            "value": "Tested at < 0"
+                            "text": "Tested at < 0 degC",
+                            "value": "Tested at < 0 degC"
                         },
                         {
                             "selected": False,
-                            "text": "Tested at > 0",
-                            "value": "Tested at > 0"
+                            "text": "Tested at > 0 degC",
+                            "value": "Tested at > 0 degC"
                         },
                         {
                             "selected": False,
-                            "text": "Untested at < 0",
-                            "value": "Untested at < 0"
+                            "text": "Untested at < 0 degC",
+                            "value": "Untested at < 0 degC"
                         },
                         {
                             "selected": False,
-                            "text": "Untested at > 0",
-                            "value": "Untested at > 0"
+                            "text": "Untested at > 0 degC",
+                            "value": "Untested at > 0 degC"
                         }
                     ],
-                    "query": "All,Tested,Untested,Tested at < 0,Tested at > 0,Untested at < 0,Untested at > 0",
+                    "query": "All,Tested,Untested,Tested at < 0 degC,Tested at > 0 degC,Untested at < 0 degC,Untested at > 0 degC",
                     "type": "custom"
                 }
                 ]
