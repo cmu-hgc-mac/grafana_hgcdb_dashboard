@@ -3952,7 +3952,7 @@ class OffsetPlotsBuilder:
                     "editorMode": "code",
                     "format": "table",
                     "rawQuery": True,
-                    "rawSql": "SELECT * FROM (VALUES (0.04, 1), (0.04, -1)) AS t(ang_offset_deg, y_zero)",
+                    "rawSql": "SELECT * FROM (VALUES (0.04, 1000), (0.04, -1000)) AS t(ang_offset_deg, y_zero)",
                     "refId": "C"
                     },
                     {
@@ -3963,7 +3963,7 @@ class OffsetPlotsBuilder:
                     "editorMode": "code",
                     "format": "table",
                     "rawQuery": True,
-                    "rawSql": "SELECT * FROM (VALUES (-0.04, 1), (-0.04, -1)) AS t(ang_offset_deg, y_zero)",
+                    "rawSql": "SELECT * FROM (VALUES (-0.04, 1000), (-0.04, -1000)) AS t(ang_offset_deg, y_zero)",
                     "refId": "D"
                     },
                     {
@@ -3974,7 +3974,7 @@ class OffsetPlotsBuilder:
                     "editorMode": "code",
                     "format": "table",
                     "rawQuery": True,
-                    "rawSql": "SELECT * FROM (VALUES (0.1, 1), (0.1, -1)) AS t(ang_offset_deg, y_zero)",
+                    "rawSql": "SELECT * FROM (VALUES (0.1, 1000), (0.1, -1000)) AS t(ang_offset_deg, y_zero)",
                     "refId": "E2"
                     },
                     {
@@ -3985,7 +3985,7 @@ class OffsetPlotsBuilder:
                     "editorMode": "code",
                     "format": "table",
                     "rawQuery": True,
-                    "rawSql": "SELECT * FROM (VALUES (-0.1, 1), (-0.1, -1)) AS t(ang_offset_deg, y_zero)",
+                    "rawSql": "SELECT * FROM (VALUES (-0.1, 1000), (-0.1, -1000)) AS t(ang_offset_deg, y_zero)",
                     "refId": "F2"
                     },
                     {
