@@ -6102,7 +6102,7 @@ class ModuleAssemblyBuilder:
                     {
                         "matcher": {
                         "id": "byName",
-                        "options": "xml_upload_success"
+                        "options": "xml_build_upload_success"
                         },
                         "properties": [
                         {
