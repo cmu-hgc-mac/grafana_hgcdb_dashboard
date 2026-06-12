@@ -5609,7 +5609,7 @@ class GeneralInfoBuilder:
                     ]
                 },
                 "gridPos": {
-                    "h": 8,
+                    "h": 16,
                     "w": 24,
                     "x": 0,
                     "y": 38
