@@ -5089,10 +5089,10 @@ class GeneralInfoBuilder:
                     "overrides": []
                 },
                 "gridPos": {
-                    "h": 2,
+                    "h": 1,
                     "w": 24,
                     "x": 0,
-                    "y": 32
+                    "y": 27
                 },
                 "id": 6,
                 "options": {
@@ -5160,7 +5160,7 @@ class GeneralInfoBuilder:
                     "h": 9,
                     "w": 8,
                     "x": 0,
-                    "y": 34
+                    "y": 28
                 },
                 "id": 7,
                 "options": {
@@ -5267,7 +5267,7 @@ class GeneralInfoBuilder:
                     "h": 9,
                     "w": 8,
                     "x": 8,
-                    "y": 34
+                    "y": 28
                 },
                 "id": 9,
                 "options": {
@@ -5374,7 +5374,7 @@ class GeneralInfoBuilder:
                     "h": 9,
                     "w": 8,
                     "x": 16,
-                    "y": 34
+                    "y": 28
                 },
                 "id": 8,
                 "options": {
@@ -5435,10 +5435,10 @@ class GeneralInfoBuilder:
                     "overrides": []
                 },
                 "gridPos": {
-                    "h": 2,
+                    "h": 1,
                     "w": 24,
                     "x": 0,
-                    "y": 43
+                    "y": 37
                 },
                 "id": 10,
                 "options": {
@@ -5506,7 +5506,7 @@ class GeneralInfoBuilder:
                     "h": 9,
                     "w": 24,
                     "x": 0,
-                    "y": 45
+                    "y": 38
                 },
                 "id": 11,
                 "options": {
@@ -5621,7 +5621,7 @@ class GeneralInfoBuilder:
                     ]
                 },
                 "gridPos": {
-                    "h": 16,
+                    "h": 11,
                     "w": 24,
                     "x": 0,
                     "y": 16
