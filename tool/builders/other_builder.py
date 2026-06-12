@@ -5092,7 +5092,7 @@ class GeneralInfoBuilder:
                     "h": 2,
                     "w": 24,
                     "x": 0,
-                    "y": 16
+                    "y": 32
                 },
                 "id": 6,
                 "options": {
@@ -5160,7 +5160,7 @@ class GeneralInfoBuilder:
                     "h": 9,
                     "w": 8,
                     "x": 0,
-                    "y": 18
+                    "y": 34
                 },
                 "id": 7,
                 "options": {
@@ -5267,7 +5267,7 @@ class GeneralInfoBuilder:
                     "h": 9,
                     "w": 8,
                     "x": 8,
-                    "y": 18
+                    "y": 34
                 },
                 "id": 9,
                 "options": {
@@ -5374,7 +5374,7 @@ class GeneralInfoBuilder:
                     "h": 9,
                     "w": 8,
                     "x": 16,
-                    "y": 18
+                    "y": 34
                 },
                 "id": 8,
                 "options": {
@@ -5438,7 +5438,7 @@ class GeneralInfoBuilder:
                     "h": 2,
                     "w": 24,
                     "x": 0,
-                    "y": 27
+                    "y": 43
                 },
                 "id": 10,
                 "options": {
@@ -5506,7 +5506,7 @@ class GeneralInfoBuilder:
                     "h": 9,
                     "w": 24,
                     "x": 0,
-                    "y": 29
+                    "y": 45
                 },
                 "id": 11,
                 "options": {
@@ -5605,6 +5605,18 @@ class GeneralInfoBuilder:
                             "value": 160
                         }
                         ]
+                    },
+                    {
+                        "matcher": {
+                        "id": "byName",
+                        "options": "Total Graded"
+                        },
+                        "properties": [
+                        {
+                            "id": "custom.width",
+                            "value": 140
+                        }
+                        ]
                     }
                     ]
                 },
@@ -5612,7 +5624,7 @@ class GeneralInfoBuilder:
                     "h": 16,
                     "w": 24,
                     "x": 0,
-                    "y": 38
+                    "y": 16
                 },
                 "options": {
                     "cellHeight": "sm",
@@ -5630,7 +5642,7 @@ class GeneralInfoBuilder:
                     "editorMode": "code",
                     "format": "table",
                     "rawQuery": True,
-                    "rawSql": "WITH filtered_module_info AS (\n    SELECT\n        module_name\n    FROM module_info\n    WHERE\n        ('All' = ANY(ARRAY[${bp_material}]) OR\n            (bp_material IS NULL AND 'NULL' = ANY(ARRAY[${bp_material}])) OR\n            bp_material::text = ANY(ARRAY[${bp_material}]))\n        AND\n            ('All' = ANY(ARRAY[${resolution}]) OR\n            (resolution IS NULL AND 'NULL' = ANY(ARRAY[${resolution}])) OR\n            resolution::text = ANY(ARRAY[${resolution}]))\n        AND\n            ('All' = ANY(ARRAY[${roc_version}]) OR\n            (roc_version IS NULL AND 'NULL' = ANY(ARRAY[${roc_version}])) OR\n            roc_version::text = ANY(ARRAY[${roc_version}]))\n        AND\n            ('All' = ANY(ARRAY[${sen_thickness}]) OR\n            (sen_thickness IS NULL AND 'NULL' = ANY(ARRAY[${sen_thickness}])) OR\n            sen_thickness::text = ANY(ARRAY[${sen_thickness}]))\n        AND\n            ('All' = ANY(ARRAY[${geometry}]) OR\n            (geometry IS NULL AND 'NULL' = ANY(ARRAY[${geometry}])) OR\n            geometry::text = ANY(ARRAY[${geometry}]))\n        AND $__timeFilter(assembled)\n        AND assembled IS NOT NULL\n),\nlatest_qc AS (\n    SELECT DISTINCT ON (q.module_name)\n        q.module_name,\n        q.final_grade\n    FROM module_qc_summary q\n    JOIN filtered_module_info f ON q.module_name = f.module_name\n    ORDER BY q.module_name, q.mod_qc_no DESC\n),\nseries_data AS (\n    SELECT\n        SUBSTRING(f.module_name, 4, 6) AS \"Series\",\n        COUNT(*) AS \"Total\",\n        COUNT(CASE WHEN lq.final_grade = 'A' THEN 1 END) AS \"A\",\n        COUNT(CASE WHEN lq.final_grade = 'B' THEN 1 END) AS \"B\",\n        COUNT(CASE WHEN lq.final_grade = 'C' THEN 1 END) AS \"C\",\n        COUNT(CASE WHEN lq.final_grade = 'F' THEN 1 END) AS \"F\",\n        COUNT(CASE WHEN lq.final_grade IN ('A', 'B') THEN 1 END) AS \"A+B (Installable)\"\n    FROM filtered_module_info f\n    JOIN latest_qc lq ON f.module_name = lq.module_name\n    WHERE\n        ('All' = ANY(ARRAY[${final_grade}]) OR\n         (lq.final_grade IS NULL AND 'NULL' = ANY(ARRAY[${final_grade}])) OR\n         lq.final_grade::text = ANY(ARRAY[${final_grade}]))\n    GROUP BY SUBSTRING(f.module_name, 4, 6)\n)\nSELECT \"Series\", \"Total\", \"A\", \"B\", \"C\", \"F\", \"A+B (Installable)\", \"% Installable\" FROM (\n    SELECT\n        \"Series\",\n        \"Total\",\n        \"A\",\n        \"B\",\n        \"C\",\n        \"F\",\n        \"A+B (Installable)\",\n        CASE WHEN \"Total\" = 0 THEN '0.0%' ELSE ROUND(\"A+B (Installable)\" * 100.0 / \"Total\", 1)::text || '%' END AS \"% Installable\",\n        0 AS sort_order\n    FROM series_data\n    UNION ALL\n    SELECT\n        'All',\n        SUM(\"Total\"),\n        SUM(\"A\"),\n        SUM(\"B\"),\n        SUM(\"C\"),\n        SUM(\"F\"),\n        SUM(\"A+B (Installable)\"),\n        CASE WHEN SUM(\"Total\") = 0 THEN '0.0%' ELSE ROUND(SUM(\"A+B (Installable)\") * 100.0 / SUM(\"Total\"), 1)::text || '%' END,\n        1\n    FROM series_data\n) AS combined\nORDER BY sort_order, \"Series\";",
+                    "rawSql": "WITH filtered_module_info AS (\n    SELECT\n        module_name\n    FROM module_info\n    WHERE\n        ('All' = ANY(ARRAY[${bp_material}]) OR\n            (bp_material IS NULL AND 'NULL' = ANY(ARRAY[${bp_material}])) OR\n            bp_material::text = ANY(ARRAY[${bp_material}]))\n        AND\n            ('All' = ANY(ARRAY[${resolution}]) OR\n            (resolution IS NULL AND 'NULL' = ANY(ARRAY[${resolution}])) OR\n            resolution::text = ANY(ARRAY[${resolution}]))\n        AND\n            ('All' = ANY(ARRAY[${roc_version}]) OR\n            (roc_version IS NULL AND 'NULL' = ANY(ARRAY[${roc_version}])) OR\n            roc_version::text = ANY(ARRAY[${roc_version}]))\n        AND\n            ('All' = ANY(ARRAY[${sen_thickness}]) OR\n            (sen_thickness IS NULL AND 'NULL' = ANY(ARRAY[${sen_thickness}])) OR\n            sen_thickness::text = ANY(ARRAY[${sen_thickness}]))\n        AND\n            ('All' = ANY(ARRAY[${geometry}]) OR\n            (geometry IS NULL AND 'NULL' = ANY(ARRAY[${geometry}])) OR\n            geometry::text = ANY(ARRAY[${geometry}]))\n        AND $__timeFilter(assembled)\n        AND assembled IS NOT NULL\n),\nlatest_qc AS (\n    SELECT DISTINCT ON (q.module_name)\n        q.module_name,\n        q.final_grade\n    FROM module_qc_summary q\n    JOIN filtered_module_info f ON q.module_name = f.module_name\n    ORDER BY q.module_name, q.mod_qc_no DESC\n),\nseries_data AS (\n    SELECT\n        SUBSTRING(f.module_name, 4, 6) AS \"Series\",\n        COUNT(*) AS \"Total Graded\",\n        COUNT(CASE WHEN lq.final_grade = 'A' THEN 1 END) AS \"A\",\n        COUNT(CASE WHEN lq.final_grade = 'B' THEN 1 END) AS \"B\",\n        COUNT(CASE WHEN lq.final_grade = 'C' THEN 1 END) AS \"C\",\n        COUNT(CASE WHEN lq.final_grade = 'F' THEN 1 END) AS \"F\",\n        COUNT(CASE WHEN lq.final_grade IN ('A', 'B') THEN 1 END) AS \"A+B (Installable)\"\n    FROM filtered_module_info f\n    JOIN latest_qc lq ON f.module_name = lq.module_name\n    WHERE\n        ('All' = ANY(ARRAY[${final_grade}]) OR\n         (lq.final_grade IS NULL AND 'NULL' = ANY(ARRAY[${final_grade}])) OR\n         lq.final_grade::text = ANY(ARRAY[${final_grade}]))\n    GROUP BY SUBSTRING(f.module_name, 4, 6)\n)\nSELECT \"Series\", \"Total Graded\", \"A\", \"B\", \"C\", \"F\", \"A+B (Installable)\", \"% Installable\" FROM (\n    SELECT\n        \"Series\",\n        \"Total Graded\",\n        \"A\",\n        \"B\",\n        \"C\",\n        \"F\",\n        \"A+B (Installable)\",\n        CASE WHEN \"Total Graded\" = 0 THEN '0.0%' ELSE ROUND(\"A+B (Installable)\" * 100.0 / \"Total Graded\", 1)::text || '%' END AS \"% Installable\",\n        0 AS sort_order\n    FROM series_data\n    UNION ALL\n    SELECT\n        'All',\n        SUM(\"Total Graded\"),\n        SUM(\"A\"),\n        SUM(\"B\"),\n        SUM(\"C\"),\n        SUM(\"F\"),\n        SUM(\"A+B (Installable)\"),\n        CASE WHEN SUM(\"Total Graded\") = 0 THEN '0.0%' ELSE ROUND(SUM(\"A+B (Installable)\") * 100.0 / SUM(\"Total Graded\"), 1)::text || '%' END,\n        1\n    FROM series_data\n) AS combined\nORDER BY sort_order, \"Series\";",
                     "refId": "A",
                     "sql": {
                         "columns": [
