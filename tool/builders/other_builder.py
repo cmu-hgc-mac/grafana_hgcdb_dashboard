@@ -5092,7 +5092,7 @@ class GeneralInfoBuilder:
                     "h": 1,
                     "w": 24,
                     "x": 0,
-                    "y": 27
+                    "y": 24
                 },
                 "id": 6,
                 "options": {
@@ -5160,7 +5160,7 @@ class GeneralInfoBuilder:
                     "h": 9,
                     "w": 8,
                     "x": 0,
-                    "y": 28
+                    "y": 25
                 },
                 "id": 7,
                 "options": {
@@ -5267,7 +5267,7 @@ class GeneralInfoBuilder:
                     "h": 9,
                     "w": 8,
                     "x": 8,
-                    "y": 28
+                    "y": 25
                 },
                 "id": 9,
                 "options": {
@@ -5374,7 +5374,7 @@ class GeneralInfoBuilder:
                     "h": 9,
                     "w": 8,
                     "x": 16,
-                    "y": 28
+                    "y": 25
                 },
                 "id": 8,
                 "options": {
@@ -5438,7 +5438,7 @@ class GeneralInfoBuilder:
                     "h": 1,
                     "w": 24,
                     "x": 0,
-                    "y": 37
+                    "y": 34
                 },
                 "id": 10,
                 "options": {
@@ -5506,7 +5506,7 @@ class GeneralInfoBuilder:
                     "h": 9,
                     "w": 24,
                     "x": 0,
-                    "y": 38
+                    "y": 35
                 },
                 "id": 11,
                 "options": {
@@ -5621,7 +5621,7 @@ class GeneralInfoBuilder:
                     ]
                 },
                 "gridPos": {
-                    "h": 11,
+                    "h": 8,
                     "w": 24,
                     "x": 0,
                     "y": 16
