@@ -5572,7 +5572,7 @@ class GeneralInfoBuilder:
                         "mode": "thresholds"
                     },
                     "custom": {
-                        "align": "auto",
+                        "align": "center",
                         "cellOptions": {
                         "type": "auto"
                         },
@@ -5593,7 +5593,20 @@ class GeneralInfoBuilder:
                         ]
                     }
                     },
-                    "overrides": []
+                    "overrides": [
+                    {
+                        "matcher": {
+                        "id": "byName",
+                        "options": "A+B (Installable)"
+                        },
+                        "properties": [
+                        {
+                            "id": "custom.width",
+                            "value": 160
+                        }
+                        ]
+                    }
+                    ]
                 },
                 "gridPos": {
                     "h": 8,
