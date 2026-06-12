@@ -5560,6 +5560,85 @@ class GeneralInfoBuilder:
                 ],
                 "title": "Count for bad cells",
                 "type": "barchart"
+                },
+                {
+                "datasource": {
+                    "type": "grafana-postgresql-datasource",
+                    "uid": f"{self.datasource_uid}"
+                },
+                "fieldConfig": {
+                    "defaults": {
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "custom": {
+                        "align": "auto",
+                        "cellOptions": {
+                        "type": "auto"
+                        },
+                        "inspect": False
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                        {
+                            "color": "green"
+                        },
+                        {
+                            "color": "red",
+                            "value": 80
+                        }
+                        ]
+                    }
+                    },
+                    "overrides": []
+                },
+                "gridPos": {
+                    "h": 8,
+                    "w": 24,
+                    "x": 0,
+                    "y": 38
+                },
+                "options": {
+                    "cellHeight": "sm",
+                    "footer": {
+                    "countRows": False,
+                    "fields": "",
+                    "reducer": ["sum"],
+                    "show": False
+                    },
+                    "showHeader": True
+                },
+                "pluginVersion": "12.0.1",
+                "targets": [
+                    {
+                    "editorMode": "code",
+                    "format": "table",
+                    "rawQuery": True,
+                    "rawSql": "WITH filtered_module_info AS (\n    SELECT\n        module_name\n    FROM module_info\n    WHERE\n        ('All' = ANY(ARRAY[${bp_material}]) OR\n            (bp_material IS NULL AND 'NULL' = ANY(ARRAY[${bp_material}])) OR\n            bp_material::text = ANY(ARRAY[${bp_material}]))\n        AND\n            ('All' = ANY(ARRAY[${resolution}]) OR\n            (resolution IS NULL AND 'NULL' = ANY(ARRAY[${resolution}])) OR\n            resolution::text = ANY(ARRAY[${resolution}]))\n        AND\n            ('All' = ANY(ARRAY[${roc_version}]) OR\n            (roc_version IS NULL AND 'NULL' = ANY(ARRAY[${roc_version}])) OR\n            roc_version::text = ANY(ARRAY[${roc_version}]))\n        AND\n            ('All' = ANY(ARRAY[${sen_thickness}]) OR\n            (sen_thickness IS NULL AND 'NULL' = ANY(ARRAY[${sen_thickness}])) OR\n            sen_thickness::text = ANY(ARRAY[${sen_thickness}]))\n        AND\n            ('All' = ANY(ARRAY[${geometry}]) OR\n            (geometry IS NULL AND 'NULL' = ANY(ARRAY[${geometry}])) OR\n            geometry::text = ANY(ARRAY[${geometry}]))\n        AND $__timeFilter(assembled)\n),\nlatest_qc AS (\n    SELECT DISTINCT ON (q.module_name)\n        q.module_name,\n        q.final_grade\n    FROM module_qc_summary q\n    JOIN filtered_module_info f ON q.module_name = f.module_name\n    ORDER BY q.module_name, q.mod_qc_no DESC\n)\nSELECT\n    SUBSTRING(f.module_name, 4, 6) AS \"Series\",\n    COUNT(*) AS \"Total\",\n    COUNT(CASE WHEN lq.final_grade = 'A' THEN 1 END) AS \"A\",\n    COUNT(CASE WHEN lq.final_grade = 'B' THEN 1 END) AS \"B\",\n    COUNT(CASE WHEN lq.final_grade = 'C' THEN 1 END) AS \"C\",\n    COUNT(CASE WHEN lq.final_grade = 'F' THEN 1 END) AS \"F\",\n    COUNT(CASE WHEN lq.final_grade IN ('A', 'B') THEN 1 END) AS \"A+B\"\nFROM filtered_module_info f\nLEFT JOIN latest_qc lq ON f.module_name = lq.module_name\nWHERE\n    ('All' = ANY(ARRAY[${final_grade}]) OR\n     (lq.final_grade IS NULL AND 'NULL' = ANY(ARRAY[${final_grade}])) OR\n     lq.final_grade::text = ANY(ARRAY[${final_grade}]))\nGROUP BY SUBSTRING(f.module_name, 4, 6)\nORDER BY 1;",
+                    "refId": "A",
+                    "sql": {
+                        "columns": [
+                        {
+                            "parameters": [],
+                            "type": "function"
+                        }
+                        ],
+                        "groupBy": [
+                        {
+                            "property": {
+                            "type": "string"
+                            },
+                            "type": "groupBy"
+                        }
+                        ],
+                        "limit": 50
+                    }
+                    }
+                ],
+                "title": "Grade Summary by Series",
+                "type": "table"
                 }
             ],
             "preload": False,
