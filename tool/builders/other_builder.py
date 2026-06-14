@@ -497,9 +497,6 @@ class ComponentsLookUpFormBuilder:
         self.sen_name = "UPPER('${sen_name}')"
         self.proto_name = "UPPER('${proto_name}')"
         self.module_name = "UPPER(REPLACE('${module_name}', '-', ''))"
-        self.mean_hex_map_base64 = "${mean_hex_map}"
-        self.std_hex_map_base64 = "${std_hex_map}"
-
         ## === SQL ===
         self.module_info_sql = f"""
         WITH selected_module_inspect AS (
@@ -751,11 +748,8 @@ class ComponentsLookUpFormBuilder:
 
         self.qc_data_list = self.generate_qc_data_list()
 
-        self.mean_hexmap_md = f'<img src=\"data:image/png;base64,{self.mean_hex_map_base64}" style="width: auto; height: auto;"/>'
-        self.std_hexmap_md = f'<img src=\"data:image/png;base64,{self.std_hex_map_base64}" style="width: auto; height: auto;"/>'
-
         self.mean_hexmap_sql = f"""
-        SELECT DISTINCT ON (module_pedestal_plots.module_name) encode(adc_mean_hexmap, 'base64') AS noise_channel_base64
+        SELECT DISTINCT ON (module_pedestal_plots.module_name) 'data:image/png;base64,' || encode(adc_mean_hexmap, 'base64') AS hexmap_image
         FROM module_pedestal_plots
         JOIN module_info ON module_pedestal_plots.module_name = module_info.module_name
         WHERE (module_info.module_name = {self.module_name}
@@ -767,7 +761,7 @@ class ComponentsLookUpFormBuilder:
         """
 
         self.std_hexmap_sql = f"""
-        SELECT DISTINCT ON (module_pedestal_plots.module_name) encode(adc_std_hexmap, 'base64') AS noise_channel_base64
+        SELECT DISTINCT ON (module_pedestal_plots.module_name) 'data:image/png;base64,' || encode(adc_std_hexmap, 'base64') AS hexmap_image
         FROM module_pedestal_plots
         JOIN module_info ON module_pedestal_plots.module_name = module_info.module_name
         WHERE (module_info.module_name = {self.module_name}
@@ -1645,8 +1639,24 @@ class ComponentsLookUpFormBuilder:
             },
     # Panel: Latest Mean Hexmap
             {
+            "datasource": {
+                "type": "grafana-postgresql-datasource",
+                "uid": f"{self.datasource_uid}"
+            },
             "fieldConfig": {
-                "defaults": {},
+                "defaults": {
+                "custom": {
+                    "cellOptions": {
+                    "type": "image"
+                    },
+                    "inspect": False
+                },
+                "mappings": [],
+                "thresholds": {
+                    "mode": "absolute",
+                    "steps": [{"color": "green"}]
+                }
+                },
                 "overrides": []
             },
             "gridPos": {
@@ -1657,19 +1667,27 @@ class ComponentsLookUpFormBuilder:
             },
             "id": 9,
             "options": {
-                "code": {
-                "language": "plaintext",
-                "showLineNumbers": False,
-                "showMiniMap": False
-                },
-                "content": self.mean_hexmap_md,
-                "mode": "markdown"
+                "cellHeight": "lg",
+                "footer": {"show": False, "reducer": ["sum"], "fields": "", "countRows": False},
+                "showHeader": False
             },
-            "pluginVersion": "12.0.0",
-            "repeat": "mean_hex_map",
-            "repeatDirection": "v",
+            "pluginVersion": "12.0.1",
+            "targets": [
+                {
+                "datasource": {
+                    "type": "grafana-postgresql-datasource",
+                    "uid": f"{self.datasource_uid}"
+                },
+                "editorMode": "code",
+                "format": "table",
+                "rawQuery": True,
+                "rawSql": self.mean_hexmap_sql,
+                "refId": "A",
+                "sql": {"columns": [{"parameters": [], "type": "function"}], "groupBy": [{"property": {"type": "string"}, "type": "groupBy"}], "limit": 50}
+                }
+            ],
             "title": "Pedestal Hexmap",
-            "type": "text",
+            "type": "table",
             "links":[
                 {
                 "title": "All Hexmap Plots",
@@ -1680,8 +1698,24 @@ class ComponentsLookUpFormBuilder:
             },
     # Panel: Latest Noisy Hexmap
             {
+            "datasource": {
+                "type": "grafana-postgresql-datasource",
+                "uid": f"{self.datasource_uid}"
+            },
             "fieldConfig": {
-                "defaults": {},
+                "defaults": {
+                "custom": {
+                    "cellOptions": {
+                    "type": "image"
+                    },
+                    "inspect": False
+                },
+                "mappings": [],
+                "thresholds": {
+                    "mode": "absolute",
+                    "steps": [{"color": "green"}]
+                }
+                },
                 "overrides": []
             },
             "gridPos": {
@@ -1692,19 +1726,27 @@ class ComponentsLookUpFormBuilder:
             },
             "id": 10,
             "options": {
-                "code": {
-                "language": "plaintext",
-                "showLineNumbers": False,
-                "showMiniMap": False
-                },
-                "content": self.std_hexmap_md,
-                "mode": "markdown"
+                "cellHeight": "lg",
+                "footer": {"show": False, "reducer": ["sum"], "fields": "", "countRows": False},
+                "showHeader": False
             },
-            "pluginVersion": "12.0.0",
-            "repeat": "std_hex_map",
-            "repeatDirection": "v",
+            "pluginVersion": "12.0.1",
+            "targets": [
+                {
+                "datasource": {
+                    "type": "grafana-postgresql-datasource",
+                    "uid": f"{self.datasource_uid}"
+                },
+                "editorMode": "code",
+                "format": "table",
+                "rawQuery": True,
+                "rawSql": self.std_hexmap_sql,
+                "refId": "A",
+                "sql": {"columns": [{"parameters": [], "type": "function"}], "groupBy": [{"property": {"type": "string"}, "type": "groupBy"}], "limit": 50}
+                }
+            ],
             "title": "Noise Hexmap",
-            "type": "text",
+            "type": "table",
             "links":[
                 {
                 "title": "All Hexmap Plots",
@@ -2097,46 +2139,6 @@ class ComponentsLookUpFormBuilder:
                 "value": ""
                 }
             },
-            {
-                "name": "mean_hex_map",
-                "label": "Mean Hex Map",
-                "type": "query",
-                "hide": 2,
-                "includeAll": True,
-                "multi": True,
-                "refresh": 1,
-                "regex": "",
-                "datasource": {
-                    "type": "postgres",
-                    "uid": f"{self.datasource_uid}"
-                },
-                "query": self.mean_hexmap_sql,
-                "options": [],
-                "current": {
-                "text": "All",
-                "value": "$__all"
-                }
-            },
-            {
-                "name": "std_hex_map",
-                "label": "Std Hex Map",
-                "type": "query",
-                "hide": 2,
-                "includeAll": True,
-                "multi": True,
-                "refresh": 1,
-                "regex": "",
-                "datasource": {
-                    "type": "postgres",
-                    "uid": f"{self.datasource_uid}"
-                },
-                "query": self.std_hexmap_sql,
-                "options": [],
-                "current": {
-                "text": "All",
-                "value": "$__all"
-                }
-            }
             ] + self.qc_data_list
         },
         "time": {
