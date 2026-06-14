@@ -463,7 +463,7 @@ class IVCurveBuilder:
             }
             ],
             "tooltip": {
-            "mode": "all",
+            "mode": "single",
             "sort": "none",
             "hideZeros": False
             },
