@@ -8194,12 +8194,12 @@ ORDER BY module_no DESC, grade_timestamp DESC"""
                         "type": "query"
                     },
                     {
-                        "current": {"text": "false", "value": "false"},
+                        "current": {"text": "true", "value": "true"},
                         "label": "Show Latest Only",
                         "name": "show_latest_only",
                         "options": [
-                            {"selected": True,  "text": "false", "value": "false"},
-                            {"selected": False, "text": "true",  "value": "true"}
+                            {"selected": False, "text": "false", "value": "false"},
+                            {"selected": True,  "text": "true",  "value": "true"}
                         ],
                         "query": "false,true",
                         "type": "custom"
