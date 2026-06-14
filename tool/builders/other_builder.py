@@ -7827,7 +7827,7 @@ class ModuleGradesBuilder:
         AND module_qc_summary.module_grade IS DISTINCT FROM 'F'
         AND module_qc_summary.iv_grade IS DISTINCT FROM 'F'
         AND module_qc_summary.readout_grade IS DISTINCT FROM 'F'
-    THEN true ELSE false END AS is_installation_module,
+    THEN 1 ELSE 0 END AS is_installation_module,
     module_qc_summary.grade_timestamp::text,
     module_qc_summary.final_grade::text,
     module_qc_summary.proto_grade::text,
@@ -7908,55 +7908,6 @@ ORDER BY module_info.module_no DESC, module_qc_summary.grade_timestamp DESC"""
             ]
         }
 
-    def _colorgrade_override(self, column_name):
-        """Return a fieldConfig override for colorgrade array columns.
-        Red if any 'red' present; purple if any 'purple' and no red; green otherwise."""
-        return {
-            "matcher": {
-                "id": "byName",
-                "options": column_name
-            },
-            "properties": [
-                {
-                    "id": "mappings",
-                    "value": [
-                        {
-                            "options": {
-                                "pattern": "[Rr][Ee][Dd]",
-                                "result": {"color": "red", "index": 0}
-                            },
-                            "type": "regex"
-                        },
-                        {
-                            "options": {
-                                "pattern": "[Pp][Uu][Rr][Pp][Ll][Ee]",
-                                "result": {"color": "purple", "index": 1}
-                            },
-                            "type": "regex"
-                        },
-                        {
-                            "options": {
-                                "match": "null",
-                                "result": {"color": "transparent", "index": 2}
-                            },
-                            "type": "special"
-                        },
-                        {
-                            "options": {
-                                "pattern": ".+",
-                                "result": {"color": "green", "index": 3}
-                            },
-                            "type": "regex"
-                        }
-                    ]
-                },
-                {
-                    "id": "custom.cellOptions",
-                    "value": {"type": "color-background"}
-                }
-            ]
-        }
-
     def generate_dashboard_json(self):
         grade_columns = [
             "final_grade",
@@ -7984,8 +7935,9 @@ ORDER BY module_info.module_no DESC, module_qc_summary.grade_timestamp DESC"""
 
         overrides = []
 
-        # Rename columns
-        for col, label in rename_map.items():
+        # Rename plain columns (no color needed)
+        plain_rename = {k: v for k, v in rename_map.items() if k not in colorgrade_columns}
+        for col, label in plain_rename.items():
             overrides.append({
                 "matcher": {"id": "byName", "options": col},
                 "properties": [{"id": "displayName", "value": label}]
@@ -7998,23 +7950,14 @@ ORDER BY module_info.module_no DESC, module_qc_summary.grade_timestamp DESC"""
         })
         overrides.append({
             "matcher": {"id": "byName", "options": "module_name"},
-            "properties": [
-                {"id": "custom.width", "value": 161},
-                {"id": "custom.cellOptions", "value": {"type": "color-background"}},
-                {
-                    "id": "color",
-                    "value": {
-                        "mode": "field",
-                        "field": "is_installation_module"
-                    }
-                }
-            ]
+            "properties": [{"id": "custom.width", "value": 161}]
         })
-        # Color scale for is_installation_module (false=red, true=green)
+        # is_installation_module: hidden; defines threshold color scale (false=0→red, true=1→green)
         overrides.append({
             "matcher": {"id": "byName", "options": "is_installation_module"},
             "properties": [
                 {"id": "custom.hidden", "value": True},
+                {"id": "color", "value": {"mode": "thresholds"}},
                 {
                     "id": "thresholds",
                     "value": {
@@ -8024,8 +7967,15 @@ ORDER BY module_info.module_no DESC, module_qc_summary.grade_timestamp DESC"""
                             {"color": "green", "value": 1}
                         ]
                     }
-                },
-                {"id": "color", "value": {"mode": "thresholds"}}
+                }
+            ]
+        })
+        # module_name: cell background color pulled from is_installation_module field
+        overrides.append({
+            "matcher": {"id": "byName", "options": "module_name"},
+            "properties": [
+                {"id": "custom.cellOptions", "value": {"type": "color-background"}},
+                {"id": "color", "value": {"mode": "field", "field": "is_installation_module"}}
             ]
         })
 
@@ -8033,9 +7983,52 @@ ORDER BY module_info.module_no DESC, module_qc_summary.grade_timestamp DESC"""
         for col in grade_columns:
             overrides.append(self._grade_color_override(col))
 
-        # Color-code colorgrade array columns
+        # Colorgrade columns: rename + color in one override so byName matches before any rename applies
+        colorgrade_regex_props = [
+            {
+                "id": "mappings",
+                "value": [
+                    {
+                        "options": {
+                            "pattern": "[Rr][Ee][Dd]",
+                            "result": {"color": "red", "index": 0}
+                        },
+                        "type": "regex"
+                    },
+                    {
+                        "options": {
+                            "pattern": "[Pp][Uu][Rr][Pp][Ll][Ee]",
+                            "result": {"color": "purple", "index": 1}
+                        },
+                        "type": "regex"
+                    },
+                    {
+                        "options": {
+                            "match": "null",
+                            "result": {"color": "transparent", "index": 2}
+                        },
+                        "type": "special"
+                    },
+                    {
+                        "options": {
+                            "pattern": ".+",
+                            "result": {"color": "green", "index": 3}
+                        },
+                        "type": "regex"
+                    }
+                ]
+            },
+            {"id": "custom.cellOptions", "value": {"type": "color-background"}}
+        ]
         for col in colorgrade_columns:
-            overrides.append(self._colorgrade_override(col))
+            label = rename_map[col]
+            overrides.append({
+                "matcher": {"id": "byName", "options": col},
+                "properties": [
+                    {"id": "displayName", "value": label},
+                    *colorgrade_regex_props
+                ]
+            })
 
         dashboard_json = {
             "annotations": {
