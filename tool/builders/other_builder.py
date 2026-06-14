@@ -7830,7 +7830,6 @@ SELECT
         AND module_qc_summary.iv_grade IS DISTINCT FROM 'F'
         AND module_qc_summary.readout_grade IS DISTINCT FROM 'F'
     THEN 'green' ELSE 'red' END AS installation_status,
-    module_qc_summary.grade_timestamp::text,
     module_qc_summary.final_grade::text,
     module_qc_summary.proto_grade::text,
     module_qc_summary.module_grade::text,
@@ -7846,7 +7845,8 @@ SELECT
         WHEN LOWER(module_qc_summary.module_corner_colorgrades::text) LIKE '%purple%' THEN 'purple'
         ELSE 'green'
     END AS module_corner_colorgrades,
-    module_qc_summary.comments_all::text
+    module_qc_summary.comments_all::text,
+    module_qc_summary.grade_timestamp::text
 FROM module_qc_summary
 JOIN module_info ON module_qc_summary.module_name = module_info.module_name
 WHERE
