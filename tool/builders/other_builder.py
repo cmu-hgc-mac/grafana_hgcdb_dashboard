@@ -7834,8 +7834,16 @@ class ModuleGradesBuilder:
     module_qc_summary.module_grade::text,
     module_qc_summary.iv_grade::text,
     module_qc_summary.readout_grade::text,
-    module_qc_summary.proto_corner_colorgrades::text,
-    module_qc_summary.module_corner_colorgrades::text,
+    CASE
+        WHEN LOWER(module_qc_summary.proto_corner_colorgrades::text) LIKE '%red%' THEN 'red'
+        WHEN LOWER(module_qc_summary.proto_corner_colorgrades::text) LIKE '%purple%' THEN 'purple'
+        ELSE 'green'
+    END AS proto_corner_colorgrades,
+    CASE
+        WHEN LOWER(module_qc_summary.module_corner_colorgrades::text) LIKE '%red%' THEN 'red'
+        WHEN LOWER(module_qc_summary.module_corner_colorgrades::text) LIKE '%purple%' THEN 'purple'
+        ELSE 'green'
+    END AS module_corner_colorgrades,
     module_qc_summary.comments_all::text
 FROM module_qc_summary
 JOIN module_info ON module_qc_summary.module_name = module_info.module_name
@@ -7990,31 +7998,18 @@ ORDER BY module_info.module_no DESC, module_qc_summary.grade_timestamp DESC"""
                 "value": [
                     {
                         "options": {
-                            "pattern": "[Rr][Ee][Dd]",
-                            "result": {"color": "red", "index": 0}
+                            "red":    {"color": "red",    "index": 0},
+                            "purple": {"color": "purple", "index": 1},
+                            "green":  {"color": "green",  "index": 2}
                         },
-                        "type": "regex"
-                    },
-                    {
-                        "options": {
-                            "pattern": "[Pp][Uu][Rr][Pp][Ll][Ee]",
-                            "result": {"color": "purple", "index": 1}
-                        },
-                        "type": "regex"
+                        "type": "value"
                     },
                     {
                         "options": {
                             "match": "null",
-                            "result": {"color": "transparent", "index": 2}
+                            "result": {"color": "transparent", "index": 3}
                         },
                         "type": "special"
-                    },
-                    {
-                        "options": {
-                            "pattern": ".+",
-                            "result": {"color": "green", "index": 3}
-                        },
-                        "type": "regex"
                     }
                 ]
             },
