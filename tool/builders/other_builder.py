@@ -7815,8 +7815,10 @@ class ModuleGradesBuilder:
         self.geometry = "{geometry}"
         self.final_grade = "{final_grade}"
         self.module_name = "{module_name}"
+        self.show_latest_only = "{show_latest_only}"
 
-        self.table_sql = f"""SELECT
+        self.table_sql = f"""WITH ranked AS (
+SELECT
     module_info.module_no,
     module_qc_summary.module_name,
     CASE WHEN
@@ -7878,7 +7880,18 @@ WHERE
   AND module_info.resolution IS NOT NULL
   AND module_info.roc_version IS NOT NULL
   AND module_info.geometry IS NOT NULL
-ORDER BY module_info.module_no DESC, module_qc_summary.grade_timestamp DESC"""
+),
+latest AS (
+    SELECT DISTINCT ON (module_name) *
+    FROM ranked
+    ORDER BY module_name, grade_timestamp DESC
+)
+SELECT * FROM (
+    SELECT * FROM ranked WHERE '${self.show_latest_only}' = 'false'
+    UNION ALL
+    SELECT * FROM latest WHERE '${self.show_latest_only}' = 'true'
+) combined
+ORDER BY module_no DESC, grade_timestamp DESC"""
 
     def _grade_color_override(self, column_name):
         """Return a fieldConfig override that color-codes A=green, B=yellow, C=orange, F=red, null=transparent."""
@@ -8048,7 +8061,7 @@ ORDER BY module_info.module_no DESC, module_qc_summary.grade_timestamp DESC"""
                         "defaults": {
                             "color": {"mode": "thresholds"},
                             "custom": {
-                                "align": "auto",
+                                "align": "center",
                                 "cellOptions": {"type": "auto"},
                                 "inspect": False
                             },
@@ -8179,6 +8192,17 @@ ORDER BY module_info.module_no DESC, module_qc_summary.grade_timestamp DESC"""
                         "query": "\n            SELECT DISTINCT final_grade::text FROM module_qc_summary \n            UNION\n            SELECT 'NULL'\n            ORDER BY final_grade\n            ",
                         "refresh": 1,
                         "type": "query"
+                    },
+                    {
+                        "current": {"text": "false", "value": "false"},
+                        "label": "Show Latest Only",
+                        "name": "show_latest_only",
+                        "options": [
+                            {"selected": True,  "text": "false", "value": "false"},
+                            {"selected": False, "text": "true",  "value": "true"}
+                        ],
+                        "query": "false,true",
+                        "type": "custom"
                     }
                 ]
             },
