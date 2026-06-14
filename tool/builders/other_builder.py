@@ -7820,14 +7820,14 @@ class ModuleGradesBuilder:
     module_info.module_no,
     module_qc_summary.module_name,
     CASE WHEN
-        NOT ('red' = ANY(SELECT LOWER(c) FROM UNNEST(module_qc_summary.proto_corner_colorgrades) c))
-        AND NOT ('red' = ANY(SELECT LOWER(c) FROM UNNEST(module_qc_summary.module_corner_colorgrades) c))
+        NOT (LOWER(module_qc_summary.proto_corner_colorgrades::text) LIKE '%red%')
+        AND NOT (LOWER(module_qc_summary.module_corner_colorgrades::text) LIKE '%red%')
         AND module_qc_summary.final_grade IS DISTINCT FROM 'F'
         AND module_qc_summary.proto_grade IS DISTINCT FROM 'F'
         AND module_qc_summary.module_grade IS DISTINCT FROM 'F'
         AND module_qc_summary.iv_grade IS DISTINCT FROM 'F'
         AND module_qc_summary.readout_grade IS DISTINCT FROM 'F'
-    THEN 1 ELSE 0 END AS is_installation_module,
+    THEN 'green' ELSE 'red' END AS installation_status,
     module_qc_summary.grade_timestamp::text,
     module_qc_summary.final_grade::text,
     module_qc_summary.proto_grade::text,
@@ -7960,30 +7960,25 @@ ORDER BY module_info.module_no DESC, module_qc_summary.grade_timestamp DESC"""
             "matcher": {"id": "byName", "options": "module_name"},
             "properties": [{"id": "custom.width", "value": 161}]
         })
-        # is_installation_module: hidden; defines threshold color scale (false=0→red, true=1→green)
+        # installation_status: narrow colored indicator column (green=installable, red=not)
         overrides.append({
-            "matcher": {"id": "byName", "options": "is_installation_module"},
+            "matcher": {"id": "byName", "options": "installation_status"},
             "properties": [
-                {"id": "custom.hidden", "value": True},
-                {"id": "color", "value": {"mode": "thresholds"}},
-                {
-                    "id": "thresholds",
-                    "value": {
-                        "mode": "absolute",
-                        "steps": [
-                            {"color": "red", "value": None},
-                            {"color": "green", "value": 1}
-                        ]
-                    }
-                }
-            ]
-        })
-        # module_name: cell background color pulled from is_installation_module field
-        overrides.append({
-            "matcher": {"id": "byName", "options": "module_name"},
-            "properties": [
+                {"id": "custom.width", "value": 20},
+                {"id": "displayName", "value": ""},
                 {"id": "custom.cellOptions", "value": {"type": "color-background"}},
-                {"id": "color", "value": {"mode": "field", "field": "is_installation_module"}}
+                {
+                    "id": "mappings",
+                    "value": [
+                        {
+                            "options": {
+                                "green": {"color": "green", "index": 0, "text": ""},
+                                "red":   {"color": "red",   "index": 1, "text": ""}
+                            },
+                            "type": "value"
+                        }
+                    ]
+                }
             ]
         })
 
