@@ -1666,6 +1666,8 @@ class ComponentsLookUpFormBuilder:
                 "mode": "markdown"
             },
             "pluginVersion": "12.0.0",
+            "repeat": "mean_hex_map",
+            "repeatDirection": "v",
             "title": "Pedestal Hexmap",
             "type": "text",
             "links":[
@@ -1699,6 +1701,8 @@ class ComponentsLookUpFormBuilder:
                 "mode": "markdown"
             },
             "pluginVersion": "12.0.0",
+            "repeat": "std_hex_map",
+            "repeatDirection": "v",
             "title": "Noise Hexmap",
             "type": "text",
             "links":[
