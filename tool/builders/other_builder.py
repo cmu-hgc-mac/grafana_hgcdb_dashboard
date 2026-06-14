@@ -8061,7 +8061,7 @@ ORDER BY module_no DESC, grade_timestamp DESC"""
                         "defaults": {
                             "color": {"mode": "thresholds"},
                             "custom": {
-                                "align": "center",
+                                "align": "auto",
                                 "cellOptions": {"type": "auto"},
                                 "inspect": False
                             },
