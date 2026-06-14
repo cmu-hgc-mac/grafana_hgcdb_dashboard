@@ -370,9 +370,9 @@ class IVCurveBuilder:
         "fieldConfig": {
             "defaults": {
             "custom": {
-                "show": "lines",
+                "show": "lines+points",
                 "pointSize": {
-                "fixed": 5
+                "fixed": 2
                 },
                 "pointShape": "circle",
                 "pointStrokeWidth": 1,
@@ -405,7 +405,7 @@ class IVCurveBuilder:
                 "fields": [
                 "module_name"
                 ],
-                "keepFields": False
+                "keepFields": True
             }
             }
         ],
@@ -463,7 +463,7 @@ class IVCurveBuilder:
             }
             ],
             "tooltip": {
-            "mode": "single",
+            "mode": "all",
             "sort": "none",
             "hideZeros": False
             },
@@ -1500,9 +1500,9 @@ class ComponentsLookUpFormBuilder:
             "fieldConfig": {
                 "defaults": {
                 "custom": {
-                    "show": "lines",
+                    "show": "lines+points",
                     "pointSize": {
-                    "fixed": 5
+                    "fixed": 2
                     },
                     "pointShape": "circle",
                     "pointStrokeWidth": 1,
@@ -1588,7 +1588,7 @@ class ComponentsLookUpFormBuilder:
                 {
                 "id": "partitionByValues",
                 "options": {
-                    "keepFields": False,
+                    "keepFields": True,
                     "fields": [
                     "status_desc"
                     ]
@@ -1631,7 +1631,7 @@ class ComponentsLookUpFormBuilder:
                 {}
                 ],
                 "tooltip": {
-                "mode": "single",
+                "mode": "all",
                 "sort": "none",
                 "hideZeros": False
                 },
