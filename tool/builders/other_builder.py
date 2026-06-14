@@ -2102,15 +2102,19 @@ class ComponentsLookUpFormBuilder:
                 "label": "Mean Hex Map",
                 "type": "query",
                 "hide": 2,
+                "includeAll": True,
+                "multi": True,
                 "refresh": 1,
+                "regex": "",
                 "datasource": {
                     "type": "postgres",
                     "uid": f"{self.datasource_uid}"
                 },
                 "query": self.mean_hexmap_sql,
+                "options": [],
                 "current": {
-                "text": "",
-                "value": ""
+                "text": "All",
+                "value": "$__all"
                 }
             },
             {
@@ -2118,15 +2122,19 @@ class ComponentsLookUpFormBuilder:
                 "label": "Std Hex Map",
                 "type": "query",
                 "hide": 2,
+                "includeAll": True,
+                "multi": True,
                 "refresh": 1,
+                "regex": "",
                 "datasource": {
                     "type": "postgres",
                     "uid": f"{self.datasource_uid}"
                 },
                 "query": self.std_hexmap_sql,
+                "options": [],
                 "current": {
-                "text": "",
-                "value": ""
+                "text": "All",
+                "value": "$__all"
                 }
             }
             ] + self.qc_data_list
