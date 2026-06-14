@@ -7973,7 +7973,7 @@ ORDER BY module_info.module_no DESC, module_qc_summary.grade_timestamp DESC"""
                         {
                             "options": {
                                 "green": {"color": "green", "index": 0, "text": ""},
-                                "red":   {"color": "red",   "index": 1, "text": ""}
+                                "red":   {"color": "red",   "index": 1, "text": "X"}
                             },
                             "type": "value"
                         }
