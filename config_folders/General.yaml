@@ -42,3 +42,13 @@ dashboards:
         groupby: []
         filters: {"xml_upload_status": []}
         distinct:
+
+  - title: "Module Grades"
+    panels:
+      - title: "Module Grades"
+        table: "module_qc_summary"
+        chart_type: "table"
+        condition:
+        groupby: []
+        filters: {"module_qc_summary": []}
+        distinct:

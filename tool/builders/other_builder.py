@@ -7797,3 +7797,416 @@ class XMLSuccessBuilder:
         }
 
         return dashboard_json
+
+
+# ============================================================
+# === Module Grades Builder ==================================
+# ============================================================
+
+class ModuleGradesBuilder:
+    def __init__(self, datasource_uid, timezone = 'America/New_York'):
+        self.datasource_uid = datasource_uid
+        self.dashboard_uid = "module-grades"
+        self.timezone = f"{timezone}"
+        self.bp_material = "{bp_material}"
+        self.resolution = "{resolution}"
+        self.roc_version = "{roc_version}"
+        self.sen_thickness = "{sen_thickness}"
+        self.geometry = "{geometry}"
+        self.final_grade = "{final_grade}"
+        self.module_name = "{module_name}"
+
+        self.table_sql = f"""SELECT
+    module_info.module_no,
+    module_qc_summary.module_name,
+    CASE WHEN
+        NOT ('red' = ANY(SELECT LOWER(c) FROM UNNEST(module_qc_summary.proto_corner_colorgrades) c))
+        AND NOT ('red' = ANY(SELECT LOWER(c) FROM UNNEST(module_qc_summary.module_corner_colorgrades) c))
+        AND module_qc_summary.final_grade IS DISTINCT FROM 'F'
+        AND module_qc_summary.proto_grade IS DISTINCT FROM 'F'
+        AND module_qc_summary.module_grade IS DISTINCT FROM 'F'
+        AND module_qc_summary.iv_grade IS DISTINCT FROM 'F'
+        AND module_qc_summary.readout_grade IS DISTINCT FROM 'F'
+    THEN true ELSE false END AS is_installation_module,
+    module_qc_summary.grade_timestamp::text,
+    module_qc_summary.final_grade::text,
+    module_qc_summary.proto_grade::text,
+    module_qc_summary.module_grade::text,
+    module_qc_summary.iv_grade::text,
+    module_qc_summary.readout_grade::text,
+    module_qc_summary.proto_corner_colorgrades::text,
+    module_qc_summary.module_corner_colorgrades::text,
+    module_qc_summary.comments_all::text
+FROM module_qc_summary
+JOIN module_info ON module_qc_summary.module_name = module_info.module_name
+WHERE
+    ('${self.module_name}' = '' OR module_qc_summary.module_name ILIKE '%' || '${self.module_name}' || '%')
+  AND
+    ('All' = ANY(ARRAY[${self.bp_material}]) OR
+     (module_info.bp_material IS NULL AND 'NULL' = ANY(ARRAY[${self.bp_material}])) OR
+     module_info.bp_material::text = ANY(ARRAY[${self.bp_material}]))
+  AND
+    ('All' = ANY(ARRAY[${self.resolution}]) OR
+     (module_info.resolution IS NULL AND 'NULL' = ANY(ARRAY[${self.resolution}])) OR
+     module_info.resolution::text = ANY(ARRAY[${self.resolution}]))
+  AND
+    ('All' = ANY(ARRAY[${self.roc_version}]) OR
+     (module_info.roc_version IS NULL AND 'NULL' = ANY(ARRAY[${self.roc_version}])) OR
+     module_info.roc_version::text = ANY(ARRAY[${self.roc_version}]))
+  AND
+    ('All' = ANY(ARRAY[${self.sen_thickness}]) OR
+     (module_info.sen_thickness IS NULL AND 'NULL' = ANY(ARRAY[${self.sen_thickness}])) OR
+     module_info.sen_thickness::text = ANY(ARRAY[${self.sen_thickness}]))
+  AND
+    ('All' = ANY(ARRAY[${self.geometry}]) OR
+     (module_info.geometry IS NULL AND 'NULL' = ANY(ARRAY[${self.geometry}])) OR
+     module_info.geometry::text = ANY(ARRAY[${self.geometry}]))
+  AND
+    ('All' = ANY(ARRAY[${self.final_grade}]) OR
+     (module_qc_summary.final_grade IS NULL AND 'NULL' = ANY(ARRAY[${self.final_grade}])) OR
+     module_qc_summary.final_grade::text = ANY(ARRAY[${self.final_grade}]))
+  AND $__timeFilter(module_info.assembled AT TIME ZONE '{self.timezone}')
+  AND module_info.bp_material IS NOT NULL
+  AND module_info.resolution IS NOT NULL
+  AND module_info.roc_version IS NOT NULL
+  AND module_info.geometry IS NOT NULL
+ORDER BY module_info.module_no DESC, module_qc_summary.grade_timestamp DESC"""
+
+    def _grade_color_override(self, column_name):
+        """Return a fieldConfig override that color-codes A=green, B=yellow, C=orange, F=red, null=transparent."""
+        return {
+            "matcher": {
+                "id": "byName",
+                "options": column_name
+            },
+            "properties": [
+                {
+                    "id": "mappings",
+                    "value": [
+                        {
+                            "options": {
+                                "A": {"color": "green", "index": 0},
+                                "B": {"color": "yellow", "index": 1},
+                                "C": {"color": "orange", "index": 2},
+                                "F": {"color": "red", "index": 3}
+                            },
+                            "type": "value"
+                        },
+                        {
+                            "options": {
+                                "match": "null",
+                                "result": {"color": "transparent", "index": 4}
+                            },
+                            "type": "special"
+                        }
+                    ]
+                },
+                {
+                    "id": "custom.cellOptions",
+                    "value": {"type": "color-background"}
+                }
+            ]
+        }
+
+    def _colorgrade_override(self, column_name):
+        """Return a fieldConfig override for colorgrade array columns.
+        Red if any 'red' present; purple if any 'purple' and no red; green otherwise."""
+        return {
+            "matcher": {
+                "id": "byName",
+                "options": column_name
+            },
+            "properties": [
+                {
+                    "id": "mappings",
+                    "value": [
+                        {
+                            "options": {
+                                "pattern": "(?i)red",
+                                "result": {"color": "red", "index": 0}
+                            },
+                            "type": "regex"
+                        },
+                        {
+                            "options": {
+                                "pattern": "(?i)purple",
+                                "result": {"color": "purple", "index": 1}
+                            },
+                            "type": "regex"
+                        },
+                        {
+                            "options": {
+                                "match": "null",
+                                "result": {"color": "transparent", "index": 2}
+                            },
+                            "type": "special"
+                        },
+                        {
+                            "options": {
+                                "pattern": ".+",
+                                "result": {"color": "green", "index": 3}
+                            },
+                            "type": "regex"
+                        }
+                    ]
+                },
+                {
+                    "id": "custom.cellOptions",
+                    "value": {"type": "color-background"}
+                }
+            ]
+        }
+
+    def generate_dashboard_json(self):
+        grade_columns = [
+            "final_grade",
+            "proto_grade",
+            "module_grade",
+            "iv_grade",
+            "readout_grade",
+        ]
+
+        rename_map = {
+            "final_grade": "Final Grade",
+            "proto_grade": "Proto Mech Grade",
+            "module_grade": "Module Mech Grade",
+            "iv_grade": "IV Grade",
+            "readout_grade": "Readout Grade",
+            "proto_corner_colorgrades": "Proto Corner Colorgrades",
+            "module_corner_colorgrades": "Module Corner Colorgrades",
+            "comments_all": "Comments",
+        }
+
+        colorgrade_columns = [
+            "proto_corner_colorgrades",
+            "module_corner_colorgrades",
+        ]
+
+        overrides = []
+
+        # Rename columns
+        for col, label in rename_map.items():
+            overrides.append({
+                "matcher": {"id": "byName", "options": col},
+                "properties": [{"id": "displayName", "value": label}]
+            })
+
+        # Fixed-width columns
+        overrides.append({
+            "matcher": {"id": "byName", "options": "module_no"},
+            "properties": [{"id": "custom.width", "value": 80}]
+        })
+        overrides.append({
+            "matcher": {"id": "byName", "options": "module_name"},
+            "properties": [
+                {"id": "custom.width", "value": 161},
+                {"id": "custom.cellOptions", "value": {"type": "color-background"}},
+                {
+                    "id": "color",
+                    "value": {
+                        "mode": "field",
+                        "field": "is_installation_module"
+                    }
+                }
+            ]
+        })
+        # Color scale for is_installation_module (false=red, true=green)
+        overrides.append({
+            "matcher": {"id": "byName", "options": "is_installation_module"},
+            "properties": [
+                {"id": "custom.hidden", "value": True},
+                {
+                    "id": "thresholds",
+                    "value": {
+                        "mode": "absolute",
+                        "steps": [
+                            {"color": "red", "value": None},
+                            {"color": "green", "value": 1}
+                        ]
+                    }
+                },
+                {"id": "color", "value": {"mode": "thresholds"}}
+            ]
+        })
+
+        # Color-code each grade column
+        for col in grade_columns:
+            overrides.append(self._grade_color_override(col))
+
+        # Color-code colorgrade array columns
+        for col in colorgrade_columns:
+            overrides.append(self._colorgrade_override(col))
+
+        dashboard_json = {
+            "annotations": {
+                "list": [
+                    {
+                        "builtIn": 1,
+                        "datasource": {"type": "grafana", "uid": "-- Grafana --"},
+                        "enable": True,
+                        "hide": True,
+                        "iconColor": "rgba(0, 211, 255, 1)",
+                        "name": "Annotations & Alerts",
+                        "type": "dashboard"
+                    }
+                ]
+            },
+            "editable": True,
+            "fiscalYearStartMonth": 0,
+            "graphTooltip": 0,
+            "links": [],
+            "panels": [
+                {
+                    "datasource": {
+                        "type": "grafana-postgresql-datasource",
+                        "uid": self.datasource_uid
+                    },
+                    "fieldConfig": {
+                        "defaults": {
+                            "color": {"mode": "thresholds"},
+                            "custom": {
+                                "align": "auto",
+                                "cellOptions": {"type": "auto"},
+                                "inspect": False
+                            },
+                            "decimals": 0,
+                            "mappings": [],
+                            "thresholds": {
+                                "mode": "absolute",
+                                "steps": [
+                                    {"color": "green"},
+                                    {"color": "red", "value": 80}
+                                ]
+                            }
+                        },
+                        "overrides": overrides
+                    },
+                    "gridPos": {"h": 20, "w": 24, "x": 0, "y": 0},
+                    "id": 1,
+                    "options": {
+                        "cellHeight": "sm",
+                        "footer": {
+                            "countRows": False,
+                            "fields": "",
+                            "reducer": ["sum"],
+                            "show": False
+                        },
+                        "showHeader": True,
+                        "sortBy": []
+                    },
+                    "pluginVersion": "12.0.0",
+                    "targets": [
+                        {
+                            "datasource": {
+                                "type": "grafana-postgresql-datasource",
+                                "uid": self.datasource_uid
+                            },
+                            "editorMode": "code",
+                            "format": "table",
+                            "rawQuery": True,
+                            "rawSql": self.table_sql,
+                            "refId": "A",
+                            "sql": {
+                                "columns": [{"parameters": [], "type": "function"}],
+                                "groupBy": [{"property": {"type": "string"}, "type": "groupBy"}],
+                                "limit": 50
+                            }
+                        }
+                    ],
+                    "title": "Module Grades",
+                    "type": "table"
+                }
+            ],
+            "preload": False,
+            "refresh": "5m",
+            "schemaVersion": 41,
+            "tags": [],
+            "templating": {
+                "list": [
+                    {
+                        "current": {"text": "", "value": ""},
+                        "label": "module_name",
+                        "name": "module_name",
+                        "options": [{"selected": True, "text": "", "value": ""}],
+                        "query": "",
+                        "type": "textbox"
+                    },
+                    {
+                        "current": {"text": "All", "value": ["$__all"]},
+                        "datasource": {"type": "postgres", "uid": self.datasource_uid},
+                        "includeAll": True,
+                        "multi": True,
+                        "name": "bp_material",
+                        "options": [],
+                        "query": "\n            SELECT DISTINCT bp_material::text FROM module_info \n            UNION\n            SELECT 'NULL'\n            ORDER BY bp_material\n            ",
+                        "refresh": 1,
+                        "type": "query"
+                    },
+                    {
+                        "current": {"text": "All", "value": ["$__all"]},
+                        "datasource": {"type": "postgres", "uid": self.datasource_uid},
+                        "includeAll": True,
+                        "multi": True,
+                        "name": "resolution",
+                        "options": [],
+                        "query": "\n            SELECT DISTINCT resolution::text FROM module_info \n            UNION\n            SELECT 'NULL'\n            ORDER BY resolution\n            ",
+                        "refresh": 1,
+                        "type": "query"
+                    },
+                    {
+                        "current": {"text": "All", "value": ["$__all"]},
+                        "datasource": {"type": "postgres", "uid": self.datasource_uid},
+                        "includeAll": True,
+                        "multi": True,
+                        "name": "roc_version",
+                        "options": [],
+                        "query": "\n            SELECT DISTINCT roc_version::text FROM module_info \n            UNION\n            SELECT 'NULL'\n            ORDER BY roc_version\n            ",
+                        "refresh": 1,
+                        "type": "query"
+                    },
+                    {
+                        "current": {"text": "All", "value": ["$__all"]},
+                        "datasource": {"type": "postgres", "uid": self.datasource_uid},
+                        "includeAll": True,
+                        "multi": True,
+                        "name": "sen_thickness",
+                        "options": [],
+                        "query": "\n            SELECT DISTINCT sen_thickness::text FROM module_info \n            UNION\n            SELECT 'NULL'\n            ORDER BY sen_thickness\n            ",
+                        "refresh": 1,
+                        "type": "query"
+                    },
+                    {
+                        "current": {"text": "All", "value": ["$__all"]},
+                        "datasource": {"type": "postgres", "uid": self.datasource_uid},
+                        "includeAll": True,
+                        "multi": True,
+                        "name": "geometry",
+                        "options": [],
+                        "query": "\n            SELECT DISTINCT geometry::text FROM module_info \n            UNION\n            SELECT 'NULL'\n            ORDER BY geometry\n            ",
+                        "refresh": 1,
+                        "type": "query"
+                    },
+                    {
+                        "current": {"text": "All", "value": ["$__all"]},
+                        "datasource": {"type": "postgres", "uid": self.datasource_uid},
+                        "includeAll": True,
+                        "multi": True,
+                        "name": "final_grade",
+                        "options": [],
+                        "query": "\n            SELECT DISTINCT final_grade::text FROM module_qc_summary \n            UNION\n            SELECT 'NULL'\n            ORDER BY final_grade\n            ",
+                        "refresh": 1,
+                        "type": "query"
+                    }
+                ]
+            },
+            "time": {
+                "from": "now-30d",
+                "to": "now"
+            },
+            "timepicker": {},
+            "timezone": "browser",
+            "title": "Module Grades",
+            "uid": self.dashboard_uid
+        }
+
+        return dashboard_json
