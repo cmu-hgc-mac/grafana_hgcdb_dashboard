@@ -7827,7 +7827,7 @@ class ModuleGradesBuilder:
         AND module_qc_summary.module_grade IS DISTINCT FROM 'F'
         AND module_qc_summary.iv_grade IS DISTINCT FROM 'F'
         AND module_qc_summary.readout_grade IS DISTINCT FROM 'F'
-    THEN 1 ELSE 0 END AS is_installation_module,
+    THEN 'green' ELSE 'red' END AS installation_status,
     module_qc_summary.grade_timestamp::text,
     module_qc_summary.final_grade::text,
     module_qc_summary.proto_grade::text,
@@ -7956,33 +7956,29 @@ ORDER BY module_info.module_no DESC, module_qc_summary.grade_timestamp DESC"""
             "matcher": {"id": "byName", "options": "module_no"},
             "properties": [{"id": "custom.width", "value": 80}]
         })
-        # is_installation_module: not hidden (hidden fields are excluded from color resolution),
-        # but width=0 and empty display name make it invisible in practice
-        overrides.append({
-            "matcher": {"id": "byName", "options": "is_installation_module"},
-            "properties": [
-                {"id": "custom.width", "value": 0},
-                {"id": "displayName", "value": ""},
-                {"id": "color", "value": {"mode": "thresholds"}},
-                {
-                    "id": "thresholds",
-                    "value": {
-                        "mode": "absolute",
-                        "steps": [
-                            {"color": "red", "value": None},
-                            {"color": "green", "value": 1}
-                        ]
-                    }
-                }
-            ]
-        })
-        # module_name: background color borrowed from is_installation_module's threshold scale
         overrides.append({
             "matcher": {"id": "byName", "options": "module_name"},
+            "properties": [{"id": "custom.width", "value": 161}]
+        })
+        # installation_status: narrow colored indicator column (green=installable, red=not)
+        overrides.append({
+            "matcher": {"id": "byName", "options": "installation_status"},
             "properties": [
-                {"id": "custom.width", "value": 161},
+                {"id": "custom.width", "value": 20},
+                {"id": "displayName", "value": ""},
                 {"id": "custom.cellOptions", "value": {"type": "color-background"}},
-                {"id": "color", "value": {"mode": "field", "field": "is_installation_module"}}
+                {
+                    "id": "mappings",
+                    "value": [
+                        {
+                            "options": {
+                                "green": {"color": "green", "index": 0, "text": ""},
+                                "red":   {"color": "red",   "index": 1, "text": ""}
+                            },
+                            "type": "value"
+                        }
+                    ]
+                }
             ]
         })
 
