@@ -7922,14 +7922,14 @@ ORDER BY module_info.module_no DESC, module_qc_summary.grade_timestamp DESC"""
                     "value": [
                         {
                             "options": {
-                                "pattern": "(?i)red",
+                                "pattern": "[Rr][Ee][Dd]",
                                 "result": {"color": "red", "index": 0}
                             },
                             "type": "regex"
                         },
                         {
                             "options": {
-                                "pattern": "(?i)purple",
+                                "pattern": "[Pp][Uu][Rr][Pp][Ll][Ee]",
                                 "result": {"color": "purple", "index": 1}
                             },
                             "type": "regex"
