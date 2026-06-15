@@ -7817,6 +7817,7 @@ class ModuleGradesBuilder:
         self.module_name = "{module_name}"
         self.show_latest_only = "{show_latest_only}"
         self.uninstallable_only = "{uninstallable_only}"
+        self.show_deteriorated = "{show_deteriorated}"
 
         self.table_sql = f"""WITH ranked AS (
 SELECT
@@ -7882,14 +7883,27 @@ latest AS (
 ),
 latest_uninstallable_modules AS (
     SELECT module_name FROM latest WHERE installation_status = 'red'
+),
+grade_order AS (
+    SELECT module_name,
+        MIN(CASE final_grade WHEN 'A' THEN 1 WHEN 'B' THEN 2 WHEN 'C' THEN 3 WHEN 'F' THEN 4 END) AS best_grade_rank,
+        MAX(CASE final_grade WHEN 'A' THEN 1 WHEN 'B' THEN 2 WHEN 'C' THEN 3 WHEN 'F' THEN 4 END) AS worst_grade_rank
+    FROM ranked
+    WHERE final_grade IS NOT NULL
+    GROUP BY module_name
+),
+deteriorated_modules AS (
+    SELECT module_name FROM grade_order WHERE worst_grade_rank > best_grade_rank
 )
 SELECT * FROM (
     SELECT * FROM ranked WHERE '${self.show_latest_only}' = 'false'
     UNION ALL
     SELECT * FROM latest WHERE '${self.show_latest_only}' = 'true'
 ) combined
-WHERE '${self.uninstallable_only}' = 'false'
-   OR combined.module_name IN (SELECT module_name FROM latest_uninstallable_modules)
+WHERE ('${self.uninstallable_only}' = 'false'
+   OR combined.module_name IN (SELECT module_name FROM latest_uninstallable_modules))
+  AND ('${self.show_deteriorated}' = 'false'
+   OR combined.module_name IN (SELECT module_name FROM deteriorated_modules))
 ORDER BY module_no DESC, mod_qc_no DESC"""
 
     def _grade_color_override(self, column_name):
@@ -8231,6 +8245,17 @@ ORDER BY module_no DESC, mod_qc_no DESC"""
                         "current": {"text": "false", "value": "false"},
                         "label": "Uninstallable Only",
                         "name": "uninstallable_only",
+                        "options": [
+                            {"selected": True,  "text": "false", "value": "false"},
+                            {"selected": False, "text": "true",  "value": "true"}
+                        ],
+                        "query": "false,true",
+                        "type": "custom"
+                    },
+                    {
+                        "current": {"text": "false", "value": "false"},
+                        "label": "Show Deteriorated",
+                        "name": "show_deteriorated",
                         "options": [
                             {"selected": True,  "text": "false", "value": "false"},
                             {"selected": False, "text": "true",  "value": "true"}
