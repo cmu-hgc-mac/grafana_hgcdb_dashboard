@@ -8266,7 +8266,7 @@ ORDER BY module_no DESC, mod_qc_no DESC"""
                 ]
             },
             "time": {
-                "from": "now-30d",
+                "from": "now-10y",
                 "to": "now"
             },
             "timepicker": {},
