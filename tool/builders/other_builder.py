@@ -8009,21 +8009,21 @@ ORDER BY module_no DESC, mod_qc_no DESC"""
                 "value": [
                     {
                         "options": {
-                            "pattern": "[Rr][Ee][Dd]",
+                            "pattern": ".*[Rr][Ee][Dd].*",
                             "result": {"color": "red", "index": 0}
                         },
                         "type": "regex"
                     },
                     {
                         "options": {
-                            "pattern": "[Pp][Uu][Rr][Pp][Ll][Ee]",
+                            "pattern": ".*[Pp][Uu][Rr][Pp][Ll][Ee].*",
                             "result": {"color": "purple", "index": 1}
                         },
                         "type": "regex"
                     },
                     {
                         "options": {
-                            "pattern": "[Yy][Ee][Ll][Ll][Oo][Ww]",
+                            "pattern": ".*[Yy][Ee][Ll][Ll][Oo][Ww].*",
                             "result": {"color": "yellow", "index": 2}
                         },
                         "type": "regex"
