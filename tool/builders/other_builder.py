@@ -7823,8 +7823,8 @@ SELECT
     module_qc_summary.mod_qc_no,
     module_qc_summary.module_name,
     CASE WHEN
-        NOT (LOWER(module_qc_summary.proto_corner_colorgrades::text) LIKE '%red%')
-        AND NOT (LOWER(module_qc_summary.module_corner_colorgrades::text) LIKE '%red%')
+        NOT (LOWER(COALESCE(module_qc_summary.proto_corner_colorgrades::text, '')) LIKE '%red%')
+        AND NOT (LOWER(COALESCE(module_qc_summary.module_corner_colorgrades::text, '')) LIKE '%red%')
         AND module_qc_summary.final_grade IS DISTINCT FROM 'F'
         AND module_qc_summary.proto_grade IS DISTINCT FROM 'F'
         AND module_qc_summary.module_grade IS DISTINCT FROM 'F'
@@ -7837,11 +7837,13 @@ SELECT
     module_qc_summary.iv_grade::text,
     module_qc_summary.readout_grade::text,
     CASE
+        WHEN module_qc_summary.proto_corner_colorgrades IS NULL THEN NULL
         WHEN LOWER(module_qc_summary.proto_corner_colorgrades::text) LIKE '%red%' THEN 'red'
         WHEN LOWER(module_qc_summary.proto_corner_colorgrades::text) LIKE '%purple%' THEN 'purple'
         ELSE 'green'
     END AS proto_corner_colorgrades,
     CASE
+        WHEN module_qc_summary.module_corner_colorgrades IS NULL THEN NULL
         WHEN LOWER(module_qc_summary.module_corner_colorgrades::text) LIKE '%red%' THEN 'red'
         WHEN LOWER(module_qc_summary.module_corner_colorgrades::text) LIKE '%purple%' THEN 'purple'
         ELSE 'green'
