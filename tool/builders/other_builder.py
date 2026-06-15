@@ -7841,12 +7841,14 @@ SELECT
         WHEN module_qc_summary.proto_corner_colorgrades IS NULL THEN NULL
         WHEN LOWER(module_qc_summary.proto_corner_colorgrades::text) LIKE '%red%' THEN 'red'
         WHEN LOWER(module_qc_summary.proto_corner_colorgrades::text) LIKE '%purple%' THEN 'purple'
+        WHEN LOWER(module_qc_summary.proto_corner_colorgrades::text) LIKE '%yellow%' THEN 'yellow'
         ELSE 'green'
     END AS proto_corner_colorgrades,
     CASE
         WHEN module_qc_summary.module_corner_colorgrades IS NULL THEN NULL
         WHEN LOWER(module_qc_summary.module_corner_colorgrades::text) LIKE '%red%' THEN 'red'
         WHEN LOWER(module_qc_summary.module_corner_colorgrades::text) LIKE '%purple%' THEN 'purple'
+        WHEN LOWER(module_qc_summary.module_corner_colorgrades::text) LIKE '%yellow%' THEN 'yellow'
         ELSE 'green'
     END AS module_corner_colorgrades,
     module_qc_summary.comments_all::text,
@@ -8021,7 +8023,8 @@ ORDER BY module_no DESC, mod_qc_no DESC"""
                         "options": {
                             "red":    {"color": "red",    "index": 0},
                             "purple": {"color": "purple", "index": 1},
-                            "green":  {"color": "green",  "index": 2}
+                            "yellow": {"color": "yellow", "index": 2},
+                            "green":  {"color": "green",  "index": 3}
                         },
                         "type": "value"
                     },
