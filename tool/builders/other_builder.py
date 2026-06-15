@@ -7820,6 +7820,7 @@ class ModuleGradesBuilder:
         self.table_sql = f"""WITH ranked AS (
 SELECT
     module_info.module_no,
+    module_qc_summary.mod_qc_no,
     module_qc_summary.module_name,
     CASE WHEN
         NOT (LOWER(module_qc_summary.proto_corner_colorgrades::text) LIKE '%red%')
@@ -7884,14 +7885,14 @@ WHERE
 latest AS (
     SELECT DISTINCT ON (module_name) *
     FROM ranked
-    ORDER BY module_name, grade_timestamp DESC
+    ORDER BY module_name, mod_qc_no DESC
 )
 SELECT * FROM (
     SELECT * FROM ranked WHERE '${self.show_latest_only}' = 'false'
     UNION ALL
     SELECT * FROM latest WHERE '${self.show_latest_only}' = 'true'
 ) combined
-ORDER BY module_no DESC, grade_timestamp DESC"""
+ORDER BY module_no DESC, mod_qc_no DESC"""
 
     def _grade_color_override(self, column_name):
         """Return a fieldConfig override that color-codes A=green, B=yellow, C=orange, F=red, null=transparent."""
