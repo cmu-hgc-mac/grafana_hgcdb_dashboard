@@ -749,7 +749,7 @@ class ComponentsLookUpFormBuilder:
         self.qc_data_list = self.generate_qc_data_list()
 
         self.mean_hexmap_sql = f"""
-        SELECT DISTINCT ON (module_pedestal_plots.module_name) 'data:image/png;base64,' || encode(adc_mean_hexmap, 'base64') AS hexmap_image
+        SELECT DISTINCT ON (module_pedestal_plots.module_name) encode(adc_mean_hexmap, 'base64') AS hex_img
         FROM module_pedestal_plots
         JOIN module_info ON module_pedestal_plots.module_name = module_info.module_name
         WHERE (module_info.module_name = {self.module_name}
@@ -761,7 +761,7 @@ class ComponentsLookUpFormBuilder:
         """
 
         self.std_hexmap_sql = f"""
-        SELECT DISTINCT ON (module_pedestal_plots.module_name) 'data:image/png;base64,' || encode(adc_std_hexmap, 'base64') AS hexmap_image
+        SELECT DISTINCT ON (module_pedestal_plots.module_name) encode(adc_std_hexmap, 'base64') AS hex_img
         FROM module_pedestal_plots
         JOIN module_info ON module_pedestal_plots.module_name = module_info.module_name
         WHERE (module_info.module_name = {self.module_name}
@@ -771,6 +771,9 @@ class ComponentsLookUpFormBuilder:
             OR module_info.hxb_name = {self.hxb_name})
         ORDER BY module_pedestal_plots.module_name, module_pedestal_plots.mod_plottest_no DESC
         """
+
+        self.mean_hexmap_md = '<img src="data:image/png;base64,${mean_hex_map}" style="width: auto; height: auto;"/>'
+        self.std_hexmap_md = '<img src="data:image/png;base64,${std_hex_map}" style="width: auto; height: auto;"/>'
 
         self.encap_info_sql = f"""
         WITH encap AS (
@@ -1639,24 +1642,8 @@ class ComponentsLookUpFormBuilder:
             },
     # Panel: Latest Mean Hexmap
             {
-            "datasource": {
-                "type": "grafana-postgresql-datasource",
-                "uid": f"{self.datasource_uid}"
-            },
             "fieldConfig": {
-                "defaults": {
-                "custom": {
-                    "cellOptions": {
-                    "type": "image"
-                    },
-                    "inspect": False
-                },
-                "mappings": [],
-                "thresholds": {
-                    "mode": "absolute",
-                    "steps": [{"color": "green"}]
-                }
-                },
+                "defaults": {},
                 "overrides": []
             },
             "gridPos": {
@@ -1667,27 +1654,19 @@ class ComponentsLookUpFormBuilder:
             },
             "id": 9,
             "options": {
-                "cellHeight": "lg",
-                "footer": {"show": False, "reducer": ["sum"], "fields": "", "countRows": False},
-                "showHeader": False
+                "code": {
+                "language": "plaintext",
+                "showLineNumbers": False,
+                "showMiniMap": False
+                },
+                "content": self.mean_hexmap_md,
+                "mode": "markdown"
             },
             "pluginVersion": "12.0.1",
-            "targets": [
-                {
-                "datasource": {
-                    "type": "grafana-postgresql-datasource",
-                    "uid": f"{self.datasource_uid}"
-                },
-                "editorMode": "code",
-                "format": "table",
-                "rawQuery": True,
-                "rawSql": self.mean_hexmap_sql,
-                "refId": "A",
-                "sql": {"columns": [{"parameters": [], "type": "function"}], "groupBy": [{"property": {"type": "string"}, "type": "groupBy"}], "limit": 50}
-                }
-            ],
+            "repeat": "mean_hex_map",
+            "repeatDirection": "v",
             "title": "Pedestal Hexmap",
-            "type": "table",
+            "type": "text",
             "links":[
                 {
                 "title": "All Hexmap Plots",
@@ -1698,24 +1677,8 @@ class ComponentsLookUpFormBuilder:
             },
     # Panel: Latest Noisy Hexmap
             {
-            "datasource": {
-                "type": "grafana-postgresql-datasource",
-                "uid": f"{self.datasource_uid}"
-            },
             "fieldConfig": {
-                "defaults": {
-                "custom": {
-                    "cellOptions": {
-                    "type": "image"
-                    },
-                    "inspect": False
-                },
-                "mappings": [],
-                "thresholds": {
-                    "mode": "absolute",
-                    "steps": [{"color": "green"}]
-                }
-                },
+                "defaults": {},
                 "overrides": []
             },
             "gridPos": {
@@ -1726,27 +1689,19 @@ class ComponentsLookUpFormBuilder:
             },
             "id": 10,
             "options": {
-                "cellHeight": "lg",
-                "footer": {"show": False, "reducer": ["sum"], "fields": "", "countRows": False},
-                "showHeader": False
+                "code": {
+                "language": "plaintext",
+                "showLineNumbers": False,
+                "showMiniMap": False
+                },
+                "content": self.std_hexmap_md,
+                "mode": "markdown"
             },
             "pluginVersion": "12.0.1",
-            "targets": [
-                {
-                "datasource": {
-                    "type": "grafana-postgresql-datasource",
-                    "uid": f"{self.datasource_uid}"
-                },
-                "editorMode": "code",
-                "format": "table",
-                "rawQuery": True,
-                "rawSql": self.std_hexmap_sql,
-                "refId": "A",
-                "sql": {"columns": [{"parameters": [], "type": "function"}], "groupBy": [{"property": {"type": "string"}, "type": "groupBy"}], "limit": 50}
-                }
-            ],
+            "repeat": "std_hex_map",
+            "repeatDirection": "v",
             "title": "Noise Hexmap",
-            "type": "table",
+            "type": "text",
             "links":[
                 {
                 "title": "All Hexmap Plots",
@@ -2113,6 +2068,7 @@ class ComponentsLookUpFormBuilder:
                 "type": "query",
                 "hide": 2,
                 "refresh": 1,
+                "skipUrlSync": True,
                 "datasource": {
                     "type": "postgres",
                     "uid": f"{self.datasource_uid}"
@@ -2129,6 +2085,7 @@ class ComponentsLookUpFormBuilder:
                 "type": "query",
                 "hide": 2,
                 "refresh": 1,
+                "skipUrlSync": True,
                 "datasource": {
                     "type": "postgres",
                     "uid": f"{self.datasource_uid}"
@@ -2138,6 +2095,46 @@ class ComponentsLookUpFormBuilder:
                 "text": "",
                 "value": ""
                 }
+            },
+            {
+                "current": {
+                "text": "All",
+                "value": "$__all"
+                },
+                "hide": 2,
+                "includeAll": True,
+                "multi": True,
+                "name": "mean_hex_map",
+                "options": [],
+                "query": self.mean_hexmap_sql,
+                "refresh": 1,
+                "regex": "",
+                "skipUrlSync": True,
+                "datasource": {
+                    "type": "postgres",
+                    "uid": f"{self.datasource_uid}"
+                },
+                "type": "query"
+            },
+            {
+                "current": {
+                "text": "All",
+                "value": "$__all"
+                },
+                "hide": 2,
+                "includeAll": True,
+                "multi": True,
+                "name": "std_hex_map",
+                "options": [],
+                "query": self.std_hexmap_sql,
+                "refresh": 1,
+                "regex": "",
+                "skipUrlSync": True,
+                "datasource": {
+                    "type": "postgres",
+                    "uid": f"{self.datasource_uid}"
+                },
+                "type": "query"
             },
             ] + self.qc_data_list
         },
@@ -2181,6 +2178,7 @@ class ComponentsLookUpFormBuilder:
                 "type": "query",
                 "hide": 2,
                 "refresh": 1,
+                "skipUrlSync": True,
                 "datasource": {
                     "type": "postgres",
                     "uid": f"{self.datasource_uid}"
@@ -2369,6 +2367,7 @@ class HexmapPlotsBuilder:
                     "query": self.mean_hexmap_sql,
                     "refresh": 1,
                     "regex": "",
+                    "skipUrlSync": True,
                     "type": "query"
                 },
                 {
@@ -2384,6 +2383,7 @@ class HexmapPlotsBuilder:
                     "query": self.std_hexmap_sql,
                     "refresh": 1,
                     "regex": "",
+                    "skipUrlSync": True,
                     "type": "query"
                 }
                 ]
