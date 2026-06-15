@@ -7837,20 +7837,8 @@ SELECT
     module_qc_summary.module_grade::text,
     module_qc_summary.iv_grade::text,
     module_qc_summary.readout_grade::text,
-    CASE
-        WHEN module_qc_summary.proto_corner_colorgrades IS NULL THEN NULL
-        WHEN LOWER(module_qc_summary.proto_corner_colorgrades::text) LIKE '%red%' THEN 'red'
-        WHEN LOWER(module_qc_summary.proto_corner_colorgrades::text) LIKE '%purple%' THEN 'purple'
-        WHEN LOWER(module_qc_summary.proto_corner_colorgrades::text) LIKE '%yellow%' THEN 'yellow'
-        ELSE 'green'
-    END AS proto_corner_colorgrades,
-    CASE
-        WHEN module_qc_summary.module_corner_colorgrades IS NULL THEN NULL
-        WHEN LOWER(module_qc_summary.module_corner_colorgrades::text) LIKE '%red%' THEN 'red'
-        WHEN LOWER(module_qc_summary.module_corner_colorgrades::text) LIKE '%purple%' THEN 'purple'
-        WHEN LOWER(module_qc_summary.module_corner_colorgrades::text) LIKE '%yellow%' THEN 'yellow'
-        ELSE 'green'
-    END AS module_corner_colorgrades,
+    module_qc_summary.proto_corner_colorgrades::text AS proto_corner_colorgrades,
+    module_qc_summary.module_corner_colorgrades::text AS module_corner_colorgrades,
     module_qc_summary.comments_all::text,
     module_qc_summary.grade_timestamp::text
 FROM module_qc_summary
@@ -8021,12 +8009,24 @@ ORDER BY module_no DESC, mod_qc_no DESC"""
                 "value": [
                     {
                         "options": {
-                            "red":    {"color": "red",    "index": 0},
-                            "purple": {"color": "purple", "index": 1},
-                            "yellow": {"color": "yellow", "index": 2},
-                            "green":  {"color": "green",  "index": 3}
+                            "pattern": "[Rr][Ee][Dd]",
+                            "result": {"color": "red", "index": 0}
                         },
-                        "type": "value"
+                        "type": "regex"
+                    },
+                    {
+                        "options": {
+                            "pattern": "[Pp][Uu][Rr][Pp][Ll][Ee]",
+                            "result": {"color": "purple", "index": 1}
+                        },
+                        "type": "regex"
+                    },
+                    {
+                        "options": {
+                            "pattern": "[Yy][Ee][Ll][Ll][Oo][Ww]",
+                            "result": {"color": "yellow", "index": 2}
+                        },
+                        "type": "regex"
                     },
                     {
                         "options": {
@@ -8034,6 +8034,13 @@ ORDER BY module_no DESC, mod_qc_no DESC"""
                             "result": {"color": "transparent", "index": 3}
                         },
                         "type": "special"
+                    },
+                    {
+                        "options": {
+                            "pattern": ".+",
+                            "result": {"color": "green", "index": 4}
+                        },
+                        "type": "regex"
                     }
                 ]
             },
