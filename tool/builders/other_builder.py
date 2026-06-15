@@ -7816,6 +7816,7 @@ class ModuleGradesBuilder:
         self.final_grade = "{final_grade}"
         self.module_name = "{module_name}"
         self.show_latest_only = "{show_latest_only}"
+        self.uninstallable_only = "{uninstallable_only}"
 
         self.table_sql = f"""WITH ranked AS (
 SELECT
@@ -7888,12 +7889,17 @@ latest AS (
     SELECT DISTINCT ON (module_name) *
     FROM ranked
     ORDER BY module_name, mod_qc_no DESC
+),
+latest_uninstallable_modules AS (
+    SELECT module_name FROM latest WHERE installation_status = 'red'
 )
 SELECT * FROM (
     SELECT * FROM ranked WHERE '${self.show_latest_only}' = 'false'
     UNION ALL
     SELECT * FROM latest WHERE '${self.show_latest_only}' = 'true'
 ) combined
+WHERE '${self.uninstallable_only}' = 'false'
+   OR combined.module_name IN (SELECT module_name FROM latest_uninstallable_modules)
 ORDER BY module_no DESC, mod_qc_no DESC"""
 
     def _grade_color_override(self, column_name):
@@ -8207,6 +8213,17 @@ ORDER BY module_no DESC, mod_qc_no DESC"""
                         "options": [
                             {"selected": False, "text": "false", "value": "false"},
                             {"selected": True,  "text": "true",  "value": "true"}
+                        ],
+                        "query": "false,true",
+                        "type": "custom"
+                    },
+                    {
+                        "current": {"text": "false", "value": "false"},
+                        "label": "Uninstallable Only",
+                        "name": "uninstallable_only",
+                        "options": [
+                            {"selected": True,  "text": "false", "value": "false"},
+                            {"selected": False, "text": "true",  "value": "true"}
                         ],
                         "query": "false,true",
                         "type": "custom"
