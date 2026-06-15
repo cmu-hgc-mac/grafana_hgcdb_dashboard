@@ -7817,7 +7817,7 @@ class ModuleGradesBuilder:
         self.module_name = "{module_name}"
         self.show_latest_only = "{show_latest_only}"
         self.uninstallable_only = "{uninstallable_only}"
-        self.show_deteriorated = "{show_deteriorated}"
+        self.show_grade_changed_modules = "{show_grade_changed_modules}"
 
         self.table_sql = f"""WITH ranked AS (
 SELECT
@@ -7902,7 +7902,7 @@ SELECT * FROM (
 ) combined
 WHERE ('${self.uninstallable_only}' = 'false'
    OR combined.module_name IN (SELECT module_name FROM latest_uninstallable_modules))
-  AND ('${self.show_deteriorated}' = 'false'
+  AND ('${self.show_grade_changed_modules}' = 'false'
    OR combined.module_name IN (SELECT module_name FROM deteriorated_modules))
 ORDER BY module_no DESC, mod_qc_no DESC"""
 
@@ -8254,8 +8254,8 @@ ORDER BY module_no DESC, mod_qc_no DESC"""
                     },
                     {
                         "current": {"text": "false", "value": "false"},
-                        "label": "Show Deteriorated",
-                        "name": "show_deteriorated",
+                        "label": "Show Grade Changed Modules",
+                        "name": "show_grade_changed_modules",
                         "options": [
                             {"selected": True,  "text": "false", "value": "false"},
                             {"selected": False, "text": "true",  "value": "true"}
