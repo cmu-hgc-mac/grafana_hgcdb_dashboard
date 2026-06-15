@@ -7971,6 +7971,10 @@ ORDER BY module_no DESC, mod_qc_no DESC"""
             "properties": [{"id": "custom.width", "value": 80}]
         })
         overrides.append({
+            "matcher": {"id": "byName", "options": "mod_qc_no"},
+            "properties": [{"id": "custom.width", "value": 80}]
+        })
+        overrides.append({
             "matcher": {"id": "byName", "options": "module_name"},
             "properties": [{"id": "custom.width", "value": 161}]
         })
