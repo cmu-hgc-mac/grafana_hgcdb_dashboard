@@ -5928,7 +5928,10 @@ class ModuleAssemblyBuilder:
             temp_table_3.date_test::text AS test_ped,
             temp_table_0.xml_upload_success::text AS xml_build_upload_success,
             temp_table_0.packed_datetime::text,
-            temp_table_0.shipped_datetime::text
+            temp_table_0.shipped_datetime::text,
+            temp_table_0.bp_name::text,
+            temp_table_0.sen_name::text,
+            temp_table_0.hxb_name::text
         FROM temp_table_0
         LEFT JOIN temp_table_1 ON temp_table_0.module_name = temp_table_1.module_name
         LEFT JOIN temp_table_2 ON temp_table_0.module_name = temp_table_2.module_name
@@ -6552,7 +6555,49 @@ class ModuleAssemblyBuilder:
                 }
               }
             ]
-          }
+          },
+                {
+                    "matcher": {
+                    "id": "byName",
+                    "options": "bp_name"
+                    },
+                    "properties": [
+                    {
+                        "id": "color",
+                        "value": {
+                        "mode": "fixed"
+                        }
+                    }
+                    ]
+                },
+                {
+                    "matcher": {
+                    "id": "byName",
+                    "options": "sen_name"
+                    },
+                    "properties": [
+                    {
+                        "id": "color",
+                        "value": {
+                        "mode": "fixed"
+                        }
+                    }
+                    ]
+                },
+                {
+                    "matcher": {
+                    "id": "byName",
+                    "options": "hxb_name"
+                    },
+                    "properties": [
+                    {
+                        "id": "color",
+                        "value": {
+                        "mode": "fixed"
+                        }
+                    }
+                    ]
+                }
                     ]
                 },
                 "gridPos": {
