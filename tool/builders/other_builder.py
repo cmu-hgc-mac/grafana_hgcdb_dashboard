@@ -884,7 +884,50 @@ class ComponentsLookUpFormBuilder:
                     ]
                 }
                 },
-                "overrides": []
+                "overrides": [
+                {
+                    "matcher": {
+                    "id": "byName",
+                    "options": "bp_name"
+                    },
+                    "properties": [
+                    {
+                        "id": "color",
+                        "value": {
+                        "mode": "fixed"
+                        }
+                    }
+                    ]
+                },
+                {
+                    "matcher": {
+                    "id": "byName",
+                    "options": "sen_name"
+                    },
+                    "properties": [
+                    {
+                        "id": "color",
+                        "value": {
+                        "mode": "fixed"
+                        }
+                    }
+                    ]
+                },
+                {
+                    "matcher": {
+                    "id": "byName",
+                    "options": "hxb_name"
+                    },
+                    "properties": [
+                    {
+                        "id": "color",
+                        "value": {
+                        "mode": "fixed"
+                        }
+                    }
+                    ]
+                }
+                ]
             },
             "gridPos": {
                 "h": 4,
@@ -6841,9 +6884,9 @@ class XMLSuccessBuilder:
 
         self.table_sql = f"""
         WITH module_info_failed AS (
-            SELECT DISTINCT ON (module_name) module_no, module_name, xml_upload_success
+            SELECT DISTINCT ON (module_name) module_no, module_name, bp_name, sen_name, hxb_name, xml_upload_success
             FROM module_info
-            WHERE $__timeFilter(module_info.assembled) 
+            WHERE $__timeFilter(module_info.assembled)
             ORDER BY module_name, xml_upload_success, module_no DESC
         ),
         proto_assembly_failed AS (
@@ -6938,6 +6981,9 @@ class XMLSuccessBuilder:
         SELECT
             module_info_failed.module_no,
             module_info_failed.module_name,
+            module_info_failed.bp_name,
+            module_info_failed.sen_name,
+            module_info_failed.hxb_name,
             CASE
                 WHEN module_info_failed.module_name IS NULL THEN 'N/A'
                 WHEN module_info_failed.xml_upload_success IS NULL THEN 'NULL'
@@ -7653,6 +7699,48 @@ class XMLSuccessBuilder:
                             "type": "value"
                         }
                         ]
+                    }
+                    ]
+                },
+                {
+                    "matcher": {
+                    "id": "byName",
+                    "options": "bp_name"
+                    },
+                    "properties": [
+                    {
+                        "id": "color",
+                        "value": {
+                        "mode": "fixed"
+                        }
+                    }
+                    ]
+                },
+                {
+                    "matcher": {
+                    "id": "byName",
+                    "options": "sen_name"
+                    },
+                    "properties": [
+                    {
+                        "id": "color",
+                        "value": {
+                        "mode": "fixed"
+                        }
+                    }
+                    ]
+                },
+                {
+                    "matcher": {
+                    "id": "byName",
+                    "options": "hxb_name"
+                    },
+                    "properties": [
+                    {
+                        "id": "color",
+                        "value": {
+                        "mode": "fixed"
+                        }
                     }
                     ]
                 }
