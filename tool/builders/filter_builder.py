@@ -1,0 +1,158 @@
+from tool.helper import *
+
+
+class FilterBuilder:
+    def __init__(self, datasource_uid):
+        self.datasource_uid = datasource_uid
+
+    def generate_filter(self, filter_name: str, filter_sql: str) -> dict:
+        """Generate a template json based on the given .
+        """
+        # generate the filter json:
+        filter_json = {
+                "current": {
+                "text": [
+                "All"
+                ],
+                "value": [
+                "$__all"
+                ]
+                },
+                "datasource": {
+                "type": "postgres",
+                "uid": f"{self.datasource_uid}"
+                },
+                "includeAll": True,
+                "multi": True,
+                "name": filter_name,
+                "options": [],
+                "query": filter_sql,
+                "refresh": 1,   # refresh everytime when dashboard is loaded
+                "type": "query"
+            }
+
+        return filter_json
+
+    def generate_filterSQL(self, filter_name: str, filters_table: str) -> str:
+        """Generate a template SQL command based on the given filter name.
+        """
+        # check filter type:
+        if filter_name == "shipping_status":
+            filter_sql = f"""
+            SELECT DISTINCT
+            CASE WHEN shipped_datetime IS NULL THEN 'not shipped' ELSE 'shipped' END AS shipping_status
+            FROM {filters_table}
+            ORDER BY shipping_status
+            """
+        elif filter_name == "wirebond_status":
+            filter_sql = f"""
+            SELECT DISTINCT
+            CASE WHEN wb_front IS NULL THEN 'not front bonded' ELSE 'front bonded' END AS wirebond_status
+            FROM {filters_table}
+            ORDER BY wirebond_status
+            """
+        else:
+            filter_sql = f"""
+            SELECT DISTINCT {filter_name}::text FROM {filters_table}
+            UNION
+            SELECT 'NULL'
+            ORDER BY {filter_name}
+            """
+
+        return filter_sql
+
+    def build_template_list(self, filters: dict, exist_filter: set) -> list:
+        """Build all filters based on the given filter_dict.
+        """
+        filters_table_list = list(filters.keys())
+        template_list = []
+
+        for filters_table in filters_table_list:
+            for elem in filters[filters_table]:
+                if elem in exist_filter:
+                    continue    # filter exists
+                elif elem in TIME_COLUMNS:
+                    continue    # filter not used in dashboard
+
+                exist_filter.add(elem)
+
+                # generate the filter's json
+                filter_sql = self.generate_filterSQL(elem, filters_table)
+                filter_json = self.generate_filter(elem, filter_sql)
+                template_list.append(filter_json)
+
+        return template_list
+
+    def build_iv_curve_filters(self, exist_filter: set) -> list:
+        """Build all filters for IV curve plot.
+        """
+        template_list = []
+
+        if not exist_filter:
+            temp_arg = [
+                        {
+                "name": "N_MODULE_SHOW",
+                "type": "textbox",
+                "label": "Number of Modules to Show",
+                "hide": 0,
+                "query": "",
+                "current": {
+                    "text": "15",
+                    "value": "15"
+                },
+                "options": [],
+                "refresh": 0
+                }
+            ]
+            template_list.extend(temp_arg)
+            exist_filter.add("N_MODULE_SHOW")
+
+        return template_list
+
+
+class InputBuilder:
+    def __init__(self):
+        pass
+
+    def generate_input(self, input_name: str) -> dict:
+        """Generate a template json based on the given input_name.
+        """
+        input_json = {
+                "current": {
+                "text": "",
+                "value": ""
+                },
+                "label": input_name,
+                "name": input_name,
+                "options": [
+                {
+                    "selected": True,
+                    "text": "",
+                    "value": ""
+                }
+                ],
+                "query": "",
+                "type": "textbox"
+            }
+
+        return input_json
+
+    def build_template_list(self, inputs: dict, exist_filter: set) -> list:
+        """Build all filters based on the given filter_dict.
+        """
+        template_list = []
+
+        for table, elems in inputs.items():
+            for elem in elems:
+                if elem in exist_filter:
+                    continue    # filter exists
+                elif elem in TIME_COLUMNS:
+                    continue    # filter not used in dashboard
+
+                exist_filter.add(elem)
+
+                # generate the filter's json
+                input_json = self.generate_input(elem)
+                template_list.append(input_json)
+
+        return template_list
