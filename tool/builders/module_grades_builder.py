@@ -471,3 +471,4 @@ ORDER BY module_no DESC, mod_qc_no DESC"""
             "uid": self.dashboard_uid
         }
 
+        return dashboard_json
