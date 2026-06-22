@@ -501,7 +501,7 @@ class ComponentsLookUpFormBuilder:
         self.module_info_sql = f"""
         WITH selected_module_inspect AS (
             SELECT DISTINCT ON (module_name) *
-            FROM module_inspect    
+            FROM module_inspect
             ORDER BY module_name, module_row_no DESC
         )
         SELECT
@@ -510,7 +510,10 @@ class ComponentsLookUpFormBuilder:
             selected_module_inspect.avg_thickness,
             selected_module_inspect.x_offset_mu,
             selected_module_inspect.y_offset_mu,
-            selected_module_inspect.ang_offset_deg
+            selected_module_inspect.ang_offset_deg,
+            module_info.bp_name,
+            module_info.sen_name,
+            module_info.hxb_name
         FROM module_info
         LEFT JOIN selected_module_inspect ON module_info.module_name = selected_module_inspect.module_name
         WHERE  (hxb_name = {self.hxb_name})
@@ -6981,9 +6984,6 @@ class XMLSuccessBuilder:
         SELECT
             module_info_failed.module_no,
             module_info_failed.module_name,
-            module_info_failed.bp_name,
-            module_info_failed.sen_name,
-            module_info_failed.hxb_name,
             CASE
                 WHEN module_info_failed.module_name IS NULL THEN 'N/A'
                 WHEN module_info_failed.xml_upload_success IS NULL THEN 'NULL'
@@ -7049,7 +7049,10 @@ class XMLSuccessBuilder:
                 WHEN hxb_pedestal_failed.module_name IS NULL THEN 'N/A'
                 WHEN hxb_pedestal_failed.xml_upload_success IS NULL THEN 'NULL'
                 ELSE hxb_pedestal_failed.xml_upload_success::text
-            END AS hxb_pedestal
+            END AS hxb_pedestal,
+            module_info_failed.bp_name,
+            module_info_failed.sen_name,
+            module_info_failed.hxb_name
         FROM module_info_failed
         LEFT JOIN proto_assembly_failed
             ON module_info_failed.module_name = proto_assembly_failed.module_name
