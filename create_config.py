@@ -21,6 +21,17 @@ db_conn = {
     'password': ''  # your password
 }
 
+mmts_db_conn = {
+    # Setting for MMTS database (secondary data source)
+
+    'dbname': 'mmts',
+    'port': '5432',
+    'db_hostname': 'localhost',  # 'localhost'
+
+    'user': 'viewer',  # recommended
+    'password': ''  # your password
+}
+
 gf_conn = {
     # Setting for Grafana
 
@@ -36,6 +47,8 @@ gf_conn = {
     'GF_DATA_SOURCE_NAME': "",
     'GF_API_KEY': "",
     'GF_DATA_SOURCE_UID': "",
+    'GF_MMTS_DATA_SOURCE_NAME': "",
+    'GF_MMTS_DATA_SOURCE_UID': "",
     'GF_RUN_TIMES': 0 # this will be updated automatically according to the run time of the `main.py` script
 }
 
@@ -51,6 +64,11 @@ os.makedirs(folder_path, exist_ok=True)    # Create the folder if it doesn't exi
 db_conn_path = os.path.join(folder_path, "db_conn.yaml")
 with open(db_conn_path, "w") as file:
     yaml.dump(db_conn, file)
+
+# create a file for the MMTS database connection
+mmts_db_conn_path = os.path.join(folder_path, "mmts_db_conn.yaml")
+with open(mmts_db_conn_path, "w") as file:
+    yaml.dump(mmts_db_conn, file)
 
 # create a file for the Grafana connection
 gf_conn_path = os.path.join(folder_path, "gf_conn.yaml")

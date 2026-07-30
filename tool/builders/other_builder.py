@@ -11,6 +11,7 @@ from tool.builders.general_info_builder import GeneralInfoBuilder
 from tool.builders.module_assembly_builder import ModuleAssemblyBuilder
 from tool.builders.xml_success_builder import XMLSuccessBuilder
 from tool.builders.module_grades_builder import ModuleGradesBuilder
+from tool.builders.mmts_builder import MMTSBuilder
 
 __all__ = [
     "FilterBuilder",

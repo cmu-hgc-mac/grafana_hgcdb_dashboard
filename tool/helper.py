@@ -119,10 +119,11 @@ class GrafanaClient:
         return sa_id, api_key
 
     def add_postgres_datasource(
-        self, 
+        self,
         datasource_name: str, datasource_uid: str,
         db_host: str, db_port: str,
-        db_name: str, db_user: str, db_password: str
+        db_name: str, db_user: str, db_password: str,
+        is_default: bool = True
     ):
         """Add a PostgreSQL data source to Grafana using current API token.
         """
@@ -136,7 +137,7 @@ class GrafanaClient:
             "secureJsonData": {
                 "password": db_password
             },
-            "isDefault": True,
+            "isDefault": is_default,
             "editable": True,
             "uid": datasource_uid,
             "jsonData": {
@@ -462,10 +463,12 @@ ALERTS_FOLDER_PATH      = "./Alerts"
 CONTACT_FOLDER_PATH     = f"{CONFIG_FOLDER_PATH}/contact_configs"
 
 DB_CONN_PATH            = f"{SETTING_FOLDER_PATH}/db_conn.yaml"
+MMTS_DB_CONN_PATH       = f"{SETTING_FOLDER_PATH}/mmts_db_conn.yaml"
 GF_CONN_PATH            = f"{SETTING_FOLDER_PATH}/gf_conn.yaml"
 
 # -- load YAML Configuration --
 db_conn = ConfigLoader(DB_CONN_PATH)
+mmts_db_conn = ConfigLoader(MMTS_DB_CONN_PATH)
 gf_conn = ConfigLoader(GF_CONN_PATH)
 
 # -- PostgreSQL Connection Info --
@@ -475,6 +478,13 @@ DB_USER         = db_conn.get("user")
 DB_PASSWORD     = db_conn.get("password")
 DB_PORT         = db_conn.get("port")
 INSTITUTION     = db_conn.get("institution_abbr").upper()
+
+# -- MMTS PostgreSQL Connection Info (secondary data source) --
+MMTS_DB_HOST     = mmts_db_conn.get("db_hostname")
+MMTS_DB_NAME     = mmts_db_conn.get("dbname")
+MMTS_DB_USER     = mmts_db_conn.get("user")
+MMTS_DB_PASSWORD = mmts_db_conn.get("password")
+MMTS_DB_PORT     = mmts_db_conn.get("port")
 
 # -- Grafana Connection Info --
 GF_PORT         = gf_conn.get('GF_PORT')
@@ -486,6 +496,8 @@ GF_USER         = gf_conn.get('GF_USER')
 GF_PASS         = gf_conn.get('GF_PASS')
 GF_DS_NAME      = gf_conn.get('GF_DATA_SOURCE_NAME')
 GF_DS_UID       = gf_conn.get('GF_DATA_SOURCE_UID')
+GF_MMTS_DS_NAME = gf_conn.get('GF_MMTS_DATA_SOURCE_NAME')
+GF_MMTS_DS_UID  = gf_conn.get('GF_MMTS_DATA_SOURCE_UID')
 
 # -- HGCDB Info --
 TIME_COLUMNS = [

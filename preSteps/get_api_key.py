@@ -20,6 +20,8 @@ gf_conn.set('GF_SA_NAME', sa_name)
 gf_conn.set('GF_API_KEY', api_key)
 gf_conn.set('GF_DATA_SOURCE_NAME', str(f"{INSTITUTION}-{DB_NAME}".upper()))
 gf_conn.set('GF_DATA_SOURCE_UID', "mac-postgres-db")
+gf_conn.set('GF_MMTS_DATA_SOURCE_NAME', str(f"{INSTITUTION}-{MMTS_DB_NAME}".upper()))
+gf_conn.set('GF_MMTS_DATA_SOURCE_UID', "mac-mmts-postgres-db")
 
 gf_conn.save()
 gf_conn.reload()

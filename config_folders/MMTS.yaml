@@ -1,0 +1,13 @@
+datasource_variable: DS_MMTS_POSTGRES
+
+dashboards:
+
+  - title: "MMTS Info"
+    panels:
+      - title: "MMTS Placeholder"
+        table:
+        chart_type: "table"
+        condition:
+        groupby: []
+        filters: {}
+        distinct:

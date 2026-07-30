@@ -1,0 +1,8 @@
+# Setting for MMTS database (secondary data source)
+
+dbname: 'mmts'
+port: '5432'
+db_hostname: 'localhost'  # 'localhost'
+
+user: 'viewer'  # recommended
+password: ''  # your password
