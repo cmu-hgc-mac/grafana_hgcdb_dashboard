@@ -56,6 +56,8 @@ class ModuleAssemblyBuilder:
             temp_table_0.wb_front::text,
             temp_table_0.encap_front::text,
             temp_table_2.temp_c::text,
+            temp_table_0.thermal_cycle_count::text,
+            temp_table_0.thermal_cycle_date::text,
             temp_table_2.date_test::text AS test_iv,
             temp_table_3.date_test::text AS test_ped,
             temp_table_0.xml_upload_success::text AS xml_build_upload_success,
@@ -192,6 +194,10 @@ class ModuleAssemblyBuilder:
                         },
                         "properties": [
                         {
+                            "id": "custom.width",
+                            "value": 121
+                        },
+                        {
                             "id": "custom.cellOptions",
                             "value": {
                             "type": "color-background"
@@ -240,6 +246,10 @@ class ModuleAssemblyBuilder:
                         "options": "test_ped"
                         },
                         "properties": [
+                        {
+                            "id": "custom.width",
+                            "value": 121
+                        },
                         {
                             "id": "custom.cellOptions",
                             "value": {
@@ -290,6 +300,10 @@ class ModuleAssemblyBuilder:
                         },
                         "properties": [
                         {
+                            "id": "custom.width",
+                            "value": 121
+                        },
+                        {
                             "id": "custom.cellOptions",
                             "value": {
                             "type": "color-background"
@@ -318,6 +332,10 @@ class ModuleAssemblyBuilder:
                         "options": "encap_back"
                         },
                         "properties": [
+                        {
+                            "id": "custom.width",
+                            "value": 121
+                        },
                         {
                             "id": "custom.cellOptions",
                             "value": {
@@ -348,6 +366,10 @@ class ModuleAssemblyBuilder:
                         },
                         "properties": [
                         {
+                            "id": "custom.width",
+                            "value": 121
+                        },
+                        {
                             "id": "custom.cellOptions",
                             "value": {
                             "type": "color-background"
@@ -377,6 +399,10 @@ class ModuleAssemblyBuilder:
                         },
                         "properties": [
                         {
+                            "id": "custom.width",
+                            "value": 121
+                        },
+                        {
                             "id": "custom.cellOptions",
                             "value": {
                             "type": "color-background"
@@ -405,6 +431,10 @@ class ModuleAssemblyBuilder:
                         "options": "xml_build_upload_success"
                         },
                         "properties": [
+                        {
+                            "id": "custom.width",
+                            "value": 121
+                        },
                         {
                             "id": "custom.cellOptions",
                             "value": {
@@ -445,6 +475,10 @@ class ModuleAssemblyBuilder:
                         },
                         "properties": [
                         {
+                            "id": "custom.width",
+                            "value": 121
+                        },
+                        {
                             "id": "custom.cellOptions",
                             "value": {
                             "type": "color-background"
@@ -474,6 +508,10 @@ class ModuleAssemblyBuilder:
                         },
                         "properties": [
                         {
+                            "id": "custom.width",
+                            "value": 121
+                        },
+                        {
                             "id": "custom.cellOptions",
                             "value": {
                             "type": "color-background"
@@ -502,6 +540,10 @@ class ModuleAssemblyBuilder:
                         "options": "packed_datetime"
                         },
                         "properties": [
+                        {
+                            "id": "custom.width",
+                            "value": 121
+                        },
                         {
                             "id": "custom.cellOptions",
                             "value": {
@@ -540,9 +582,88 @@ class ModuleAssemblyBuilder:
                     {
                         "matcher": {
                         "id": "byName",
+                        "options": "thermal_cycle_date"
+                        },
+                        "properties": [
+                        {
+                            "id": "custom.width",
+                            "value": 121
+                        },
+                        {
+                            "id": "custom.cellOptions",
+                            "value": {
+                            "type": "color-background"
+                            }
+                        },
+                        {
+                            "id": "mappings",
+                            "value": [
+                            {
+                                "options": {
+                                "match": "null",
+                                "result": {
+                                    "color": "red",
+                                    "index": 0
+                                }
+                                },
+                                "type": "special"
+                            }
+                            ]
+                        }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                        "id": "byName",
+                        "options": "thermal_cycle_count"
+                        },
+                        "properties": [
+                        {
+                            "id": "custom.width",
+                            "value": 80
+                        },
+                        {
+                            "id": "custom.cellOptions",
+                            "value": {
+                            "type": "color-background"
+                            }
+                        },
+                        {
+                            "id": "mappings",
+                            "value": [
+                            {
+                                "options": {
+                                "match": "null",
+                                "result": {
+                                    "color": "red",
+                                    "index": 0
+                                }
+                                },
+                                "type": "special"
+                            },
+                            {
+                                "options": {
+                                "0": {
+                                    "color": "red",
+                                    "index": 1
+                                }
+                                },
+                                "type": "value"
+                            }
+                            ]
+                        }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                        "id": "byName",
                         "options": "temp_c"
                         },
                         "properties": [
+                        {
+                            "id": "custom.width",
+                            "value": 80
+                        },
                         {
                             "id": "custom.cellOptions",
                             "value": {
@@ -595,6 +716,10 @@ class ModuleAssemblyBuilder:
             },
             "properties": [
               {
+                "id": "custom.width",
+                "value": 121
+              },
+              {
                 "id": "mappings",
                 "value": [
                   {
@@ -644,6 +769,10 @@ class ModuleAssemblyBuilder:
               "options": "inspected"
             },
             "properties": [
+              {
+                "id": "custom.width",
+                "value": 121
+              },
               {
                 "id": "mappings",
                 "value": [

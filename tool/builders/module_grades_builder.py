@@ -29,6 +29,7 @@ SELECT
         AND module_qc_summary.iv_grade IS DISTINCT FROM 'F'
         AND module_qc_summary.readout_grade IS DISTINCT FROM 'F'
     THEN 'green' ELSE 'red' END AS installation_status,
+    module_qc_summary.thermal_cycle_count,
     module_qc_summary.final_grade::text,
     module_qc_summary.proto_grade::text,
     module_qc_summary.module_grade::text,
@@ -148,6 +149,7 @@ ORDER BY module_no DESC, mod_qc_no DESC"""
         ]
 
         rename_map = {
+            "thermal_cycle_count": "Thermal Cycle Count",
             "final_grade": "Final Grade",
             "proto_grade": "Proto Mech Grade",
             "module_grade": "Module Mech Grade",
