@@ -210,6 +210,40 @@ ORDER BY module_no DESC, mod_qc_no DESC"""
             ]
         })
 
+        # thermal_cycle_count: black if null/0, green otherwise
+        overrides.append({
+            "matcher": {"id": "byName", "options": "thermal_cycle_count"},
+            "properties": [
+                {"id": "custom.width", "value": 20},
+                {"id": "custom.cellOptions", "value": {"type": "color-background"}},
+                {
+                    "id": "mappings",
+                    "value": [
+                        {
+                            "options": {
+                                "match": "null",
+                                "result": {"color": "black", "index": 0}
+                            },
+                            "type": "special"
+                        },
+                        {
+                            "options": {
+                                "0": {"color": "black", "index": 1}
+                            },
+                            "type": "value"
+                        },
+                        {
+                            "options": {
+                                "pattern": ".+",
+                                "result": {"color": "green", "index": 2}
+                            },
+                            "type": "regex"
+                        }
+                    ]
+                }
+            ]
+        })
+
         # Color-code each grade column
         for col in grade_columns:
             overrides.append(self._grade_color_override(col))
