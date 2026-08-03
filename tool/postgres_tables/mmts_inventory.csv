@@ -1,0 +1,6 @@
+part_no,serial PRIMARY KEY,primary key,,
+part_name,TEXT,primary key in proto_assembly table,,
+kind,TEXT,imported from CMSR HGCAPI `kind_of_part`,,
+qc_details,TEXT,imported from CMSR HGCAPI,,
+comment,TEXT,imported from CMSR HGCAPI,,
+date_verify_received,DATE,filled during MAC intake and if is being tested without verification,,
