@@ -107,7 +107,7 @@ dashboards:
         table: "hexaboard"
         chart_type: "table"
         condition: "module_no is NULL AND roc_version IS NOT NULL AND resolution IS NOT NULL AND geometry IS NOT NULL AND date_verify_received IS NOT NULL"
-        groupby: {"hexaboard": ["hxb_name"], "hxb_pedestal_test": ["count_bad_cells", "status_desc", "date_test", "comment"], "hxb_inspect": ["flatness", "avg_thickness", "max_thickness"]}
+        groupby: {"hexaboard": ["hxb_name", "roc_name", "roc_index"], "hxb_pedestal_test": ["count_bad_cells", "status_desc", "date_test", "comment"], "hxb_inspect": ["flatness", "avg_thickness", "max_thickness"]}
         filters: {"hexaboard": ["roc_version", "resolution", "geometry", "obsolete"], "hxb_pedestal_test": ["status_desc"], "hxb_inspect": []}
         contains_inputs: {"hexaboard": ["hxb_name"]}
         distinct: ["hexaboard", "hxb_pedestal_test", "hxb_inspect"]
@@ -115,7 +115,7 @@ dashboards:
         table: "hexaboard"
         chart_type: "table"
         condition: "module_no IS NULL AND date_verify_received IS NULL"
-        groupby: {"hexaboard": ["row_count", "hxb_name", "geometry", "resolution", "kind", "date_verify_received"]}
+        groupby: {"hexaboard": ["row_count", "hxb_name", "geometry", "resolution", "kind", "date_verify_received", "roc_name", "roc_index"]}
         filters: {"hexaboard": ["roc_version", "resolution", "geometry", "obsolete"], "hxb_pedestal_test": ["status_desc"], "hxb_inspect": []}
         contains_inputs: {"hexaboard": ["hxb_name"]}
         distinct: ["hexaboard", "hxb_pedestal_test"]
@@ -123,7 +123,7 @@ dashboards:
         table: "hexaboard"
         chart_type: "table"
         condition: "module_no IS NULL AND kind IS NULL"
-        groupby: {"hexaboard": ["row_count", "hxb_name", "geometry", "resolution", "kind", "date_verify_received"]}
+        groupby: {"hexaboard": ["row_count", "hxb_name", "geometry", "resolution", "kind", "date_verify_received", "roc_name", "roc_index"]}
         filters: {"hexaboard": ["roc_version", "resolution", "geometry", "obsolete"], "hxb_pedestal_test": ["status_desc"], "hxb_inspect": []}
         contains_inputs: {"hexaboard": ["hxb_name"]}
         distinct: ["hexaboard", "hxb_pedestal_test"]
@@ -131,7 +131,7 @@ dashboards:
         table: "hexaboard"
         chart_type: "table"
         condition: "temp_table_0.module_no IS NOT NULL"
-        groupby: {"hexaboard": ["hxb_name", "geometry", "resolution", "kind", "comment"], "hxb_pedestal_test": [], "module_info": ["module_name", "assembled"]}
+        groupby: {"hexaboard": ["hxb_name", "geometry", "resolution", "kind", "comment", "roc_name", "roc_index"], "hxb_pedestal_test": [], "module_info": ["module_name", "assembled"]}
         filters: {"hexaboard": ["roc_version", "resolution", "geometry", "obsolete"], "hxb_pedestal_test": ["status_desc"], "module_info": []}
         contains_inputs: {"hexaboard": ["hxb_name"]}
         distinct: ["hexaboard", "hxb_pedestal_test", "module_info"]
