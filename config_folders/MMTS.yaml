@@ -1,0 +1,6 @@
+datasource_variable: DS_POSTGRES
+
+dashboards:
+
+  - title: "MMTS Environment Logging"
+    panels: []
