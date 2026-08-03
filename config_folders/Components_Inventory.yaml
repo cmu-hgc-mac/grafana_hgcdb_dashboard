@@ -83,6 +83,15 @@ dashboards:
         inputs: {"sensor": ["sen_batch_id"]}
         contains_inputs: {"sensor": ["sen_name"]}
         distinct: ["sensor"]
+      - title: "Used Sensors"
+        table: "sensor"
+        chart_type: "table"
+        condition: "temp_table_0.proto_no IS NOT NULL"
+        groupby: {"sensor": ["sen_name", "geometry", "resolution", "thickness", "kind", "sen_batch_id", "comment"], "proto_assembly": ["proto_name", "ass_run_date"]}
+        filters: {"sensor": ["thickness", "resolution", "geometry", "grade"], "proto_assembly": []}
+        inputs: {"sensor": ["sen_batch_id"]}
+        contains_inputs: {"sensor": ["sen_name"]}
+        distinct: ["sensor", "proto_assembly"]
 
   - title: "Free Hexaboards"
     panels:
@@ -118,3 +127,11 @@ dashboards:
         filters: {"hexaboard": ["roc_version", "resolution", "geometry", "obsolete"], "hxb_pedestal_test": ["status_desc"], "hxb_inspect": []}
         contains_inputs: {"hexaboard": ["hxb_name"]}
         distinct: ["hexaboard", "hxb_pedestal_test"]
+      - title: "Used Hexaboards"
+        table: "hexaboard"
+        chart_type: "table"
+        condition: "temp_table_0.module_no IS NOT NULL"
+        groupby: {"hexaboard": ["hxb_name", "geometry", "resolution", "kind", "comment"], "hxb_pedestal_test": [], "module_info": ["module_name", "assembled"]}
+        filters: {"hexaboard": ["roc_version", "resolution", "geometry", "obsolete"], "hxb_pedestal_test": ["status_desc"], "module_info": []}
+        contains_inputs: {"hexaboard": ["hxb_name"]}
+        distinct: ["hexaboard", "hxb_pedestal_test", "module_info"]
