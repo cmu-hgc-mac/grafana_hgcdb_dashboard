@@ -50,7 +50,7 @@ class MMTSBatchLoggingBuilder:
                                 "show": "points",
                                 "pointSize": {
                                     "fixed": 5,
-                                    "min": 8,
+                                    "min": 16,
                                     "max": 60
                                 },
                                 "pointShape": "circle",
