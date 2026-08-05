@@ -354,7 +354,7 @@ ORDER BY 1, 2;""",
                                     "group": "A"
                                 },
                                 "axisPlacement": "auto",
-                                "axisLabel": "",
+                                "axisLabel": "Dewpoint (°C)",
                                 "axisColorMode": "text",
                                 "axisBorderShow": False,
                                 "scaleDistribution": {
