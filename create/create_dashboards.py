@@ -6,7 +6,7 @@ import yaml
 
 from tool.helper import *
 from tool import DashboardValidator
-from tool import PanelBuilder, FilterBuilder, InputBuilder, DashboardBuilder, ComponentsLookUpFormBuilder, HexmapPlotsBuilder, OffsetPlotsBuilder, GeneralInfoBuilder, ModuleAssemblyBuilder, XMLSuccessBuilder, ModuleGradesBuilder, MMTSLoggingBuilder
+from tool import PanelBuilder, FilterBuilder, InputBuilder, DashboardBuilder, ComponentsLookUpFormBuilder, HexmapPlotsBuilder, OffsetPlotsBuilder, GeneralInfoBuilder, ModuleAssemblyBuilder, XMLSuccessBuilder, ModuleGradesBuilder, MMTSLoggingBuilder, MMTSBatchLoggingBuilder
 
 """
 This script generates all the dashboards json_file, saves them to a folder under `grafana_hgcdb_dashboard`, and uploads them to grafana.
