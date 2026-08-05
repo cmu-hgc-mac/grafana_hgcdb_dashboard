@@ -35,6 +35,160 @@ class MMTSBatchLoggingBuilder:
                         "uid": self.datasource_uid
                     },
                     "id": 1,
+                    "title": "Cycle Count by Batch",
+                    "description": "",
+                    "links": [],
+                    "gridPos": {
+                        "h": 9,
+                        "w": 24,
+                        "x": 0,
+                        "y": 0
+                    },
+                    "fieldConfig": {
+                        "defaults": {
+                            "custom": {
+                                "show": "points",
+                                "pointSize": {
+                                    "fixed": 5
+                                },
+                                "pointShape": "circle",
+                                "pointStrokeWidth": 1,
+                                "fillOpacity": 50,
+                                "axisPlacement": "auto",
+                                "axisLabel": "",
+                                "axisColorMode": "text",
+                                "axisBorderShow": False,
+                                "scaleDistribution": {
+                                    "type": "linear"
+                                },
+                                "axisCenteredZero": False,
+                                "hideFrom": {
+                                    "tooltip": False,
+                                    "viz": False,
+                                    "legend": False
+                                }
+                            },
+                            "color": {
+                                "mode": "palette-classic"
+                            },
+                            "mappings": []
+                        },
+                        "overrides": [
+                            {
+                                "matcher": {
+                                    "id": "byName",
+                                    "options": "time"
+                                },
+                                "properties": [
+                                    {
+                                        "id": "custom.axisLabel",
+                                        "value": "Batch Time"
+                                    }
+                                ]
+                            },
+                            {
+                                "matcher": {
+                                    "id": "byName",
+                                    "options": "cycle_count"
+                                },
+                                "properties": [
+                                    {
+                                        "id": "custom.axisLabel",
+                                        "value": "Cycle Count"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    "transformations": [],
+                    "options": {
+                        "mapping": "auto",
+                        "series": [
+                            {
+                                "x": {
+                                    "matcher": {
+                                        "id": "byName",
+                                        "options": "time"
+                                    }
+                                },
+                                "y": {
+                                    "matcher": {
+                                        "id": "byName",
+                                        "options": "cycle_count"
+                                    }
+                                },
+                                "size": {
+                                    "matcher": {
+                                        "id": "byName",
+                                        "options": "module_count"
+                                    }
+                                }
+                            }
+                        ],
+                        "tooltip": {
+                            "mode": "all",
+                            "sort": "none",
+                            "hideZeros": False
+                        },
+                        "legend": {
+                            "showLegend": True,
+                            "displayMode": "list",
+                            "placement": "bottom",
+                            "calcs": []
+                        }
+                    },
+                    "pluginVersion": "12.0.0",
+                    "type": "xychart",
+                    "targets": [
+                        {
+                            "datasource": {
+                                "type": "grafana-postgresql-datasource",
+                                "uid": self.datasource_uid
+                            },
+                            "editorMode": "code",
+                            "format": "table",
+                            "rawQuery": True,
+                            "rawSql": f"""SELECT
+  to_timestamp(t.batch_name, 'YYYYMMDD-HH24MISS') AS "time",
+  cycle_count,
+  cardinality(module_names) AS module_count
+FROM mmts_batch_logging t
+WHERE
+  ('${{module_name}}' = '' OR EXISTS (
+    SELECT 1
+    FROM unnest(t.module_names) AS elem
+    WHERE elem ILIKE '%' || '${{module_name}}' || '%'
+  ))
+  AND ('${{batch_name}}' = '' OR t.batch_name ILIKE '%' || '${{batch_name}}' || '%')
+ORDER BY 1;""",
+                            "refId": "A",
+                            "hidden": False,
+                            "sql": {
+                                "columns": [
+                                    {
+                                        "parameters": [],
+                                        "type": "function"
+                                    }
+                                ],
+                                "groupBy": [
+                                    {
+                                        "property": {
+                                            "type": "string"
+                                        },
+                                        "type": "groupBy"
+                                    }
+                                ],
+                                "limit": 50
+                            }
+                        }
+                    ]
+                },
+                {
+                    "datasource": {
+                        "type": "grafana-postgresql-datasource",
+                        "uid": self.datasource_uid
+                    },
+                    "id": 2,
                     "title": "Batches",
                     "description": "",
                     "links": [],
@@ -42,7 +196,7 @@ class MMTSBatchLoggingBuilder:
                         "h": 15,
                         "w": 24,
                         "x": 0,
-                        "y": 0
+                        "y": 9
                     },
                     "fieldConfig": {
                         "defaults": {
@@ -116,6 +270,25 @@ class MMTSBatchLoggingBuilder:
                                         }
                                     }
                                 ]
+                            },
+                            {
+                                "matcher": {
+                                    "id": "byName",
+                                    "options": "station_names"
+                                },
+                                "properties": [
+                                    {
+                                        "id": "custom.width",
+                                        "value": 300
+                                    },
+                                    {
+                                        "id": "custom.cellOptions",
+                                        "value": {
+                                            "type": "auto",
+                                            "wrapText": True
+                                        }
+                                    }
+                                ]
                             }
                         ]
                     },
@@ -148,8 +321,8 @@ class MMTSBatchLoggingBuilder:
   status_dry_air_pressure,
   status_alcohol_content,
   status_chiller_alarm,
-  module_names,
-  station_names,
+  array_to_string(module_names, ', ') AS module_names,
+  array_to_string(station_names, ', ') AS station_names,
   other_electrical_startup_tests,
   log_timestamp AT TIME ZONE '{self.timezone}' AS log_timestamp,
   timestamp_utc
