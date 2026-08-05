@@ -188,6 +188,10 @@ WHERE
     WHERE elem ILIKE '%' || '${{module_name}}' || '%'
   ))
   AND ('${{batch_name}}' = '' OR t.batch_name ILIKE '%' || '${{batch_name}}' || '%')
+UNION ALL
+SELECT $__timeFrom() AS "time", NULL, NULL, NULL
+UNION ALL
+SELECT $__timeTo() AS "time", NULL, NULL, NULL
 ORDER BY 1;""",
                             "refId": "A",
                             "hidden": False,
