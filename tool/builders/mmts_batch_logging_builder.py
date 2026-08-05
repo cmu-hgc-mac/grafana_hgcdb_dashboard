@@ -126,7 +126,7 @@ class MMTSBatchLoggingBuilder:
                     },
                     "transformations": [],
                     "options": {
-                        "mapping": "auto",
+                        "mapping": "manual",
                         "series": [
                             {
                                 "x": {
