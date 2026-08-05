@@ -613,7 +613,7 @@ ORDER BY 1;""",
                 "list": []
             },
             "time": {
-                "from": "now-24h",
+                "from": "now-7d",
                 "to": "now"
             },
             "timepicker": {},
