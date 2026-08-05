@@ -113,6 +113,14 @@ class MMTSBatchLoggingBuilder:
                                             "viz": False,
                                             "legend": True
                                         }
+                                    },
+                                    {
+                                        "id": "min",
+                                        "value": 1
+                                    },
+                                    {
+                                        "id": "max",
+                                        "value": 8
                                     }
                                 ]
                             }
