@@ -77,7 +77,7 @@ class MMTSBatchLoggingBuilder:
                             {
                                 "matcher": {
                                     "id": "byName",
-                                    "options": "batch_time"
+                                    "options": "time"
                                 },
                                 "properties": [
                                     {
@@ -97,54 +97,18 @@ class MMTSBatchLoggingBuilder:
                                         "value": "Cycle Count"
                                     }
                                 ]
-                            },
-                            {
-                                "matcher": {
-                                    "id": "byName",
-                                    "options": "module_count_sqrt"
-                                },
-                                "properties": [
-                                    {
-                                        "id": "custom.pointSize",
-                                        "value": {
-                                            "fixed": 5,
-                                            "min": 4,
-                                            "max": 30
-                                        }
-                                    },
-                                    {
-                                        "id": "custom.hideFrom",
-                                        "value": {
-                                            "tooltip": True,
-                                            "viz": False,
-                                            "legend": True
-                                        }
-                                    }
-                                ]
-                            },
-                            {
-                                "matcher": {
-                                    "id": "byName",
-                                    "options": "module_count"
-                                },
-                                "properties": [
-                                    {
-                                        "id": "displayName",
-                                        "value": "Module Count"
-                                    }
-                                ]
                             }
                         ]
                     },
                     "transformations": [],
                     "options": {
-                        "mapping": "manual",
+                        "mapping": "auto",
                         "series": [
                             {
                                 "x": {
                                     "matcher": {
                                         "id": "byName",
-                                        "options": "batch_time"
+                                        "options": "time"
                                     }
                                 },
                                 "y": {
@@ -156,7 +120,7 @@ class MMTSBatchLoggingBuilder:
                                 "size": {
                                     "matcher": {
                                         "id": "byName",
-                                        "options": "module_count_sqrt"
+                                        "options": "module_count"
                                     }
                                 }
                             }
@@ -185,10 +149,9 @@ class MMTSBatchLoggingBuilder:
                             "format": "table",
                             "rawQuery": True,
                             "rawSql": f"""SELECT
-  to_timestamp(t.batch_name, 'YYYYMMDD-HH24MISS') AS batch_time,
+  to_timestamp(t.batch_name, 'YYYYMMDD-HH24MISS') AS "time",
   cycle_count,
-  cardinality(module_names) AS module_count,
-  sqrt(cardinality(module_names)) AS module_count_sqrt
+  cardinality(module_names) AS module_count
 FROM mmts_batch_logging t
 WHERE
   ('${{module_name}}' = '' OR EXISTS (
@@ -371,7 +334,7 @@ WHERE
     WHERE elem ILIKE '%' || '${{module_name}}' || '%'
   ))
   AND ('${{batch_name}}' = '' OR t.batch_name ILIKE '%' || '${{batch_name}}' || '%')
-ORDER BY batch_name DESC;""",
+ORDER BY batch_name;""",
                             "refId": "A",
                             "hidden": False,
                             "sql": {
