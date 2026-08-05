@@ -174,20 +174,28 @@ class MMTSBatchLoggingBuilder:
                             "editorMode": "code",
                             "format": "table",
                             "rawQuery": True,
-                            "rawSql": f"""SELECT
-  to_timestamp(t.batch_name, 'YYYYMMDD-HH24MISS') AS "time",
+                            "rawSql": f"""WITH filtered AS (
+  SELECT
+    to_timestamp(t.batch_name, 'YYYYMMDD-HH24MISS') AS "time",
+    cycle_count,
+    cardinality(module_names) AS module_count,
+    sqrt(cardinality(module_names)) AS module_size
+  FROM mmts_batch_logging t
+  WHERE
+    $__timeFilter(t.log_timestamp)
+    AND ('${{module_name}}' = '' OR EXISTS (
+      SELECT 1
+      FROM unnest(t.module_names) AS elem
+      WHERE elem ILIKE '%' || '${{module_name}}' || '%'
+    ))
+    AND ('${{batch_name}}' = '' OR t.batch_name ILIKE '%' || '${{batch_name}}' || '%')
+)
+SELECT
+  "time",
   cycle_count,
-  cardinality(module_names) AS module_count,
-  sqrt(cardinality(module_names)) AS module_size
-FROM mmts_batch_logging t
-WHERE
-  $__timeFilter(t.log_timestamp)
-  AND ('${{module_name}}' = '' OR EXISTS (
-    SELECT 1
-    FROM unnest(t.module_names) AS elem
-    WHERE elem ILIKE '%' || '${{module_name}}' || '%'
-  ))
-  AND ('${{batch_name}}' = '' OR t.batch_name ILIKE '%' || '${{batch_name}}' || '%')
+  module_count,
+  CASE WHEN (SELECT COUNT(*) FROM filtered) = 1 THEN 30 ELSE module_size END AS module_size
+FROM filtered
 UNION ALL
 SELECT $__timeFrom() AS "time", NULL, NULL, NULL
 UNION ALL
