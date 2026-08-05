@@ -111,6 +111,26 @@ class MMTSBatchLoggingBuilder:
                                             "min": 4,
                                             "max": 30
                                         }
+                                    },
+                                    {
+                                        "id": "custom.hideFrom",
+                                        "value": {
+                                            "tooltip": True,
+                                            "viz": False,
+                                            "legend": True
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "matcher": {
+                                    "id": "byName",
+                                    "options": "module_count"
+                                },
+                                "properties": [
+                                    {
+                                        "id": "displayName",
+                                        "value": "Module Count"
                                     }
                                 ]
                             }
@@ -118,7 +138,7 @@ class MMTSBatchLoggingBuilder:
                     },
                     "transformations": [],
                     "options": {
-                        "mapping": "auto",
+                        "mapping": "manual",
                         "series": [
                             {
                                 "x": {
