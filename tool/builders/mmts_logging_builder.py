@@ -604,6 +604,174 @@ ORDER BY 1;""",
                             }
                         }
                     ]
+                },
+                {
+                    "datasource": {
+                        "type": "grafana-postgresql-datasource",
+                        "uid": self.datasource_uid
+                    },
+                    "id": 4,
+                    "title": "Cycle Count by Batch",
+                    "description": "",
+                    "links": [],
+                    "gridPos": {
+                        "h": 9,
+                        "w": 24,
+                        "x": 0,
+                        "y": 27
+                    },
+                    "fieldConfig": {
+                        "defaults": {
+                            "custom": {
+                                "show": "points",
+                                "pointSize": {
+                                    "fixed": 5,
+                                    "min": 16,
+                                    "max": 60
+                                },
+                                "pointShape": "circle",
+                                "pointStrokeWidth": 1,
+                                "fillOpacity": 50,
+                                "axisPlacement": "auto",
+                                "axisLabel": "",
+                                "axisColorMode": "text",
+                                "axisBorderShow": False,
+                                "scaleDistribution": {
+                                    "type": "linear"
+                                },
+                                "axisCenteredZero": False,
+                                "hideFrom": {
+                                    "tooltip": False,
+                                    "viz": False,
+                                    "legend": False
+                                }
+                            },
+                            "color": {
+                                "mode": "palette-classic"
+                            },
+                            "mappings": []
+                        },
+                        "overrides": [
+                            {
+                                "matcher": {
+                                    "id": "byName",
+                                    "options": "time"
+                                },
+                                "properties": [
+                                    {
+                                        "id": "custom.axisLabel",
+                                        "value": "Batch Time"
+                                    }
+                                ]
+                            },
+                            {
+                                "matcher": {
+                                    "id": "byName",
+                                    "options": "cycle_count"
+                                },
+                                "properties": [
+                                    {
+                                        "id": "custom.axisLabel",
+                                        "value": "Cycle Count"
+                                    }
+                                ]
+                            },
+                            {
+                                "matcher": {
+                                    "id": "byName",
+                                    "options": "module_size"
+                                },
+                                "properties": [
+                                    {
+                                        "id": "custom.hideFrom",
+                                        "value": {
+                                            "tooltip": True,
+                                            "viz": False,
+                                            "legend": True
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    "transformations": [],
+                    "options": {
+                        "mapping": "auto",
+                        "series": [
+                            {
+                                "x": {
+                                    "matcher": {
+                                        "id": "byName",
+                                        "options": "time"
+                                    }
+                                },
+                                "y": {
+                                    "matcher": {
+                                        "id": "byName",
+                                        "options": "cycle_count"
+                                    }
+                                },
+                                "size": {
+                                    "matcher": {
+                                        "id": "byName",
+                                        "options": "module_size"
+                                    }
+                                }
+                            }
+                        ],
+                        "tooltip": {
+                            "mode": "all",
+                            "sort": "none",
+                            "hideZeros": False
+                        },
+                        "legend": {
+                            "showLegend": True,
+                            "displayMode": "list",
+                            "placement": "bottom",
+                            "calcs": []
+                        }
+                    },
+                    "pluginVersion": "12.0.0",
+                    "type": "xychart",
+                    "targets": [
+                        {
+                            "datasource": {
+                                "type": "grafana-postgresql-datasource",
+                                "uid": self.datasource_uid
+                            },
+                            "editorMode": "code",
+                            "format": "table",
+                            "rawQuery": True,
+                            "rawSql": f"""SELECT
+  to_timestamp(t.batch_name, 'YYYYMMDD-HH24MISS') AS "time",
+  cycle_count,
+  cardinality(module_names) AS module_count,
+  sqrt(cardinality(module_names)) AS module_size
+FROM mmts_batch_logging t
+WHERE
+  $__timeFilter(t.log_timestamp)
+ORDER BY 1;""",
+                            "refId": "A",
+                            "hidden": False,
+                            "sql": {
+                                "columns": [
+                                    {
+                                        "parameters": [],
+                                        "type": "function"
+                                    }
+                                ],
+                                "groupBy": [
+                                    {
+                                        "property": {
+                                            "type": "string"
+                                        },
+                                        "type": "groupBy"
+                                    }
+                                ],
+                                "limit": 50
+                            }
+                        }
+                    ]
                 }
             ],
             "refresh": "5m",
