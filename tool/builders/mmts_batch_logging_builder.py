@@ -367,7 +367,7 @@ WHERE
     WHERE elem ILIKE '%' || '${{module_name}}' || '%'
   ))
   AND ('${{batch_name}}' = '' OR t.batch_name ILIKE '%' || '${{batch_name}}' || '%')
-ORDER BY batch_name;""",
+ORDER BY batch_name DESC;""",
                             "refId": "A",
                             "hidden": False,
                             "sql": {
