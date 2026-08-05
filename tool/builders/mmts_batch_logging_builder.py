@@ -401,7 +401,7 @@ ORDER BY batch_name;""",
                 ]
             },
             "time": {
-                "from": "now-24h",
+                "from": "now-90d",
                 "to": "now"
             },
             "timepicker": {},
