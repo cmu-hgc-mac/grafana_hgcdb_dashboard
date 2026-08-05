@@ -689,6 +689,14 @@ ORDER BY 1;""",
                                             "viz": False,
                                             "legend": True
                                         }
+                                    },
+                                    {
+                                        "id": "min",
+                                        "value": 1
+                                    },
+                                    {
+                                        "id": "max",
+                                        "value": 8
                                     }
                                 ]
                             }
@@ -751,6 +759,10 @@ FROM mmts_batch_logging t
 WHERE
   $__timeFilter(t.log_timestamp)
   AND t.batch_name ~ '^[0-9]{{8}}-[0-9]{{6}}$'
+UNION ALL
+SELECT $__timeFrom() AS "time", NULL, NULL, NULL
+UNION ALL
+SELECT $__timeTo() AS "time", NULL, NULL, NULL
 ORDER BY 1;""",
                             "refId": "A",
                             "hidden": False,
