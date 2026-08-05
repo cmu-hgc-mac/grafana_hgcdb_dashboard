@@ -99,6 +99,22 @@ class MMTSBatchLoggingBuilder:
                                         "value": "Cycle Count"
                                     }
                                 ]
+                            },
+                            {
+                                "matcher": {
+                                    "id": "byName",
+                                    "options": "module_size"
+                                },
+                                "properties": [
+                                    {
+                                        "id": "custom.hideFrom",
+                                        "value": {
+                                            "tooltip": True,
+                                            "viz": False,
+                                            "legend": True
+                                        }
+                                    }
+                                ]
                             }
                         ]
                     },
@@ -122,7 +138,7 @@ class MMTSBatchLoggingBuilder:
                                 "size": {
                                     "matcher": {
                                         "id": "byName",
-                                        "options": "module_count"
+                                        "options": "module_size"
                                     }
                                 }
                             }
@@ -153,7 +169,8 @@ class MMTSBatchLoggingBuilder:
                             "rawSql": f"""SELECT
   to_timestamp(t.batch_name, 'YYYYMMDD-HH24MISS') AS "time",
   cycle_count,
-  sqrt(cardinality(module_names)) AS module_count
+  cardinality(module_names) AS module_count,
+  sqrt(cardinality(module_names)) AS module_size
 FROM mmts_batch_logging t
 WHERE
   $__timeFilter(t.log_timestamp)
