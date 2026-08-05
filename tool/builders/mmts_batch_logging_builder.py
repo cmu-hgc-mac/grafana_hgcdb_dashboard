@@ -50,8 +50,8 @@ class MMTSBatchLoggingBuilder:
                                 "show": "points",
                                 "pointSize": {
                                     "fixed": 5,
-                                    "min": 1,
-                                    "max": 24
+                                    "min": 8,
+                                    "max": 60
                                 },
                                 "pointShape": "circle",
                                 "pointStrokeWidth": 1,
@@ -153,7 +153,7 @@ class MMTSBatchLoggingBuilder:
                             "rawSql": f"""SELECT
   to_timestamp(t.batch_name, 'YYYYMMDD-HH24MISS') AS "time",
   cycle_count,
-  cardinality(module_names) AS module_count
+  sqrt(cardinality(module_names)) AS module_count
 FROM mmts_batch_logging t
 WHERE
   $__timeFilter(t.log_timestamp)
