@@ -101,7 +101,7 @@ class MMTSBatchLoggingBuilder:
                             {
                                 "matcher": {
                                     "id": "byName",
-                                    "options": "module_count"
+                                    "options": "module_count_sqrt"
                                 },
                                 "properties": [
                                     {
@@ -109,7 +109,7 @@ class MMTSBatchLoggingBuilder:
                                         "value": {
                                             "fixed": 5,
                                             "min": 4,
-                                            "max": 12
+                                            "max": 30
                                         }
                                     }
                                 ]
@@ -136,7 +136,7 @@ class MMTSBatchLoggingBuilder:
                                 "size": {
                                     "matcher": {
                                         "id": "byName",
-                                        "options": "module_count"
+                                        "options": "module_count_sqrt"
                                     }
                                 }
                             }
@@ -167,7 +167,8 @@ class MMTSBatchLoggingBuilder:
                             "rawSql": f"""SELECT
   to_timestamp(t.batch_name, 'YYYYMMDD-HH24MISS') AS "time",
   cycle_count,
-  cardinality(module_names) AS module_count
+  cardinality(module_names) AS module_count,
+  sqrt(cardinality(module_names)) AS module_count_sqrt
 FROM mmts_batch_logging t
 WHERE
   ('${{module_name}}' = '' OR EXISTS (
