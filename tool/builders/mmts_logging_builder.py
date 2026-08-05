@@ -750,6 +750,7 @@ ORDER BY 1;""",
 FROM mmts_batch_logging t
 WHERE
   $__timeFilter(t.log_timestamp)
+  AND t.batch_name ~ '^[0-9]{{8}}-[0-9]{{6}}$'
 ORDER BY 1;""",
                             "refId": "A",
                             "hidden": False,
