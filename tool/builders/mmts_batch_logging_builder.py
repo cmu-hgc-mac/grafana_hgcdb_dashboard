@@ -256,6 +256,18 @@ ORDER BY 1;""",
                             {
                                 "matcher": {
                                     "id": "byName",
+                                    "options": "modcount"
+                                },
+                                "properties": [
+                                    {
+                                        "id": "custom.width",
+                                        "value": 70
+                                    }
+                                ]
+                            },
+                            {
+                                "matcher": {
+                                    "id": "byName",
                                     "options": "description"
                                 },
                                 "properties": [
@@ -336,6 +348,7 @@ ORDER BY 1;""",
                             "rawSql": f"""SELECT
   batch_name,
   cycle_count,
+  cardinality(module_names) AS modcount,
   description,
   status_safety_alarm,
   status_dry_air_pressure,
