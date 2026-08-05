@@ -97,6 +97,22 @@ class MMTSBatchLoggingBuilder:
                                         "value": "Cycle Count"
                                     }
                                 ]
+                            },
+                            {
+                                "matcher": {
+                                    "id": "byName",
+                                    "options": "module_count"
+                                },
+                                "properties": [
+                                    {
+                                        "id": "custom.pointSize",
+                                        "value": {
+                                            "fixed": 5,
+                                            "min": 4,
+                                            "max": 12
+                                        }
+                                    }
+                                ]
                             }
                         ]
                     },
@@ -334,7 +350,7 @@ WHERE
     WHERE elem ILIKE '%' || '${{module_name}}' || '%'
   ))
   AND ('${{batch_name}}' = '' OR t.batch_name ILIKE '%' || '${{batch_name}}' || '%')
-ORDER BY batch_name;""",
+ORDER BY batch_name DESC;""",
                             "refId": "A",
                             "hidden": False,
                             "sql": {
