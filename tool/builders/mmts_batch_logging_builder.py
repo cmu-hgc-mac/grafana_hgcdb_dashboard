@@ -49,7 +49,9 @@ class MMTSBatchLoggingBuilder:
                             "custom": {
                                 "show": "points",
                                 "pointSize": {
-                                    "fixed": 5
+                                    "fixed": 5,
+                                    "min": 1,
+                                    "max": 24
                                 },
                                 "pointShape": "circle",
                                 "pointStrokeWidth": 1,
@@ -115,6 +117,12 @@ class MMTSBatchLoggingBuilder:
                                     "matcher": {
                                         "id": "byName",
                                         "options": "cycle_count"
+                                    }
+                                },
+                                "size": {
+                                    "matcher": {
+                                        "id": "byName",
+                                        "options": "module_count"
                                     }
                                 }
                             }
