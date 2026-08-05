@@ -77,7 +77,7 @@ class MMTSBatchLoggingBuilder:
                             {
                                 "matcher": {
                                     "id": "byName",
-                                    "options": "time"
+                                    "options": "batch_time"
                                 },
                                 "properties": [
                                     {
@@ -144,7 +144,7 @@ class MMTSBatchLoggingBuilder:
                                 "x": {
                                     "matcher": {
                                         "id": "byName",
-                                        "options": "time"
+                                        "options": "batch_time"
                                     }
                                 },
                                 "y": {
@@ -185,7 +185,7 @@ class MMTSBatchLoggingBuilder:
                             "format": "table",
                             "rawQuery": True,
                             "rawSql": f"""SELECT
-  to_timestamp(t.batch_name, 'YYYYMMDD-HH24MISS') AS "time",
+  to_timestamp(t.batch_name, 'YYYYMMDD-HH24MISS') AS batch_time,
   cycle_count,
   cardinality(module_names) AS module_count,
   sqrt(cardinality(module_names)) AS module_count_sqrt
