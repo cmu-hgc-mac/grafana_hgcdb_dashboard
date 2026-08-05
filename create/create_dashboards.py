@@ -28,6 +28,7 @@ module_assembly_builder = ModuleAssemblyBuilder(GF_DS_UID, TIME_ZONE)
 xml_success_builder = XMLSuccessBuilder(GF_DS_UID, TIME_ZONE)
 module_grades_builder = ModuleGradesBuilder(GF_DS_UID, TIME_ZONE)
 mmts_logging_builder = MMTSLoggingBuilder(GF_DS_UID, TIME_ZONE)
+mmts_batch_logging_builder = MMTSBatchLoggingBuilder(GF_DS_UID, TIME_ZONE)
 
 # Check if succeed:
 succeed = True      # assert every file generated successfully
@@ -124,6 +125,13 @@ for config in filelist:
 
         elif dashboard_title == "MMTS Environment Logging":
             dashboard_json = mmts_logging_builder.generate_dashboard_json()
+            # Export the dashboard json to a file
+            file_name = config.split(".")[0]
+            dashboard_builder.save_dashboard_json(dashboard, dashboard_json, file_name)
+            continue
+
+        elif dashboard_title == "MMTS Batch Logging":
+            dashboard_json = mmts_batch_logging_builder.generate_dashboard_json()
             # Export the dashboard json to a file
             file_name = config.split(".")[0]
             dashboard_builder.save_dashboard_json(dashboard, dashboard_json, file_name)

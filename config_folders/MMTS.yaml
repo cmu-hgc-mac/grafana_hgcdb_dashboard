@@ -4,3 +4,6 @@ dashboards:
 
   - title: "MMTS Environment Logging"
     panels: []
+
+  - title: "MMTS Batch Logging"
+    panels: []
