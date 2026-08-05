@@ -97,36 +97,12 @@ class MMTSBatchLoggingBuilder:
                                         "value": "Cycle Count"
                                     }
                                 ]
-                            },
-                            {
-                                "matcher": {
-                                    "id": "byName",
-                                    "options": "module_count_sqrt"
-                                },
-                                "properties": [
-                                    {
-                                        "id": "custom.pointSize",
-                                        "value": {
-                                            "fixed": 5,
-                                            "min": 4,
-                                            "max": 20
-                                        }
-                                    },
-                                    {
-                                        "id": "custom.hideFrom",
-                                        "value": {
-                                            "tooltip": True,
-                                            "viz": False,
-                                            "legend": True
-                                        }
-                                    }
-                                ]
                             }
                         ]
                     },
                     "transformations": [],
                     "options": {
-                        "mapping": "manual",
+                        "mapping": "auto",
                         "series": [
                             {
                                 "x": {
@@ -139,12 +115,6 @@ class MMTSBatchLoggingBuilder:
                                     "matcher": {
                                         "id": "byName",
                                         "options": "cycle_count"
-                                    }
-                                },
-                                "size": {
-                                    "matcher": {
-                                        "id": "byName",
-                                        "options": "module_count_sqrt"
                                     }
                                 }
                             }
@@ -175,8 +145,7 @@ class MMTSBatchLoggingBuilder:
                             "rawSql": f"""SELECT
   to_timestamp(t.batch_name, 'YYYYMMDD-HH24MISS') AS "time",
   cycle_count,
-  cardinality(module_names) AS module_count,
-  sqrt(cardinality(module_names)) AS module_count_sqrt
+  cardinality(module_names) AS module_count
 FROM mmts_batch_logging t
 WHERE
   $__timeFilter(t.log_timestamp)
