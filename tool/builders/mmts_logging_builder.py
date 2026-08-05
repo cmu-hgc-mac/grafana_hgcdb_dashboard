@@ -750,15 +750,23 @@ ORDER BY 1;""",
                             "editorMode": "code",
                             "format": "table",
                             "rawQuery": True,
-                            "rawSql": f"""SELECT
-  to_timestamp(t.batch_name, 'YYYYMMDD-HH24MISS') AS "time",
+                            "rawSql": f"""WITH filtered AS (
+  SELECT
+    to_timestamp(t.batch_name, 'YYYYMMDD-HH24MISS') AS "time",
+    cycle_count,
+    cardinality(module_names) AS module_count,
+    sqrt(cardinality(module_names)) AS module_size
+  FROM mmts_batch_logging t
+  WHERE
+    $__timeFilter(t.log_timestamp)
+    AND t.batch_name ~ '^[0-9]{{8}}-[0-9]{{6}}$'
+)
+SELECT
+  "time",
   cycle_count,
-  cardinality(module_names) AS module_count,
-  sqrt(cardinality(module_names)) AS module_size
-FROM mmts_batch_logging t
-WHERE
-  $__timeFilter(t.log_timestamp)
-  AND t.batch_name ~ '^[0-9]{{8}}-[0-9]{{6}}$'
+  module_count,
+  CASE WHEN (SELECT COUNT(*) FROM filtered) = 1 THEN 30 ELSE module_size END AS module_size
+FROM filtered
 UNION ALL
 SELECT $__timeFrom() AS "time", NULL, NULL, NULL
 UNION ALL
