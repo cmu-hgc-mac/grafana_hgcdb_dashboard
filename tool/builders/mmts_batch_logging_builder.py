@@ -154,7 +154,8 @@ class MMTSBatchLoggingBuilder:
   cardinality(module_names) AS module_count
 FROM mmts_batch_logging t
 WHERE
-  ('${{module_name}}' = '' OR EXISTS (
+  $__timeFilter(t.log_timestamp)
+  AND ('${{module_name}}' = '' OR EXISTS (
     SELECT 1
     FROM unnest(t.module_names) AS elem
     WHERE elem ILIKE '%' || '${{module_name}}' || '%'
