@@ -72,11 +72,12 @@ class PanelBuilder:
         """
         if chart_type == "xychart":
             filters = panel.get("filters", None)
+            contains_inputs = panel.get("contains_inputs", None)
             temp_condition = panel.get("temp_condition", None)
             rel_hum_condition = panel.get("rel_hum_condition", None)
             gridPos = panel.get("gridPos")
-            
-            return filters, temp_condition, rel_hum_condition, gridPos
+
+            return filters, contains_inputs, temp_condition, rel_hum_condition, gridPos
         
         else:
             title = panel.get("title")
@@ -185,8 +186,8 @@ class PanelBuilder:
 
             try:
                 if chart_type == "xychart":
-                    filters, temp_condition, rel_hum_condition, gridPos = self.get_info(panel, chart_type)    # get conditions for SQL
-                    raw_sql = self.IVCurveBuilder.IV_curve_panel_sql(filters, temp_condition, rel_hum_condition)    # generate SQL
+                    filters, contains_inputs, temp_condition, rel_hum_condition, gridPos = self.get_info(panel, chart_type)    # get conditions for SQL
+                    raw_sql = self.IVCurveBuilder.IV_curve_panel_sql(filters, temp_condition, rel_hum_condition, contains_inputs=contains_inputs)    # generate SQL
                     override = self.IVCurveBuilder.IV_curve_panel_override()   # generate override for xy axises
                     panel_json = self.IVCurveBuilder.generate_IV_curve_panel_new(title, raw_sql, override, gridPos)
 

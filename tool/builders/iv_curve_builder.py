@@ -29,12 +29,26 @@ class IVCurveBuilder:
 
         return module_where_arg, iv_where_arg
 
-    def IV_curve_panel_sql(self, filters: dict, temp_condition: str, rel_hum_condition: str, N_MODULE_SHOW="${N_MODULE_SHOW}") -> str:
+    def IV_curve_panel_contains_inputs(self, contains_inputs: dict) -> str:
+        """Build the ILIKE textbox WHERE clause for IV curve plot based on the given contains_inputs.
+        """
+        contains_inputs_clauses = []
+
+        if contains_inputs:
+            for inputs_table, elems in contains_inputs.items():
+                for elem in elems:
+                    arg = self.SQLgenerator._build_contains_input_argument(elem, "latest_iv_test")
+                    contains_inputs_clauses.append(arg)
+
+        return " AND ".join(contains_inputs_clauses)
+
+    def IV_curve_panel_sql(self, filters: dict, temp_condition: str, rel_hum_condition: str, N_MODULE_SHOW="${N_MODULE_SHOW}", contains_inputs: dict = None) -> str:
         """Generate the SQL command for IV curve plot based on temp_condition and rel_hum_condition.
            Core filtering logic: Andrew C. Roberts
         """
         # build the WHERE clause
         module_where_arg, iv_where_arg = self.IV_curve_panel_filter(filters)
+        contains_inputs_arg = self.IV_curve_panel_contains_inputs(contains_inputs)
 
         # generate the SQL command
         raw_sql = rf"""
@@ -66,6 +80,7 @@ class IVCurveBuilder:
         LEFT JOIN latest_qc_summary ON module_info.module_name = latest_qc_summary.module_name
         WHERE {module_where_arg}
             AND {iv_where_arg}
+            {"AND " + contains_inputs_arg if contains_inputs_arg else ""}
         ORDER BY module_info.module_no DESC
         LIMIT {N_MODULE_SHOW}
         ),

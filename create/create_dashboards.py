@@ -161,12 +161,18 @@ for config in filelist:
 
             elif chart_type == "xychart":
                 filters = panel["filters"]
+                contains_inputs = panel.get("contains_inputs", None)
                 # special case for IV curve
                 module_num_input = filter_builder.build_iv_curve_filters(exist_filter)
                 template_list.extend(module_num_input)
                 # regular filters
                 filter_json = filter_builder.build_template_list(filters, exist_filter)
                 template_list.extend(filter_json)
+                # textbox contains-inputs (e.g. batch_name, iteration, station_name)
+                if contains_inputs:
+                    input_builder = InputBuilder()
+                    input_json = input_builder.build_template_list(contains_inputs, exist_filter)
+                    template_list.extend(input_json)
             
         panels_array = panel_builder.generate_panels_json(dashboard_title, config_panels)
             
