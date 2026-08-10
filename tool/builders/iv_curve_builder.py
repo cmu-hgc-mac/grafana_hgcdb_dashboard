@@ -42,7 +42,7 @@ class IVCurveBuilder:
 
         return " AND ".join(contains_inputs_clauses)
 
-    def IV_curve_panel_sql(self, filters: dict, temp_condition: str, rel_hum_condition: str, N_MODULE_SHOW="${N_MODULE_SHOW}", contains_inputs: dict = None) -> str:
+    def IV_curve_panel_sql(self, filters: dict, temp_condition: str, rel_hum_condition: str, N_MODULE_SHOW="${N_MODULE_SHOW}", contains_inputs: dict = None, show_best_only="${show_best_only}") -> str:
         """Generate the SQL command for IV curve plot based on temp_condition and rel_hum_condition.
            Core filtering logic: Andrew C. Roberts
         """
@@ -94,7 +94,9 @@ class IVCurveBuilder:
         ),
 
         best_per_module AS (
-        SELECT DISTINCT ON (filtered_iv.module_name) *
+        SELECT DISTINCT ON (
+            CASE WHEN '{show_best_only}' = 'true' THEN filtered_iv.module_name::text ELSE filtered_iv.mod_ivtest_no::text END
+        ) *
         FROM filtered_iv
         WHERE $__timeFilter(filtered_iv.date_test)
             AND meas_v IS NOT NULL AND meas_i IS NOT NULL
@@ -104,12 +106,16 @@ class IVCurveBuilder:
             AND rel_hum ~ '^[-+]?[0-9]+(\.[0-9]+)?$'
             AND (status_desc = 'Completely Encapsulated' OR status_desc = 'Frontside Encapsulated' OR status_desc = 'Bolted')
             AND array_length(meas_v, 1) = array_length(meas_i, 1)
-        ORDER BY filtered_iv.module_name, i_last ASC
+        ORDER BY
+            CASE WHEN '{show_best_only}' = 'true' THEN filtered_iv.module_name::text ELSE filtered_iv.mod_ivtest_no::text END,
+            i_last ASC
         ),
 
         unnested AS (
         SELECT
             module_name,
+            mod_ivtest_no,
+            module_name || '_' || mod_ivtest_no::text AS curve_id,
             ABS(v) as v,
             i
         FROM best_per_module,
@@ -118,7 +124,7 @@ class IVCurveBuilder:
 
         SELECT *
         FROM unnested
-        ORDER BY module_name ASC;
+        ORDER BY module_name ASC, mod_ivtest_no ASC;
         """
 
         return raw_sql
@@ -230,7 +236,7 @@ class IVCurveBuilder:
             "id": "partitionByValues",
             "options": {
                 "fields": [
-                "module_name"
+                "curve_id"
                 ],
                 "keepFields": True
             }
