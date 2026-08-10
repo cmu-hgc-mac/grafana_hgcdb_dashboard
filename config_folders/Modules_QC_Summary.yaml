@@ -100,9 +100,8 @@ dashboards:
           condition:
           groupby: []
           filters: {"module_info": []}
-          contains_inputs: {"module_iv_test": ["batch_name", "iteration", "station_name"]}
           distinct:
-  
+
   - title: "Offset Plots"
     panels:
         - title: "Components Look-up Form"
