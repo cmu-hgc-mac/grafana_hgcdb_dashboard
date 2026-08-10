@@ -14,9 +14,21 @@ class HexmapPlotsBuilder:
         SELECT encode(adc_mean_hexmap, 'base64') AS hex_img
         FROM module_pedestal_plots
         WHERE module_name = '${module_name}'
-            AND ('All' = ANY(ARRAY[${status_desc}]) OR 
-            (module_pedestal_plots.status_desc IS NULL AND 'NULL' = ANY(ARRAY[${status_desc}])) OR 
+            AND ('All' = ANY(ARRAY[${status_desc}]) OR
+            (module_pedestal_plots.status_desc IS NULL AND 'NULL' = ANY(ARRAY[${status_desc}])) OR
             module_pedestal_plots.status_desc::text = ANY(ARRAY[${status_desc}]))
+            AND ('${batch_name}' = '' OR EXISTS (
+                SELECT 1 FROM module_iv_test
+                WHERE module_iv_test.module_name = module_pedestal_plots.module_name
+                    AND module_iv_test.batch_name ILIKE '%' || '${batch_name}' || '%'))
+            AND ('${iteration}' = '' OR EXISTS (
+                SELECT 1 FROM module_iv_test
+                WHERE module_iv_test.module_name = module_pedestal_plots.module_name
+                    AND module_iv_test.iteration ILIKE '%' || '${iteration}' || '%'))
+            AND ('${station_name}' = '' OR EXISTS (
+                SELECT 1 FROM module_iv_test
+                WHERE module_iv_test.module_name = module_pedestal_plots.module_name
+                    AND module_iv_test.station_name ILIKE '%' || '${station_name}' || '%'))
         ORDER BY mod_plottest_no DESC;
         """
 
@@ -24,9 +36,21 @@ class HexmapPlotsBuilder:
         SELECT encode(adc_std_hexmap, 'base64') AS hex_img
         FROM module_pedestal_plots
         WHERE module_name = '${module_name}'
-            AND ('All' = ANY(ARRAY[${status_desc}]) OR 
-            (module_pedestal_plots.status_desc IS NULL AND 'NULL' = ANY(ARRAY[${status_desc}])) OR 
+            AND ('All' = ANY(ARRAY[${status_desc}]) OR
+            (module_pedestal_plots.status_desc IS NULL AND 'NULL' = ANY(ARRAY[${status_desc}])) OR
             module_pedestal_plots.status_desc::text = ANY(ARRAY[${status_desc}]))
+            AND ('${batch_name}' = '' OR EXISTS (
+                SELECT 1 FROM module_iv_test
+                WHERE module_iv_test.module_name = module_pedestal_plots.module_name
+                    AND module_iv_test.batch_name ILIKE '%' || '${batch_name}' || '%'))
+            AND ('${iteration}' = '' OR EXISTS (
+                SELECT 1 FROM module_iv_test
+                WHERE module_iv_test.module_name = module_pedestal_plots.module_name
+                    AND module_iv_test.iteration ILIKE '%' || '${iteration}' || '%'))
+            AND ('${station_name}' = '' OR EXISTS (
+                SELECT 1 FROM module_iv_test
+                WHERE module_iv_test.module_name = module_pedestal_plots.module_name
+                    AND module_iv_test.station_name ILIKE '%' || '${station_name}' || '%'))
         ORDER BY mod_plottest_no DESC;
         """
 
@@ -121,6 +145,57 @@ class HexmapPlotsBuilder:
                     },
                     "label": "Serial Name",
                     "name": "module_name",
+                    "options": [
+                    {
+                        "selected": True,
+                        "text": "",
+                        "value": ""
+                    }
+                    ],
+                    "query": "",
+                    "type": "textbox"
+                },
+                {
+                    "current": {
+                    "text": "",
+                    "value": ""
+                    },
+                    "label": "batch_name",
+                    "name": "batch_name",
+                    "options": [
+                    {
+                        "selected": True,
+                        "text": "",
+                        "value": ""
+                    }
+                    ],
+                    "query": "",
+                    "type": "textbox"
+                },
+                {
+                    "current": {
+                    "text": "",
+                    "value": ""
+                    },
+                    "label": "iteration",
+                    "name": "iteration",
+                    "options": [
+                    {
+                        "selected": True,
+                        "text": "",
+                        "value": ""
+                    }
+                    ],
+                    "query": "",
+                    "type": "textbox"
+                },
+                {
+                    "current": {
+                    "text": "",
+                    "value": ""
+                    },
+                    "label": "station_name",
+                    "name": "station_name",
                     "options": [
                     {
                         "selected": True,
