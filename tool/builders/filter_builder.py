@@ -102,10 +102,29 @@ class FilterBuilder:
                 },
                 "options": [],
                 "refresh": 0
+                },
+                {
+                "name": "show_best_only",
+                "type": "custom",
+                "label": "Show Best IV Only",
+                "hide": 0,
+                "query": "true,false",
+                "current": {
+                    "text": "true",
+                    "value": "true"
+                },
+                "options": [
+                    {"text": "true", "value": "true", "selected": True},
+                    {"text": "false", "value": "false", "selected": False}
+                ],
+                "multi": False,
+                "includeAll": False,
+                "refresh": 0
                 }
             ]
             template_list.extend(temp_arg)
             exist_filter.add("N_MODULE_SHOW")
+            exist_filter.add("show_best_only")
 
         return template_list
 
