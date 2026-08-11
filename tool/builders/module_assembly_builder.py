@@ -44,6 +44,22 @@ class ModuleAssemblyBuilder:
                 WHERE (status = 7 OR status = 8)
                 AND ('${self.module_name}' = '' OR module_name ILIKE '%' || '${self.module_name}' || '%')
                 ORDER BY module_name, temp_c DESC
+                ),
+
+                temp_table_4 AS (
+                SELECT DISTINCT ON (module_name) module_name,
+                    (date_encap + time_encap) AT TIME ZONE '{self.timezone}' AS encap_ts_utc
+                FROM back_encap
+                WHERE date_encap IS NOT NULL AND time_encap IS NOT NULL
+                ORDER BY module_name, (date_encap + time_encap) DESC
+                ),
+
+                temp_table_5 AS (
+                SELECT DISTINCT ON (module_name) module_name,
+                    (date_encap + time_encap) AT TIME ZONE '{self.timezone}' AS encap_ts_utc
+                FROM front_encap
+                WHERE date_encap IS NOT NULL AND time_encap IS NOT NULL
+                ORDER BY module_name, (date_encap + time_encap) DESC
                 )
         SELECT
             ROW_NUMBER() OVER (ORDER BY temp_table_0.module_no DESC) AS no,
@@ -57,7 +73,12 @@ class ModuleAssemblyBuilder:
             temp_table_0.encap_front::text,
             temp_table_2.temp_c::text,
             temp_table_0.thermal_cycle_count::text,
-            temp_table_0.thermal_cycle_date::text,
+            CASE
+                WHEN GREATEST(temp_table_4.encap_ts_utc, temp_table_5.encap_ts_utc) IS NOT NULL
+                    AND (now() - GREATEST(temp_table_4.encap_ts_utc, temp_table_5.encap_ts_utc)) < INTERVAL '1440 MINUTE'
+                THEN 'WAIT'
+                ELSE temp_table_0.thermal_cycle_date::text
+            END AS thermal_cycle_date,
             temp_table_2.date_test::text AS test_iv,
             temp_table_3.date_test::text AS test_ped,
             temp_table_0.xml_upload_success::text AS xml_build_upload_success,
@@ -70,6 +91,8 @@ class ModuleAssemblyBuilder:
         LEFT JOIN temp_table_1 ON temp_table_0.module_name = temp_table_1.module_name
         LEFT JOIN temp_table_2 ON temp_table_0.module_name = temp_table_2.module_name
         LEFT JOIN temp_table_3 ON temp_table_0.module_name = temp_table_3.module_name
+        LEFT JOIN temp_table_4 ON temp_table_0.module_name = temp_table_4.module_name
+        LEFT JOIN temp_table_5 ON temp_table_0.module_name = temp_table_5.module_name
         WHERE 
                 ('All' = ANY(ARRAY[${self.bp_material}]) OR 
                 (temp_table_0.bp_material IS NULL AND 'NULL' = ANY(ARRAY[${self.bp_material}])) OR 
