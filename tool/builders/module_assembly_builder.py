@@ -60,6 +60,22 @@ class ModuleAssemblyBuilder:
                 FROM front_encap
                 WHERE date_encap IS NOT NULL AND time_encap IS NOT NULL
                 ORDER BY module_name, (date_encap + time_encap) DESC
+                ),
+
+                temp_table_6 AS (
+                SELECT DISTINCT ON (module_name) module_name,
+                    (date_bond + time_bond) AT TIME ZONE '{self.timezone}' AS bond_ts_utc
+                FROM back_wirebond
+                WHERE date_bond IS NOT NULL AND time_bond IS NOT NULL
+                ORDER BY module_name, (date_bond + time_bond) DESC
+                ),
+
+                temp_table_7 AS (
+                SELECT DISTINCT ON (module_name) module_name,
+                    (date_bond + time_bond) AT TIME ZONE '{self.timezone}' AS bond_ts_utc
+                FROM front_wirebond
+                WHERE date_bond IS NOT NULL AND time_bond IS NOT NULL
+                ORDER BY module_name, (date_bond + time_bond) DESC
                 )
         SELECT
             ROW_NUMBER() OVER (ORDER BY temp_table_0.module_no DESC) AS no,
@@ -74,8 +90,8 @@ class ModuleAssemblyBuilder:
             temp_table_2.temp_c::text,
             temp_table_0.thermal_cycle_count::text,
             CASE
-                WHEN GREATEST(temp_table_4.encap_ts_utc, temp_table_5.encap_ts_utc) IS NOT NULL
-                    AND (now() - GREATEST(temp_table_4.encap_ts_utc, temp_table_5.encap_ts_utc)) < INTERVAL '1440 MINUTE'
+                WHEN GREATEST(temp_table_4.encap_ts_utc, temp_table_5.encap_ts_utc, temp_table_6.bond_ts_utc, temp_table_7.bond_ts_utc) IS NOT NULL
+                    AND (now() - GREATEST(temp_table_4.encap_ts_utc, temp_table_5.encap_ts_utc, temp_table_6.bond_ts_utc, temp_table_7.bond_ts_utc)) < INTERVAL '1440 MINUTE'
                 THEN 'WAIT'
                 ELSE temp_table_0.thermal_cycle_date::text
             END AS thermal_cycle_date,
@@ -93,7 +109,9 @@ class ModuleAssemblyBuilder:
         LEFT JOIN temp_table_3 ON temp_table_0.module_name = temp_table_3.module_name
         LEFT JOIN temp_table_4 ON temp_table_0.module_name = temp_table_4.module_name
         LEFT JOIN temp_table_5 ON temp_table_0.module_name = temp_table_5.module_name
-        WHERE 
+        LEFT JOIN temp_table_6 ON temp_table_0.module_name = temp_table_6.module_name
+        LEFT JOIN temp_table_7 ON temp_table_0.module_name = temp_table_7.module_name
+        WHERE
                 ('All' = ANY(ARRAY[${self.bp_material}]) OR 
                 (temp_table_0.bp_material IS NULL AND 'NULL' = ANY(ARRAY[${self.bp_material}])) OR 
                 temp_table_0.bp_material::text = ANY(ARRAY[${self.bp_material}]))
@@ -630,6 +648,15 @@ class ModuleAssemblyBuilder:
                                 }
                                 },
                                 "type": "special"
+                            },
+                            {
+                                "options": {
+                                "WAIT": {
+                                    "color": "transparent",
+                                    "index": 1
+                                }
+                                },
+                                "type": "value"
                             }
                             ]
                         }
