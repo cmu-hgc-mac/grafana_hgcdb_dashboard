@@ -93,21 +93,15 @@ grade_order AS (
 deteriorated_modules AS (
     SELECT module_name FROM grade_order WHERE worst_grade_rank > best_grade_rank
 )
-filtered AS (
-    SELECT * FROM (
-        SELECT * FROM ranked WHERE '${self.show_latest_only}' = 'false'
-        UNION ALL
-        SELECT * FROM latest WHERE '${self.show_latest_only}' = 'true'
-    ) combined
-    WHERE ('${self.uninstallable_only}' = 'false'
-       OR combined.module_name IN (SELECT module_name FROM latest_uninstallable_modules))
-      AND ('${self.show_grade_changed_modules}' = 'false'
-       OR combined.module_name IN (SELECT module_name FROM deteriorated_modules))
-)
-SELECT
-    *,
-    (module_name IS DISTINCT FROM LAG(module_name) OVER (ORDER BY module_no DESC, mod_qc_no DESC)) AS is_group_start
-FROM filtered
+SELECT * FROM (
+    SELECT * FROM ranked WHERE '${self.show_latest_only}' = 'false'
+    UNION ALL
+    SELECT * FROM latest WHERE '${self.show_latest_only}' = 'true'
+) combined
+WHERE ('${self.uninstallable_only}' = 'false'
+   OR combined.module_name IN (SELECT module_name FROM latest_uninstallable_modules))
+  AND ('${self.show_grade_changed_modules}' = 'false'
+   OR combined.module_name IN (SELECT module_name FROM deteriorated_modules))
 ORDER BY module_no DESC, mod_qc_no DESC"""
 
     def _grade_color_override(self, column_name):
@@ -199,28 +193,6 @@ ORDER BY module_no DESC, mod_qc_no DESC"""
         overrides.append({
             "matcher": {"id": "byName", "options": "final_grade_def"},
             "properties": [{"id": "custom.width", "value": 483}]
-        })
-
-        # is_group_start: narrow indicator column marking the first row of each module_name block
-        overrides.append({
-            "matcher": {"id": "byName", "options": "is_group_start"},
-            "properties": [
-                {"id": "custom.width", "value": 20},
-                {"id": "displayName", "value": ""},
-                {"id": "custom.cellOptions", "value": {"type": "color-background"}},
-                {
-                    "id": "mappings",
-                    "value": [
-                        {
-                            "options": {
-                                "true":  {"color": "blue", "index": 0, "text": ""},
-                                "false": {"color": "transparent", "index": 1, "text": ""}
-                            },
-                            "type": "value"
-                        }
-                    ]
-                }
-            ]
         })
 
         # installation_status: narrow colored indicator column (green=installable, red=not)
@@ -383,19 +355,6 @@ ORDER BY module_no DESC, mod_qc_no DESC"""
                     },
                     "gridPos": {"h": 20, "w": 24, "x": 0, "y": 0},
                     "id": 1,
-                    "transformations": [
-                        {
-                            "id": "organize",
-                            "options": {
-                                "indexByName": {
-                                    "is_group_start": 0,
-                                    "module_no": 1,
-                                    "mod_qc_no": 2,
-                                    "module_name": 3
-                                }
-                            }
-                        }
-                    ],
                     "options": {
                         "cellHeight": "sm",
                         "footer": {
