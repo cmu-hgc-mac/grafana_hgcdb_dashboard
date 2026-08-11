@@ -124,7 +124,7 @@ class IVCurveBuilder:
 
         SELECT *
         FROM unnested
-        ORDER BY module_name ASC, mod_ivtest_no ASC;
+        ORDER BY module_name ASC, mod_ivtest_no ASC, v ASC;
         """
 
         return raw_sql
