@@ -38,7 +38,8 @@ SELECT
     module_qc_summary.proto_corner_colorgrades::text AS proto_corner_colorgrades,
     module_qc_summary.module_corner_colorgrades::text AS module_corner_colorgrades,
     module_qc_summary.comments_all::text,
-    module_qc_summary.grade_timestamp::text
+    module_qc_summary.grade_timestamp::text,
+    module_qc_summary.final_grade_def::text
 FROM module_qc_summary
 JOIN module_info ON module_qc_summary.module_name = module_info.module_name
 WHERE
@@ -158,6 +159,7 @@ ORDER BY module_no DESC, mod_qc_no DESC"""
             "proto_corner_colorgrades": "Proto Corner Colorgrades",
             "module_corner_colorgrades": "Module Corner Colorgrades",
             "comments_all": "Comments",
+            "final_grade_def": "Final Grade Definition",
         }
 
         colorgrade_columns = [
