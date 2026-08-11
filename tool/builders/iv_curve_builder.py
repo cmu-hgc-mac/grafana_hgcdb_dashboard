@@ -29,7 +29,7 @@ class IVCurveBuilder:
 
         return module_where_arg, iv_where_arg
 
-    def IV_curve_panel_contains_inputs(self, contains_inputs: dict) -> str:
+    def IV_curve_panel_contains_inputs(self, contains_inputs: dict, table_alias: str = "latest_iv_test") -> str:
         """Build the ILIKE textbox WHERE clause for IV curve plot based on the given contains_inputs.
         """
         contains_inputs_clauses = []
@@ -37,7 +37,7 @@ class IVCurveBuilder:
         if contains_inputs:
             for inputs_table, elems in contains_inputs.items():
                 for elem in elems:
-                    arg = self.SQLgenerator._build_contains_input_argument(elem, "latest_iv_test")
+                    arg = self.SQLgenerator._build_contains_input_argument(elem, table_alias)
                     contains_inputs_clauses.append(arg)
 
         return " AND ".join(contains_inputs_clauses)
@@ -48,7 +48,8 @@ class IVCurveBuilder:
         """
         # build the WHERE clause
         module_where_arg, iv_where_arg = self.IV_curve_panel_filter(filters)
-        contains_inputs_arg = self.IV_curve_panel_contains_inputs(contains_inputs)
+        contains_inputs_arg = self.IV_curve_panel_contains_inputs(contains_inputs, "latest_iv_test")
+        filtered_iv_contains_inputs_arg = self.IV_curve_panel_contains_inputs(contains_inputs, "filtered_iv")
 
         # generate the SQL command
         raw_sql = rf"""
@@ -88,9 +89,10 @@ class IVCurveBuilder:
         filtered_iv AS (
         SELECT *,
             meas_i[array_length(meas_i, 1)] AS i_last
-        FROM module_iv_test
+        FROM module_iv_test AS filtered_iv
         WHERE
             module_name IN (SELECT module_name FROM selected_modules)
+            {"AND " + filtered_iv_contains_inputs_arg if filtered_iv_contains_inputs_arg else ""}
         ),
 
         best_per_module AS (
