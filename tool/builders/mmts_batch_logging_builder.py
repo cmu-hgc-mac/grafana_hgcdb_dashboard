@@ -189,17 +189,19 @@ class MMTSBatchLoggingBuilder:
       WHERE elem ILIKE '%' || '${{module_name}}' || '%'
     ))
     AND ('${{batch_name}}' = '' OR t.batch_name ILIKE '%' || '${{batch_name}}' || '%')
+),
+single_point AS (
+  SELECT (SELECT COUNT(*) FROM filtered) = 1 AS is_single
 )
-SELECT
-  "time",
-  cycle_count,
-  module_count,
-  CASE WHEN (SELECT COUNT(*) FROM filtered) = 1 THEN 30 ELSE module_size END AS module_size
+SELECT "time", cycle_count, module_count, module_size
 FROM filtered
 UNION ALL
 SELECT $__timeFrom() AS "time", NULL, NULL, NULL
 UNION ALL
 SELECT $__timeTo() AS "time", NULL, NULL, NULL
+UNION ALL
+SELECT NULL, NULL, NULL, 0
+FROM single_point WHERE is_single
 ORDER BY 1;""",
                             "refId": "A",
                             "hidden": False,
