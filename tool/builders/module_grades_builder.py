@@ -205,8 +205,8 @@ ORDER BY module_no DESC, mod_qc_no DESC"""
         overrides.append({
             "matcher": {"id": "byName", "options": "is_group_start"},
             "properties": [
-                {"id": "custom.width", "value": 4},
-                {"id": "displayName", "value": ""},
+                {"id": "custom.width", "value": 0.4},
+                {"id": "displayName", "value": " "},
                 {"id": "custom.cellOptions", "value": {"type": "color-background"}},
                 {
                     "id": "mappings",
