@@ -205,7 +205,7 @@ ORDER BY module_no DESC, mod_qc_no DESC"""
         overrides.append({
             "matcher": {"id": "byName", "options": "is_group_start"},
             "properties": [
-                {"id": "custom.width", "value": 20},
+                {"id": "custom.width", "value": 4},
                 {"id": "displayName", "value": ""},
                 {"id": "custom.cellOptions", "value": {"type": "color-background"}},
                 {
@@ -388,9 +388,9 @@ ORDER BY module_no DESC, mod_qc_no DESC"""
                             "id": "organize",
                             "options": {
                                 "indexByName": {
-                                    "is_group_start": 0,
-                                    "module_no": 1,
-                                    "mod_qc_no": 2,
+                                    "module_no": 0,
+                                    "mod_qc_no": 1,
+                                    "is_group_start": 2,
                                     "module_name": 3
                                 }
                             }
