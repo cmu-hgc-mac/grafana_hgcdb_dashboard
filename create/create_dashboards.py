@@ -6,7 +6,7 @@ import yaml
 
 from tool.helper import *
 from tool import DashboardValidator
-from tool import PanelBuilder, FilterBuilder, InputBuilder, DashboardBuilder, ComponentsLookUpFormBuilder, HexmapPlotsBuilder, OffsetPlotsBuilder, GeneralInfoBuilder, ModuleAssemblyBuilder, XMLSuccessBuilder, ModuleGradesBuilder, MMTSLoggingBuilder, MMTSBatchLoggingBuilder
+from tool import PanelBuilder, FilterBuilder, InputBuilder, DashboardBuilder, ComponentsLookUpFormBuilder, HexmapPlotsBuilder, OffsetPlotsBuilder, GeneralInfoBuilder, ModuleAssemblyBuilder, XMLSuccessBuilder, ModuleGradesBuilder, MMTSLoggingBuilder, MMTSBatchLoggingBuilder, AllDataBuilder
 
 """
 This script generates all the dashboards json_file, saves them to a folder under `grafana_hgcdb_dashboard`, and uploads them to grafana.
@@ -29,6 +29,7 @@ xml_success_builder = XMLSuccessBuilder(GF_DS_UID, TIME_ZONE)
 module_grades_builder = ModuleGradesBuilder(GF_DS_UID, TIME_ZONE)
 mmts_logging_builder = MMTSLoggingBuilder(GF_DS_UID, TIME_ZONE)
 mmts_batch_logging_builder = MMTSBatchLoggingBuilder(GF_DS_UID, TIME_ZONE)
+all_data_builder = AllDataBuilder(GF_DS_UID)
 
 # Check if succeed:
 succeed = True      # assert every file generated successfully
@@ -132,6 +133,13 @@ for config in filelist:
 
         elif dashboard_title == "MMTS Batch Logging":
             dashboard_json = mmts_batch_logging_builder.generate_dashboard_json()
+            # Export the dashboard json to a file
+            file_name = config.split(".")[0]
+            dashboard_builder.save_dashboard_json(dashboard, dashboard_json, file_name)
+            continue
+
+        elif dashboard_title == "All Data":
+            dashboard_json = all_data_builder.generate_dashboard_json()
             # Export the dashboard json to a file
             file_name = config.split(".")[0]
             dashboard_builder.save_dashboard_json(dashboard, dashboard_json, file_name)
