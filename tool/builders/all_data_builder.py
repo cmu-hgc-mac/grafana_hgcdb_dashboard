@@ -4,8 +4,8 @@ from tool.helper import *
 
 """
 This file defines the class for building the "All Data" dashboard in Grafana.
-    - A single table panel with a dropdown to pick any table (from tool/postgres_tables)
-      and view/search/sort its raw contents.
+    - A single table panel driven by a custom SQL query textbox, letting the
+      user type any query and view/search/sort the result.
 """
 
 class AllDataBuilder:
@@ -27,14 +27,9 @@ class AllDataBuilder:
         """Generate the dashboard JSON for the "All Data" table viewer.
         """
         table_names = self.get_table_names()
-        default_table = table_names[0] if table_names else ""
+        default_table = "module_info" if "module_info" in table_names else (table_names[0] if table_names else "")
 
-        table_options = [
-            {"selected": table_name == default_table, "text": table_name, "value": table_name}
-            for table_name in table_names
-        ]
-
-        default_query = f"SELECT * FROM {default_table} LIMIT 100" if default_table else ""
+        default_query = f"SELECT * FROM {default_table} ORDER BY module_no DESC LIMIT 500" if default_table else ""
 
         dashboard_json = {
             "annotations": {
@@ -123,94 +118,6 @@ class AllDataBuilder:
                             "editorMode": "code",
                             "format": "table",
                             "rawQuery": True,
-                            "rawSql": "SELECT * FROM ${table_name:raw}",
-                            "refId": "A",
-                            "sql": {
-                                "columns": [
-                                    {
-                                        "parameters": [],
-                                        "type": "function"
-                                    }
-                                ],
-                                "groupBy": [
-                                    {
-                                        "property": {
-                                            "type": "string"
-                                        },
-                                        "type": "groupBy"
-                                    }
-                                ],
-                                "limit": 50
-                            }
-                        }
-                    ],
-                    "title": "All Data",
-                    "type": "table"
-                },
-                {
-                    "datasource": {
-                        "type": "grafana-postgresql-datasource",
-                        "uid": f"{self.datasource_uid}"
-                    },
-                    "fieldConfig": {
-                        "defaults": {
-                            "color": {
-                                "mode": "thresholds"
-                            },
-                            "custom": {
-                                "align": "auto",
-                                "cellOptions": {
-                                    "type": "auto"
-                                },
-                                "filterable": True,
-                                "inspect": False
-                            },
-                            "mappings": [],
-                            "thresholds": {
-                                "mode": "absolute",
-                                "steps": [
-                                    {
-                                        "color": "green"
-                                    },
-                                    {
-                                        "color": "red",
-                                        "value": 80
-                                    }
-                                ]
-                            }
-                        },
-                        "overrides": []
-                    },
-                    "gridPos": {
-                        "h": 24,
-                        "w": 24,
-                        "x": 0,
-                        "y": 24
-                    },
-                    "id": 2,
-                    "options": {
-                        "cellHeight": "sm",
-                        "footer": {
-                            "countRows": False,
-                            "fields": "",
-                            "reducer": [
-                                "sum"
-                            ],
-                            "show": False
-                        },
-                        "showHeader": True,
-                        "sortBy": []
-                    },
-                    "pluginVersion": "12.0.1",
-                    "targets": [
-                        {
-                            "datasource": {
-                                "type": "grafana-postgresql-datasource",
-                                "uid": f"{self.datasource_uid}"
-                            },
-                            "editorMode": "code",
-                            "format": "table",
-                            "rawQuery": True,
                             "rawSql": "${custom_query:raw}",
                             "refId": "A",
                             "sql": {
@@ -241,22 +148,6 @@ class AllDataBuilder:
             "tags": [],
             "templating": {
                 "list": [
-                    {
-                        "current": {
-                            "text": default_table,
-                            "value": default_table
-                        },
-                        "hide": 0,
-                        "includeAll": False,
-                        "label": "Table",
-                        "multi": False,
-                        "name": "table_name",
-                        "options": table_options,
-                        "query": ",".join(table_names),
-                        "queryValue": "",
-                        "skipUrlSync": False,
-                        "type": "custom"
-                    },
                     {
                         "current": {
                             "text": default_query,
