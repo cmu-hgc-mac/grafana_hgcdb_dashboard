@@ -83,12 +83,12 @@ class FilterBuilder:
 
         return template_list
 
-    def build_iv_curve_filters(self, exist_filter: set, include_best_only: bool = True) -> list:
+    def build_iv_curve_filters(self, exist_filter: set, include_best_only: bool = True, include_module_show: bool = True) -> list:
         """Build all filters for IV curve plot.
         """
         template_list = []
 
-        if "N_MODULE_SHOW" not in exist_filter:
+        if include_module_show and "N_MODULE_SHOW" not in exist_filter:
             template_list.append({
                 "name": "N_MODULE_SHOW",
                 "type": "textbox",

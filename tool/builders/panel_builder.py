@@ -189,8 +189,8 @@ class PanelBuilder:
                 if chart_type == "xychart":
                     filters, contains_inputs, temp_condition, rel_hum_condition, gridPos, iteration_ilike = self.get_info(panel, chart_type)    # get conditions for SQL
                     if dashboard_title == "MMTS IV_Curve Plot":
-                        # no show_best_only filter on this page - always show all IV tests per module
-                        raw_sql = self.IVCurveBuilder.IV_curve_panel_sql(filters, temp_condition, rel_hum_condition, contains_inputs=contains_inputs, show_best_only="false", iteration_ilike=iteration_ilike)
+                        # simplified query: no N_MODULE_SHOW limit, no show_best_only dedup, page is scoped by batch_name
+                        raw_sql = self.IVCurveBuilder.MMTS_IV_curve_panel_sql(filters, temp_condition, rel_hum_condition, contains_inputs=contains_inputs, iteration_ilike=iteration_ilike)
                     else:
                         raw_sql = self.IVCurveBuilder.IV_curve_panel_sql(filters, temp_condition, rel_hum_condition, contains_inputs=contains_inputs)    # generate SQL
                     override = self.IVCurveBuilder.IV_curve_panel_override()   # generate override for xy axises
