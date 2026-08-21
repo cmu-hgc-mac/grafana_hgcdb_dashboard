@@ -83,14 +83,13 @@ class FilterBuilder:
 
         return template_list
 
-    def build_iv_curve_filters(self, exist_filter: set) -> list:
+    def build_iv_curve_filters(self, exist_filter: set, include_best_only: bool = True) -> list:
         """Build all filters for IV curve plot.
         """
         template_list = []
 
-        if not exist_filter:
-            temp_arg = [
-                        {
+        if "N_MODULE_SHOW" not in exist_filter:
+            template_list.append({
                 "name": "N_MODULE_SHOW",
                 "type": "textbox",
                 "label": "Number of Modules to Show",
@@ -102,8 +101,11 @@ class FilterBuilder:
                 },
                 "options": [],
                 "refresh": 0
-                },
-                {
+            })
+            exist_filter.add("N_MODULE_SHOW")
+
+        if include_best_only and "show_best_only" not in exist_filter:
+            template_list.append({
                 "name": "show_best_only",
                 "type": "custom",
                 "label": "Show Best IV Only",
@@ -120,10 +122,7 @@ class FilterBuilder:
                 "multi": False,
                 "includeAll": False,
                 "refresh": 0
-                }
-            ]
-            template_list.extend(temp_arg)
-            exist_filter.add("N_MODULE_SHOW")
+            })
             exist_filter.add("show_best_only")
 
         return template_list

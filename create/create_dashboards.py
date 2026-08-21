@@ -171,7 +171,8 @@ for config in filelist:
                 filters = panel["filters"]
                 contains_inputs = panel.get("contains_inputs", None)
                 # special case for IV curve
-                module_num_input = filter_builder.build_iv_curve_filters(exist_filter)
+                include_best_only = dashboard_title != "MMTS IV_Curve Plot"
+                module_num_input = filter_builder.build_iv_curve_filters(exist_filter, include_best_only=include_best_only)
                 template_list.extend(module_num_input)
                 # regular filters
                 filter_json = filter_builder.build_template_list(filters, exist_filter)

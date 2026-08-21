@@ -118,6 +118,7 @@ class IVCurveBuilder:
             module_name,
             mod_ivtest_no,
             module_name || '_' || mod_ivtest_no::text AS curve_id,
+            (date_test::text || ' ' || time_test::text)::timestamp AS test_timestamp,
             ABS(v) as v,
             i
         FROM best_per_module,
