@@ -104,7 +104,7 @@ class IVCurveBuilder:
         """
         # build the WHERE clause
         module_where_arg, iv_where_arg = self.IV_curve_panel_filter(filters)
-        contains_inputs_arg = self.IV_curve_panel_contains_inputs(contains_inputs, "latest_iv_test")
+        contains_inputs_arg = self.IV_curve_panel_contains_inputs(contains_inputs, "module_iv_test")
         filtered_iv_contains_inputs_arg = self.IV_curve_panel_contains_inputs(contains_inputs, "filtered_iv")
 
         # generate the SQL command
@@ -126,6 +126,7 @@ class IVCurveBuilder:
             AND rel_hum ~ '^[-+]?[0-9]+(\.[0-9]+)?$'
             AND (status_desc = 'Completely Encapsulated' OR status_desc = 'Frontside Encapsulated' OR status_desc = 'Bolted')
             AND array_length(meas_v, 1) = array_length(meas_i, 1)
+            {"AND " + contains_inputs_arg if contains_inputs_arg else ""}
             ORDER BY module_name, date_test DESC
         ),
 
@@ -137,7 +138,6 @@ class IVCurveBuilder:
         LEFT JOIN latest_qc_summary ON module_info.module_name = latest_qc_summary.module_name
         WHERE {module_where_arg}
             AND {iv_where_arg}
-            {"AND " + contains_inputs_arg if contains_inputs_arg else ""}
         ORDER BY module_info.module_no DESC
         LIMIT {N_MODULE_SHOW}
         ),
