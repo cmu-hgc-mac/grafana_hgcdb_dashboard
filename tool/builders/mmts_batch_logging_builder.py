@@ -274,7 +274,7 @@ ORDER BY 1;""",
                                         "value": [
                                             {
                                                 "title": "View MMTS IV Curve Plot",
-                                                "url": "/d/mmts-iv_curve-plot/mmts-iv-curve-plot?orgId=1&from=0&to=now&timezone=browser&var-N_MODULE_SHOW=1000&var-bp_material=$__all&var-resolution=$__all&var-roc_version=$__all&var-geometry=$__all&var-sen_thickness=$__all&var-iv_grade=$__all&refresh=5m&var-module_name=&var-batch_name=${__value.text}&var-station_name=",
+                                                "url": "/d/mmts-iv_curve-plot/mmts-iv-curve-plot?orgId=1&from=0&to=now&timezone=browser&var-bp_material=$__all&var-resolution=$__all&var-roc_version=$__all&var-geometry=$__all&var-sen_thickness=$__all&var-iv_grade=$__all&refresh=5m&var-module_name=&var-batch_name=${__value.text}&var-station_name=",
                                                 "targetBlank": True
                                             }
                                         ]
