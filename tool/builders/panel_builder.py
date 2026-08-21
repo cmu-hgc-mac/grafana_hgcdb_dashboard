@@ -76,8 +76,9 @@ class PanelBuilder:
             temp_condition = panel.get("temp_condition", None)
             rel_hum_condition = panel.get("rel_hum_condition", None)
             gridPos = panel.get("gridPos")
+            iteration_ilike = panel.get("iteration_ilike", None)
 
-            return filters, contains_inputs, temp_condition, rel_hum_condition, gridPos
+            return filters, contains_inputs, temp_condition, rel_hum_condition, gridPos, iteration_ilike
         
         else:
             title = panel.get("title")
@@ -186,10 +187,10 @@ class PanelBuilder:
 
             try:
                 if chart_type == "xychart":
-                    filters, contains_inputs, temp_condition, rel_hum_condition, gridPos = self.get_info(panel, chart_type)    # get conditions for SQL
+                    filters, contains_inputs, temp_condition, rel_hum_condition, gridPos, iteration_ilike = self.get_info(panel, chart_type)    # get conditions for SQL
                     if dashboard_title == "MMTS IV_Curve Plot":
                         # no show_best_only filter on this page - always show all IV tests per module
-                        raw_sql = self.IVCurveBuilder.IV_curve_panel_sql(filters, temp_condition, rel_hum_condition, contains_inputs=contains_inputs, show_best_only="false")
+                        raw_sql = self.IVCurveBuilder.IV_curve_panel_sql(filters, temp_condition, rel_hum_condition, contains_inputs=contains_inputs, show_best_only="false", iteration_ilike=iteration_ilike)
                     else:
                         raw_sql = self.IVCurveBuilder.IV_curve_panel_sql(filters, temp_condition, rel_hum_condition, contains_inputs=contains_inputs)    # generate SQL
                     override = self.IVCurveBuilder.IV_curve_panel_override()   # generate override for xy axises

@@ -42,7 +42,7 @@ class IVCurveBuilder:
 
         return " AND ".join(contains_inputs_clauses)
 
-    def IV_curve_panel_sql(self, filters: dict, temp_condition: str, rel_hum_condition: str, N_MODULE_SHOW="${N_MODULE_SHOW}", contains_inputs: dict = None, show_best_only="${show_best_only}") -> str:
+    def IV_curve_panel_sql(self, filters: dict, temp_condition: str, rel_hum_condition: str, N_MODULE_SHOW="${N_MODULE_SHOW}", contains_inputs: dict = None, show_best_only="${show_best_only}", iteration_ilike: str = None) -> str:
         """Generate the SQL command for IV curve plot based on temp_condition and rel_hum_condition.
            Core filtering logic: Andrew C. Roberts
         """
@@ -50,6 +50,10 @@ class IVCurveBuilder:
         module_where_arg, iv_where_arg = self.IV_curve_panel_filter(filters)
         contains_inputs_arg = self.IV_curve_panel_contains_inputs(contains_inputs, "latest_iv_test")
         filtered_iv_contains_inputs_arg = self.IV_curve_panel_contains_inputs(contains_inputs, "filtered_iv")
+
+        # fixed (non-Grafana-variable) iteration condition, e.g. panel hardcoded to a specific iteration
+        latest_iv_test_iteration_arg = f"AND latest_iv_test.iteration ILIKE '%{iteration_ilike}%'" if iteration_ilike else ""
+        filtered_iv_iteration_arg = f"AND filtered_iv.iteration ILIKE '%{iteration_ilike}%'" if iteration_ilike else ""
 
         # generate the SQL command
         raw_sql = rf"""
@@ -70,6 +74,7 @@ class IVCurveBuilder:
             AND rel_hum ~ '^[-+]?[0-9]+(\.[0-9]+)?$'
             AND (status_desc = 'Completely Encapsulated' OR status_desc = 'Frontside Encapsulated' OR status_desc = 'Bolted')
             AND array_length(meas_v, 1) = array_length(meas_i, 1)
+            {latest_iv_test_iteration_arg}
             ORDER BY module_name, date_test DESC
         ),
 
@@ -93,6 +98,7 @@ class IVCurveBuilder:
         WHERE
             module_name IN (SELECT module_name FROM selected_modules)
             {"AND " + filtered_iv_contains_inputs_arg if filtered_iv_contains_inputs_arg else ""}
+            {filtered_iv_iteration_arg}
         ),
 
         best_per_module AS (
