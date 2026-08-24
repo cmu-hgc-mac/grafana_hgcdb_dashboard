@@ -760,9 +760,6 @@ ORDER BY 1;""",
   WHERE
     $__timeFilter(t.log_timestamp)
     AND t.batch_name ~ '^[0-9]{{8}}-[0-9]{{6}}$'
-),
-single_point AS (
-  SELECT (SELECT COUNT(*) FROM filtered) = 1 AS is_single
 )
 SELECT "time", cycle_count, module_count, module_size
 FROM filtered
@@ -772,7 +769,6 @@ UNION ALL
 SELECT $__timeTo() AS "time", NULL, NULL, NULL
 UNION ALL
 SELECT NULL, NULL, NULL, 0
-FROM single_point WHERE is_single
 ORDER BY 1;""",
                             "refId": "A",
                             "hidden": False,
