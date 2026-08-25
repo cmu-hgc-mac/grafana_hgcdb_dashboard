@@ -8,6 +8,9 @@ dashboards:
   - title: "MMTS Batch Logging"
     panels: []
 
+  - title: "MMTS IV Grades by Position"
+    panels: []
+
   - title: "MMTS IV_Curve Plot"
     panels:
         - title: "Dry-Roomtemp (0-12% RH, 10-30°C) Module IV Curves [Log Scale] -- Iteration 1"
