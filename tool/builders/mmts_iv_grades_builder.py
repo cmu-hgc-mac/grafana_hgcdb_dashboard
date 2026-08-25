@@ -23,6 +23,18 @@ class MMTSIVGradesBuilder:
                      grade::text = ANY(ARRAY[${{grade}}]))
             GROUP BY station_name, grade
         ),
+        all_grade_counts AS (
+            SELECT
+                station_name,
+                COUNT(*) AS n_count
+            FROM module_iv_test
+            WHERE station_name ~ '^MMTS_[1-8][LCR]$'
+                AND status_desc ILIKE '%bolted%'
+                AND ('${{batch_name}}' = '' OR batch_name ILIKE '%' || '${{batch_name}}' || '%')
+                AND ('${{iteration}}' = '' OR iteration ILIKE '%' || '${{iteration}}' || '%')
+                AND grade IN ('A', 'B', 'C', 'F')
+            GROUP BY station_name
+        ),
         stacked AS (
             SELECT
                 station_name,
@@ -44,19 +56,31 @@ class MMTSIVGradesBuilder:
                 'MMTS_' || row_no::text || col AS station_name
             FROM generate_series(1, 8) AS row_no
             CROSS JOIN unnest(ARRAY['L', 'C', 'R']) AS col
+        ),
+        combined AS (
+            SELECT
+                positions.row_no,
+                positions.position,
+                CASE WHEN COALESCE(all_grade_counts.n_count, 0) > 0
+                    THEN 'N: ' || all_grade_counts.n_count::text || E'\\n' || COALESCE(stacked.grade_counts, '')
+                    ELSE ''
+                END AS cell_text,
+                stacked.dominant_grade
+            FROM positions
+            LEFT JOIN stacked ON stacked.station_name = positions.station_name
+            LEFT JOIN all_grade_counts ON all_grade_counts.station_name = positions.station_name
         )
         SELECT
-            positions.row_no AS "Row",
-            MAX(CASE WHEN positions.position = 'L' THEN COALESCE(stacked.grade_counts, '') END) AS "L",
-            MAX(CASE WHEN positions.position = 'C' THEN COALESCE(stacked.grade_counts, '') END) AS "C",
-            MAX(CASE WHEN positions.position = 'R' THEN COALESCE(stacked.grade_counts, '') END) AS "R",
-            MAX(CASE WHEN positions.position = 'L' THEN COALESCE(stacked.dominant_grade, '') END) AS "L_grade",
-            MAX(CASE WHEN positions.position = 'C' THEN COALESCE(stacked.dominant_grade, '') END) AS "C_grade",
-            MAX(CASE WHEN positions.position = 'R' THEN COALESCE(stacked.dominant_grade, '') END) AS "R_grade"
-        FROM positions
-        LEFT JOIN stacked ON stacked.station_name = positions.station_name
-        GROUP BY positions.row_no
-        ORDER BY positions.row_no;
+            combined.row_no AS "Row",
+            MAX(CASE WHEN combined.position = 'L' THEN cell_text END) AS "L",
+            MAX(CASE WHEN combined.position = 'C' THEN cell_text END) AS "C",
+            MAX(CASE WHEN combined.position = 'R' THEN cell_text END) AS "R",
+            MAX(CASE WHEN combined.position = 'L' THEN COALESCE(dominant_grade, '') END) AS "L_grade",
+            MAX(CASE WHEN combined.position = 'C' THEN COALESCE(dominant_grade, '') END) AS "C_grade",
+            MAX(CASE WHEN combined.position = 'R' THEN COALESCE(dominant_grade, '') END) AS "R_grade"
+        FROM combined
+        GROUP BY combined.row_no
+        ORDER BY combined.row_no;
         """
 
     def generate_dashboard_json(self):
@@ -81,19 +105,19 @@ class MMTSIVGradesBuilder:
                         "id": "mappings",
                         "value": [
                             {
-                                "options": {"pattern": "^A:.*", "result": {"color": "green"}},
+                                "options": {"pattern": "[\\s\\S]*\\nA:.*", "result": {"color": "green"}},
                                 "type": "regex"
                             },
                             {
-                                "options": {"pattern": "^B:.*", "result": {"color": "yellow"}},
+                                "options": {"pattern": "[\\s\\S]*\\nB:.*", "result": {"color": "yellow"}},
                                 "type": "regex"
                             },
                             {
-                                "options": {"pattern": "^C:.*", "result": {"color": "orange"}},
+                                "options": {"pattern": "[\\s\\S]*\\nC:.*", "result": {"color": "orange"}},
                                 "type": "regex"
                             },
                             {
-                                "options": {"pattern": "^F:.*", "result": {"color": "red"}},
+                                "options": {"pattern": "[\\s\\S]*\\nF:.*", "result": {"color": "red"}},
                                 "type": "regex"
                             },
                             {
@@ -162,7 +186,7 @@ class MMTSIVGradesBuilder:
                         },
                         "overrides": overrides
                     },
-                    "gridPos": {"h": 20, "w": 12, "x": 0, "y": 0},
+                    "gridPos": {"h": 32, "w": 12, "x": 0, "y": 0},
                     "id": 1,
                     "options": {
                         "cellHeight": "xl",
