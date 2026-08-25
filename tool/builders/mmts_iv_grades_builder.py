@@ -26,8 +26,9 @@ class MMTSIVGradesBuilder:
         stacked AS (
             SELECT
                 station_name,
-                STRING_AGG(
-                    COALESCE(grade, 'NULL') || ':' || grade_count::text || ' [' || module_names || ']',
+                'Total: ' || SUM(grade_count)::text || E'\\n' || STRING_AGG(
+                    COALESCE(grade, 'NULL') || ':' || grade_count::text ||
+                        CASE WHEN '${{show_module_names}}' = 'true' THEN ' [' || module_names || ']' ELSE '' END,
                     E'\\n'
                     ORDER BY CASE grade WHEN 'A' THEN 1 WHEN 'B' THEN 2 WHEN 'C' THEN 3 WHEN 'F' THEN 4 ELSE 5 END
                 ) AS grade_counts,
@@ -80,19 +81,19 @@ class MMTSIVGradesBuilder:
                         "id": "mappings",
                         "value": [
                             {
-                                "options": {"pattern": "^A:.*", "result": {"color": "green"}},
+                                "options": {"pattern": "(?s).*\\nA:.*", "result": {"color": "green"}},
                                 "type": "regex"
                             },
                             {
-                                "options": {"pattern": "^B:.*", "result": {"color": "yellow"}},
+                                "options": {"pattern": "(?s).*\\nB:.*", "result": {"color": "yellow"}},
                                 "type": "regex"
                             },
                             {
-                                "options": {"pattern": "^C:.*", "result": {"color": "orange"}},
+                                "options": {"pattern": "(?s).*\\nC:.*", "result": {"color": "orange"}},
                                 "type": "regex"
                             },
                             {
-                                "options": {"pattern": "^F:.*", "result": {"color": "red"}},
+                                "options": {"pattern": "(?s).*\\nF:.*", "result": {"color": "red"}},
                                 "type": "regex"
                             },
                             {
@@ -234,6 +235,17 @@ class MMTSIVGradesBuilder:
                             {"selected": False, "text": "NULL", "value": "NULL"}
                         ],
                         "query": "A,B,C,F,NULL",
+                        "type": "custom"
+                    },
+                    {
+                        "current": {"text": "false", "value": "false"},
+                        "label": "Show Module Names",
+                        "name": "show_module_names",
+                        "options": [
+                            {"selected": True, "text": "false", "value": "false"},
+                            {"selected": False, "text": "true", "value": "true"}
+                        ],
+                        "query": "false,true",
                         "type": "custom"
                     }
                 ]
