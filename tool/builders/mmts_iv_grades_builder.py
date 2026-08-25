@@ -11,19 +11,24 @@ class MMTSIVGradesBuilder:
             SELECT
                 station_name,
                 grade,
-                COUNT(*) AS grade_count
+                COUNT(*) AS grade_count,
+                STRING_AGG(module_name, ', ' ORDER BY module_name) AS module_names
             FROM module_iv_test
             WHERE station_name ~ '^MMTS_[1-8][LCR]$'
+                AND status_desc ILIKE '%bolted%'
                 AND ('${{batch_name}}' = '' OR batch_name ILIKE '%' || '${{batch_name}}' || '%')
                 AND ('${{iteration}}' = '' OR iteration ILIKE '%' || '${{iteration}}' || '%')
+                AND ('All' = ANY(ARRAY[${{grade}}]) OR
+                     (grade IS NULL AND 'NULL' = ANY(ARRAY[${{grade}}])) OR
+                     grade::text = ANY(ARRAY[${{grade}}]))
             GROUP BY station_name, grade
         ),
         stacked AS (
             SELECT
                 station_name,
                 STRING_AGG(
-                    COALESCE(grade, 'NULL') || ':' || grade_count::text,
-                    ' '
+                    COALESCE(grade, 'NULL') || ':' || grade_count::text || ' [' || module_names || ']',
+                    E'\\n'
                     ORDER BY CASE grade WHEN 'A' THEN 1 WHEN 'B' THEN 2 WHEN 'C' THEN 3 WHEN 'F' THEN 4 ELSE 5 END
                 ) AS grade_counts,
                 (ARRAY_AGG(grade ORDER BY grade_count DESC, grade))[1] AS dominant_grade,
@@ -98,11 +103,11 @@ class MMTSIVGradesBuilder:
                     },
                     {
                         "id": "custom.cellOptions",
-                        "value": {"type": "color-background"}
+                        "value": {"type": "color-background", "wrapText": True}
                     },
                     {
                         "id": "custom.width",
-                        "value": 220
+                        "value": 320
                     }
                 ]
             })
@@ -159,7 +164,7 @@ class MMTSIVGradesBuilder:
                     "gridPos": {"h": 20, "w": 12, "x": 0, "y": 0},
                     "id": 1,
                     "options": {
-                        "cellHeight": "lg",
+                        "cellHeight": "xl",
                         "footer": {
                             "countRows": False,
                             "fields": "",
@@ -213,6 +218,23 @@ class MMTSIVGradesBuilder:
                         "options": [{"selected": True, "text": "", "value": ""}],
                         "query": "",
                         "type": "textbox"
+                    },
+                    {
+                        "current": {"text": "All", "value": ["$__all"]},
+                        "includeAll": True,
+                        "label": "grade",
+                        "multi": True,
+                        "name": "grade",
+                        "options": [
+                            {"selected": True, "text": "All", "value": "$__all"},
+                            {"selected": False, "text": "A", "value": "A"},
+                            {"selected": False, "text": "B", "value": "B"},
+                            {"selected": False, "text": "C", "value": "C"},
+                            {"selected": False, "text": "F", "value": "F"},
+                            {"selected": False, "text": "NULL", "value": "NULL"}
+                        ],
+                        "query": "A,B,C,F,NULL",
+                        "type": "custom"
                     }
                 ]
             },
