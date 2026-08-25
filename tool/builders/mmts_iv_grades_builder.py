@@ -26,7 +26,7 @@ class MMTSIVGradesBuilder:
         stacked AS (
             SELECT
                 station_name,
-                'Total: ' || SUM(grade_count)::text || E'\\n' || STRING_AGG(
+                STRING_AGG(
                     COALESCE(grade, 'NULL') || ':' || grade_count::text ||
                         CASE WHEN '${{show_module_names}}' = 'true' THEN ' [' || module_names || ']' ELSE '' END,
                     E'\\n'
@@ -81,19 +81,19 @@ class MMTSIVGradesBuilder:
                         "id": "mappings",
                         "value": [
                             {
-                                "options": {"pattern": "(?s).*\\nA:.*", "result": {"color": "green"}},
+                                "options": {"pattern": "^A:.*", "result": {"color": "green"}},
                                 "type": "regex"
                             },
                             {
-                                "options": {"pattern": "(?s).*\\nB:.*", "result": {"color": "yellow"}},
+                                "options": {"pattern": "^B:.*", "result": {"color": "yellow"}},
                                 "type": "regex"
                             },
                             {
-                                "options": {"pattern": "(?s).*\\nC:.*", "result": {"color": "orange"}},
+                                "options": {"pattern": "^C:.*", "result": {"color": "orange"}},
                                 "type": "regex"
                             },
                             {
-                                "options": {"pattern": "(?s).*\\nF:.*", "result": {"color": "red"}},
+                                "options": {"pattern": "^F:.*", "result": {"color": "red"}},
                                 "type": "regex"
                             },
                             {
