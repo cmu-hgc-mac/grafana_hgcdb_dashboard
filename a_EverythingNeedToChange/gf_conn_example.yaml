@@ -1,6 +1,7 @@
 # Setting for Grafana
 
 # Things might need to change:
+GF_HOST: 'localhost'
 GF_PORT: '3000' # default
 GF_PROTOCAL: 'http'  # default
 
