@@ -477,9 +477,10 @@ DB_PORT         = db_conn.get("port")
 INSTITUTION     = db_conn.get("institution_abbr").upper()
 
 # -- Grafana Connection Info --
+GF_HOST         = gf_conn.get('GF_HOST', DB_HOST)
 GF_PORT         = gf_conn.get('GF_PORT')
 GF_PROTOCAL     = gf_conn.get('GF_PROTOCAL')
-GF_URL          = f"{GF_PROTOCAL}://{DB_HOST}:{GF_PORT}"
+GF_URL          = f"{GF_PROTOCAL}://{GF_HOST}:{GF_PORT}"
 # GF_URL          = f"{GF_PROTOCAL}://127.0.0.1:{GF_PORT}"
 GF_API_KEY      = gf_conn.get('GF_API_KEY')
 GF_USER         = gf_conn.get('GF_USER')
