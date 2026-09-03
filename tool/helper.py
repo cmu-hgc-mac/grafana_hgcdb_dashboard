@@ -84,21 +84,48 @@ class GrafanaClient:
     
     def create_service_account_and_token(self, sa_name: str, token_name: str, username: str, password: str) -> str:
         """Create a service account and return the API token string.
+           - If a service account with the same name already exists, reuse it instead of failing.
         """
-        # Create service account
-        sa_payload = {
-            "name": sa_name,
-            "role": "Admin"
-        }
-
-        sa_res = requests.post(
-            f"{self.base_url}/api/serviceaccounts",
-            headers={"Content-Type": "application/json"},
-            auth=(username, password),
-            data=json.dumps(sa_payload)
+        # Check for an existing service account with this name
+        search_res = requests.get(
+            f"{self.base_url}/api/serviceaccounts/search",
+            params={"query": sa_name},
+            auth=(username, password)
         )
-        sa_res.raise_for_status()
-        sa_id = sa_res.json()["id"]
+        search_res.raise_for_status()
+        existing = [sa for sa in search_res.json().get("serviceAccounts", []) if sa["name"] == sa_name]
+
+        if existing:
+            sa_id = existing[0]["id"]
+            print(f"[Grafana] Service account '{sa_name}' already exists (id={sa_id}), reusing it.")
+        else:
+            sa_payload = {
+                "name": sa_name,
+                "role": "Admin"
+            }
+
+            sa_res = requests.post(
+                f"{self.base_url}/api/serviceaccounts",
+                headers={"Content-Type": "application/json"},
+                auth=(username, password),
+                data=json.dumps(sa_payload)
+            )
+            sa_res.raise_for_status()
+            sa_id = sa_res.json()["id"]
+
+        # Delete any existing token with this name to avoid pile-up on reruns
+        tokens_res = requests.get(
+            f"{self.base_url}/api/serviceaccounts/{sa_id}/tokens",
+            auth=(username, password)
+        )
+        tokens_res.raise_for_status()
+        for token in tokens_res.json():
+            if token["name"] == token_name:
+                requests.delete(
+                    f"{self.base_url}/api/serviceaccounts/{sa_id}/tokens/{token['id']}",
+                    auth=(username, password)
+                ).raise_for_status()
+                print(f"[Grafana] Deleted existing token '{token_name}' (id={token['id']}) before recreating.")
 
         # Create token
         token_payload = {
