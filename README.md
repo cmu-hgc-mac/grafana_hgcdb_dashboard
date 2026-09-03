@@ -136,3 +136,8 @@ python delete_alert_rule.py
 ```
 2. Choose and enter the `alert rule UID` you would like to delete.
 3. Press `Enter`
+
+## To change the DB source
+1. Update the `db_hostname` in `a_EverythingNeedToChange/db_conn.py`
+2. Set the Grafana run count to 0 by `GF_RUN_TIMES: 0` in `a_EverythingNeedToChange/gf_conn.py`
+4. Run `python main.py`
