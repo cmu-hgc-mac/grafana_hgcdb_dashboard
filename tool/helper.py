@@ -140,6 +140,7 @@ class GrafanaClient:
             "editable": True,
             "uid": datasource_uid,
             "jsonData": {
+                "database": db_name,
                 "sslmode": "disable",
                 "alerting": True
             }
