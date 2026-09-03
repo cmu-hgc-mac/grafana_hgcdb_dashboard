@@ -25,6 +25,7 @@ gf_conn = {
     # Setting for Grafana
 
     # Things might need to change:
+    'GF_HOST': 'localhost', # default 
     'GF_PORT': '3000', # default 
     'GF_PROTOCAL': 'http', # default
 
