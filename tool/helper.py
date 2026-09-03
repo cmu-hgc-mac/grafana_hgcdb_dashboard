@@ -183,7 +183,18 @@ class GrafanaClient:
         if response.status_code in [200, 201]:
             print(f"[Grafana] PostgreSQL data source '{datasource_name}' added as default... (`∀´σ) \n")
         elif response.status_code == 409:
-            print(f"[Grafana] Data source '{datasource_name}' already exists.  (´･ω･`) \n")
+            # Data source already exists (by name or uid) — update it instead so config changes take effect
+            update_response = requests.put(
+                f"{self.base_url}/api/datasources/uid/{datasource_uid}",
+                headers=self.headers,
+                data=json.dumps(payload)
+            )
+            if update_response.status_code in [200, 201]:
+                print(f"[Grafana] Data source '{datasource_name}' already existed, updated it.  (´･ω･`) \n")
+            else:
+                print(f"[Grafana] Failed to update existing data source: {update_response.status_code} ヽ(`Д´)ﾉ \n")
+                print(update_response.text)
+                update_response.raise_for_status()
         else:
             print(f"[Grafana] Failed to add data source: {response.status_code} ヽ(`Д´)ﾉ \n")
             print(response.text)
