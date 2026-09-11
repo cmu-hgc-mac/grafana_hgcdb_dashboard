@@ -7,7 +7,7 @@ class XMLSuccessBuilder:
 
         self.table_sql = f"""
         WITH module_info_failed AS (
-            SELECT DISTINCT ON (module_name) module_no, module_name, bp_name, sen_name, hxb_name, xml_upload_success
+            SELECT DISTINCT ON (module_name) module_no, module_name, assembled, bp_name, sen_name, hxb_name, xml_upload_success
             FROM module_info
             WHERE $__timeFilter(module_info.assembled) 
             ORDER BY module_name, xml_upload_success, module_no DESC
@@ -104,6 +104,7 @@ class XMLSuccessBuilder:
         SELECT
             module_info_failed.module_no,
             module_info_failed.module_name,
+            module_info_failed.assembled,
             CASE
                 WHEN module_info_failed.module_name IS NULL THEN 'N/A'
                 WHEN module_info_failed.xml_upload_success IS NULL THEN 'NULL'
@@ -337,6 +338,18 @@ class XMLSuccessBuilder:
                     "matcher": {
                     "id": "byName",
                     "options": "module_name"
+                    },
+                    "properties": [
+                    {
+                        "id": "custom.width",
+                        "value": 165
+                    }
+                    ]
+                },
+                {
+                    "matcher": {
+                    "id": "byName",
+                    "options": "assembled"
                     },
                     "properties": [
                     {
