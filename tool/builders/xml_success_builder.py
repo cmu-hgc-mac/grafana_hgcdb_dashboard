@@ -450,7 +450,8 @@ class XMLSuccessBuilder:
                             },
                             "false": {
                                 "color": "red",
-                                "index": 3
+                                "index": 3,
+                                "text": "Some failed"
                             },
                             "Latest failed": {
                                 "color": "#C51162",
@@ -530,7 +531,8 @@ class XMLSuccessBuilder:
                             },
                             "false": {
                                 "color": "red",
-                                "index": 3
+                                "index": 3,
+                                "text": "Some failed"
                             },
                             "Latest failed": {
                                 "color": "#C51162",
@@ -574,7 +576,8 @@ class XMLSuccessBuilder:
                             },
                             "false": {
                                 "color": "red",
-                                "index": 3
+                                "index": 3,
+                                "text": "Some failed"
                             },
                             "Latest failed": {
                                 "color": "#C51162",
@@ -618,7 +621,8 @@ class XMLSuccessBuilder:
                             },
                             "false": {
                                 "color": "red",
-                                "index": 3
+                                "index": 3,
+                                "text": "Some failed"
                             },
                             "Latest failed": {
                                 "color": "#C51162",
@@ -662,7 +666,8 @@ class XMLSuccessBuilder:
                             },
                             "false": {
                                 "color": "red",
-                                "index": 3
+                                "index": 3,
+                                "text": "Some failed"
                             },
                             "Latest failed": {
                                 "color": "#C51162",
@@ -706,7 +711,8 @@ class XMLSuccessBuilder:
                             },
                             "false": {
                                 "color": "red",
-                                "index": 3
+                                "index": 3,
+                                "text": "Some failed"
                             },
                             "Latest failed": {
                                 "color": "#C51162",
@@ -750,7 +756,8 @@ class XMLSuccessBuilder:
                             },
                             "false": {
                                 "color": "red",
-                                "index": 3
+                                "index": 3,
+                                "text": "Some failed"
                             },
                             "Latest failed": {
                                 "color": "#C51162",
@@ -794,7 +801,8 @@ class XMLSuccessBuilder:
                             },
                             "false": {
                                 "color": "red",
-                                "index": 3
+                                "index": 3,
+                                "text": "Some failed"
                             },
                             "Latest failed": {
                                 "color": "#C51162",
@@ -838,7 +846,8 @@ class XMLSuccessBuilder:
                             },
                             "false": {
                                 "color": "red",
-                                "index": 3
+                                "index": 3,
+                                "text": "Some failed"
                             },
                             "Latest failed": {
                                 "color": "#C51162",
@@ -882,7 +891,8 @@ class XMLSuccessBuilder:
                             },
                             "false": {
                                 "color": "red",
-                                "index": 3
+                                "index": 3,
+                                "text": "Some failed"
                             },
                             "Latest failed": {
                                 "color": "#C51162",
@@ -926,7 +936,8 @@ class XMLSuccessBuilder:
                             },
                             "false": {
                                 "color": "red",
-                                "index": 3
+                                "index": 3,
+                                "text": "Some failed"
                             },
                             "Latest failed": {
                                 "color": "#C51162",
@@ -970,7 +981,8 @@ class XMLSuccessBuilder:
                             },
                             "false": {
                                 "color": "red",
-                                "index": 3
+                                "index": 3,
+                                "text": "Some failed"
                             },
                             "Latest failed": {
                                 "color": "#C51162",
@@ -1014,7 +1026,8 @@ class XMLSuccessBuilder:
                             },
                             "false": {
                                 "color": "red",
-                                "index": 3
+                                "index": 3,
+                                "text": "Some failed"
                             },
                             "Latest failed": {
                                 "color": "#C51162",
