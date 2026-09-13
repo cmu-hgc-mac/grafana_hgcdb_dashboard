@@ -201,80 +201,80 @@ class XMLSuccessBuilder:
             module_info_failed.assembled,
             CASE
                 WHEN module_info_failed.module_name IS NULL THEN 'N/A'
-                WHEN '${{check_latest_only}}' = 'Yes' AND module_info_latest.latest_xml_upload_success = 'false' THEN 'pink'
+                WHEN '${{check_latest_only}}' = 'Yes' AND module_info_latest.latest_xml_upload_success = 'false' THEN 'Latest failed'
                 WHEN module_info_failed.xml_upload_success IS NULL THEN 'NULL'
                 ELSE module_info_failed.xml_upload_success::text
             END AS module_build,
             CASE
                 WHEN proto_assembly_failed.module_name IS NULL THEN 'N/A'
-                WHEN '${{check_latest_only}}' = 'Yes' AND proto_assembly_latest.latest_xml_upload_success = 'false' THEN 'pink'
+                WHEN '${{check_latest_only}}' = 'Yes' AND proto_assembly_latest.latest_xml_upload_success = 'false' THEN 'Latest failed'
                 WHEN proto_assembly_failed.xml_upload_success IS NULL THEN 'NULL'
                 ELSE proto_assembly_failed.xml_upload_success::text
             END AS proto_assembly,
             CASE
                 WHEN proto_inspect_failed.module_name IS NULL THEN 'N/A'
-                WHEN '${{check_latest_only}}' = 'Yes' AND proto_inspect_latest.latest_xml_upload_success = 'false' THEN 'pink'
+                WHEN '${{check_latest_only}}' = 'Yes' AND proto_inspect_latest.latest_xml_upload_success = 'false' THEN 'Latest failed'
                 WHEN proto_inspect_failed.xml_upload_success IS NULL THEN 'NULL'
                 ELSE proto_inspect_failed.xml_upload_success::text
             END AS proto_inspect,
             CASE
                 WHEN module_assembly_failed.module_name IS NULL THEN 'N/A'
-                WHEN '${{check_latest_only}}' = 'Yes' AND module_assembly_latest.latest_xml_upload_success = 'false' THEN 'pink'
+                WHEN '${{check_latest_only}}' = 'Yes' AND module_assembly_latest.latest_xml_upload_success = 'false' THEN 'Latest failed'
                 WHEN module_assembly_failed.xml_upload_success IS NULL THEN 'NULL'
                 ELSE module_assembly_failed.xml_upload_success::text
             END AS module_assembly,
             CASE
                 WHEN module_inspect_failed.module_name IS NULL THEN 'N/A'
-                WHEN '${{check_latest_only}}' = 'Yes' AND module_inspect_latest.latest_xml_upload_success = 'false' THEN 'pink'
+                WHEN '${{check_latest_only}}' = 'Yes' AND module_inspect_latest.latest_xml_upload_success = 'false' THEN 'Latest failed'
                 WHEN module_inspect_failed.xml_upload_success IS NULL THEN 'NULL'
                 ELSE module_inspect_failed.xml_upload_success::text
             END AS module_inspect,
             CASE
                 WHEN (back_wirebond_failed.module_name IS NULL OR back_encap_failed.module_name IS NULL OR front_wirebond_failed.module_name IS NULL OR front_encap_failed.module_name IS NULL) THEN 'N/A'
-                WHEN '${{check_latest_only}}' = 'Yes' AND (back_wirebond_latest.latest_xml_upload_success = 'false' OR back_encap_latest.latest_xml_upload_success = 'false' OR front_wirebond_latest.latest_xml_upload_success = 'false' OR front_encap_latest.latest_xml_upload_success = 'false' OR bond_pull_latest.latest_xml_upload_success = 'false') THEN 'pink'
+                WHEN '${{check_latest_only}}' = 'Yes' AND (back_wirebond_latest.latest_xml_upload_success = 'false' OR back_encap_latest.latest_xml_upload_success = 'false' OR front_wirebond_latest.latest_xml_upload_success = 'false' OR front_encap_latest.latest_xml_upload_success = 'false' OR bond_pull_latest.latest_xml_upload_success = 'false') THEN 'Latest failed'
                 WHEN (back_wirebond_failed.xml_upload_success IS NULL OR back_encap_failed.xml_upload_success IS NULL OR front_wirebond_failed.xml_upload_success IS NULL OR front_encap_failed.xml_upload_success IS NULL) THEN 'NULL'
                 WHEN (back_wirebond_failed.xml_upload_success = 'true' AND back_encap_failed.xml_upload_success = 'true' AND front_wirebond_failed.xml_upload_success = 'true' AND front_encap_failed.xml_upload_success = 'true') THEN 'true'
                 WHEN (back_wirebond_failed.xml_upload_success = 'false' OR back_encap_failed.xml_upload_success = 'false' OR front_wirebond_failed.xml_upload_success = 'false' OR front_encap_failed.xml_upload_success = 'false' OR bond_pull_failed.xml_upload_success = 'false') THEN 'false'
             END AS module_wirebond,
             CASE
                 WHEN module_iv_failed.module_name IS NULL THEN 'N/A'
-                WHEN '${{check_latest_only}}' = 'Yes' AND module_iv_latest.latest_xml_upload_success = 'false' THEN 'pink'
+                WHEN '${{check_latest_only}}' = 'Yes' AND module_iv_latest.latest_xml_upload_success = 'false' THEN 'Latest failed'
                 WHEN module_iv_failed.xml_upload_success IS NULL THEN 'NULL'
                 ELSE module_iv_failed.xml_upload_success::text
             END AS module_iv,
             CASE
                 WHEN module_pedestal_failed.module_name IS NULL THEN 'N/A'
-                WHEN '${{check_latest_only}}' = 'Yes' AND module_pedestal_latest.latest_xml_upload_success = 'false' THEN 'pink'
+                WHEN '${{check_latest_only}}' = 'Yes' AND module_pedestal_latest.latest_xml_upload_success = 'false' THEN 'Latest failed'
                 WHEN module_pedestal_failed.xml_upload_success IS NULL THEN 'NULL'
                 ELSE module_pedestal_failed.xml_upload_success::text
             END AS module_pedestal,
             CASE
                 WHEN module_grade_failed.module_name IS NULL THEN 'N/A'
-                WHEN '${{check_latest_only}}' = 'Yes' AND module_grade_latest.latest_xml_upload_success = 'false' THEN 'pink'
+                WHEN '${{check_latest_only}}' = 'Yes' AND module_grade_latest.latest_xml_upload_success = 'false' THEN 'Latest failed'
                 WHEN module_grade_failed.xml_upload_success IS NULL THEN 'NULL'
                 ELSE module_grade_failed.xml_upload_success::text
             END AS module_grade,
             CASE
                 WHEN bp_inspect_failed.module_name IS NULL THEN 'N/A'
-                WHEN '${{check_latest_only}}' = 'Yes' AND bp_inspect_latest.latest_xml_upload_success = 'false' THEN 'pink'
+                WHEN '${{check_latest_only}}' = 'Yes' AND bp_inspect_latest.latest_xml_upload_success = 'false' THEN 'Latest failed'
                 WHEN bp_inspect_failed.xml_upload_success IS NULL THEN 'NULL'
                 ELSE bp_inspect_failed.xml_upload_success::text
             END AS bp_inspect,
             CASE
                 WHEN sen_inspect_failed.module_name IS NULL THEN 'N/A'
-                WHEN '${{check_latest_only}}' = 'Yes' AND sen_inspect_latest.latest_xml_upload_success = 'false' THEN 'pink'
+                WHEN '${{check_latest_only}}' = 'Yes' AND sen_inspect_latest.latest_xml_upload_success = 'false' THEN 'Latest failed'
                 WHEN sen_inspect_failed.xml_upload_success IS NULL THEN 'NULL'
                 ELSE sen_inspect_failed.xml_upload_success::text
             END AS sen_inspect,
             CASE
                 WHEN hxb_inspect_failed.module_name IS NULL THEN 'N/A'
-                WHEN '${{check_latest_only}}' = 'Yes' AND hxb_inspect_latest.latest_xml_upload_success = 'false' THEN 'pink'
+                WHEN '${{check_latest_only}}' = 'Yes' AND hxb_inspect_latest.latest_xml_upload_success = 'false' THEN 'Latest failed'
                 WHEN hxb_inspect_failed.xml_upload_success IS NULL THEN 'NULL'
                 ELSE hxb_inspect_failed.xml_upload_success::text
             END AS hxb_inspect,
             CASE
                 WHEN hxb_pedestal_failed.module_name IS NULL THEN 'N/A'
-                WHEN '${{check_latest_only}}' = 'Yes' AND hxb_pedestal_latest.latest_xml_upload_success = 'false' THEN 'pink'
+                WHEN '${{check_latest_only}}' = 'Yes' AND hxb_pedestal_latest.latest_xml_upload_success = 'false' THEN 'Latest failed'
                 WHEN hxb_pedestal_failed.xml_upload_success IS NULL THEN 'NULL'
                 ELSE hxb_pedestal_failed.xml_upload_success::text
             END AS hxb_pedestal,
@@ -355,11 +355,11 @@ class XMLSuccessBuilder:
         WHERE (
             ('${{show_failed_uploads}}' != 'Yes' AND '${{show_unattempted_uploads}}' != 'Yes')
             OR ('${{show_failed_uploads}}' = 'Yes' AND (
-                module_build IN ('false', 'pink') OR proto_assembly IN ('false', 'pink') OR proto_inspect IN ('false', 'pink')
-                OR module_assembly IN ('false', 'pink') OR module_inspect IN ('false', 'pink') OR module_wirebond IN ('false', 'pink')
-                OR module_iv IN ('false', 'pink') OR module_pedestal IN ('false', 'pink') OR module_grade IN ('false', 'pink')
-                OR bp_inspect IN ('false', 'pink') OR sen_inspect IN ('false', 'pink') OR hxb_inspect IN ('false', 'pink')
-                OR hxb_pedestal IN ('false', 'pink')
+                module_build IN ('false', 'Latest failed') OR proto_assembly IN ('false', 'Latest failed') OR proto_inspect IN ('false', 'Latest failed')
+                OR module_assembly IN ('false', 'Latest failed') OR module_inspect IN ('false', 'Latest failed') OR module_wirebond IN ('false', 'Latest failed')
+                OR module_iv IN ('false', 'Latest failed') OR module_pedestal IN ('false', 'Latest failed') OR module_grade IN ('false', 'Latest failed')
+                OR bp_inspect IN ('false', 'Latest failed') OR sen_inspect IN ('false', 'Latest failed') OR hxb_inspect IN ('false', 'Latest failed')
+                OR hxb_pedestal IN ('false', 'Latest failed')
             ))
             OR ('${{show_unattempted_uploads}}' = 'Yes' AND (
                 module_build = 'NULL' OR proto_assembly = 'NULL' OR proto_inspect = 'NULL'
@@ -452,8 +452,8 @@ class XMLSuccessBuilder:
                                 "color": "red",
                                 "index": 3
                             },
-                            "pink": {
-                                "color": "pink",
+                            "Latest failed": {
+                                "color": "#C51162",
                                 "index": 4
                             },
                             "true": {
@@ -532,8 +532,8 @@ class XMLSuccessBuilder:
                                 "color": "red",
                                 "index": 3
                             },
-                            "pink": {
-                                "color": "pink",
+                            "Latest failed": {
+                                "color": "#C51162",
                                 "index": 4
                             },
                             "true": {
@@ -576,8 +576,8 @@ class XMLSuccessBuilder:
                                 "color": "red",
                                 "index": 3
                             },
-                            "pink": {
-                                "color": "pink",
+                            "Latest failed": {
+                                "color": "#C51162",
                                 "index": 4
                             },
                             "true": {
@@ -620,8 +620,8 @@ class XMLSuccessBuilder:
                                 "color": "red",
                                 "index": 3
                             },
-                            "pink": {
-                                "color": "pink",
+                            "Latest failed": {
+                                "color": "#C51162",
                                 "index": 4
                             },
                             "true": {
@@ -664,8 +664,8 @@ class XMLSuccessBuilder:
                                 "color": "red",
                                 "index": 3
                             },
-                            "pink": {
-                                "color": "pink",
+                            "Latest failed": {
+                                "color": "#C51162",
                                 "index": 4
                             },
                             "true": {
@@ -708,8 +708,8 @@ class XMLSuccessBuilder:
                                 "color": "red",
                                 "index": 3
                             },
-                            "pink": {
-                                "color": "pink",
+                            "Latest failed": {
+                                "color": "#C51162",
                                 "index": 4
                             },
                             "true": {
@@ -752,8 +752,8 @@ class XMLSuccessBuilder:
                                 "color": "red",
                                 "index": 3
                             },
-                            "pink": {
-                                "color": "pink",
+                            "Latest failed": {
+                                "color": "#C51162",
                                 "index": 4
                             },
                             "true": {
@@ -796,8 +796,8 @@ class XMLSuccessBuilder:
                                 "color": "red",
                                 "index": 3
                             },
-                            "pink": {
-                                "color": "pink",
+                            "Latest failed": {
+                                "color": "#C51162",
                                 "index": 4
                             },
                             "true": {
@@ -840,8 +840,8 @@ class XMLSuccessBuilder:
                                 "color": "red",
                                 "index": 3
                             },
-                            "pink": {
-                                "color": "pink",
+                            "Latest failed": {
+                                "color": "#C51162",
                                 "index": 4
                             },
                             "true": {
@@ -884,8 +884,8 @@ class XMLSuccessBuilder:
                                 "color": "red",
                                 "index": 3
                             },
-                            "pink": {
-                                "color": "pink",
+                            "Latest failed": {
+                                "color": "#C51162",
                                 "index": 4
                             },
                             "true": {
@@ -928,8 +928,8 @@ class XMLSuccessBuilder:
                                 "color": "red",
                                 "index": 3
                             },
-                            "pink": {
-                                "color": "pink",
+                            "Latest failed": {
+                                "color": "#C51162",
                                 "index": 4
                             },
                             "true": {
@@ -972,8 +972,8 @@ class XMLSuccessBuilder:
                                 "color": "red",
                                 "index": 3
                             },
-                            "pink": {
-                                "color": "pink",
+                            "Latest failed": {
+                                "color": "#C51162",
                                 "index": 4
                             },
                             "true": {
@@ -1016,8 +1016,8 @@ class XMLSuccessBuilder:
                                 "color": "red",
                                 "index": 3
                             },
-                            "pink": {
-                                "color": "pink",
+                            "Latest failed": {
+                                "color": "#C51162",
                                 "index": 4
                             },
                             "true": {
