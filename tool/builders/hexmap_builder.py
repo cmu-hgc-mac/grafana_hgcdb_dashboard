@@ -102,7 +102,7 @@ class HexmapPlotsBuilder:
                 "pluginVersion": "12.0.0",
                 "repeat": "mean_hex_map",
                 "repeatDirection": "v",
-                "title": "Pedestal Hexmap",
+                "title": "Pedestal Hexmap / ${status_desc}",
                 "type": "text"
                 },
                 {
@@ -129,7 +129,7 @@ class HexmapPlotsBuilder:
                 "pluginVersion": "12.0.0",
                 "repeat": "std_hex_map",
                 "repeatDirection": "v",
-                "title": "Noise Hexmap",
+                "title": "Noise Hexmap / ${status_desc}",
                 "type": "text"
                 }
             ],
