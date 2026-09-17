@@ -32,8 +32,52 @@ class HexmapPlotsBuilder:
         ORDER BY mod_plottest_no DESC;
         """
 
+        self.mean_status_desc_sql = """
+        SELECT COALESCE(status_desc::text, 'NULL') AS status_desc
+        FROM module_pedestal_plots
+        WHERE module_name = '${module_name}'
+            AND ('All' = ANY(ARRAY[${status_desc}]) OR
+            (module_pedestal_plots.status_desc IS NULL AND 'NULL' = ANY(ARRAY[${status_desc}])) OR
+            module_pedestal_plots.status_desc::text = ANY(ARRAY[${status_desc}]))
+            AND ('${batch_name}' = '' OR EXISTS (
+                SELECT 1 FROM module_iv_test
+                WHERE module_iv_test.module_name = module_pedestal_plots.module_name
+                    AND module_iv_test.batch_name ILIKE '%' || '${batch_name}' || '%'))
+            AND ('${iteration}' = '' OR EXISTS (
+                SELECT 1 FROM module_iv_test
+                WHERE module_iv_test.module_name = module_pedestal_plots.module_name
+                    AND module_iv_test.iteration ILIKE '%' || '${iteration}' || '%'))
+            AND ('${station_name}' = '' OR EXISTS (
+                SELECT 1 FROM module_iv_test
+                WHERE module_iv_test.module_name = module_pedestal_plots.module_name
+                    AND module_iv_test.station_name ILIKE '%' || '${station_name}' || '%'))
+        ORDER BY mod_plottest_no DESC;
+        """
+
         self.std_hexmap_sql = """
         SELECT encode(adc_std_hexmap, 'base64') AS hex_img
+        FROM module_pedestal_plots
+        WHERE module_name = '${module_name}'
+            AND ('All' = ANY(ARRAY[${status_desc}]) OR
+            (module_pedestal_plots.status_desc IS NULL AND 'NULL' = ANY(ARRAY[${status_desc}])) OR
+            module_pedestal_plots.status_desc::text = ANY(ARRAY[${status_desc}]))
+            AND ('${batch_name}' = '' OR EXISTS (
+                SELECT 1 FROM module_iv_test
+                WHERE module_iv_test.module_name = module_pedestal_plots.module_name
+                    AND module_iv_test.batch_name ILIKE '%' || '${batch_name}' || '%'))
+            AND ('${iteration}' = '' OR EXISTS (
+                SELECT 1 FROM module_iv_test
+                WHERE module_iv_test.module_name = module_pedestal_plots.module_name
+                    AND module_iv_test.iteration ILIKE '%' || '${iteration}' || '%'))
+            AND ('${station_name}' = '' OR EXISTS (
+                SELECT 1 FROM module_iv_test
+                WHERE module_iv_test.module_name = module_pedestal_plots.module_name
+                    AND module_iv_test.station_name ILIKE '%' || '${station_name}' || '%'))
+        ORDER BY mod_plottest_no DESC;
+        """
+
+        self.std_status_desc_sql = """
+        SELECT COALESCE(status_desc::text, 'NULL') AS status_desc
         FROM module_pedestal_plots
         WHERE module_name = '${module_name}'
             AND ('All' = ANY(ARRAY[${status_desc}]) OR
@@ -102,7 +146,7 @@ class HexmapPlotsBuilder:
                 "pluginVersion": "12.0.0",
                 "repeat": "mean_hex_map",
                 "repeatDirection": "v",
-                "title": "Pedestal Hexmap / ${status_desc}",
+                "title": "Pedestal Hexmap / ${mean_status_desc}",
                 "type": "text"
                 },
                 {
@@ -129,7 +173,7 @@ class HexmapPlotsBuilder:
                 "pluginVersion": "12.0.0",
                 "repeat": "std_hex_map",
                 "repeatDirection": "v",
-                "title": "Noise Hexmap / ${status_desc}",
+                "title": "Noise Hexmap / ${std_status_desc}",
                 "type": "text"
                 }
             ],
@@ -256,6 +300,38 @@ class HexmapPlotsBuilder:
                     "name": "std_hex_map",
                     "options": [],
                     "query": self.std_hexmap_sql,
+                    "refresh": 1,
+                    "regex": "",
+                    "skipUrlSync": True,
+                    "type": "query"
+                },
+                {
+                    "current": {
+                    "text": "",
+                    "value": ""
+                    },
+                    "hide": 2,
+                    "includeAll": False,
+                    "multi": False,
+                    "name": "mean_status_desc",
+                    "options": [],
+                    "query": self.mean_status_desc_sql,
+                    "refresh": 1,
+                    "regex": "",
+                    "skipUrlSync": True,
+                    "type": "query"
+                },
+                {
+                    "current": {
+                    "text": "",
+                    "value": ""
+                    },
+                    "hide": 2,
+                    "includeAll": False,
+                    "multi": False,
+                    "name": "std_status_desc",
+                    "options": [],
+                    "query": self.std_status_desc_sql,
                     "refresh": 1,
                     "regex": "",
                     "skipUrlSync": True,
