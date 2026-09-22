@@ -693,12 +693,25 @@ class ModuleAssemblyBuilder:
                             },
                             {
                                 "options": {
-                                "0": {
+                                "from": None,
+                                "result": {
                                     "color": "red",
                                     "index": 1
-                                }
                                 },
-                                "type": "value"
+                                "to": 0
+                                },
+                                "type": "range"
+                            },
+                            {
+                                "options": {
+                                "from": 1,
+                                "result": {
+                                    "color": "green",
+                                    "index": 2
+                                },
+                                "to": None
+                                },
+                                "type": "range"
                             }
                             ]
                         }
