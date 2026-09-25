@@ -11,7 +11,8 @@ class HexmapPlotsBuilder:
         self.std_hexmap_md = f'<img src=\"data:image/png;base64,{self.std_hex_map_base64}" style="width: auto; height: auto;"/>'
 
         self.mean_hexmap_sql = """
-        SELECT encode(adc_mean_hexmap, 'base64') AS hex_img
+        SELECT encode(adc_mean_hexmap, 'base64') AS __value,
+               COALESCE(status_desc::text, 'NULL') AS __text
         FROM module_pedestal_plots
         WHERE module_name = '${module_name}'
             AND ('All' = ANY(ARRAY[${status_desc}]) OR
@@ -33,7 +34,8 @@ class HexmapPlotsBuilder:
         """
 
         self.std_hexmap_sql = """
-        SELECT encode(adc_std_hexmap, 'base64') AS hex_img
+        SELECT encode(adc_std_hexmap, 'base64') AS __value,
+               COALESCE(status_desc::text, 'NULL') AS __text
         FROM module_pedestal_plots
         WHERE module_name = '${module_name}'
             AND ('All' = ANY(ARRAY[${status_desc}]) OR
@@ -102,7 +104,7 @@ class HexmapPlotsBuilder:
                 "pluginVersion": "12.0.0",
                 "repeat": "mean_hex_map",
                 "repeatDirection": "v",
-                "title": "Pedestal Hexmap",
+                "title": "Pedestal Hexmap / ${mean_hex_map:text}",
                 "type": "text"
                 },
                 {
@@ -129,7 +131,7 @@ class HexmapPlotsBuilder:
                 "pluginVersion": "12.0.0",
                 "repeat": "std_hex_map",
                 "repeatDirection": "v",
-                "title": "Noise Hexmap",
+                "title": "Noise Hexmap / ${std_hex_map:text}",
                 "type": "text"
                 }
             ],

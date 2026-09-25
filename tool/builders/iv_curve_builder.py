@@ -235,7 +235,7 @@ class IVCurveBuilder:
                 "properties": [
                 {
                     "id": "max",
-                    "value": 500
+                    "value": 850
                 },
                 {
                     "id": "min",

@@ -384,25 +384,43 @@ ORDER BY 1;""",
                             "rawSql": f"""SELECT
   batch_name,
   cycle_count,
-  cardinality(module_names) AS modcount,
+  modcount,
   description,
   status_safety_alarm,
   status_dry_air_pressure,
   status_alcohol_content,
   status_chiller_alarm,
-  array_to_string(module_names, ', ') AS module_names,
-  array_to_string(station_names, ', ') AS station_names,
+  module_names,
+  station_names,
   other_electrical_startup_tests,
-  log_timestamp AT TIME ZONE '{self.timezone}' AS log_timestamp,
+  log_timestamp,
   timestamp_utc
-FROM mmts_batch_logging t
-WHERE
-  ('${{module_name}}' = '' OR EXISTS (
-    SELECT 1
-    FROM unnest(t.module_names) AS elem
-    WHERE elem ILIKE '%' || '${{module_name}}' || '%'
-  ))
-  AND ('${{batch_name}}' = '' OR t.batch_name ILIKE '%' || '${{batch_name}}' || '%')
+FROM (
+  SELECT DISTINCT ON (batch_name)
+    batch_name,
+    cycle_count,
+    cardinality(module_names) AS modcount,
+    description,
+    status_safety_alarm,
+    status_dry_air_pressure,
+    status_alcohol_content,
+    status_chiller_alarm,
+    array_to_string(module_names, ', ') AS module_names,
+    array_to_string(station_names, ', ') AS station_names,
+    other_electrical_startup_tests,
+    log_timestamp AT TIME ZONE '{self.timezone}' AS log_timestamp,
+    timestamp_utc,
+    batch_no
+  FROM mmts_batch_logging t
+  WHERE
+    ('${{module_name}}' = '' OR EXISTS (
+      SELECT 1
+      FROM unnest(t.module_names) AS elem
+      WHERE elem ILIKE '%' || '${{module_name}}' || '%'
+    ))
+    AND ('${{batch_name}}' = '' OR t.batch_name ILIKE '%' || '${{batch_name}}' || '%')
+  ORDER BY batch_name, batch_no ASC
+) first_entries
 ORDER BY batch_name DESC;""",
                             "refId": "A",
                             "hidden": False,
