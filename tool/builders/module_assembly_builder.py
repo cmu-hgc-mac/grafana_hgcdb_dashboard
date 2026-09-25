@@ -153,6 +153,7 @@ class ModuleAssemblyBuilder:
           )
           AND (
             '${self.pack_ship_status}' = 'All'
+            OR ('${self.pack_ship_status}' = 'Not shipped' AND temp_table_0.shipped_datetime IS NULL)
             OR ('${self.pack_ship_status}' = 'Not packed (unshipped)' AND temp_table_0.packed_datetime IS NULL AND temp_table_0.shipped_datetime IS NULL)
             OR ('${self.pack_ship_status}' = 'Packed (unshipped)' AND temp_table_0.packed_datetime IS NOT NULL AND temp_table_0.shipped_datetime IS NULL)
             OR ('${self.pack_ship_status}' = 'Packed & Shipped' AND temp_table_0.packed_datetime IS NOT NULL AND temp_table_0.shipped_datetime IS NOT NULL)
@@ -1119,6 +1120,11 @@ class ModuleAssemblyBuilder:
                         },
                         {
                             "selected": False,
+                            "text": "Not shipped",
+                            "value": "Not shipped"
+                        },
+                        {
+                            "selected": False,
                             "text": "Not packed (unshipped)",
                             "value": "Not packed (unshipped)"
                         },
@@ -1138,7 +1144,7 @@ class ModuleAssemblyBuilder:
                             "value": "Shipped; Not packed"
                         }
                     ],
-                    "query": "All,Not packed (unshipped),Packed (unshipped),Packed & Shipped,Shipped; Not packed",
+                    "query": "All,Not shipped,Not packed (unshipped),Packed (unshipped),Packed & Shipped,Shipped; Not packed",
                     "type": "custom"
                 },
                 {
