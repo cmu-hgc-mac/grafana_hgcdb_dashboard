@@ -48,22 +48,27 @@ class PanelBuilder:
         else:
             width = max_cols // max_num
 
-        height = width // 2 + 2
+        height = 0
 
         # assign gridPos to each panel
         for panel in config_panels:
-            if x + width > max_cols:    # Switch lines
+            per_row = panel.get("panels_per_row")
+            new_width = max_cols // per_row if per_row else width
+            new_height = new_width // 2 + 2
+            if x + new_width > max_cols:    # Switch lines
                 x = 0
                 y += height
+                height = 0
 
             panel["gridPos"] = {
                 "x": x,
                 "y": y,
-                "w": width,
-                "h": height
+                "w": new_width,
+                "h": new_height
             }
 
-            x += width
+            x += new_width
+            height = max(height, new_height)
 
         return config_panels
 
@@ -90,7 +95,7 @@ class PanelBuilder:
             distinct = panel.get("distinct")
             return title, table, condition, groupby, filters, gridPos, distinct
     
-    def generate_general_panel(self, title: str, raw_sql: str, table: str, chart_type: str, gridPos: dict) -> dict:
+    def generate_general_panel(self, title: str, raw_sql: str, table: str, chart_type: str, gridPos: dict, bucket_size = None, bucket_offset = None) -> dict:
         """Generate a panel json based on the given title, raw_sql, table, chart_type, and gridPos.
         """
         # generate the panel json:
@@ -135,7 +140,7 @@ class PanelBuilder:
             "sort": "none"
             },
             "xTickLabelRotation": 0,
-            "xTickLabelSpacing": 0
+            "xTickLabelSpacing": 0,
         },
         "pluginVersion": "12.0.0",
         "targets": [
@@ -171,6 +176,11 @@ class PanelBuilder:
         "type": f"{chart_type}"
         }
 
+        if chart_type == "histogram" and bucket_size is not None:
+            panel_json["options"]["bucketSize"] = bucket_size
+        if chart_type == "histogram" and bucket_offset is not None:
+            panel_json["options"]["bucketOffset"] = bucket_offset
+
         return panel_json
 
     # -- Genarate Panels --
@@ -200,9 +210,10 @@ class PanelBuilder:
                     title, table, condition, groupby, filters, gridPos, distinct = self.get_info(panel, chart_type)
                     inputs = panel.get("inputs", None)
                     contains_inputs = panel.get("contains_inputs", None)
+                    bucket_size = panel.get("bucket_size", None)
+                    bucket_offset = panel.get("bucket_offset", None)
                     raw_sql = self.generate_sql(chart_type, table, condition, groupby, filters, distinct, inputs, contains_inputs)
-                    panel_json = self.generate_general_panel(title, raw_sql, table, chart_type, gridPos)
-
+                    panel_json = self.generate_general_panel(title, raw_sql, table, chart_type, gridPos, bucket_size, bucket_offset)
                 panels.append(panel_json)
 
             except Exception as e:

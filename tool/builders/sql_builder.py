@@ -83,6 +83,12 @@ class BaseSQLGenerator(ChartSQLGenerator):
             arg = f"""('All' = ANY(ARRAY[{param}]) OR 
                     (shipped_datetime IS NULL AND 'not shipped' = ANY(ARRAY[{param}])) OR
                     (shipped_datetime IS NOT NULL AND 'shipped' = ANY(ARRAY[{param}])))"""
+        elif elem == "packing_and_shipping_status":
+            param = "${packing_and_shipping_status}"
+            arg = f"""('All' = ANY(ARRAY[{param}]) OR
+                    (packed_datetime IS NULL AND 'not packed' = ANY(ARRAY[{param}])) OR
+                    (packed_datetime IS NOT NULL AND shipped_datetime IS NULL AND 'packed and not shipped' = ANY(ARRAY[{param}])) OR
+                    (packed_datetime IS NOT NULL AND shipped_datetime IS NOT NULL AND 'packed and shipped' = ANY(ARRAY[{param}])))"""
         elif elem == "wirebond_status":
             param = "${wirebond_status}"
             arg = f"""('All' = ANY(ARRAY[{param}]) OR 
@@ -508,6 +514,10 @@ class TableGenerator(BaseSQLGenerator):
 
         # Now generate select arguments
         for table_name, col in pairs:
+            # time columns (e.g. packed_datetime) are dropped by _build_select_argument; keep them as local timestamps in tables
+            if isinstance(col, str) and col.endswith("time"):
+                groupby_fields.append(f"({table_name}.{col} AT TIME ZONE '{TIME_ZONE}') AS {col}")
+                continue
             arg = self._build_select_argument(table_name, col)
             if arg:
                 groupby_fields.append(arg)
