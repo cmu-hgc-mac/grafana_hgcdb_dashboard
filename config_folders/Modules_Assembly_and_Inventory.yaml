@@ -231,3 +231,4 @@ dashboards:
         contains_inputs: {"module_info":["module_name", "box_number", "shipment_number", "position_in_box"]}
         filters: {"module_info": ["bp_material", "resolution", "roc_version", "sen_thickness", "geometry", "packing_and_shipping_status"], "module_qc_summary": ["final_grade"]}
         distinct: ["module_info", "module_qc_summary"]
+        orderby: "module_no DESC"
