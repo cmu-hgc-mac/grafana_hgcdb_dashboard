@@ -14,14 +14,15 @@ class PanelBuilder:
         self.IVCurveBuilder = IVCurveBuilder(datasource_uid)
     
     # -- Regular Panels --
-    def generate_sql(self, chart_type: str, table: str, condition: str, groupby: list, filters: list, distinct: bool, inputs: list, contains_inputs: dict = None) -> str:
+    def generate_sql(self, chart_type: str, table: str, condition: str, groupby: list, filters: list, distinct: bool, inputs: list, contains_inputs: dict = None, orderby: str = None) -> str:
         """Generate the SQL command from ChartSQLFactory. -> sql_builder.py
         """
         # Get Generator
         generator = ChartSQLFactory.get_generator(chart_type)
 
         # Generate SQL command
-        panel_sql = generator.generate_sql(table, condition, groupby, filters, distinct, inputs, contains_inputs)
+        extra = {"orderby": orderby} if orderby else {}   # only supported by the table generator
+        panel_sql = generator.generate_sql(table, condition, groupby, filters, distinct, inputs, contains_inputs, **extra)
 
         return panel_sql
 
@@ -212,7 +213,8 @@ class PanelBuilder:
                     contains_inputs = panel.get("contains_inputs", None)
                     bucket_size = panel.get("bucket_size", None)
                     bucket_offset = panel.get("bucket_offset", None)
-                    raw_sql = self.generate_sql(chart_type, table, condition, groupby, filters, distinct, inputs, contains_inputs)
+                    orderby = panel.get("orderby", None)
+                    raw_sql = self.generate_sql(chart_type, table, condition, groupby, filters, distinct, inputs, contains_inputs, orderby)
                     panel_json = self.generate_general_panel(title, raw_sql, table, chart_type, gridPos, bucket_size, bucket_offset)
                 panels.append(panel_json)
 
