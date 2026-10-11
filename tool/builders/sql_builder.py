@@ -464,9 +464,10 @@ class StatChartGenerator(BaseSQLGenerator):
 
 # -- Table Chart --
 class TableGenerator(BaseSQLGenerator):
-    def generate_sql(self, table: str, condition: str, groupby: list, filters: list, distinct: bool, inputs: list, contains_inputs: dict = None) -> str:
+    def generate_sql(self, table: str, condition: str, groupby: list, filters: list, distinct: bool, inputs: list, contains_inputs: dict = None, orderby: str = None) -> str:
         pre_clause, target_table = self._build_pre_clause(table, distinct)
-        select_clause = self._build_select_clause(table, groupby, distinct)
+        order_expr = self._build_order_expr(target_table, orderby)
+        select_clause = self._build_select_clause(table, groupby, distinct, order_expr)
         where_clause, original_filters = self._build_where_clause(filters, condition, table, distinct, inputs, contains_inputs)
         join_clause = self._build_join_clause(table, original_filters, distinct)
 
@@ -477,11 +478,26 @@ class TableGenerator(BaseSQLGenerator):
         FROM {target_table}
         {join_clause}
         WHERE {where_clause}
+        {"ORDER BY " + order_expr if order_expr else ""}
         """
         return sql.strip()
 
-    def _build_select_clause(self, table: str, groupby: Any, distinct: bool) -> str:
+    def _build_order_expr(self, target_table: str, orderby: str = None) -> str:
+        """Builds the ordering expression from the optional panel key `orderby`, e.g. "module_no DESC".
+           - The column is qualified with the target table to avoid ambiguity after joins.
+        """
+        if not orderby:
+            return None
+        parts = orderby.split()
+        column = parts[0]
+        direction = parts[1].upper() if len(parts) > 1 else "ASC"
+        if len(parts) > 2 or direction not in ("ASC", "DESC"):
+            raise ValueError(f"Invalid orderby '{orderby}': expected '<column> [ASC|DESC]'")
+        return f"{target_table}.{column} {direction}"
+
+    def _build_select_clause(self, table: str, groupby: Any, distinct: bool, order_expr: str = None) -> str:
         """Builds the SELECT clause by joining all groupby fields.
+           - order_expr, if given, orders the row_count numbering (default: by name).
         """
         groupby_fields = []
 
@@ -493,7 +509,7 @@ class TableGenerator(BaseSQLGenerator):
             for elem in groupby:
                 if elem == "row_count":
                     prefix = PREFIX[table.split("_")[0]]
-                    arg = f"ROW_NUMBER() OVER (ORDER BY {temp_table}.{prefix}_name) AS no"
+                    arg = f"ROW_NUMBER() OVER (ORDER BY {order_expr or f'{temp_table}.{prefix}_name'}) AS no"
                     groupby_fields.append(arg)
                 else:
                     cols = [elem]
@@ -507,7 +523,7 @@ class TableGenerator(BaseSQLGenerator):
                 for col in cols:
                     if col == "row_count":
                         prefix = PREFIX[original_table.split("_")[0]]
-                        arg = f"ROW_NUMBER() OVER (ORDER BY {temp_table}.{prefix}_name) AS no"
+                        arg = f"ROW_NUMBER() OVER (ORDER BY {order_expr or f'{temp_table}.{prefix}_name'}) AS no"
                         groupby_fields.append(arg)
                     else:
                         pairs.append((temp_table, col))
