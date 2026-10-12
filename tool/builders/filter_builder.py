@@ -47,8 +47,9 @@ class FilterBuilder:
         elif filter_name == "packing_and_shipping_status":
             filter_sql = f"""
             SELECT DISTINCT
-            CASE WHEN packed_datetime IS NULL THEN 'not packed'
-                 WHEN packed_datetime IS NOT NULL AND shipped_datetime IS NULL THEN 'packed and not shipped'
+            CASE WHEN packed_datetime IS NULL AND shipped_datetime IS NOT NULL THEN 'not packed but shipped'
+                 WHEN packed_datetime IS NULL AND shipped_datetime IS NULL THEN 'not packed and not shipped'
+                 WHEN packed_datetime IS NOT NULL AND shipped_datetime IS NULL THEN 'packed but not shipped'
                  ELSE 'packed and shipped' END AS packing_and_shipping_status
             FROM {filters_table}
             ORDER BY packing_and_shipping_status

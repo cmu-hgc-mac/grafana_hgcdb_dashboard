@@ -270,7 +270,7 @@ ORDER BY 1;""",
                                         "value": [
                                             {
                                                 "title": "View MMTS IV Curve Plot",
-                                                "url": "/d/mmts-iv_curve-plot/mmts-iv-curve-plot?orgId=1&from=0&to=now&timezone=browser&var-bp_material=$__all&var-resolution=$__all&var-roc_version=$__all&var-geometry=$__all&var-sen_thickness=$__all&var-iv_grade=$__all&refresh=5m&var-module_name=&var-batch_name=${__value.text}&var-station_name=",
+                                                "url": "/d/mmts-iv_curve-plot/mmts-iv-curve-plot?orgId=1&from=${__data.fields.window_start}&to=${__data.fields.window_end}&timezone=browser&var-bp_material=$__all&var-resolution=$__all&var-roc_version=$__all&var-geometry=$__all&var-sen_thickness=$__all&var-iv_grade=$__all&refresh=5m&var-module_name=&var-batch_name=${__value.text}&var-station_name=",
                                                 "targetBlank": True
                                             }
                                         ]
@@ -357,6 +357,30 @@ ORDER BY 1;""",
                                         }
                                     }
                                 ]
+                            },
+                            {
+                                "matcher": {
+                                    "id": "byName",
+                                    "options": "window_start"
+                                },
+                                "properties": [
+                                    {
+                                        "id": "custom.hidden",
+                                        "value": True
+                                    }
+                                ]
+                            },
+                            {
+                                "matcher": {
+                                    "id": "byName",
+                                    "options": "window_end"
+                                },
+                                "properties": [
+                                    {
+                                        "id": "custom.hidden",
+                                        "value": True
+                                    }
+                                ]
                             }
                         ]
                     },
@@ -394,7 +418,10 @@ ORDER BY 1;""",
   station_names,
   other_electrical_startup_tests,
   log_timestamp,
-  timestamp_utc
+  timestamp_utc,
+  (SELECT (EXTRACT(EPOCH FROM log_timestamp - INTERVAL '30 minutes' ) * 1000)::bigint) AS window_start,
+    (SELECT (EXTRACT(EPOCH FROM (MAX(date_test + time_test) + INTERVAL '30 minutes') AT TIME ZONE '{self.timezone}') * 1000)::bigint
+       FROM module_iv_test i WHERE i.batch_name = first_entries.batch_name) AS window_end
 FROM (
   SELECT DISTINCT ON (batch_name)
     batch_name,

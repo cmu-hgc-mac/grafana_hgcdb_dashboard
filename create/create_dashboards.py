@@ -196,6 +196,12 @@ for config in filelist:
                     template_list.extend(input_json)
             
         panels_array = panel_builder.generate_panels_json(dashboard_title, config_panels)
+        if dashboard_title == "MMTS IV_Curve Plot":
+            # shift the IV curve panels down to make room for temperature and dewpoint panels
+            for panel in panels_array:
+                panel["gridPos"]["y"] += 12
+            
+            panels_array.insert(0, mmts_logging_builder.temperature_dewpoint_panel({"h": 12, "w": 24, "x": 0, "y": 0}))
             
         # Generate the dashboard json
         dashboard_json = dashboard_builder.build_dashboard(dashboard_title, panels_array, template_list)
