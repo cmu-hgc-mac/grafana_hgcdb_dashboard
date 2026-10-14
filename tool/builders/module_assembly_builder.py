@@ -97,7 +97,7 @@ class ModuleAssemblyBuilder:
             END AS thermal_cycle_date,
             temp_table_2.date_test::text AS test_iv,
             temp_table_3.date_test::text AS test_ped,
-            temp_table_0.xml_upload_success::text AS xml_build_upload_success,
+            COALESCE(temp_table_0.xml_upload_success::text, 'Yet to Upload') AS xml_build_upload_success,
             temp_table_0.packed_datetime::text,
             temp_table_0.shipped_datetime::text,
             temp_table_0.bp_name::text,
@@ -488,23 +488,11 @@ class ModuleAssemblyBuilder:
                             "value": [
                             {
                                 "options": {
-                                "match": "null",
-                                "result": {
-                                    "color": "orange",
-                                    "index": 0
-                                }
+                                "true": {"color": "green", "index": 0},
+                                "false": {"color": "red", "index": 1},
+                                "Yet to Upload": {"color": "yellow", "index": 2}
                                 },
-                                "type": "special"
-                            },
-                            {
-                                "options": {
-                                "match": "False",
-                                "result": {
-                                    "color": "red",
-                                    "index": 1
-                                }
-                                },
-                                "type": "special"
+                                "type": "value"
                             }
                             ]
                         }
