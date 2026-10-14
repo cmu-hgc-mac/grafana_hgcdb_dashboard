@@ -86,8 +86,9 @@ class BaseSQLGenerator(ChartSQLGenerator):
         elif elem == "packing_and_shipping_status":
             param = "${packing_and_shipping_status}"
             arg = f"""('All' = ANY(ARRAY[{param}]) OR
-                    (packed_datetime IS NULL AND 'not packed' = ANY(ARRAY[{param}])) OR
-                    (packed_datetime IS NOT NULL AND shipped_datetime IS NULL AND 'packed and not shipped' = ANY(ARRAY[{param}])) OR
+                    (packed_datetime IS NULL AND shipped_datetime IS NOT NULL AND 'not packed but shipped' = ANY(ARRAY[{param}])) OR
+                    (packed_datetime IS NULL AND shipped_datetime IS NULL AND 'not packed and not shipped' = ANY(ARRAY[{param}])) OR
+                    (packed_datetime IS NOT NULL AND shipped_datetime IS NULL AND 'packed but not shipped' = ANY(ARRAY[{param}])) OR
                     (packed_datetime IS NOT NULL AND shipped_datetime IS NOT NULL AND 'packed and shipped' = ANY(ARRAY[{param}])))"""
         elif elem == "wirebond_status":
             param = "${wirebond_status}"

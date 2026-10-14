@@ -29,426 +29,8 @@ class MMTSLoggingBuilder:
             "graphTooltip": 0,
             "links": [],
             "panels": [
-                {
-                    "datasource": {
-                        "type": "grafana-postgresql-datasource",
-                        "uid": self.datasource_uid
-                    },
-                    "id": 1,
-                    "title": "RTD-01 ~ RTD-08 Temperature",
-                    "description": "",
-                    "links": [],
-                    "gridPos": {
-                        "h": 9,
-                        "w": 24,
-                        "x": 0,
-                        "y": 0
-                    },
-                    "fieldConfig": {
-                        "defaults": {
-                            "custom": {
-                                "drawStyle": "line",
-                                "lineInterpolation": "linear",
-                                "barAlignment": 0,
-                                "barWidthFactor": 0.6,
-                                "lineWidth": 2,
-                                "fillOpacity": 0,
-                                "gradientMode": "none",
-                                "spanNulls": False,
-                                "insertNulls": False,
-                                "showPoints": "auto",
-                                "showValues": False,
-                                "pointSize": 5,
-                                "stacking": {
-                                    "mode": "none",
-                                    "group": "A"
-                                },
-                                "axisPlacement": "auto",
-                                "axisLabel": "Temperature (°C)",
-                                "axisColorMode": "text",
-                                "axisBorderShow": False,
-                                "scaleDistribution": {
-                                    "type": "linear"
-                                },
-                                "axisCenteredZero": False,
-                                "hideFrom": {
-                                    "tooltip": False,
-                                    "viz": False,
-                                    "legend": False
-                                },
-                                "thresholdsStyle": {
-                                    "mode": "off"
-                                }
-                            },
-                            "color": {
-                                "mode": "palette-classic"
-                            },
-                            "thresholds": {
-                                "mode": "absolute",
-                                "steps": [
-                                    {
-                                        "value": None,
-                                        "color": "green"
-                                    },
-                                    {
-                                        "value": 80,
-                                        "color": "red"
-                                    }
-                                ]
-                            }
-                        },
-                        "overrides": [
-                            {
-                                "matcher": {
-                                    "id": "byName",
-                                    "options": "RTD-01"
-                                },
-                                "properties": [
-                                    {
-                                        "id": "color",
-                                        "value": {
-                                            "fixedColor": "red",
-                                            "mode": "fixed"
-                                        }
-                                    }
-                                ]
-                            },
-                            {
-                                "matcher": {
-                                    "id": "byName",
-                                    "options": "RTD-02"
-                                },
-                                "properties": [
-                                    {
-                                        "id": "color",
-                                        "value": {
-                                            "fixedColor": "orange",
-                                            "mode": "fixed"
-                                        }
-                                    }
-                                ]
-                            },
-                            {
-                                "matcher": {
-                                    "id": "byName",
-                                    "options": "RTD-03"
-                                },
-                                "properties": [
-                                    {
-                                        "id": "color",
-                                        "value": {
-                                            "fixedColor": "yellow",
-                                            "mode": "fixed"
-                                        }
-                                    }
-                                ]
-                            },
-                            {
-                                "matcher": {
-                                    "id": "byName",
-                                    "options": "RTD-04"
-                                },
-                                "properties": [
-                                    {
-                                        "id": "color",
-                                        "value": {
-                                            "fixedColor": "green",
-                                            "mode": "fixed"
-                                        }
-                                    }
-                                ]
-                            },
-                            {
-                                "matcher": {
-                                    "id": "byName",
-                                    "options": "RTD-05"
-                                },
-                                "properties": [
-                                    {
-                                        "id": "color",
-                                        "value": {
-                                            "fixedColor": "blue",
-                                            "mode": "fixed"
-                                        }
-                                    }
-                                ]
-                            },
-                            {
-                                "matcher": {
-                                    "id": "byName",
-                                    "options": "RTD-06"
-                                },
-                                "properties": [
-                                    {
-                                        "id": "color",
-                                        "value": {
-                                            "fixedColor": "purple",
-                                            "mode": "fixed"
-                                        }
-                                    }
-                                ]
-                            },
-                            {
-                                "matcher": {
-                                    "id": "byName",
-                                    "options": "RTD-07"
-                                },
-                                "properties": [
-                                    {
-                                        "id": "color",
-                                        "value": {
-                                            "fixedColor": "cyan",
-                                            "mode": "fixed"
-                                        }
-                                    }
-                                ]
-                            },
-                            {
-                                "matcher": {
-                                    "id": "byName",
-                                    "options": "RTD-08"
-                                },
-                                "properties": [
-                                    {
-                                        "id": "color",
-                                        "value": {
-                                            "fixedColor": "pink",
-                                            "mode": "fixed"
-                                        }
-                                    }
-                                ]
-                            },
-                            {
-                                "matcher": {
-                                    "id": "byName",
-                                    "options": "Chiller-01"
-                                },
-                                "properties": [
-                                    {
-                                        "id": "displayName",
-                                        "value": "Chiller-ReadoutTemp"
-                                    },
-                                    {
-                                        "id": "color",
-                                        "value": {
-                                            "fixedColor": "dark-blue",
-                                            "mode": "fixed"
-                                        }
-                                    }
-                                ]
-                            },
-                            {
-                                "matcher": {
-                                    "id": "byName",
-                                    "options": "Chiller-T"
-                                },
-                                "properties": [
-                                    {
-                                        "id": "displayName",
-                                        "value": "Target Temp"
-                                    },
-                                    {
-                                        "id": "color",
-                                        "value": {
-                                            "fixedColor": "dark-red",
-                                            "mode": "fixed"
-                                        }
-                                    }
-                                ]
-                            }
-                        ]
-                    },
-                    "options": {
-                        "tooltip": {
-                            "mode": "multi",
-                            "sort": "none",
-                            "hideZeros": False
-                        },
-                        "legend": {
-                            "showLegend": True,
-                            "displayMode": "list",
-                            "placement": "bottom",
-                            "calcs": []
-                        },
-                        "annotations": {
-                            "multiLane": False,
-                            "clustering": -1
-                        }
-                    },
-                    "pluginVersion": "12.0.0",
-                    "type": "timeseries",
-                    "targets": [
-                        {
-                            "datasource": {
-                                "type": "grafana-postgresql-datasource",
-                                "uid": self.datasource_uid
-                            },
-                            "editorMode": "code",
-                            "format": "time_series",
-                            "rawQuery": True,
-                            "rawSql": f"""SELECT
-  log_timestamp AT TIME ZONE '{self.timezone}' AS "time",
-  device_name::text AS metric,
-  value
-FROM mmts_sensors_logging
-WHERE
-  $__timeFilter(log_timestamp AT TIME ZONE '{self.timezone}')
-  AND device_name IN ('RTD-01','RTD-02','RTD-03','RTD-04','RTD-05','RTD-06','RTD-07','RTD-08','Chiller-01','Chiller-T')
-  AND mmts_sensors_logging.metric = 'temperature_C'
-ORDER BY 1, 2;""",
-                            "refId": "A",
-                            "hidden": False,
-                            "sql": {
-                                "columns": [
-                                    {
-                                        "parameters": [],
-                                        "type": "function"
-                                    }
-                                ],
-                                "groupBy": [
-                                    {
-                                        "property": {
-                                            "type": "string"
-                                        },
-                                        "type": "groupBy"
-                                    }
-                                ],
-                                "limit": 50
-                            },
-                            "table": "measurement"
-                        }
-                    ]
-                },
-                {
-                    "datasource": {
-                        "type": "grafana-postgresql-datasource",
-                        "uid": self.datasource_uid
-                    },
-                    "id": 2,
-                    "title": "Dewpoint",
-                    "description": "",
-                    "links": [],
-                    "gridPos": {
-                        "h": 9,
-                        "w": 24,
-                        "x": 0,
-                        "y": 9
-                    },
-                    "fieldConfig": {
-                        "defaults": {
-                            "custom": {
-                                "drawStyle": "line",
-                                "lineInterpolation": "linear",
-                                "barAlignment": 0,
-                                "barWidthFactor": 0.6,
-                                "lineWidth": 2,
-                                "fillOpacity": 0,
-                                "gradientMode": "none",
-                                "spanNulls": False,
-                                "insertNulls": False,
-                                "showPoints": "auto",
-                                "showValues": False,
-                                "pointSize": 1,
-                                "stacking": {
-                                    "mode": "none",
-                                    "group": "A"
-                                },
-                                "axisPlacement": "auto",
-                                "axisLabel": "Dewpoint (°C)",
-                                "axisColorMode": "text",
-                                "axisBorderShow": False,
-                                "scaleDistribution": {
-                                    "type": "linear"
-                                },
-                                "axisCenteredZero": False,
-                                "hideFrom": {
-                                    "tooltip": False,
-                                    "viz": False,
-                                    "legend": False
-                                },
-                                "thresholdsStyle": {
-                                    "mode": "dashed"
-                                }
-                            },
-                            "color": {
-                                "mode": "palette-classic"
-                            },
-                            "thresholds": {
-                                "mode": "absolute",
-                                "steps": [
-                                    {
-                                        "value": None,
-                                        "color": "green"
-                                    },
-                                    {
-                                        "value": -40,
-                                        "color": "dark-red"
-                                    }
-                                ]
-                            }
-                        },
-                        "overrides": []
-                    },
-                    "options": {
-                        "tooltip": {
-                            "mode": "single",
-                            "sort": "none",
-                            "hideZeros": False
-                        },
-                        "legend": {
-                            "showLegend": True,
-                            "displayMode": "list",
-                            "placement": "bottom",
-                            "calcs": []
-                        },
-                        "annotations": {
-                            "multiLane": False,
-                            "clustering": -1
-                        }
-                    },
-                    "pluginVersion": "12.0.0",
-                    "type": "timeseries",
-                    "targets": [
-                        {
-                            "datasource": {
-                                "type": "grafana-postgresql-datasource",
-                                "uid": self.datasource_uid
-                            },
-                            "editorMode": "code",
-                            "format": "time_series",
-                            "rawQuery": True,
-                            "rawSql": f"""SELECT
-  log_timestamp AT TIME ZONE '{self.timezone}' AS "time",
-  device_name::text AS metric,
-  value
-FROM mmts_sensors_logging
-WHERE
-  $__timeFilter(log_timestamp AT TIME ZONE '{self.timezone}')
-  AND device_name IN ('DMT-01','DMT-02')
-  AND metric = 'dewpoint_C'
-ORDER BY 1, 2;""",
-                            "refId": "A",
-                            "hidden": False,
-                            "sql": {
-                                "columns": [
-                                    {
-                                        "parameters": [],
-                                        "type": "function"
-                                    }
-                                ],
-                                "groupBy": [
-                                    {
-                                        "property": {
-                                            "type": "string"
-                                        },
-                                        "type": "groupBy"
-                                    }
-                                ],
-                                "limit": 50
-                            }
-                        }
-                    ]
-                },
+                self.temperature_panel({"h": 9, "w": 24, "x": 0, "y": 0}, batch_only=False),
+                self.dewpoint_panel({"h": 9, "w": 24, "x": 0, "y": 9}, batch_only=False),
                 {
                     "datasource": {
                         "type": "grafana-postgresql-datasource",
@@ -811,3 +393,471 @@ ORDER BY 1;""",
         }
 
         return dashboard_json
+
+    def temperature_panel(self, gridPos: dict, batch_only: bool) -> dict:
+        if batch_only:
+            time_condition = f"""
+                                AND ('${{batch_name}}' = '' OR log_timestamp BETWEEN
+                                      (SELECT MIN(log_timestamp) FROM mmts_batch_logging WHERE batch_name = '${{batch_name}}') - INTERVAL '30 minutes'
+                                AND (SELECT MAX(date_test + time_test) FROM module_iv_test WHERE batch_name = '${{batch_name}}') + INTERVAL '30 minutes') """
+        else:
+            time_condition = ""
+
+        return {
+                            "datasource": {
+                                "type": "grafana-postgresql-datasource",
+                                "uid": self.datasource_uid
+                            },
+                            "id": 1,
+                            "title": "RTD-01 ~ RTD-08 Temperature",
+                            "description": "",
+                            "links": [],
+                            "gridPos": gridPos,
+                            "fieldConfig": {
+                                "defaults": {
+                                    "custom": {
+                                        "drawStyle": "line",
+                                        "lineInterpolation": "linear",
+                                        "barAlignment": 0,
+                                        "barWidthFactor": 0.6,
+                                        "lineWidth": 2,
+                                        "fillOpacity": 0,
+                                        "gradientMode": "none",
+                                        "spanNulls": False,
+                                        "insertNulls": False,
+                                        "showPoints": "auto",
+                                        "showValues": False,
+                                        "pointSize": 5,
+                                        "stacking": {
+                                            "mode": "none",
+                                            "group": "A"
+                                        },
+                                        "axisPlacement": "auto",
+                                        "axisLabel": "Temperature (°C)",
+                                        "axisColorMode": "text",
+                                        "axisBorderShow": False,
+                                        "scaleDistribution": {
+                                            "type": "linear"
+                                        },
+                                        "axisCenteredZero": False,
+                                        "hideFrom": {
+                                            "tooltip": False,
+                                            "viz": False,
+                                            "legend": False
+                                        },
+                                        "thresholdsStyle": {
+                                            "mode": "off"
+                                        }
+                                    },
+                                    "color": {
+                                        "mode": "palette-classic"
+                                    },
+                                    "thresholds": {
+                                        "mode": "absolute",
+                                        "steps": [
+                                            {
+                                                "value": None,
+                                                "color": "green"
+                                            },
+                                            {
+                                                "value": 80,
+                                                "color": "red"
+                                            }
+                                        ]
+                                    }
+                                },
+                                "overrides": [
+                                    {
+                                        "matcher": {
+                                            "id": "byName",
+                                            "options": "RTD-01"
+                                        },
+                                        "properties": [
+                                            {
+                                                "id": "color",
+                                                "value": {
+                                                    "fixedColor": "red",
+                                                    "mode": "fixed"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "matcher": {
+                                            "id": "byName",
+                                            "options": "RTD-02"
+                                        },
+                                        "properties": [
+                                            {
+                                                "id": "color",
+                                                "value": {
+                                                    "fixedColor": "orange",
+                                                    "mode": "fixed"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "matcher": {
+                                            "id": "byName",
+                                            "options": "RTD-03"
+                                        },
+                                        "properties": [
+                                            {
+                                                "id": "color",
+                                                "value": {
+                                                    "fixedColor": "yellow",
+                                                    "mode": "fixed"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "matcher": {
+                                            "id": "byName",
+                                            "options": "RTD-04"
+                                        },
+                                        "properties": [
+                                            {
+                                                "id": "color",
+                                                "value": {
+                                                    "fixedColor": "green",
+                                                    "mode": "fixed"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "matcher": {
+                                            "id": "byName",
+                                            "options": "RTD-05"
+                                        },
+                                        "properties": [
+                                            {
+                                                "id": "color",
+                                                "value": {
+                                                    "fixedColor": "blue",
+                                                    "mode": "fixed"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "matcher": {
+                                            "id": "byName",
+                                            "options": "RTD-06"
+                                        },
+                                        "properties": [
+                                            {
+                                                "id": "color",
+                                                "value": {
+                                                    "fixedColor": "purple",
+                                                    "mode": "fixed"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "matcher": {
+                                            "id": "byName",
+                                            "options": "RTD-07"
+                                        },
+                                        "properties": [
+                                            {
+                                                "id": "color",
+                                                "value": {
+                                                    "fixedColor": "cyan",
+                                                    "mode": "fixed"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "matcher": {
+                                            "id": "byName",
+                                            "options": "RTD-08"
+                                        },
+                                        "properties": [
+                                            {
+                                                "id": "color",
+                                                "value": {
+                                                    "fixedColor": "pink",
+                                                    "mode": "fixed"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "matcher": {
+                                            "id": "byName",
+                                            "options": "Chiller-01"
+                                        },
+                                        "properties": [
+                                            {
+                                                "id": "displayName",
+                                                "value": "Chiller-ReadoutTemp"
+                                            },
+                                            {
+                                                "id": "color",
+                                                "value": {
+                                                    "fixedColor": "dark-blue",
+                                                    "mode": "fixed"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "matcher": {
+                                            "id": "byName",
+                                            "options": "Chiller-T"
+                                        },
+                                        "properties": [
+                                            {
+                                                "id": "displayName",
+                                                "value": "Target Temp"
+                                            },
+                                            {
+                                                "id": "color",
+                                                "value": {
+                                                    "fixedColor": "dark-red",
+                                                    "mode": "fixed"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            "options": {
+                                "tooltip": {
+                                    "mode": "multi",
+                                    "sort": "none",
+                                    "hideZeros": False
+                                },
+                                "legend": {
+                                    "showLegend": True,
+                                    "displayMode": "list",
+                                    "placement": "bottom",
+                                    "calcs": []
+                                },
+                                "annotations": {
+                                    "multiLane": False,
+                                    "clustering": -1
+                                }
+                            },
+                            "pluginVersion": "12.0.0",
+                            "type": "timeseries",
+                            "targets": [
+                                {
+                                    "datasource": {
+                                        "type": "grafana-postgresql-datasource",
+                                        "uid": self.datasource_uid
+                                    },
+                                    "editorMode": "code",
+                                    "format": "time_series",
+                                    "rawQuery": True,
+                                    "rawSql": f"""SELECT
+          log_timestamp AT TIME ZONE '{self.timezone}' AS "time",
+          device_name::text AS metric,
+          value
+        FROM mmts_sensors_logging
+        WHERE
+          $__timeFilter(log_timestamp AT TIME ZONE '{self.timezone}')
+          AND device_name IN ('RTD-01','RTD-02','RTD-03','RTD-04','RTD-05','RTD-06','RTD-07','RTD-08','Chiller-01','Chiller-T')
+          AND mmts_sensors_logging.metric = 'temperature_C' """ + time_condition + """
+        ORDER BY 1, 2;""",
+                                    "refId": "A",
+                                    "hidden": False,
+                                    "sql": {
+                                        "columns": [
+                                            {
+                                                "parameters": [],
+                                                "type": "function"
+                                            }
+                                        ],
+                                        "groupBy": [
+                                            {
+                                                "property": {
+                                                    "type": "string"
+                                                },
+                                                "type": "groupBy"
+                                            }
+                                        ],
+                                        "limit": 50
+                                    },
+                                    "table": "measurement"
+                                }
+                            ]
+                        }
+
+    def dewpoint_panel(self, gridPos: dict, batch_only: bool) -> dict:
+        if batch_only:
+            time_condition = f"""
+                                AND ('${{batch_name}}' = '' OR log_timestamp BETWEEN
+                                      (SELECT MIN(log_timestamp) FROM mmts_batch_logging WHERE batch_name = '${{batch_name}}') - INTERVAL '30 minutes'
+                                AND (SELECT MAX(date_test + time_test) FROM module_iv_test WHERE batch_name = '${{batch_name}}') + INTERVAL '30 minutes') """
+        else:
+            time_condition = ""
+        
+        return {
+                            "datasource": {
+                                "type": "grafana-postgresql-datasource",
+                                "uid": self.datasource_uid
+                            },
+                            "id": 2,
+                            "title": "Dewpoint",
+                            "description": "",
+                            "links": [],
+                            "gridPos": gridPos,
+                            "fieldConfig": {
+                                "defaults": {
+                                    "custom": {
+                                        "drawStyle": "line",
+                                        "lineInterpolation": "linear",
+                                        "barAlignment": 0,
+                                        "barWidthFactor": 0.6,
+                                        "lineWidth": 2,
+                                        "fillOpacity": 0,
+                                        "gradientMode": "none",
+                                        "spanNulls": False,
+                                        "insertNulls": False,
+                                        "showPoints": "auto",
+                                        "showValues": False,
+                                        "pointSize": 1,
+                                        "stacking": {
+                                            "mode": "none",
+                                            "group": "A"
+                                        },
+                                        "axisPlacement": "auto",
+                                        "axisLabel": "Dewpoint (°C)",
+                                        "axisColorMode": "text",
+                                        "axisBorderShow": False,
+                                        "scaleDistribution": {
+                                            "type": "linear"
+                                        },
+                                        "axisCenteredZero": False,
+                                        "hideFrom": {
+                                            "tooltip": False,
+                                            "viz": False,
+                                            "legend": False
+                                        },
+                                        "thresholdsStyle": {
+                                            "mode": "dashed"
+                                        }
+                                    },
+                                    "color": {
+                                        "mode": "palette-classic"
+                                    },
+                                    "thresholds": {
+                                        "mode": "absolute",
+                                        "steps": [
+                                            {
+                                                "value": None,
+                                                "color": "green"
+                                            },
+                                            {
+                                                "value": -40,
+                                                "color": "dark-red"
+                                            }
+                                        ]
+                                    }
+                                },
+                                "overrides": []
+                            },
+                            "options": {
+                                "tooltip": {
+                                    "mode": "single",
+                                    "sort": "none",
+                                    "hideZeros": False
+                                },
+                                "legend": {
+                                    "showLegend": True,
+                                    "displayMode": "list",
+                                    "placement": "bottom",
+                                    "calcs": []
+                                },
+                                "annotations": {
+                                    "multiLane": False,
+                                    "clustering": -1
+                                }
+                            },
+                            "pluginVersion": "12.0.0",
+                            "type": "timeseries",
+                            "targets": [
+                                {
+                                    "datasource": {
+                                        "type": "grafana-postgresql-datasource",
+                                        "uid": self.datasource_uid
+                                    },
+                                    "editorMode": "code",
+                                    "format": "time_series",
+                                    "rawQuery": True,
+                                    "rawSql": f"""SELECT
+          log_timestamp AT TIME ZONE '{self.timezone}' AS "time",
+          device_name::text AS metric,
+          value
+        FROM mmts_sensors_logging
+        WHERE
+          $__timeFilter(log_timestamp AT TIME ZONE '{self.timezone}')
+          AND device_name IN ('DMT-01','DMT-02')
+          AND metric = 'dewpoint_C' """ + time_condition + """
+        ORDER BY 1, 2;""",
+                                    "refId": "A",
+                                    "hidden": False,
+                                    "sql": {
+                                        "columns": [
+                                            {
+                                                "parameters": [],
+                                                "type": "function"
+                                            }
+                                        ],
+                                        "groupBy": [
+                                            {
+                                                "property": {
+                                                    "type": "string"
+                                                },
+                                                "type": "groupBy"
+                                            }
+                                        ],
+                                        "limit": 50
+                                    }
+                                }
+                            ]
+                        }
+
+    def temperature_dewpoint_panel(self, gridPos:dict) -> dict:
+        panel  = self.temperature_panel(gridPos, batch_only=True)
+        dewpoint = self.dewpoint_panel(gridPos, batch_only=True)
+
+        panel["title"] = "Temperature and Dewpoint"
+
+        dewpoint_target = dewpoint["targets"][0]
+        dewpoint_target["refId"] = "B"
+        panel["targets"].append(dewpoint_target)
+
+        panel["fieldConfig"]["overrides"].append({
+            "matcher": {"id": "byName", "options": "DMT-01"},
+            "properties": [
+                {"id": "color", "value": {
+                    "mode": "fixed",
+                    "fixedColor": "rgb(230, 93, 138)"
+                }}
+            ]
+        })
+        panel["fieldConfig"]["overrides"].append({
+            "matcher": {"id": "byName", "options": "DMT-02"},
+            "properties": [
+                {"id": "color", "value": {
+                    "mode": "fixed",
+                    "fixedColor": "rgb(218, 255, 99)"
+                }}
+            ]
+        })
+        panel["fieldConfig"]["overrides"].append({
+            "matcher": {"id": "byRegexp", "options": "DMT-.*"},
+            "properties": [
+                {"id": "custom.axisPlacement", "value": "right"},
+                {"id": "custom.axisLabel", "value": "Dewpoint (°C)"},
+            ]
+        })
+
+        return panel

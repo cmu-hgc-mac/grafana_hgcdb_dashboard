@@ -65,7 +65,7 @@ class IVCurveBuilder:
         FROM module_iv_test
         JOIN module_info ON module_info.module_name = module_iv_test.module_name
         LEFT JOIN latest_qc_summary ON latest_qc_summary.module_name = module_iv_test.module_name
-        WHERE $__timeFilter(module_iv_test.date_test)
+        WHERE ((module_iv_test.date_test + module_iv_test.time_test) AT TIME ZONE '{TIME_ZONE}') BETWEEN $__timeFrom() AND $__timeTo()
             AND meas_v IS NOT NULL AND meas_i IS NOT NULL
             AND {temp_condition}
             AND {rel_hum_condition}
