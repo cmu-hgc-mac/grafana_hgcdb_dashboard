@@ -852,12 +852,6 @@ ORDER BY 1;""",
                 }}
             ]
         })
-        panel["fieldConfig"]["overrides"].append({
-            "matcher": {"id": "byRegexp", "options": "DMT-.*"},
-            "properties": [
-                {"id": "custom.axisPlacement", "value": "right"},
-                {"id": "custom.axisLabel", "value": "Dewpoint (°C)"},
-            ]
-        })
+        panel["fieldConfig"]["defaults"]["custom"]["axisLabel"] = "Temperature / Dewpoint (°C)"
 
         return panel
