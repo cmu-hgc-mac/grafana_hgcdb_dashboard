@@ -14,6 +14,7 @@ class ModuleGradesBuilder:
         self.show_latest_only = "{show_latest_only}"
         self.uninstallable_only = "{uninstallable_only}"
         self.show_grade_changed_modules = "{show_grade_changed_modules}"
+        self.comments_filter = "{comments_filter}"
 
         self.table_sql = f"""WITH ranked AS (
 SELECT
@@ -103,6 +104,8 @@ filtered AS (
        OR combined.module_name IN (SELECT module_name FROM latest_uninstallable_modules))
       AND ('${self.show_grade_changed_modules}' = 'false'
        OR combined.module_name IN (SELECT module_name FROM deteriorated_modules))
+      AND ('${self.comments_filter}' = ''
+       OR combined.comments_all ILIKE '%' || '${self.comments_filter}' || '%')
 )
 SELECT
     *,
@@ -542,6 +545,16 @@ ORDER BY module_no DESC, mod_qc_no DESC"""
                         ],
                         "query": "false,true",
                         "type": "custom"
+                    },
+                    {
+                        "current": {"text": "true", "value": ""},
+                        "label": "Comments Filter",
+                        "name": "comments_filter",
+                        "options": [
+                            {"selected": True, "text": "", "value": ""}
+                        ],
+                        "query": "",
+                        "type": "textbox"
                     }
                 ]
             },

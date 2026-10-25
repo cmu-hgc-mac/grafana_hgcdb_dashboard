@@ -29,8 +29,7 @@ class MMTSLoggingBuilder:
             "graphTooltip": 0,
             "links": [],
             "panels": [
-                self.temperature_panel({"h": 9, "w": 24, "x": 0, "y": 0}, batch_only=False),
-                self.dewpoint_panel({"h": 9, "w": 24, "x": 0, "y": 9}, batch_only=False),
+                self.temperature_dewpoint_panel({"h": 12, "w": 24, "x": 0, "y": 0}, batch_only=False),
                 {
                     "datasource": {
                         "type": "grafana-postgresql-datasource",
@@ -44,7 +43,7 @@ class MMTSLoggingBuilder:
                         "h": 9,
                         "w": 24,
                         "x": 0,
-                        "y": 18
+                        "y": 12
                     },
                     "fieldConfig": {
                         "defaults": {
@@ -200,7 +199,7 @@ ORDER BY 1;""",
                         "h": 9,
                         "w": 24,
                         "x": 0,
-                        "y": 27
+                        "y": 21
                     },
                     "fieldConfig": {
                         "defaults": {
@@ -824,9 +823,9 @@ ORDER BY 1;""",
                             ]
                         }
 
-    def temperature_dewpoint_panel(self, gridPos:dict) -> dict:
-        panel  = self.temperature_panel(gridPos, batch_only=True)
-        dewpoint = self.dewpoint_panel(gridPos, batch_only=True)
+    def temperature_dewpoint_panel(self, gridPos:dict, batch_only:bool = False) -> dict:
+        panel  = self.temperature_panel(gridPos, batch_only=batch_only)
+        dewpoint = self.dewpoint_panel(gridPos, batch_only=batch_only)
 
         panel["title"] = "Temperature and Dewpoint"
 
@@ -839,7 +838,7 @@ ORDER BY 1;""",
             "properties": [
                 {"id": "color", "value": {
                     "mode": "fixed",
-                    "fixedColor": "rgb(230, 93, 138)"
+                    "fixedColor": "rgb(245, 77, 255)"
                 }}
             ]
         })
