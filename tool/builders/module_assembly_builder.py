@@ -91,16 +91,16 @@ class ModuleAssemblyBuilder:
             temp_table_0.wb_front::text,
             temp_table_0.encap_front::text,
             CASE
+                WHEN temp_table_4.encap_ts_utc IS NULL AND temp_table_5.encap_ts_utc IS NULL THEN NULL
+                WHEN temp_table_5.encap_ts_utc IS NULL OR temp_table_4.encap_ts_utc >= temp_table_5.encap_ts_utc THEN temp_table_4.cure_temp_c::text
+                ELSE temp_table_5.cure_temp_c::text
+            END AS cure_temp_c,
+            CASE
                 WHEN GREATEST(temp_table_4.encap_ts_utc, temp_table_5.encap_ts_utc, temp_table_6.bond_ts_utc, temp_table_7.bond_ts_utc) IS NOT NULL
                     AND (now() - GREATEST(temp_table_4.encap_ts_utc, temp_table_5.encap_ts_utc, temp_table_6.bond_ts_utc, temp_table_7.bond_ts_utc)) < INTERVAL '1440 MINUTE'
                 THEN 'WAIT'
                 ELSE temp_table_0.thermal_cycle_date::text
             END AS thermal_cycle_date,
-            CASE
-                WHEN temp_table_4.encap_ts_utc IS NULL AND temp_table_5.encap_ts_utc IS NULL THEN NULL
-                WHEN temp_table_5.encap_ts_utc IS NULL OR temp_table_4.encap_ts_utc >= temp_table_5.encap_ts_utc THEN temp_table_4.cure_temp_c::text
-                ELSE temp_table_5.cure_temp_c::text
-            END AS cure_temp_c,
             temp_table_2.temp_c::text AS test_temp_c,
             temp_table_0.thermal_cycle_count::text,
             temp_table_2.date_test::text AS test_iv,
