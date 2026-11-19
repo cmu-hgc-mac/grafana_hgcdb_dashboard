@@ -87,7 +87,7 @@ class ModuleAssemblyBuilder:
             temp_table_0.encap_back::text,
             temp_table_0.wb_front::text,
             temp_table_0.encap_front::text,
-            temp_table_2.temp_c::text,
+            temp_table_2.temp_c::text AS test_temp_c,
             temp_table_0.thermal_cycle_count::text,
             CASE
                 WHEN GREATEST(temp_table_4.encap_ts_utc, temp_table_5.encap_ts_utc, temp_table_6.bond_ts_utc, temp_table_7.bond_ts_utc) IS NOT NULL
@@ -709,7 +709,7 @@ class ModuleAssemblyBuilder:
                     {
                         "matcher": {
                         "id": "byName",
-                        "options": "temp_c"
+                        "options": "test_temp_c"
                         },
                         "properties": [
                         {
