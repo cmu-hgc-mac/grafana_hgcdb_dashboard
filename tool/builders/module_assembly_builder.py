@@ -92,7 +92,7 @@ class ModuleAssemblyBuilder:
             temp_table_0.encap_front::text,
             CASE
                 WHEN temp_table_4.encap_ts_utc IS NULL AND temp_table_5.encap_ts_utc IS NULL THEN NULL
-                WHEN temp_table_5.encap_ts_utc IS NULL OR temp_table_4.encap_ts_utc >= temp_table_5.encap_ts_utc THEN temp_table_4.cure_temp_c::text
+                WHEN temp_table_5.encap_ts_utc IS NULL OR temp_table_4.encap_ts_utc > temp_table_5.encap_ts_utc THEN temp_table_4.cure_temp_c::text
                 ELSE temp_table_5.cure_temp_c::text
             END AS cure_temp_c,
             CASE
@@ -158,12 +158,12 @@ class ModuleAssemblyBuilder:
             '${self.cure_temp}' = 'All'
             OR ('${self.cure_temp}' = '< 35' AND (CASE
                 WHEN temp_table_4.encap_ts_utc IS NULL AND temp_table_5.encap_ts_utc IS NULL THEN NULL
-                WHEN temp_table_5.encap_ts_utc IS NULL OR temp_table_4.encap_ts_utc >= temp_table_5.encap_ts_utc THEN temp_table_4.cure_temp_c
+                WHEN temp_table_5.encap_ts_utc IS NULL OR temp_table_4.encap_ts_utc > temp_table_5.encap_ts_utc THEN temp_table_4.cure_temp_c
                 ELSE temp_table_5.cure_temp_c
             END) <= 35)
             OR ('${self.cure_temp}' = '> 35' AND (CASE
                 WHEN temp_table_4.encap_ts_utc IS NULL AND temp_table_5.encap_ts_utc IS NULL THEN NULL
-                WHEN temp_table_5.encap_ts_utc IS NULL OR temp_table_4.encap_ts_utc >= temp_table_5.encap_ts_utc THEN temp_table_4.cure_temp_c
+                WHEN temp_table_5.encap_ts_utc IS NULL OR temp_table_4.encap_ts_utc > temp_table_5.encap_ts_utc THEN temp_table_4.cure_temp_c
                 ELSE temp_table_5.cure_temp_c
             END) > 35)
           )
