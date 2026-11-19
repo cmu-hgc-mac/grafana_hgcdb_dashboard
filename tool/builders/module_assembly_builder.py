@@ -14,6 +14,7 @@ class ModuleAssemblyBuilder:
         self.test_status = "{test_status}"
         self.assembly_status = "{assembly_status}"
         self.pack_ship_status = "{pack_ship_status}"
+        self.cure_temp = "{cure_temp}"
 
         self.table_sql = f"""WITH
                 temp_table_0 AS (
@@ -48,7 +49,8 @@ class ModuleAssemblyBuilder:
 
                 temp_table_4 AS (
                 SELECT DISTINCT ON (module_name) module_name,
-                    (date_encap + time_encap) AT TIME ZONE '{self.timezone}' AS encap_ts_utc
+                    (date_encap + time_encap) AT TIME ZONE '{self.timezone}' AS encap_ts_utc,
+                    cure_temp_c
                 FROM back_encap
                 WHERE date_encap IS NOT NULL AND time_encap IS NOT NULL
                 ORDER BY module_name, (date_encap + time_encap) DESC
@@ -56,7 +58,8 @@ class ModuleAssemblyBuilder:
 
                 temp_table_5 AS (
                 SELECT DISTINCT ON (module_name) module_name,
-                    (date_encap + time_encap) AT TIME ZONE '{self.timezone}' AS encap_ts_utc
+                    (date_encap + time_encap) AT TIME ZONE '{self.timezone}' AS encap_ts_utc,
+                    cure_temp_c
                 FROM front_encap
                 WHERE date_encap IS NOT NULL AND time_encap IS NOT NULL
                 ORDER BY module_name, (date_encap + time_encap) DESC
@@ -87,14 +90,19 @@ class ModuleAssemblyBuilder:
             temp_table_0.encap_back::text,
             temp_table_0.wb_front::text,
             temp_table_0.encap_front::text,
-            temp_table_2.temp_c::text AS test_temp_c,
-            temp_table_0.thermal_cycle_count::text,
             CASE
                 WHEN GREATEST(temp_table_4.encap_ts_utc, temp_table_5.encap_ts_utc, temp_table_6.bond_ts_utc, temp_table_7.bond_ts_utc) IS NOT NULL
                     AND (now() - GREATEST(temp_table_4.encap_ts_utc, temp_table_5.encap_ts_utc, temp_table_6.bond_ts_utc, temp_table_7.bond_ts_utc)) < INTERVAL '1440 MINUTE'
                 THEN 'WAIT'
                 ELSE temp_table_0.thermal_cycle_date::text
             END AS thermal_cycle_date,
+            CASE
+                WHEN temp_table_4.encap_ts_utc IS NULL AND temp_table_5.encap_ts_utc IS NULL THEN NULL
+                WHEN temp_table_5.encap_ts_utc IS NULL OR temp_table_4.encap_ts_utc >= temp_table_5.encap_ts_utc THEN temp_table_4.cure_temp_c::text
+                ELSE temp_table_5.cure_temp_c::text
+            END AS cure_temp_c,
+            temp_table_2.temp_c::text AS test_temp_c,
+            temp_table_0.thermal_cycle_count::text,
             temp_table_2.date_test::text AS test_iv,
             temp_table_3.date_test::text AS test_ped,
             COALESCE(temp_table_0.xml_upload_success::text, 'Yet to Upload') AS xml_build_upload_success,
@@ -145,6 +153,19 @@ class ModuleAssemblyBuilder:
             OR ('${self.test_status}' = 'Tested at > 0°C' AND (temp_table_2.module_name IS NOT NULL OR temp_table_3.module_name IS NOT NULL) AND EXISTS (SELECT 1 FROM module_iv_test WHERE module_iv_test.module_name = temp_table_0.module_name AND (module_iv_test.status = 7 OR module_iv_test.status = 8) AND module_iv_test.temp_c::numeric > 0))
             OR ('${self.test_status}' = 'Untested at < 0°C' AND NOT EXISTS (SELECT 1 FROM module_iv_test WHERE module_iv_test.module_name = temp_table_0.module_name AND (module_iv_test.status = 7 OR module_iv_test.status = 8) AND module_iv_test.temp_c::numeric < 0))
             OR ('${self.test_status}' = 'Untested at > 0°C' AND NOT EXISTS (SELECT 1 FROM module_iv_test WHERE module_iv_test.module_name = temp_table_0.module_name AND (module_iv_test.status = 7 OR module_iv_test.status = 8) AND module_iv_test.temp_c::numeric > 0))
+          )
+          AND (
+            '${self.cure_temp}' = 'All'
+            OR ('${self.cure_temp}' = '< 35' AND (CASE
+                WHEN temp_table_4.encap_ts_utc IS NULL AND temp_table_5.encap_ts_utc IS NULL THEN NULL
+                WHEN temp_table_5.encap_ts_utc IS NULL OR temp_table_4.encap_ts_utc >= temp_table_5.encap_ts_utc THEN temp_table_4.cure_temp_c
+                ELSE temp_table_5.cure_temp_c
+            END) <= 35)
+            OR ('${self.cure_temp}' = '> 35' AND (CASE
+                WHEN temp_table_4.encap_ts_utc IS NULL AND temp_table_5.encap_ts_utc IS NULL THEN NULL
+                WHEN temp_table_5.encap_ts_utc IS NULL OR temp_table_4.encap_ts_utc >= temp_table_5.encap_ts_utc THEN temp_table_4.cure_temp_c
+                ELSE temp_table_5.cure_temp_c
+            END) > 35)
           )
           AND (
             '${self.assembly_status}' = 'All'
@@ -709,6 +730,61 @@ class ModuleAssemblyBuilder:
                     {
                         "matcher": {
                         "id": "byName",
+                        "options": "cure_temp_c"
+                        },
+                        "properties": [
+                        {
+                            "id": "custom.width",
+                            "value": 80
+                        },
+                        {
+                            "id": "custom.cellOptions",
+                            "value": {
+                            "type": "color-background"
+                            }
+                        },
+                        {
+                            "id": "mappings",
+                            "value": [
+                            {
+                                "options": {
+                                "match": "null",
+                                "result": {
+                                    "color": "red",
+                                    "index": 0
+                                }
+                                },
+                                "type": "special"
+                            },
+                            {
+                                "options": {
+                                "from": None,
+                                "result": {
+                                    "color": "#87CEEB",
+                                    "index": 1
+                                },
+                                "to": 35
+                                },
+                                "type": "range"
+                            },
+                            {
+                                "options": {
+                                "from": 35.0001,
+                                "result": {
+                                    "color": "green",
+                                    "index": 2
+                                },
+                                "to": None
+                                },
+                                "type": "range"
+                            }
+                            ]
+                        }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                        "id": "byName",
                         "options": "test_temp_c"
                         },
                         "properties": [
@@ -1173,6 +1249,33 @@ class ModuleAssemblyBuilder:
                         }
                     ],
                     "query": "All,Complete,Incomplete",
+                    "type": "custom"
+                },
+                {
+                    "current": {
+                        "text": "All",
+                        "value": "All"
+                    },
+                    "label": "Cure Temp",
+                    "name": "cure_temp",
+                    "options": [
+                        {
+                            "selected": True,
+                            "text": "All",
+                            "value": "All"
+                        },
+                        {
+                            "selected": False,
+                            "text": "< 35",
+                            "value": "< 35"
+                        },
+                        {
+                            "selected": False,
+                            "text": "> 35",
+                            "value": "> 35"
+                        }
+                    ],
+                    "query": "All,< 35,> 35",
                     "type": "custom"
                 },
                 {
